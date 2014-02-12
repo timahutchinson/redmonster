@@ -21,12 +21,12 @@ class Spec:
     def set_plate_mjd(self, plate=None, mjd=None):
         self.plate = plate
         self.mjd = mjd
-        if self.topdir and self.run2d and self.plate and self.mjd: self.platepath = join(self.topdir,self.run2d,"spPlate-%s-%s.fits" % (self.plate,self.mjd)) else self.platepath = None
-        self.set_data()
-
+        if self.topdir and self.run2d and self.plate and self.mjd:
+            self.platepath = join(self.topdir,self.run2d,"%s" % self.plate,"spPlate-%s-%s.fits" % (self.plate,self.mjd))
+            self.set_data()
     
     def set_data(self):
-        if self.platepath and exist(self.platepath): hdu = fits.open(self.platepath)
+        if self.platepath and exists(self.platepath): hdu = fits.open(self.platepath)
         else: print "Missing path to %r" % self.platepath
         try:
             self.flux = hdu[0].data
