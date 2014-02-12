@@ -1,42 +1,39 @@
-import os
+from os import environ
+from os.path import exists, join
 from astropy.io import fits
 import numpy as n
 
 class Spec:
 
     def __init__(self, plate=None, mjd=None):
+        self.flux = None
+        self.ivar = None
+        self.loglambda = None
+        self.ormask = None
+        self.plugmap = None
+        self.skyflux = None
+        try: self.topdir = environ['BOSS_SPECTRO_REDUX']
+        except: self.topdir = None
+        try: self.run2d = environ['RUN2D']
+        except: self.run2d = None
         self.set_plate_mjd(plate=plate, mjd=mjd)
-        self.set_platepath()
-        global hdu
-        hdu = fits.open(self.platepath)
-        self.set_flux()
-        self.set_ivar()
-        self.set_loglambda()
     
     def set_plate_mjd(self, plate=None, mjd=None):
         self.plate = plate
         self.mjd = mjd
+        if self.topdir and self.run2d and self.plate and self.mjd: self.platepath = join(self.topdir,self.run2d,"spPlate-%s-%s.fits" % (self.plate,self.mjd)) else self.platepath = None
+        self.set_data()
+
     
-    def set_platepath(self):
-        self.platepath = os.environ['BOSS_SPECTRO_REDUX'] + os.environ['RUN2D'] + str(self.plate) + '/' + 'spPlate-' + str(self.plate) + '-' + str(self.mjd) + '.fits'
-    
-    def set_flux(self):
-        self.flux = hdu[0].data
-    
-    def set_ivar(self):
-        self.ivar = hdu[1].data
-        
-    def set_loglambda(self):
-        self.loglambda = hdu[0].header['COEFF0'] + n.arange(hdu[0].header['NAXIS1']) * hdu[0].header['COEFF1']
-
-    def set_andmask(self):
-        self.andmask = hdu[2].data
-
-    def set_ormask(self):
-        self.ormask = hdu[3].data
-
-    def set_plugmap(self):
-        self.plugmap = hdu[5].data
-
-    def set_skyflux(self):
-        self.skyflux = hdu[6].data
+    def set_data(self):
+        if self.platepath and exist(self.platepath): hdu = fits.open(self.platepath)
+        else: print "Missing path to %r" % self.platepath
+        try:
+            self.flux = hdu[0].data
+            self.ivar = hdu[1].data
+            self.loglambda = hdu[0].header['COEFF0'] + n.arange(hdu[0].header['NAXIS1']) * hdu[0].header['COEFF1']
+            self.andmask = hdu[2].data
+            self.ormask = hdu[3].data
+            self.plugmap = hdu[5].data
+            self.skyflux = hdu[6].data
+        except Exception as e: print "Exception: %r" % e
