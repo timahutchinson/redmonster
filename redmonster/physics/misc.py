@@ -11,10 +11,10 @@ def flux_check(flux, ivars):
         if len(badpix) > 0:
             # ALSO CHANGE TO ADD TO LOG
             print 'WARNING: Fiber #%s has %s pixels with Flux < -10*Noise' % (i+1,len(badpix))
-            ivars[i] = mask_pixels(badpix, ivars)
+            ivars[i] = mask_pixels(badpix, ivars[i])
 
 # Mask unphysically negative pixels + neighboring two pixels in both directions
 def mask_pixels(badpix, ivars):
     for j in badpix:
-        ivars[:,j-2:j+2] = 0
+        ivars[j-2:j+2] = 0
     return ivars

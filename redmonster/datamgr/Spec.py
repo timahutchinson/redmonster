@@ -6,22 +6,25 @@ from math import ceil, floor
 
 class Spec:
 
-    def __init__(self, plate=None, mjd=None, data_range=None):
+    def __init__(self, plate=None, mjd=None, fiberid=None, data_range=None):
         self.flux = None
         self.ivar = None
         self.loglambda = None
-        self.andmask = NOne
+        self.andmask = None
         self.ormask = None
         self.plugmap = None
         self.skyflux = None
+        self.nobj = None
+        self.npix = None
+        self.coeff0 = None
+        self.coeff1 = None
         try: self.topdir = environ['BOSS_SPECTRO_REDUX']
         except: self.topdir = None
         try: self.run2d = environ['RUN2D']
         except: self.run2d = None
-        self.set_plate_mjd(plate=plate, mjd=mjd)
-        if data_range: self.chop_data(data_range)
+        self.set_plate_mjd(plate=plate, mjd=mjd, fiberid=fiberid, data_range=data_range)
     
-    def set_plate_mjd(self, plate=None, mjd=None):
+    def set_plate_mjd(self, plate=None, mjd=None, fiberid=None, data_range=None):
         self.plate = plate
         self.mjd = mjd
         if self.topdir and self.run2d and self.plate and self.mjd:
@@ -45,23 +48,27 @@ class Spec:
             if self.skyflux.shape != self.flux.shape: self.skyflux = 0
             self.nobj = hdu[0].header['NAXIS2']
             self.npix = hdu[0].header['NAXIS1']
+            self.coeff0 = hdu[0].header['COEFF0']
+            self.coeff1 = hdu[0].header['COEFF1']
         except Exception as e: print "Exception: %r" % e
 
-    def chop_data(data_range):
-        i1 = ceil( (n.log10(data_range[0]) - hdu[0].header['COEFF0']) / hdu[0].header['COEFF1'] )
-        i2 = floor( (n.log10(data_range[1]) - hdu[0].header['COEFF0']) / hdu[0].header['COEFF1'] )
+    def chop_data(self, data_range):
+        self.data_range = data_range
+        i1 = ceil( (n.log10(data_range[0]) - self.coeff0) / self.coeff1 )
+        i2 = floor( (n.log10(data_range[1]) - self.coeff0) / self.coeff1 )
         if i1 >= 0: self.ivar[:,:i1] = 0
-        if i2 <= self.nobj: self.ivar[:,i2:] = 0
+        if i2 <= self.npix: self.ivar[:,i2:] = 0
         # CHANGE PRINT STATE TO LOG
         print 'Trim wavelength range to %s' % data_range
 
-    def set_fibers(fiberid):
+    def set_fibers(self, fiberid):
         if min(fiberid) < 0 or max(fiberid) > self.nobj: print 'Invalid value for FIBERID: must be between 0 and %s' % hdu[0].header['NAXIS1'] # CHANGE THIS TO LOG INSTEAD OF PRINT
         else:
+            self.fiberid = fiberid
             self.flux = self.flux[fiberid]
             self.ivar = self.ivar[fiberid]
             self.andmask = self.andmask[fiberid]
             self.ormask = self.ormask[fiberid]
             self.plugmap = self.plugmap[fiberid]
             self.nobj = len(fiberid)
-            if self.skyflux != 0: self.skyflux = self.skyflux[fiberid]
+            if self.skyflux.shape[0] != 1: self.skyflux = self.skyflux[fiberid]
