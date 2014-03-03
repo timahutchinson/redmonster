@@ -58,7 +58,7 @@ class Spec:
         i2 = floor( (n.log10(data_range[1]) - self.coeff0) / self.coeff1 )
         if i1 >= 0: self.ivar[:,:i1] = 0
         if i2 <= self.npix: self.ivar[:,i2:] = 0
-        # CHANGE PRINT STATE TO LOG
+        # CHANGE PRINT STATEMENT TO LOG
         print 'Trim wavelength range to %s' % data_range
 
     def set_fibers(self, fiberid):

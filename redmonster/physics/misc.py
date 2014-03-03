@@ -18,3 +18,11 @@ def mask_pixels(badpix, ivars):
     for j in badpix:
         ivars[j-2:j+2] = 0
     return ivars
+
+# Function to transform pixel centers to pixel boundaries
+def cen2bound(pixelcen):
+    pixbound = 0.5 * (pixelcen[1:] + pixelcen[:-1])
+    lo_val = 2. * pixbound[0] - pixbound[1]
+    hi_val = 2. * pixbound[-1] - pixbound[-2]
+    pixbound = n.append(n.append(lo_val, pixbound), hi_val)
+    return pixbound
