@@ -8,7 +8,7 @@ from time import gmtime, strftime
 
 # Assumes SSPs are a fits file located in $IDLSPEC2D_DIR/templates/SSPs/
 
-class ssp_prep:
+class SSP_Prep:
 
     def __init__(self, coeff1 = .0001, velmin=None, velstep=None, nvel=None, ssp_file = 'SSP_Padova_RRLIB_Kroupa_Z0.0190.fits'):
         self.ssp_path = None
@@ -68,6 +68,6 @@ class ssp_prep:
         self.wave = bound2cen(bwb)
 
     def add_velo_disp(self, velmin, velstep, nvel):
-        velspecs = n.zeros(shape=(self.specs.shape[0], self.npix, nvel))
-        for i in range(nvel): velspecs[:,:,i] = gaussian_filter1d(self.specs, sigma=(velmin + velstep*i)/69., order=0) # Divide by 69 due to d(loglam)/dpix = .0001 corresponding to dv/dpix ~ 69 km/s
+        velspecs = n.zeros(shape=(self.specs.shape[0], nvel, self.npix))
+        for i in range(nvel): velspecs[:,i,:] = gaussian_filter1d(self.specs, sigma=(velmin + velstep*i)/69., order=0) # Divide by 69 due to d(loglam)/dpix = .0001 corresponding to dv/dpix ~ 69 km/s
         self.specs = velspecs
