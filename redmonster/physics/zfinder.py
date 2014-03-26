@@ -18,6 +18,5 @@ class zfinder:
         #self.eigendir = join(self.specdir,"%s" % "templates", "%s" % "SSPs") if self.specdir else None
 
     def zchi2(self, specs, ivar):
-        #ndim = len(self.templates.shape) - 1
-        zchi2 = n.append(n.zeros(specs.shape[0]),n.zeros(shape=self.templates.shape[:-1]))
+        zchi2 = n.zeros(shape=(n.append(specs.shape[0],self.templates.shape[:-1]))) # Create chi2 array of shape (# of fibers, template_parameter1, ... , template_parameterN)
         return zchi2
