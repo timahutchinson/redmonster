@@ -15,8 +15,12 @@ class zfinder:
         self.npoly = npoly if npoly else 3
         ssp_stuff = SSP_Prep(velmin=100, velstep=100, nvel=3) # THIS MAY NOT BE THE BEST WAY TO DO THIS
         self.templates = ssp_stuff.specs
-        #self.eigendir = join(self.specdir,"%s" % "templates", "%s" % "SSPs") if self.specdir else None
 
     def zchi2(self, specs, ivar):
         zchi2 = n.zeros(shape=(n.append(specs.shape[0],self.templates.shape[:-1]))) # Create chi2 array of shape (# of fibers, template_parameter1, ... , template_parameterN)
-        return zchi2
+        # NEED TO ADD LINE TO CREATE POLYNOMIAL TERMS HERE
+        for i in range(specs.shape[0]):
+            for j in range(self.template.shape[0]):
+                for k in range(self.template.shape[1]):
+                    conv_vector = n.convolve( spec[i]/ivar[i], self.template[j,k], mode='valid' )
+                    conv_matrix = n.convolve( )
