@@ -29,3 +29,10 @@ def cen2bound(pixelcen):
 def bound2cen(pixbound):
     pixbound = .5 * (pixbound[:-1] + pixbound[1:])
     return pixbound
+
+# Create poly array to add polynomial terms in fitting
+def poly_array(npoly, npix):
+    arr = n.zeros(shape=(npoly,npix))
+    xvec = n.arange(npix) / float(npix)
+    for i in range(npoly): arr[i] = xvec**i
+    return arr
