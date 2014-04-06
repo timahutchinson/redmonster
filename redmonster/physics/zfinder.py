@@ -54,4 +54,34 @@ class zfinder:
                         #import pdb; pdb.set_trace()
         print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         return zchi2arr, amat
-# now use f to create model at redshift=l, compute chi^2 for that model, and plug it into zchi2arr array
+
+def zchi3(self, specs, ivar):
+    print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
+    num_z = self.templates.shape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
+    shape = (specs.shape[0],) + self.templates.shape[:-1] + (num_z,)
+    
+    # Create arrays for use in routine
+    zchi2arr = n.zeros(shape) # Create chi2 array of shape (# of fibers, template_parameter_1, ... , template_parameter_N, # of redshifts)
+    polyarr = poly_array(self.npoly, specs.shape[1]) # Compute poly terms, noting that they will stay fixed with the data - assumes data is passed in as shape (nfibers, npix)
+    bvec = n.zeros((self.npoly+1,num_z))
+    amat = n.zeros((self.npoly+1,self.npoly+1,num_z)) # Amat(z).f=bvec(z)
+
+    # Pre-compute some matrix elements
+    for i in range(self.npoly):
+        for j in range(self.npoly):
+            amat[i+1,j+1] = n.sum(polyarr[i]*polyarr[j])
+
+# Do z computation for all fibers
+for i in range(specs.shape[0]): # Loop over fibers
+    bvec[1:] = n.sum( specs[i]*polyarr*(ivar[i]**2) )
+    amat[1:,1:] = amat[1:,1:] * n.sum(ivar[i]**2)
+    for j in range(self.templates.shape[0]): # Loop over template_parameter1
+        for k in range(self.templates.shape[1]): # Loop over template_parameter2
+            bvec[0] = n.convolve(specs[i]*self.templates[j,k]*ivar[i]**2)
+            avec[0,0] = n.convolve( self.templates[j,k]**2, ivar[i]**2 )
+            avec[1,0] = n.convolve( self.templates[j,k], polyarr[0]*(ivar[i]**2) )
+            avec[2,0] = n.convolve( self.templates[j,k], polyarr[1]*(ivar[i]**2) )
+            avec[3,0] = n.convolve( self.templates[j,k], polyarr[2]*(ivar[i]**2) )
+            avec[0,1], avec[0,2], avec[0,3] = avec[1,0], avec[2,0], avec[3,0]
+            for l in range(num_z): # Solve Amat.f = bvec at all pixel-redshifts l and compute chi2 at those redshifts
+                
