@@ -3,6 +3,7 @@ from os import environ
 from os.path import join, exists
 from redmonster.datamgr.ssp_prep import SSP_Prep
 from redmonster.physics.misc import poly_array
+from time import gmtime, strftime
 
 class zfinder:
 
@@ -18,6 +19,7 @@ class zfinder:
         self.templates = ssp_stuff.specs
 
     def zchi2(self, specs, ivar):
+        print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         num_z = self.templates.shape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
         shape = (specs.shape[0],) + self.templates.shape[:-1] + (num_z,)
         zchi2arr = n.zeros(shape) # Create chi2 array of shape (# of fibers, template_parameter_1, ... , template_parameter_N, # of redshifts)
@@ -31,17 +33,16 @@ class zfinder:
             for j in range(self.templates.shape[0]): # Loop over template-ages
                 for k in range(self.templates.shape[1]): # Loop over template vdisps
                     bvec[0] = n.convolve( specs[i]*(ivar[i]**2), self.templates[j,k], mode='valid' )
-                    model_mat[:,0] = self.templates[j,k]
+                    #model_mat[:,0] = self.templates[j,k]
                     for l in range(self.npoly+1): # Fill in entries of A matrix
                         for m in range(self.npoly+1):
                             if l == 0 and m == 0: amat[l,m] = n.convolve( (self.templates[j,k]*self.templates[j,k]), ivar[i]**2, mode='valid' )
-                            if l == 0 and m != 0:
+                            elif l == 0 and m != 0:
                                 amat[l,m] = n.convolve( self.templates[j,k], polyarr[m-1] * (ivar[i]**2), mode='valid' )
                                 amat[m,l] = amat[l,m]
-                            if l != 0 and m != 0:
+                            elif l != 0 and m != 0:
                                 amat[l,m] = n.sum( (polyarr[l-1]*polyarr[m-1])*(ivar[i]**2) )
-                                amat[m,l] = amat[l,m]
-                    for l in range(num_z): # Solve Amat.f = bvec at all pixel-redshifts l and computer chi2 at those redshifts
+                    for l in range(num_z): # Solve Amat.f = bvec at all pixel-redshifts l and compute chi2 at those redshifts
                         f = n.dot(n.linalg.inv(amat[:,:,l]),bvec[:,l])
                         #model = n.dot(model_mat, f)
                         #zchi2arr[i,j,k,l] = n.sum( ((specs[i]-model[l:l+specs.shape[-1]])**2)*(ivar[i]**2) )
@@ -51,5 +52,6 @@ class zfinder:
                             polymodel += f[m+1]*polyarr[m]
                         zchi2arr[i,j,k,l] = n.sum( ( ( specs[i] - model[l:l+specs.shape[-1]] - polymodel)**2)*(ivar[i]**2) )
                         #import pdb; pdb.set_trace()
-        return zchi2arr
+        print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
+        return zchi2arr, amat
 # now use f to create model at redshift=l, compute chi^2 for that model, and plug it into zchi2arr array

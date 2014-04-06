@@ -28,6 +28,7 @@ class SSP_Prep:
             self.ssp_path = join(self.specdir,"%s" % "templates","%s" % "SSPs","%s" % ssp_file)
             if exists(self.ssp_path):
                 self.read_ssp()
+                self.reduce_num() # THIS IS TEMPORARY JUST DURING TESTING
                 self.unit_conv()
                 print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # Just for timing rebinning and adding velo disp during testing
                 self.rebin_ssp()
@@ -71,3 +72,9 @@ class SSP_Prep:
         velspecs = n.zeros(shape=(self.specs.shape[0], nvel, self.npix))
         for i in range(nvel): velspecs[:,i,:] = gaussian_filter1d(self.specs, sigma=(velmin + velstep*i)/69., order=0) # Divide by 69 due to d(loglam)/dpix = .0001 corresponding to dv/dpix ~ 69 km/s
         self.specs = velspecs
+
+    def reduce_num(self):
+        newtemps = n.zeros(shape=(self.specs.shape[0]/4., self.specs.shape[1]))
+        for i in range(newtemps.shape[0]):
+            newtemps[i] = self.specs[4*i]
+        self.specs = newtemps
