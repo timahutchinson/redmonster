@@ -8,19 +8,19 @@ from time import gmtime, strftime
 import matplotlib as m
 from matplotlib import pyplot as p
 
-class zfinder:
-
+class Zfinder:
+    
     def __init__(self, config=None, npoly=None):
         self.config = config
         try: self.specdir = environ['IDLSPEC2D_DIR']
         except: self.specdir = None
         if self.config.lower() == 'ssp': self.set_SSP(npoly=npoly)
-
+    
     def set_SSP(self, npoly=None):
         self.npoly = npoly if npoly else 3
         ssp_stuff = SSP_Prep(velmin=100, velstep=100, nvel=3) # THIS MAY NOT BE THE BEST WAY TO DO THIS
         self.templates, self.tempwave, self.coeff1 = ssp_stuff.specs, ssp_stuff.wave, ssp_stuff.coeff1
-
+    
     def zchi3(self, specs, ivar, poffset=0, pspace=0, pmin=0, pmax=0):
         print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         num_z = self.templates.shape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
@@ -31,12 +31,12 @@ class zfinder:
         polyarr = poly_array(self.npoly, specs.shape[1]) # Compute poly terms, noting that they will stay fixed with the data - assumes data is passed in as shape (nfibers, npix)
         bvec = n.zeros((self.npoly+1,num_z))
         amat = n.zeros((self.npoly+1,self.npoly+1,num_z)) # Amat(z).f=bvec(z)
-
+        
         # Pre-compute some matrix elements
         for i in range(self.npoly):
             for j in range(self.npoly):
                 amat[i+1,j+1] = n.sum(polyarr[i]*polyarr[j])
-
+        
         # Do z computation for all fibers
         for i in range(specs.shape[0]): # Loop over fibers
             bvec[1:] = n.sum( specs[i]*polyarr*(ivar[i]**2) )
@@ -77,7 +77,7 @@ class zfinder:
         p.plot(model[l:l+specs.shape[-1]]+polymodel)
         p.show()
         return zchi2arr, amat
-
+    
     def zchi4(self, specs, specloglam, ivar):
         print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         num_z = self.templates.shape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
@@ -89,12 +89,12 @@ class zfinder:
         polyarr = poly_array(self.npoly, specs.shape[1]) # Compute poly terms, noting that they will stay fixed with the data - assumes data is passed in as shape (nfibers, npix)'
         bvec = n.zeros((self.npoly+1,num_z))
         pmat = n.zeros((self.npoly+1,self.npoly+1,num_z))
-
+        
         # Pre-compute some matrix elements
         for i in range(self.npoly):
             for j in range(self.npoly):
                 pmat[i+1, j+1] = n.sum(polyarr[i]*polyarr[j])
-
+        
         # Compute z for all fibers
         for i in range(specs.shape[0]): # Loop over fibers
             bvec[1:] = n.sum(specs[i]*polyarr*ivar[i])
@@ -135,7 +135,7 @@ class zfinder:
         p.plot(specs[i])
         p.plot(model[l:l+specs.shape[-1]]+polymodel)
         p.show()
-
+        
         return zchi2arr
 
 
