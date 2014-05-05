@@ -30,10 +30,8 @@ class SSP_Prep:
                 self.read_ssp()
                 self.reduce_num() # THIS IS TEMPORARY JUST DURING TESTING
                 self.unit_conv()
-                print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # Just for timing rebinning and adding velo disp during testing
                 self.rebin_ssp()
                 if self.velmin and self.velstep and nvel: self.add_velo_disp(self.velmin, self.velstep, nvel)
-                print strftime("%Y-%m-%d %H:%M:%S", gmtime())
             else: print "%s IS NOT A VALID PATH" % self.ssp_path
 
     def read_ssp(self):
