@@ -8,7 +8,7 @@ from time import gmtime, strftime
 import matplotlib as m
 from matplotlib import pyplot as p
 
-class zfinder:
+class Zfinder:
 
     def __init__(self, config=None, npoly=None):
         self.config = config
