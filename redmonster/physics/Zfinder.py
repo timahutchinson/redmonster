@@ -132,7 +132,29 @@ class Zfinder:
                         f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
                         zchi2arr[i,j,k,l] = sn_data - n.dot(n.dot(f,pmat[:,:,l]),f)
         print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
-        bestl = n.where(zchi2arr == n.min(zchi2arr))[3][0]
+        bests = n.where(zchi2arr == n.min(zchi2arr))
+        besti = bests[0][0]; bestj = bests[1][0]; bestk=bests[2][0]; bestl=bests[3][0]
         thisz = ((10**(specloglam[0]))/self.tempwave[bestl])-1
         print thisz
-        return zchi2arr
+        
+        i = besti; j=bestj; k=bestk; l=bestl
+            #bvec[1:,:] = n.sum( poly_pad * data_pad[i] * ivar_pad[i], axis=1)
+            #import pdb; pdb.set_trace()
+        for ipos in xrange(self.npoly): bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] * ivar_pad[i])
+        sn_data = n.sum( (specs[i]**2)*ivar[i] )
+        for ipos in xrange(self.npoly):
+            for jpos in xrange(self.npoly): pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] * poly_pad[jpos] * ivar_pad[i])
+        pmat[0,0] = n.fft.ifft(t2_fft[j,k] * ivar_fft[i].conj()).real
+        bvec[0] = n.fft.ifft(t_fft[j,k] * data_fft[i].conj()).real
+        for ipos in xrange(self.npoly): pmat[ipos+1,0] = pmat[0,ipos+1] = n.fft.ifft(t_fft[j,k] * poly_fft[i,ipos].conj()).real
+        f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
+        
+        proj_mat = n.zeros((4663,4))
+        proj_mat[:,0] = self.templates[j,k,l:l+4663]
+        proj_mat[:,1:] = n.transpose(polyarr)
+        
+        model = n.dot(proj_mat,f)
+
+        
+        
+        return zchi2arr, model
