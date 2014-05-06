@@ -21,8 +21,9 @@ class Zfinder:
         ssp_stuff = SSP_Prep(velmin=100, velstep=100, nvel=3) # THIS MAY NOT BE THE BEST WAY TO DO THIS
         self.templates, self.tempwave, self.coeff1 = ssp_stuff.specs, ssp_stuff.wave, ssp_stuff.coeff1
     
-    def zchi3(self, specs, ivar, poffset=0, pspace=0, pmin=0, pmax=0):
+    def zchi3(self, specs, specloglam, ivar):
         print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
+        #import pdb; pdb.set_trace()
         num_z = self.templates.shape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
         shape = (specs.shape[0],) + self.templates.shape[:-1] + (num_z,)
         fftnaxis1 = 2**13 if self.templates.shape[-1] <= 2**13 else 2**14
@@ -31,7 +32,7 @@ class Zfinder:
         zchi2arr = n.zeros(shape) # Create chi2 array of shape (# of fibers, template_parameter_1, ... , template_parameter_N, # of redshifts)
         polyarr = poly_array(self.npoly, specs.shape[1]) # Compute poly terms, noting that they will stay fixed with the data - assumes data is passed in as shape (nfibers, npix)
         pmat = n.zeros( (self.npoly+1, self.npoly+1, fftnaxis1), dtype=float)
-        bvec = n.zeros( (self.npoly+1, fftnaxis1), dtype=float )
+        bvec = n.zeros( (self.npoly+1, fftnaxis1), dtype=float)
         
         # Pad data and SSPs to a power of 2 for faster FFTs
         temp_pad = n.zeros(self.templates.shape[:-1] + (fftnaxis1,), dtype=float)
@@ -53,8 +54,9 @@ class Zfinder:
             poly_fft[:,i,:] = n.fft.fft(poly_pad[i] * ivar_pad)
         
         # Compute z for all fibers
+        #import pdb; pdb.set_trace()
         for i in xrange(specs.shape[0]): # Loop over fibers
-            bvec[1:] = n.sum( poly_pad * data_pad[i] * ivar_pad[i])
+            for ipos in xrange(self.npoly): bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] * ivar_pad[i])
             sn_data = n.sum( (specs[i]**2)*ivar[i] )
             for ipos in xrange(self.npoly):
                 for jpos in xrange(self.npoly): pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] * poly_pad[jpos] * ivar_pad[i])
@@ -66,7 +68,6 @@ class Zfinder:
                     for l in range(num_z): # Solve pmat.f = bvec at all pixel-redshifts l and compute chi2 at those redshifts
                         f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
                         zchi2arr[i,j,k,l] = sn_data - n.dot(n.dot(f,pmat[:,:,l]),f)
-                        print sn_data - n.dot(n.dot(f,pmat[:,:,l]),f)
         print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         bestl = n.where(zchi2arr == n.min(zchi2arr))[3][0]
         thisz = ((10**(specloglam[0]))/self.tempwave[bestl])-1
