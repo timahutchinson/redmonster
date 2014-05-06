@@ -12,6 +12,7 @@ class SSP_Prep:
 
     def __init__(self, coeff1 = .0001, velmin=None, velstep=None, nvel=None, ssp_file = 'SSP_Padova_RRLIB_Kroupa_Z0.0190.fits'):
         self.ssp_path = None
+        self.hdr = None
         self.specs = None
         self.wave = None
         self.wavebounds = None
@@ -37,6 +38,7 @@ class SSP_Prep:
     def read_ssp(self):
         if exists(self.ssp_path):
             hdu = fits.open(self.ssp_path)
+            self.hdr = hdu[0].header
             self.specs = n.reshape(hdu[1].data.SPEC,(188,-1))
             self.wave = hdu[1].data.LAMBDA[0]
             self.wavebounds = cen2bound(self.wave)
