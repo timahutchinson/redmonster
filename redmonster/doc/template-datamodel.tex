@@ -1,0 +1,169 @@
+\documentclass[12pt]{article}
+\parindent=0pt
+\parskip=6pt
+\begin{document}
+
+\title{Proposed Data Model for a General Archetype
+Redshift Template File}
+
+\author{Adam S. Bolton}
+
+\maketitle
+
+\section{Introduction}
+
+This note describes a proposed file format for storing general
+``archetype'' redshift template grids for ingestion into
+the \texttt{redmonster} classification, redshift, and parameter
+measurement code.
+
+The proposed standard is motivated by the desire to provide a general
+form of template file that can be written by end users and ingested
+into the redshift software to allow highly configurable spectroscopic
+template classes without any recoding of the low-level analysis routines.
+
+``Archetypes'' refers to sets of single spectral template vectors that are not
+fit in linear combination with any other templates (except possibly
+low-order nuisance vectors).
+
+\section{File Format}
+
+\subsection{File naming convention}
+
+Files conforming to this data model will follow the naming scheme
+
+\hspace*{36pt}\texttt{rmArch-CLASS-VERSION.fits}
+
+The string ``\texttt{rmArch}'' signifies ``RedMonster Archetype''.
+
+\texttt{CLASS} and \texttt{VERSION} are arbitrary
+strings that may contain any legal filename
+characters other than the dash (\texttt{-}).  Both the \texttt{CLASS}
+and \texttt{VERSION} strings are required to be present in
+some non-trivial form.  The \texttt{CLASS} string will be extracted
+and used by the RedMonster code as the primary qualitative
+identifier of the class of models contained in the file,
+while the \texttt{VERSION} string is intended to distinguish
+between multiple versions of the same type of model file.
+Users may adopt further specific conventions for \texttt{CLASS}
+and \texttt{VERSION} as appropriate to their needs.
+
+The exact extension string ``\texttt{.fits}'' is formally required,
+but may in the future be relaxed to permit alternate and/or
+compressed versions.
+
+\subsection{File type}
+
+Valid \texttt{rmArch} files will be uncompressed FITS
+files with all relevant information contained in the
+filename and the primary HDU\@.
+
+Additional FITS HDU extensions may be present, but are not defined
+by this data model.
+
+\subsection{Data structure and requirements}
+
+The data contained in the \texttt{rmArch} file
+will consist of a single multi-dimensional array
+containing flux densities or luminosity densities in units of
+$F_{\lambda}$ (energy per unit area per unit
+time per unit wavelength) or $\L_{lambda}$
+(energy per unit time per unit wavelength).
+The absolute normalization may be physically
+meaningful, but is not required to be meaningful.
+If the normalization is meaningful, the units
+shall be specified via the \texttt{BUNIT} keyword (see below),
+and must be the same for all data values in the file.
+
+The first axis of the data array shall correspond to \textbf{vacuum}
+wavelength, and shall be gridded in positive increments of constant
+log-wavelength.  There may be zero or more axes in addition
+to the first axis, up to the maximum number allowed by
+the FITS standard.  Each axis beyond the first will generally correspond
+to a monotonically ordered
+physical model-parameter dimension (age, metallicity,
+emission-line strength, etc.), but may also correspond to
+an arbitrary labeled or unlabeled collection.
+Conventions for specifying the parameter dimensions are
+described in the following section.
+
+The archetype template vectors shall be assumed to have
+a uniform resolution characterized by a Gaussian
+line-spread function with a dispersion parameter
+$\sigma$ equal to one sampling pixel, and should therefore be
+prepared as such to the extent possible.
+
+\subsection{Header structure and requirements}
+
+The following primary header keywords are \textbf{required} to
+be present and defined as specified, in addition
+to header keywords required by the FITS standard itself:
+
+\noindent \texttt{CRPIX1}: Shall be set to the value 1, referencing the
+first sample point (``pixel'') along the wavelength axis.
+
+\noindent \texttt{CRVAL1}: Shall specify the
+\textbf{base-10 logarithm} of the central wavelength
+\textbf{in vacuum Angstromgs} of first pixel along the wavelength axis.
+
+\noindent \texttt{CDELT1}: Shall specify the pixel-to-pixel
+increment in \textbf{base-10 logarithm} of wavelength from
+one pixel to the next along the wavelength axis. \\
+
+
+The following primary header keywords is \textbf{required} in the
+case that the physical normalization of the templates is meaningful:
+
+\noindent \texttt{BUNIT}: String giving the units of the template spectra. \\
+
+The following primary header keywords are supported as
+optional but \textbf{recommended}
+in some combination as appropriate:
+
+\noindent \texttt{CNAMEn}: For $n > 1$, a string giving the
+name of the physical parameter coordinate along the $n^{\mathrm{th}}$ axis.
+
+\noindent \texttt{CUNITn}: For $n > 1$, a string giving the
+units of the physical parameter coordinate along the $n^{\mathrm{th}}$ axis.
+
+\noindent \texttt{CRPIXn, CRVALn, CDELTn}: For $n > 1$, specifying
+the physical parameter baselines for axes corresponding to
+regularly gridded numerical physical parameters.
+
+\noindent \texttt{PVn\_j}: For $n > 1$ and for the case of irregularly gridded
+numerical physical parameters along axis $n$ , specifies the parameter value
+of the $j^{\mathrm{th}}$ point along the $n^{\mathrm{th}}$ axis.
+The index $j$ shall begin with 1 and increase in integer steps up to the
+size of the $n^{\mathrm{th}}$ axis, with one keyword per grid step.
+Note that the FITS standard currently limits the maximum size of axes
+that can be represented in this manner to 99, and that leading zero-padding
+is not allowed.
+
+\noindent \texttt{PSn\_j}: For $n > 1$ and for the case of non-numerical
+physical parameters along axis $n$ , specifies the parameter string value
+of the $j^{\mathrm{th}}$ point along the $n^{\mathrm{th}}$ axis.
+The index $j$ shall begin with 1 and increase in integer steps up to the
+size of the $n^{\mathrm{th}}$ axis, with one keyword per grid step.
+Note that the FITS standard currently limits the maximum size of axes
+that can be represented in this manner to 99, and that leading zero-padding
+is not allowed.
+
+\noindent \texttt{Nn\_j}: For $n > 1$ and for the case of arbitrary labels
+along axis $n$, specifies the label string for the $j^{\mathrm{th}}$
+point along the $n^{\mathrm{th}}$ axis.
+The index $j$ shall begin with 1 and increase in integer steps up to the
+size of the $n^{\mathrm{th}}$ axis, with one keyword per grid step.
+These keywords do not belong to the FITS standard,
+and can accommodate dimensionality up to 999.
+
+For any given axis beyond the first (wavelength) axis, the
+RedMonster code will use information from the above keywords
+to construct parameter-grid baselines.  The precedence
+for establishing the baseline for each axis is
+first for \texttt{CRPIXn, CRVALn, CDELTn}, then for
+\texttt{PVn\_j}, then for \texttt{PSn\_j}, then
+for \texttt{Nn\_j}, then for a one-based integer baseline
+in the absence of a valid set of keywords of any of the preceding
+specified types.
+
+\end{document}
