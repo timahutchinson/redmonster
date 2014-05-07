@@ -36,3 +36,11 @@ def poly_array(npoly, npix):
     xvec = n.arange(npix) / float(npix)
     for i in range(npoly): arr[i] = xvec**i
     return arr
+
+def two_pad(npix):
+    i = 0
+    res = 0
+    while (res == 0):
+        i += 1
+        res = (2**i) // int(abs(npix))
+    return (2**i)
