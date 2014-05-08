@@ -44,3 +44,43 @@ def two_pad(npix):
         i += 1
         res = (2**i) // int(abs(npix))
     return (2**i)
+
+def multipoly_fit(ind, dep, order=2):
+    ndata = n.prod(dep.shape)
+    ndim = ind.shape[0]
+    A = n.zeros((ndata, ndim*(order+1)))
+    b = n.zeros(ndata)
+    for i in xrange(ndata):
+        for j in xrange(ndim*(order+1)):
+            A[i,j] = 0
+
+def quadfit_2d(ind, dep): # Requires (2x3) matrix ind where ind[0] is 3 coordinates along one dimension and ind[1] is three coordinates along other, dep is (3x3) matrix of datapoints where dep[i,j] corresponds to ind[0,i], ind[1,j], returns coeffs for ax^2+by^2+cxy+dx+ey+f=z
+    x = ind[0]
+    y = ind[1]
+    A = n.zeros((9,6))
+    b = n.reshape(dep,(9,1))
+    for k in range(9):
+        for i in xrange(3):
+            for j in xrange(3):
+                A[k] = n.array([ x[i]**2, y[j]**2, x[i]*y[j], x[i], y[j], 1 ])
+    f = n.dot(n.linalg.pinv(A),b)
+    return f
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
