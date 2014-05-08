@@ -7,7 +7,7 @@ from astropy.io import fits
 #import os
 #import pixelsplines as pxs
 
-# Script to test WCS routines in astropy:
+# Script to make test file for "read_ndArch" file-reader routine:
 
 # Set the plan:
 naxis1 = 3000 # log-wavelength
@@ -21,6 +21,9 @@ naxis6 = 3    # Default index
 image = n.zeros((naxis6, naxis5, naxis4, naxis3, naxis2, naxis1), dtype='float32')
 image[...] = n.random.uniform(size=(naxis3, naxis2, naxis1))
 hdu = fits.PrimaryHDU(image)
+
+# 0. Indicate the units:
+hdu.header.set('BUNIT', value='10^(-17) erg/cm^2/s/Angstrom', comment='Data unit')
 
 # 1. Set the wavelength basis information:
 hdu.header.set('CNAME1', value='loglam', comment='Axis 1 name')
