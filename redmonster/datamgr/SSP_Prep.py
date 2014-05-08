@@ -3,7 +3,7 @@ from os import environ
 from os.path import join,exists
 from astropy.io import fits
 from scipy.ndimage.filters import gaussian_filter1d
-from redmonster.physics.misc import cen2bound, bound2cen
+from redmonster.math.misc import cen2bound, bound2cen
 from time import gmtime, strftime
 
 # Assumes SSPs are a fits file located in $IDLSPEC2D_DIR/templates/SSPs/
