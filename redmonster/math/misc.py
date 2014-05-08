@@ -66,6 +66,13 @@ def quadfit_2d(ind, dep): # Requires (2x3) matrix ind where ind[0] is 3 coordina
     f = n.dot(n.linalg.pinv(A),b)
     return f
 
+def quadfit(ind, dep):
+    A = n.zeros((3,3))
+    for i in xrange(3):
+        A[i] = n.array([ ind[i]**2, ind[i], 1 ])
+    f = n.linalg.solve(A,dep)
+    return f
+
 
 
 

@@ -61,6 +61,9 @@ class Zfinder:
         self.templates = templates_pad
         self.hdr = hdu[0].header
     
+    def create_z_baseline(self, loglam0):
+        self.zbase = ((10**loglam0)/self.tempwave) - 1
+    
     def zchi2(self, specs, specloglam, ivar):
         print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         num_z = self.templates.shape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
@@ -117,9 +120,8 @@ class Zfinder:
 
     def zchi3(self, specs, specloglam, ivar):
         print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
+        self.create_z_baseline(specloglam[0])
         num_z = self.origshape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
-        #shape = (specs.shape[0],) + self.templates.shape[:-1] + (num_z,)
-        #fftnaxis1 = 2**13 if self.templates.shape[-1] <= 2**13 else 2**14
         
         # Create arrays for use in routine
         zchi2arr = n.zeros((specs.shape[0], self.templates_flat.shape[0], num_z)) # Create chi2 array of shape (# of fibers, template_parameter_1, ... , template_parameter_N, # of redshifts)
@@ -128,8 +130,6 @@ class Zfinder:
         bvec = n.zeros( (self.npoly+1, self.fftnaxis1), dtype=float)
         
         # Pad data and SSPs to a power of 2 for faster FFTs
-        #temp_pad = n.zeros(self.templates.shape[:-1] + (self.fftnaxis1,), dtype=float)
-        #temp_pad[...,:self.templates.shape[-1]] = self.templates
         data_pad = n.zeros(specs.shape[:-1] + (self.fftnaxis1,), dtype=float)
         data_pad[...,:specs.shape[-1]] = specs
         ivar_pad = n.zeros(ivar.shape[:-1] + (self.fftnaxis1,), dtype=float)
@@ -138,8 +138,6 @@ class Zfinder:
         poly_pad[...,:polyarr.shape[-1]] = polyarr
         
         # Pre-compute FFTs for use in convolutions
-        #t_fft = n.fft.fft(temp_pad)
-        #t2_fft = n.fft.fft(temp_pad**2)
         data_fft = n.fft.fft(data_pad * ivar_pad)
         ivar_fft = n.fft.fft(ivar_pad)
         poly_fft = n.zeros((ivar_pad.shape[0], self.npoly, self.fftnaxis1), dtype=complex)
@@ -147,7 +145,6 @@ class Zfinder:
             poly_fft[:,i,:] = n.fft.fft(poly_pad[i] * ivar_pad)
         
         # Compute z for all fibers
-        #import pdb; pdb.set_trace()
         for i in xrange(specs.shape[0]): # Loop over fibers
             for ipos in xrange(self.npoly): bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] * ivar_pad[i])
             sn2_data = n.sum( (specs[i]**2)*ivar[i] )
@@ -161,14 +158,13 @@ class Zfinder:
                     f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
                     zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
         print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
-        #import pdb; pdb.set_trace()
         if self.config == 'star':
             besttemp = n.where(zchi2arr == n.min(zchi2arr))[1][0]
             print 'TYPE: ' + self.hdr['NAME%s' % besttemp]
         zchi2arr = n.reshape(zchi2arr, (specs.shape[0],) + self.origshape[:-1] + (num_z,) )
         bestl = n.where(zchi2arr == n.min(zchi2arr))[-1][0]
         thisz = ((10**(specloglam[0]))/self.tempwave[bestl])-1
-        print thisz, bestl
+        print thisz
         return zchi2arr
 
 
