@@ -5,15 +5,19 @@ from redmonster.datamgr.ssp_prep import SSP_Prep
 from redmonster.math.misc import poly_array, two_pad
 from time import gmtime, strftime
 from astropy.io import fits
+from redmonster.datamgr.io import read_ndArch
 
 import matplotlib as m
 from matplotlib import pyplot as p
 
 class Zfinder:
     
-    def __init__(self, config=None, npoly=None):
+    def __init__(self, fname=None, config=None, npoly=None, zmin=None, zmax=None):
+        self.fname = fname
         self.config = config
         self.npoly = npoly if npoly else 3
+        self.zmin = zmin
+        self.zmax = zmax
         try: self.specdir = environ['IDLSPEC2D_DIR']
         except: self.specdir = None
         if self.config.lower() == 'ssp': self.set_SSP(npoly=npoly)
@@ -21,24 +25,25 @@ class Zfinder:
         if self.config.lower() == 'star': self.set_star(npoly=npoly)
         #self.read_template()
         self.npars = len(self.templates.shape) - 1
-        #self.ntemppix = self.origshape[-1]
-        #self.fftnaxis1 = two_pad(self.ntemppix)
         self.templates_flat = n.reshape(self.templates, (-1,self.fftnaxis1))
         self.t_fft = n.fft.fft(self.templates_flat)
         self.t2_fft = n.fft.fft(self.templates_flat**2)
 
-    #def read_template(self): pad templates
-        #self.origshape = size(self.templates)
-        #self.ntemps = size(self.templates[...,0])
-        #self.fftnaxis1 = two_pad(self.origshape[-1])
+    def read_template(self):
+        self.templates, self.baselines, self.infodict = read_ndArch(self.fname)
+        self.origshape = self.templates.shape
+        self.ntemps = self.templates[...,0].size
+        self.fftnaxis1 = two_pad(self.origshape[-1])
+        self.tempwave = self.infodict['coeff0'] + n.arange(self.infodict['nwave'])*self.infodict['coeff1']
+        templates_pad = n.zeros( self.origshape[:-1]+(self.fftnaxis1,) )
+        templates_pad[...,:self.origshape[-1]] = self.templates
+        self.templates = templates_pad
     
     def set_SSP(self, npoly=None):
-        self.npoly = npoly if npoly else 3
         ssp_stuff = SSP_Prep(velmin=100, velstep=100, nvel=3) # THIS MAY NOT BE THE BEST WAY TO DO THIS
         self.templates, self.tempwave, self.coeff1 = ssp_stuff.specs, ssp_stuff.wave, ssp_stuff.coeff1
     
     def set_SSP_test(self, npoly=None): # FOR TESTING - Skips SSP processing and just reads from templates.fits to speed things up
-        self.npoly = npoly if npoly else 3
         hdu = fits.open('/Users/Tim/Documents/Workstuff/BOSS/Python/templates.fits')
         self.templates = hdu[0].data
         self.tempwave = hdu[1].data.LAMBDA
@@ -50,7 +55,6 @@ class Zfinder:
         self.templates = templates_pad
     
     def set_star(self, npoly=None):
-        self.npoly = npoly if npoly else 4
         hdu = fits.open('/Applications/itt/idl70/lib/idlspec2d-v5_6_4/templates/spEigenStar-55734.fits')
         self.templates = hdu[0].data
         self.tempwave = 10**(hdu[0].header['COEFF0'] + hdu[0].header['COEFF1']*n.arange(hdu[0].header['NAXIS1']))
