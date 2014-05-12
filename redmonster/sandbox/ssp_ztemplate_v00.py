@@ -9,8 +9,9 @@ import os
 from redmonster.datamgr import io
 from redmonster.math import pixelsplines as pxs
 import copy
+from redmonster.math import misc
 
-# ssp_ztemplate.py
+# ssp_ztemplate_v00.py
 # Script to generate redshift templates at SDSS sampling
 # from Charlie Conroy's theoretical SSPs.
 # bolton@utah@iac 2014mayo
@@ -144,14 +145,14 @@ for i_age in xrange(nsub_age):
         pxspline = pxs.PixelSpline(ssp_wavebound, ssp_vblur[i_age,j_logv])
         ssp_sdssbin[i_age,j_logv] = pxspline.resample(wavebound_sdss)
 
-i = -1L
+#i = -1L
 
-i +=1
-p.plot(10.**loglam_sdss, ssp_sdssbin[i,0], drawstyle='steps-mid', hold=False)
-p.plot(10.**loglam_sdss, ssp_sdssbin[i,1], drawstyle='steps-mid', hold=True)
-p.plot(10.**loglam_sdss, ssp_sdssbin[i,2], drawstyle='steps-mid', hold=True)
-p.plot(10.**loglam_sdss, ssp_sdssbin[i,3], drawstyle='steps-mid', hold=True)
-p.title(str(n.log10(ssp_agegyr[idx[i]])))
+#i +=1
+#p.plot(10.**loglam_sdss, ssp_sdssbin[i,0], drawstyle='steps-mid', hold=False)
+#p.plot(10.**loglam_sdss, ssp_sdssbin[i,1], drawstyle='steps-mid', hold=True)
+#p.plot(10.**loglam_sdss, ssp_sdssbin[i,2], drawstyle='steps-mid', hold=True)
+#p.plot(10.**loglam_sdss, ssp_sdssbin[i,3], drawstyle='steps-mid', hold=True)
+#p.title(str(n.log10(ssp_agegyr[idx[i]])))
 
 
 # Now to get the emission-line fluxes:
@@ -173,9 +174,8 @@ n_line = len(linedata['lambda'])
 sdss_line_array = n.zeros((n_line, naxis1), dtype=float)
 
 # Import functions and compute array values:
-import sandbox_funcs as sand
 for i in xrange(n_line):
-    sdss_line_array[i] = sand.gaussflux(wavebound_sdss, linedata['lambda'][i], linesigma[i])
+    sdss_line_array[i] = misc.gaussflux(wavebound_sdss, linedata['lambda'][i], linesigma[i])
 
 # Test normalization:
 wave_sdss = 10.**loglam_sdss
@@ -187,5 +187,42 @@ n.dot(sdss_line_array, deltawave_sdss)
 # Generate combined spectrum:
 sdss_line_spec = n.dot(linedata['fratio'], sdss_line_array)
 
-p.plot(wave_sdss, sdss_line_spec, drawstyle='steps-mid', hold=False)
+#p.plot(wave_sdss, sdss_line_spec, drawstyle='steps-mid', hold=False)
+
+# Average spectrum over velocity dispersions for each age:
+sdss_meanspec = ssp_sdssbin.mean(axis=1)
+# Pick a bandwidth over which to average the continuum at Halpha
+bandhw = 100.
+wtest = (wave_sdss > (linedata['lambda'][8] - bandhw)) * \
+        (wave_sdss < (linedata['lambda'][8] + bandhw))
+
+cont_halpha = n.asarray([n.sum(sdss_meanspec[i] * wtest * deltawave_sdss) /
+                         n.sum(deltawave_sdss * wtest) for i in xrange(nsub_age)])
+
+# Let's try the following range of Halpha equivalent widths:
+ew_ha = n.asarray([0., 3.0, 10.0, 30.0, 100.0])
+n_ew = len(ew_ha)
+
+# Broadcast-fu to add the line spectra and expand the grid:
+full_sdssbin = cont_halpha.reshape((-1,1,1,1)) * \
+               ew_ha.reshape((1,1,-1,1)) * \
+               sdss_line_spec.reshape((1,1,1,-1)) + \
+               ssp_sdssbin.reshape((nsub_age,log_vnum,1,naxis1))
+
+
+baselines = [n.log10(ssp_agegyr[idx]), log_vbase, ew_ha]
+
+this_class = 'ssp_em_galaxy'
+this_version = 'v000'
+
+infodict = {'par_names': n.asarray(['log10-age', 'log10-vdisp', 'EW_Halpha']),
+            'par_units': n.asarray(['log10-Gyr', 'log10-km/s', 'rest-frame Angstroms']),
+            'par_axistype': n.asarray(['regular', 'regular', 'irregular']),
+            'coeff0': coeff0, 'coeff1': coeff1,
+            'fluxunit': '10^'+str(exp_div)+' erg/s/Ang/M_sun_init',
+            'filename': 'ndArch-'+this_class+'-'+this_version+'.fits'}
+
+io.write_ndArch(n.float32(full_sdssbin), baselines, infodict)
+
+#junk, bjunk, ijunk = io.read_ndArch(infodict['filename'])
 
