@@ -20,7 +20,7 @@ measurement Python code.
 The proposed standard is motivated by the desire to provide a general
 form of template file that can be written by end users and ingested
 into the redshift software to allow highly configurable spectroscopic
-template classes without any recoding of the low-level analysis routines.
+template classes without any re-coding of the low-level analysis routines.
 
 ``Archetypes'' refers to sets of single spectral template vectors that are not
 fit in linear combination with any other templates (except possibly
@@ -54,7 +54,7 @@ between multiple versions of the same type of model file.
 Users may adopt further specific conventions for \texttt{CLASS}
 and \texttt{VERSION} as appropriate to their needs.
 
-The exact extension string ``\texttt{.fits}'' is formally required,
+The exact extension string ``\texttt{.fits}'' is formally required at present,
 but may in the future be relaxed to permit alternate and/or
 compressed versions.
 
@@ -80,8 +80,9 @@ If the normalization is meaningful, the units
 shall be specified via the \texttt{BUNIT} keyword (see below),
 and must be the same for all data values in the file.
 
-The first axis of the data array shall correspond to \textbf{vacuum}
-wavelength, and shall be gridded in positive increments of constant
+The first axis of the data array should correspond to \textbf{vacuum}
+wavelength (see below for the air-wavelength alternative case),
+and shall be gridded in positive increments of constant
 log-wavelength.  There may be zero or more axes in addition
 to the first axis, up to the maximum number allowed by
 the FITS standard.  Each axis beyond the first will generally correspond
@@ -92,7 +93,7 @@ an arbitrary labeled or unlabeled collection.
 Conventions for specifying the parameter dimensions are
 described in the following section.
 
-The archetype template vectors shall be assumed to have
+The archetype template vectors should generally be assumed to have
 a uniform resolution characterized by a Gaussian
 line-spread function with a dispersion parameter
 $\sigma$ equal to one sampling pixel, and should therefore be
@@ -116,10 +117,20 @@ increment in \textbf{base-10 logarithm} of vacuum wavelength from
 one pixel to the next along the wavelength axis. \\
 
 
-The following primary header keywords is \textbf{required} in the
+The following primary header keyword is \textbf{required} in the
 case that the physical normalization of the templates is meaningful:
 
 \noindent \texttt{BUNIT}: String giving the units of the template spectra. \\
+
+The following primary header keyword is \textbf{required} in the
+case that the templates are given with respect to air wavelengths
+rather than vacuum:
+
+\noindent \texttt{AIRORVAC}: String that is either \texttt{'air'}
+or \texttt{'vac'} depending upon wavelength convention.
+(The only significant value is \texttt{'air'}, since
+anything else, including the absence of this keyword, will
+be interpreted as \texttt{'vac'}.) \\
 
 The following primary header keywords are supported as
 optional but \textbf{recommended}
@@ -173,14 +184,13 @@ specified types.
 
 \section{Implementation}
 
-A reader routine for \texttt{ndArch} files conforming
-to this proposed standard is implemented in the \texttt{redmonster}
-package as \texttt{read\_ndArch}.  This routine currently resides
-within a module of the same name (\texttt{read\_ndArch.py}),
-however that location is
-subject to change with further development and package
-reorganization.  Detailed documentation of this file-reading
-routine can be found in its embedded docstring.
+Reader and writer routines for \texttt{ndArch} files conforming
+to this proposed standard are implemented in the \texttt{redmonster.datamgr.io}
+module as \texttt{read\_ndArch} and \texttt{write\_ndArch}.
+(The location of these routines is subject to change
+with future package reorganizations.)
+Detailed documentation of these file-handling
+routines can be found in their embedded docstrings.
 
 A script called \texttt{test\_ndArch.py} is also provided,
 which generates a file named \texttt{ndArch-TEST-v00.fits},
