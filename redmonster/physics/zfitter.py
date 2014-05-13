@@ -14,7 +14,6 @@ class Zfitter:
         self.zbase = zbase
 
     def z_refine(self):
-        #import pdb; pdb.set_trace()
         zminpos = n.where(self.zchi2 == n.min(self.zchi2))
         vecpos = ()
         for i in xrange(len(zminpos)-1):
@@ -26,8 +25,8 @@ class Zfitter:
         #fit = quad_for_fit(xp, popt[0]*(1000.**2), popt[1]*(1000.), popt[2]) # See above comment
         f = quadfit(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2])
         fit = quad_for_fit(xp, f[0], f[1], f[2])
-        p.plot(xp, fit, color='red')
-        p.plot(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2], 'ko', hold=True)
+        #p.plot(xp, fit, color='red')
+        #p.plot(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2], 'ko', hold=True)
         print xp[n.where(fit == n.min(fit))[0][0]]
 
 # -----------------------------------------------------------------------------

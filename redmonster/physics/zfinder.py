@@ -111,6 +111,7 @@ class Zfinder:
         
         # Compute z for all fibers
         for i in xrange(specs.shape[0]): # Loop over fibers
+            print i
             for ipos in xrange(self.npoly): bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] * ivar_pad[i])
             sn2_data = n.sum( (specs[i]**2)*ivar[i] )
             for ipos in xrange(self.npoly):
