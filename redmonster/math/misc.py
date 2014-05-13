@@ -1,4 +1,5 @@
 import numpy as n
+from scipy import special as spc
 
 # Function to find where S/N is unreasonably large or where flux is unphysically negative
 def flux_check(flux, ivars):
@@ -72,6 +73,26 @@ def quadfit(ind, dep):
         A[i] = n.array([ ind[i]**2, ind[i], 1 ])
     f = n.linalg.solve(A,dep)
     return f
+
+def gaussflux(pixbound, cen, sig):
+    """
+    For monotonically increasing pixel boundaries specified by 'pixbound'
+    in some abscissa units, consider a Gaussian with unit integrated
+    amplitude that expresses a density per those same abscissa units,
+    centered on 'cen' and with sigma parameter 'sig', and return
+    the average value of that Gaussian between the boundaries
+    (i.e., its pixel-averaged value for possibly non-uniform pixels.)
+    (bolton@utah@iac 2014mayo)
+    """
+    # Calculate the pixel widths and test for monotonicity:
+    pixdiff = pixbound[1:] - pixbound[:-1]
+    if (pixdiff.min <= 0):
+        print 'pixbound must be monotonically increasing!'
+        return 0
+    # Compute scaled argument for error function:
+    argscale = (pixbound - cen) / (n.sqrt(2.) * sig)
+    # Compute and return the argument:
+    return 0.5 * (spc.erf(argscale[1:]) - spc.erf(argscale[:-1])) / pixdiff
 
 
 

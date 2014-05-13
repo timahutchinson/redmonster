@@ -10,10 +10,12 @@ from astropy.io import fits
 # Script to make test file for "read_ndArch" file-reader routine:
 
 # Set the plan:
-naxis1 = 3000 # log-wavelength
+#naxis1 = 3000 # log-wavelength
+naxis1 = 8 # log-wavelength
 naxis2 = 5    # irregular
 naxis3 = 10   # PS-labeled
-naxis4 = 20   # regular
+#naxis4 = 20   # regular
+naxis4 = 6   # regular
 naxis5 = 2    # N-labeled
 naxis6 = 3    # Default index
 
