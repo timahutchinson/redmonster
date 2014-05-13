@@ -17,7 +17,7 @@ class Zfinder:
     def __init__(self, fname=None, config=None, npoly=None, zmin=None, zmax=None):
         self.fname = fname
         self.config = config
-        self.npoly = npoly if npoly else 3
+        self.npoly = npoly if npoly else 4
         self.zmin = float(zmin)
         self.zmax = float(zmax)
         try: self.specdir = environ['REDMONSTER_DIR']
@@ -84,6 +84,7 @@ class Zfinder:
             zminpix, zmaxpix = self.conv_zbounds()
             num_z = zmaxpix - zminpix + 1 # Number of pixels to be fitted in redshift
             self.zbase = self.zbase[zminpix:zminpix+num_z]
+            print zminpix
         else:
             bounds_set = False
             num_z = self.origshape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
