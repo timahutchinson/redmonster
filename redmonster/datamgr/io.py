@@ -1,6 +1,6 @@
 # read_ndArch.py
 #
-# Code for reading ndArch files
+# Code for reading and writing ndArch files
 #
 # bolton@utah@iac 2014mayo
 #

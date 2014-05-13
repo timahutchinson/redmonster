@@ -10,6 +10,8 @@ from redmonster.datamgr.io import read_ndArch
 import matplotlib as m
 from matplotlib import pyplot as p
 
+# Assumes all templates live in $REDMONSTER_DIR/templates/
+
 class Zfinder:
     
     def __init__(self, fname=None, config=None, npoly=None, zmin=None, zmax=None):
@@ -18,23 +20,23 @@ class Zfinder:
         self.npoly = npoly if npoly else 3
         self.zmin = float(zmin)
         self.zmax = float(zmax)
-        try: self.specdir = environ['IDLSPEC2D_DIR']
+        try: self.specdir = environ['REDMONSTER_DIR']
         except: self.specdir = None
-        if self.config.lower() == 'ssp': self.set_SSP(npoly=npoly)
-        if self.config.lower() == 'ssptest': self.set_SSP_test(npoly=npoly)
-        if self.config.lower() == 'star': self.set_star(npoly=npoly)
-        #self.read_template()
+        #if self.config.lower() == 'ssp': self.set_SSP(npoly=npoly)
+        #if self.config.lower() == 'ssptest': self.set_SSP_test(npoly=npoly)
+        #if self.config.lower() == 'star': self.set_star(npoly=npoly)
+        self.read_template()
         self.npars = len(self.templates.shape) - 1
         self.templates_flat = n.reshape(self.templates, (-1,self.fftnaxis1))
         self.t_fft = n.fft.fft(self.templates_flat)
         self.t2_fft = n.fft.fft(self.templates_flat**2)
 
     def read_template(self):
-        self.templates, self.baselines, self.infodict = read_ndArch(self.fname)
+        self.templates, self.baselines, self.infodict = read_ndArch(join(self.specdir,'templates',self.fname))
         self.origshape = self.templates.shape
         self.ntemps = self.templates[...,0].size
         self.fftnaxis1 = two_pad(self.origshape[-1])
-        self.tempwave = self.infodict['coeff0'] + n.arange(self.infodict['nwave'])*self.infodict['coeff1']
+        self.tempwave = 10**(self.infodict['coeff0'] + n.arange(self.infodict['nwave'])*self.infodict['coeff1'])
         templates_pad = n.zeros( self.origshape[:-1]+(self.fftnaxis1,) )
         templates_pad[...,:self.origshape[-1]] = self.templates
         self.templates = templates_pad
@@ -69,12 +71,11 @@ class Zfinder:
         self.zbase = ((10**loglam0)/self.tempwave) - 1
     
     def conv_zbounds(self):
-        #import pdb; pdb.set_trace()
         zmaxpix = n.where( abs((self.zbase-self.zmin)) == n.min(abs(self.zbase-self.zmin)) )[0][0]
         zminpix = n.where( abs((self.zbase-self.zmax)) == n.min(abs(self.zbase-self.zmax)) )[0][0]
         return zminpix, zmaxpix
 
-    def zchi3(self, specs, specloglam, ivar):
+    def zchi2(self, specs, specloglam, ivar):
         print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         self.create_z_baseline(specloglam[0])
         #import pdb; pdb.set_trace()
