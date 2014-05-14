@@ -15,3 +15,4 @@ zchi2_star = fits.open('/Users/Tim/zchi2_star.fits')[0].data
 
 root = Tk()
 app = Plot_fit(root, zchi2_ssp, zchi2_star)
+#app.mainloop()
