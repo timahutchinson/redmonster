@@ -144,29 +144,34 @@ class GridSpline:
     def __init__(self, y):
         self.y = y.copy()
         self.ms = spline_get_ms(self.y)
+    
     def get_val(self, x):
         """
         Return spline evaluated at abscissa positions x.
         """
         return spline_get_val(self.y, self.ms, x)
+    
     def get_slope(self, x):
         """
         Return analytic derivative of spline evaluated at
         abscissa positions x.
         """
         return spline_get_slope(self.y, self.ms, x)
+    
     def get_curv(self, x):
         """
         Return analytic curvature of spline evaluated at
         abscissa positions x.
         """
         return spline_get_curv(self.y, self.ms, x)
+    
     def get_max(self):
         """
         Return analytically determined locations of maxima
         of spline over domain of original values.
         """
         return spline_get_max(self.y, self.ms)
+    
     def get_min(self):
         """
         Return analytically determined locations of minima
