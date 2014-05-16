@@ -1,20 +1,20 @@
 # Routine to refine redshifts found in zfinder.py
 
 import numpy as n
-#from scipy.optimize import curve_fit
 from redmonster.math.misc import quadfit
 import matplotlib as m
 from matplotlib import pyplot as p
 m.interactive(True)
+from redmonster.math import grid_spline as gs
 
 class Zfitter:
 
-    def __init__(self, zchi2, zbase):
+    def __init__(self, zchi2, zbase, zwarning=None):
         self.zchi2 = zchi2
         self.zbase = zbase
         self.best_z = n.zeros(zchi2.shape[0])
         self.z_err = n.zeros(zchi2.shape[0])
-    #import pdb; pdb.set_trace()
+        self.zwarning = zwarning if zwarning else None
 
     def z_refine(self):
         for ifiber in xrange(self.zchi2.shape[0]):
@@ -34,11 +34,27 @@ class Zfitter:
             self.best_z[ifiber] = xp[n.where(fit == n.min(fit))[0][0]]
             self.z_err[ifiber] = self.estimate_z_err(xp, fit)
             print self.best_z[ifiber]
+            self.flag_small_dchi2(bestzvec, threshold=2) # Flag fibers with small delta chi2 in redshift
 
     def estimate_z_err(self, xp, fit):
         fitminloc = n.where(fit == n.min(fit)) # Index of lowest chi2
         z_err = abs(xp[fitminloc]-xp[abs(n.min(fit)+1-fit).argmin()]) # abs() of difference between z_(chi2_min) and z_(chi2_min_+1)
         return z_err
+
+    def flag_small_dchi2(self, zvector, threshold=None, width=None): # zvector: vector of chi2(z) values of best template
+        flag_val = int('0b100',2) # From BOSS zwarning flag definitions
+        do_flag = False
+        globminloc = n.where(zvector == n.min(zvector))[0][0]
+        globmin = zvector[globminloc]
+        zspline = gs.GridSpline(zvector)
+        zminlocs = n.round(zspline.get_min())
+        zminvals = zspline.get_val(zminlocs)
+        small_dchi2 = n.where(zminvals < (globmin+threshold))[0]
+        if len(small_dchi2) > 0:
+            for i in small_dchi2:
+                if abs(zminvals[i] - globminloc) < threshold: do_flag = False
+        if do_flag: self.zwarning = self.zwarning ^ flag_val
+
 
 # -----------------------------------------------------------------------------
 

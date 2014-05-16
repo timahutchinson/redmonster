@@ -12,11 +12,12 @@ from scipy.signal import boxcar
 
 class Plot_fit:
 
-    def __init__(self, master, zchi2_ssp, zchi2_star):
+    def __init__(self, master, zchi2_ssp, zchi2_star, fiber_offset=0):
         self.master = master
         self.plate = None
         self.zchi2_ssp = zchi2_ssp
         self.zchi2_star = zchi2_star
+        self.fos = fiber_offset
         L1 = Label(master, text='Plate')
         L1.grid(sticky=E)
         L2 = Label(master, text='Fiber')
@@ -36,7 +37,8 @@ class Plot_fit:
         nextfiber.grid(row=1, column=4)
         prevfiber = Button(master, text='<', command=self.prev_fiber)
         prevfiber.grid(row=1, column=3)
-        self.startemps = fits.open(join(environ['REDMONSTER_DIR'],'templates','ndArch-spEigenStar-55734.fits'))[0].data
+        #self.startemps = fits.open(join(environ['REDMONSTER_DIR'],'templates','ndArch-spEigenStar-55734.fits'))[0].data
+        self.startemps = fits.open(join(environ['REDMONSTER_DIR'],'templates','ndArch-all-CAP-grids.fits'))[0].data
         self.ssptemps = fits.open(join(environ['REDMONSTER_DIR'],'templates','ndArch-ssp_em_galaxy-v000.fits'))[0].data
 
     def do_plot(self):
@@ -59,10 +61,10 @@ class Plot_fit:
             # Overplot best-fit SSP
             ssploc = []
             for i in xrange(len(self.zchi2_ssp.shape)-1):
-                ssploc.append(n.where(self.zchi2_ssp[self.fiber] == n.min(self.zchi2_ssp[self.fiber]))[i][0])
-            pmat = n.zeros((4663,4))
+                ssploc.append(n.where(self.zchi2_ssp[self.fiber-self.fos] == n.min(self.zchi2_ssp[self.fiber-self.fos]))[i][0])
+            pmat = n.zeros((4663,5))
             pmat[:,0] = self.ssptemps[tuple(ssploc[:-1])][ssploc[-1]+667:ssploc[-1]+4663+667]
-            pmat[:,1:] = n.transpose(poly_array(3, 4663))
+            pmat[:,1:] = n.transpose(poly_array(4, 4663))
             ninv = n.diag(self.ivar[self.fiber])
             coeffvec = n.linalg.solve(n.dot(n.transpose(pmat),n.dot(ninv,pmat)),n.dot(n.transpose(pmat),n.dot(ninv,self.specs[self.fiber])))
             model = n.dot(pmat,coeffvec)
@@ -70,17 +72,17 @@ class Plot_fit:
             # Overplot best-fit star
             ssploc = []
             for i in xrange(len(self.zchi2_star.shape)-1):
-                ssploc.append(n.where(self.zchi2_star[self.fiber] == n.min(self.zchi2_star[self.fiber]))[i][0])
+                ssploc.append(n.where(self.zchi2_star[self.fiber-self.fos] == n.min(self.zchi2_star[self.fiber-self.fos]))[i][0])
             pmat = n.zeros((4663,5))
-            pmat[:,0] = self.startemps[tuple(ssploc[:-1])][ssploc[-1]+653:ssploc[-1]+4663+653]
+            pmat[:,0] = self.startemps[tuple(ssploc[:-1])][ssploc[-1]+864:ssploc[-1]+4663+864] #653 for spEigenStar, 864 for CAP grids, 667 for Charlie's SSPs
             pmat[:,1:] = n.transpose(poly_array(4, 4663))
             ninv = n.diag(self.ivar[self.fiber])
             coeffvec = n.linalg.solve(n.dot(n.transpose(pmat),n.dot(ninv,pmat)),n.dot(n.transpose(pmat),n.dot(ninv,self.specs[self.fiber])))
             model2 = n.dot(pmat,coeffvec)
             a.plot(self.wave, model2, color='blue')
+            a.set_ylim([n.min(model)-5, n.max(model)+5])
         a.set_xlabel('Wavelength (Angstroms)')
         a.set_ylabel('Flux in some units')
-        a.set_ylim([n.min(model)-5, n.max(model)+5])
         canvas = FigureCanvasTkAgg(f, master=self.master)
         canvas.show()
         canvas.get_tk_widget().grid(row=5, column=5)

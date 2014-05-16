@@ -84,6 +84,7 @@ class Zfinder:
             zminpix, zmaxpix = self.conv_zbounds()
             num_z = zmaxpix - zminpix + 1 # Number of pixels to be fitted in redshift
             self.zbase = self.zbase[zminpix:zminpix+num_z]
+            print zminpix
         else:
             bounds_set = False
             num_z = self.origshape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift

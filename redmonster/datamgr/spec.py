@@ -3,6 +3,7 @@ from os.path import exists, join
 from astropy.io import fits
 import numpy as n
 from math import ceil, floor
+from redmonster.math.misc import flux_check
 
 class Spec:
 
@@ -23,6 +24,7 @@ class Spec:
         try: self.run2d = environ['RUN2D']
         except: self.run2d = None
         self.set_plate_mjd(plate=plate, mjd=mjd, fiberid=fiberid, data_range=data_range)
+        self.ivar = flux_check(self.flux, self.ivar)
     
     def set_plate_mjd(self, plate=None, mjd=None, fiberid=None, data_range=None):
         self.plate = plate
