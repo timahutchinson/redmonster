@@ -19,6 +19,7 @@ class Spec:
         self.npix = None
         self.coeff0 = None
         self.coeff1 = None
+        self.zwarning = n.zeros(len(fiberid))
         try: self.topdir = environ['BOSS_SPECTRO_REDUX']
         except: self.topdir = None
         try: self.run2d = environ['RUN2D']
@@ -74,3 +75,20 @@ class Spec:
             self.plugmap = self.plugmap[fiberid]
             self.nobj = len(fiberid)
             if self.skyflux.shape[0] != 1: self.skyflux = self.skyflux[fiberid]
+
+    def flag_sky_fibers(self):
+        flag_val = int('0b1',2) # From BOSS zwarning flag definitions
+        for i in xrange(self.plugmap.shape[0]):
+            if ( self.plugmap[i]['OBJTYPE'] == 'sky'): self.zwarning = self.zwarning ^ flagval
+
+
+
+
+
+
+
+
+
+
+
+

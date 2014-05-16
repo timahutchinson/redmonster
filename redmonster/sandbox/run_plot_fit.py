@@ -12,7 +12,9 @@ from plot_fits import Plot_fit
 
 zchi2_ssp = fits.open('/Users/Tim/zchi2_ssp.fits')[0].data
 zchi2_star = fits.open('/Users/Tim/zchi2_star.fits')[0].data
+zchi2_cap = fits.open('/Users/Tim/zchi2_cap.fits')[0].data
 
 root = Tk()
-app = Plot_fit(root, zchi2_ssp, zchi2_star)
+app = Plot_fit(root, zchi2_star=zchi2_star, zchi2_cap=zchi2_cap, fiber_offset=39)
+#NavigationToolbar2TkAgg(app, root)
 #app.mainloop()
