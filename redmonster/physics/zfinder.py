@@ -11,6 +11,7 @@ import matplotlib as m
 from matplotlib import pyplot as p
 
 # Assumes all templates live in $REDMONSTER_DIR/templates/
+# test commit
 
 class Zfinder:
     
