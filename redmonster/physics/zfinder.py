@@ -139,7 +139,7 @@ class Zfinder:
             thisz = ((10**(specloglam[0]))/self.tempwave[bestl+zminpix])-1
         else:
             thisz = ((10**(specloglam[0]))/self.tempwave[bestl])-1
-        print thisz
+        #print thisz
         return zchi2arr
 
 
