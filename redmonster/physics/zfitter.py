@@ -26,7 +26,7 @@ class Zfitter:
             bestzvec = self.zchi2[(ifiber,)+vecpos]
             posinvec = zminpos[-1][0]
             if (posinvec == 0) or (posinvec == bestzvec.shape[0]-1): # Flag and skip interpolation fit if best chi2 is at edge of z-range
-                self.flag_z_fitlimit()
+                self.flag_z_fitlimit(ifiber)
                 self.best_z = bestzvec[posinvec]
             else:
                 xp = n.linspace(self.zbase[posinvec-1], self.zbase[posinvec+1], 1000)
@@ -37,14 +37,14 @@ class Zfitter:
                 self.best_z[ifiber] = xp[n.where(fit == n.min(fit))[0][0]]
                 self.z_err[ifiber] = self.estimate_z_err(xp, fit)
                 print self.best_z[ifiber]
-                self.flag_small_dchi2(bestzvec, threshold=2) # Flag fibers with small delta chi2 in redshift
+                self.flag_small_dchi2(ifiber, bestzvec) # Flag fibers with small delta chi2 in redshift
 
     def estimate_z_err(self, xp, fit):
         fitminloc = n.where(fit == n.min(fit)) # Index of lowest chi2
         z_err = abs(xp[fitminloc]-xp[abs(n.min(fit)+1-fit).argmin()]) # abs() of difference between z_(chi2_min) and z_(chi2_min_+1)
         return z_err
 
-    def flag_small_dchi2(self, zvector, threshold=46.6, width=15): # zvector: vector of chi2(z) values of best template
+    def flag_small_dchi2(self, ifiber, zvector, threshold=46.6, width=15): # zvector: vector of chi2(z) values of best template
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
         do_flag = False
         globminloc = n.where(zvector == n.min(zvector))[0][0]
@@ -56,11 +56,11 @@ class Zfitter:
         if len(small_dchi2) > 0:
             for i in small_dchi2:
                 if abs(zminvals[i] - globminloc) < threshold: do_flag = False
-        if do_flag: self.zwarning = self.zwarning ^ flag_val
+        if do_flag: self.zwarning[ifiber] = int(self.zwarning[ifiber]) ^ flag_val
 
-    def flag_z_fitlimit(self):
+    def flag_z_fitlimit(self, ifiber):
         flag_val = int('0b100000',2) # From BOSS zwarning flag definitions
-        self.zwarning = self.zwarning ^ flag_val
+        self.zwarning[ifiber] = int(self.zwarning[ifiber]) ^ flag_val
 
 
 # -----------------------------------------------------------------------------
