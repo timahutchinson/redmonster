@@ -30,6 +30,7 @@ class Zfinder:
         self.templates_flat = n.reshape(self.templates, (-1,self.fftnaxis1))
         self.t_fft = n.fft.fft(self.templates_flat)
         self.t2_fft = n.fft.fft(self.templates_flat**2)
+    
 
     def read_template(self):
         self.templates, self.baselines, self.infodict = read_ndArch(join(self.specdir,'templates',self.fname))
@@ -41,9 +42,11 @@ class Zfinder:
         templates_pad[...,:self.origshape[-1]] = self.templates
         self.templates = templates_pad
     
+    
     def set_SSP(self, npoly=None):
         ssp_stuff = SSP_Prep(velmin=100, velstep=100, nvel=3) # THIS MAY NOT BE THE BEST WAY TO DO THIS
         self.templates, self.tempwave, self.coeff1 = ssp_stuff.specs, ssp_stuff.wave, ssp_stuff.coeff1
+    
     
     def set_SSP_test(self, npoly=None): # FOR TESTING - Skips SSP processing and just reads from templates.fits to speed things up
         hdu = fits.open('/Users/Tim/Documents/Workstuff/BOSS/Python/templates.fits')
@@ -56,6 +59,7 @@ class Zfinder:
         templates_pad[...,:self.origshape[-1]] = self.templates
         self.templates = templates_pad
     
+    
     def set_star(self, npoly=None):
         hdu = fits.open('/Applications/itt/idl70/lib/idlspec2d-v5_6_4/templates/spEigenStar-55734.fits')
         self.templates = hdu[0].data
@@ -67,16 +71,21 @@ class Zfinder:
         self.templates = templates_pad
         self.hdr = hdu[0].header
     
+    
     def create_z_baseline(self, loglam0):
         self.zbase = ((10**loglam0)/self.tempwave) - 1
+    
     
     def conv_zbounds(self):
         zmaxpix = n.where( abs((self.zbase-self.zmin)) == n.min(abs(self.zbase-self.zmin)) )[0][0]
         zminpix = n.where( abs((self.zbase-self.zmax)) == n.min(abs(self.zbase-self.zmax)) )[0][0]
         return zminpix, zmaxpix
+    
 
     def zchi2(self, specs, specloglam, ivar):
-        print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
+        self.zwarning = n.zeros(specs.shape[0])
+        flag_val = int('0b10000000',2)
+        #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         self.create_z_baseline(specloglam[0])
         #import pdb; pdb.set_trace()
         if (self.zmin != None) and (self.zmax != None) and (self.zmax > self.zmin):
@@ -84,7 +93,7 @@ class Zfinder:
             zminpix, zmaxpix = self.conv_zbounds()
             num_z = zmaxpix - zminpix + 1 # Number of pixels to be fitted in redshift
             self.zbase = self.zbase[zminpix:zminpix+num_z]
-            print zminpix
+            #print zminpix
         else:
             bounds_set = False
             num_z = self.origshape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
@@ -113,36 +122,34 @@ class Zfinder:
         # Compute z for all fibers
         for i in xrange(specs.shape[0]): # Loop over fibers
             print i
-            for ipos in xrange(self.npoly): bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] * ivar_pad[i])
-            sn2_data = n.sum( (specs[i]**2)*ivar[i] )
-            for ipos in xrange(self.npoly):
-                for jpos in xrange(self.npoly): pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] * poly_pad[jpos] * ivar_pad[i])
-            for j in xrange(self.templates_flat.shape[0]): # Loop over templates
-                pmat[0,0] = n.fft.ifft(self.t2_fft[j] * ivar_fft[i].conj()).real
-                bvec[0] = n.fft.ifft(self.t_fft[j] * data_fft[i].conj()).real
-                for ipos in xrange(self.npoly): pmat[ipos+1,0] = pmat[0,ipos+1] = n.fft.ifft(self.t_fft[j] * poly_fft[i,ipos].conj()).real
-                if bounds_set:
-                    for l in range(num_z):
-                        f = n.linalg.solve(pmat[:,:,l+zminpix],bvec[:,l+zminpix])
-                        zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
-                else:
-                    for l in range(num_z):
-                        f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
-                        zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
-        print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
-        if self.config == 'star':
-            besttemp = n.where(zchi2arr == n.min(zchi2arr))[1][0]
-            print 'TYPE: ' + self.hdr['NAME%s' % besttemp]
+            if len(n.where(specs[i] != 0.)[0]) == 0: # If flux is all zeros, flag as unplugged according to BOSS zwarning flags and don't bother with doing fit
+                self.zwarning[i] = int(self.zwarning[i]) ^ flag_val
+            else: # Otherwise, go ahead and do fit
+                for ipos in xrange(self.npoly): bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] * ivar_pad[i])
+                sn2_data = n.sum( (specs[i]**2)*ivar[i] )
+                for ipos in xrange(self.npoly):
+                    for jpos in xrange(self.npoly): pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] * poly_pad[jpos] * ivar_pad[i])
+                for j in xrange(self.templates_flat.shape[0]): # Loop over templates
+                    pmat[0,0] = n.fft.ifft(self.t2_fft[j] * ivar_fft[i].conj()).real
+                    bvec[0] = n.fft.ifft(self.t_fft[j] * data_fft[i].conj()).real
+                    for ipos in xrange(self.npoly): pmat[ipos+1,0] = pmat[0,ipos+1] = n.fft.ifft(self.t_fft[j] * poly_fft[i,ipos].conj()).real
+                    if bounds_set:
+                        for l in range(num_z):
+                            f = n.linalg.solve(pmat[:,:,l+zminpix],bvec[:,l+zminpix])
+                            zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
+                    else:
+                        for l in range(num_z):
+                            f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
+                            zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
+        #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         zchi2arr = n.reshape(zchi2arr, (specs.shape[0],) + self.origshape[:-1] + (num_z,) )
         bestl = n.where(zchi2arr == n.min(zchi2arr))[-1][0]
         if bounds_set:
             thisz = ((10**(specloglam[0]))/self.tempwave[bestl+zminpix])-1
         else:
             thisz = ((10**(specloglam[0]))/self.tempwave[bestl])-1
-        print thisz
+        #print thisz
         return zchi2arr
-
-
 
 
 

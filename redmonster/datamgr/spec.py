@@ -19,20 +19,20 @@ class Spec:
         self.npix = None
         self.coeff0 = None
         self.coeff1 = None
-        self.zwarning = n.zeros(len(fiberid))
         try: self.topdir = environ['BOSS_SPECTRO_REDUX']
         except: self.topdir = None
         try: self.run2d = environ['RUN2D']
         except: self.run2d = None
         self.set_plate_mjd(plate=plate, mjd=mjd, fiberid=fiberid, data_range=data_range)
         self.ivar = flux_check(self.flux, self.ivar)
+        self.zwarning = n.zeros(self.flux.shape[0])
     
     def set_plate_mjd(self, plate=None, mjd=None, fiberid=None, data_range=None):
         self.plate = plate
         self.mjd = mjd
         if self.topdir and self.run2d and self.plate and self.mjd:
             self.platepath = join(self.topdir,self.run2d,"%s" % self.plate,"spPlate-%s-%s.fits" % (self.plate,self.mjd))
-            self.set_data()
+            if exists(self.platepath): self.set_data()
             if data_range: self.chop_data(data_range)
             if fiberid: self.set_fibers(fiberid)
     
