@@ -27,7 +27,7 @@ class Zfitter:
             posinvec = zminpos[-1][0]
             if (posinvec == 0) or (posinvec == bestzvec.shape[0]-1): # Flag and skip interpolation fit if best chi2 is at edge of z-range
                 self.flag_z_fitlimit(ifiber)
-                self.best_z = bestzvec[posinvec]
+                self.best_z[ifiber] = bestzvec[posinvec]
             else:
                 xp = n.linspace(self.zbase[posinvec-1], self.zbase[posinvec+1], 1000)
                 f = quadfit(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2])
@@ -36,7 +36,7 @@ class Zfitter:
                 #p.plot(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2], 'ko', hold=True)
                 self.best_z[ifiber] = xp[n.where(fit == n.min(fit))[0][0]]
                 self.z_err[ifiber] = self.estimate_z_err(xp, fit)
-                print self.best_z[ifiber]
+                #print self.best_z[ifiber]
                 self.flag_small_dchi2(ifiber, bestzvec) # Flag fibers with small delta chi2 in redshift
 
     def estimate_z_err(self, xp, fit):
