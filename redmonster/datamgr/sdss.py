@@ -52,14 +52,17 @@ class SpCFrameAll:
                 self.i_exp.append(i)
                 self.j_row.append(wh_fib[j])
         self.nspec_fib = len(self.i_exp)
-        self.flux_fib = [self.flux_list[self.i_exp[k]][self.j_row[k]]
+        full_ivar = [self.invvar_list[self.i_exp[k]][self.j_row[k]]
+                     for k in xrange(self.nspec_fib)]
+        self.ilo_fib = [min(n.where(this_ivar > 0)[0]) for this_ivar in full_ivar]
+        self.ihi_fib = [max(n.where(this_ivar > 0)[0]) for this_ivar in full_ivar]
+        self.flux_fib = [self.flux_list[self.i_exp[k]][self.j_row[k],self.ilo_fib[k]:self.ihi_fib[k]+1]
                          for k in xrange(self.nspec_fib)]
-        self.invvar_fib = [self.invvar_list[self.i_exp[k]][self.j_row[k]]
+        self.invvar_fib = [self.invvar_list[self.i_exp[k]][self.j_row[k],self.ilo_fib[k]:self.ihi_fib[k]+1]
                            for k in xrange(self.nspec_fib)]
-        self.mask_fib = [self.mask_list[self.i_exp[k]][self.j_row[k]]
+        self.mask_fib = [self.mask_list[self.i_exp[k]][self.j_row[k],self.ilo_fib[k]:self.ihi_fib[k]+1]
                          for k in xrange(self.nspec_fib)]
-        self.loglam_fib = [self.loglam_list[self.i_exp[k]][self.j_row[k]]
+        self.loglam_fib = [self.loglam_list[self.i_exp[k]][self.j_row[k],self.ilo_fib[k]:self.ihi_fib[k]+1]
                            for k in xrange(self.nspec_fib)]
-        self.disp_fib = [self.disp_list[self.i_exp[k]][self.j_row[k]]
+        self.disp_fib = [self.disp_list[self.i_exp[k]][self.j_row[k],self.ilo_fib[k]:self.ihi_fib[k]+1]
                          for k in xrange(self.nspec_fib)]
-
