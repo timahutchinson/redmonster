@@ -34,7 +34,7 @@ class Spec:
             self.platepath = join(self.topdir,self.run2d,"%s" % self.plate,"spPlate-%s-%s.fits" % (self.plate,self.mjd))
             if exists(self.platepath): self.set_data()
             if data_range: self.chop_data(data_range)
-            if fiberid: self.set_fibers(fiberid)
+            if fiberid != None: self.set_fibers(fiberid)
     
     def set_data(self):
         if self.platepath and exists(self.platepath): hdu = fits.open(self.platepath)

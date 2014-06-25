@@ -485,9 +485,9 @@ class yanny(dict):
                 (typ.find('char') < 0 and (typ.find('[') >= 0
                                            or typ.find('<') >= 0))):
                 cache[variable] = True
-                                           else:
-                                               cache[variable] = False
-                                           result = cache[variable]
+            else:
+                cache[variable] = False
+                result = cache[variable]
         return result
     #
     #
@@ -1125,4 +1125,4 @@ class yanny(dict):
                 for c in self.columns(t):
                     record[c] = self[t][c]
                 self[t] = record
-    return
+            return

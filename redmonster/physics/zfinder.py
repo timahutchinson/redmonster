@@ -84,7 +84,8 @@ class Zfinder:
 
     def zchi2(self, specs, specloglam, ivar):
         self.zwarning = n.zeros(specs.shape[0])
-        flag_val = int('0b10000000',2)
+        flag_val_unplugged = int('0b10000000',2)
+        flag_val_neg_model = int('0b1000',2)
         #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         self.create_z_baseline(specloglam[0])
         #import pdb; pdb.set_trace()
@@ -93,7 +94,7 @@ class Zfinder:
             zminpix, zmaxpix = self.conv_zbounds()
             num_z = zmaxpix - zminpix + 1 # Number of pixels to be fitted in redshift
             self.zbase = self.zbase[zminpix:zminpix+num_z]
-            #print zminpix
+            print zminpix
         else:
             bounds_set = False
             num_z = self.origshape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
@@ -123,7 +124,7 @@ class Zfinder:
         for i in xrange(specs.shape[0]): # Loop over fibers
             print i
             if len(n.where(specs[i] != 0.)[0]) == 0: # If flux is all zeros, flag as unplugged according to BOSS zwarning flags and don't bother with doing fit
-                self.zwarning[i] = int(self.zwarning[i]) ^ flag_val
+                self.zwarning[i] = int(self.zwarning[i]) ^ flag_val_unplugged
             else: # Otherwise, go ahead and do fit
                 for ipos in xrange(self.npoly): bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] * ivar_pad[i])
                 sn2_data = n.sum( (specs[i]**2)*ivar[i] )
@@ -140,6 +141,7 @@ class Zfinder:
                     else:
                         for l in range(num_z):
                             f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
+                            if (f[0] < 0.): self.zwarning[i] = int(self.zwarning[i]) ^ flag_val_neg_model
                             zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
         #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         zchi2arr = n.reshape(zchi2arr, (specs.shape[0],) + self.origshape[:-1] + (num_z,) )
