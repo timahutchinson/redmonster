@@ -38,9 +38,9 @@ class Plot_fit:
         nextfiber.grid(row=1, column=4)
         prevfiber = Button(master, text='<', command=self.prev_fiber)
         prevfiber.grid(row=1, column=3)
-        self.startemps2 = fits.open(join(environ['REDMONSTER_DIR'],'templates','ndArch-spEigenStar-55734.fits'))[0].data
-        self.startemps1 = fits.open(join(environ['REDMONSTER_DIR'],'templates','ndArch-all-CAP-grids.fits'))[0].data
-        #self.ssptemps = fits.open(join(environ['REDMONSTER_DIR'],'templates','ndArch-ssp_em_galaxy-v000.fits'))[0].data
+        #self.startemps2 = fits.open(join(environ['REDMONSTER_DIR'],'templates','ndArch-spEigenStar-55734.fits'))[0].data
+        #self.startemps1 = fits.open(join(environ['REDMONSTER_DIR'],'templates','ndArch-all-CAP-grids.fits'))[0].data
+        self.ssptemps = fits.open(join(environ['REDMONSTER_DIR'],'templates','ndArch-ssp_em_galaxy-v000.fits'))[0].data
 
     def do_plot(self):
         if self.plate != int(self.e1.get()):
@@ -61,41 +61,41 @@ class Plot_fit:
             a.plot(self.wave, n.convolve(self.specs[self.fiber], boxcar(5)/5., mode='same'), color='red')
             
             # Overplot best-fit SSP
+            ssploc = []
+            for i in xrange(len(self.zchi2_ssp.shape)-1):
+                ssploc.append(n.where(self.zchi2_ssp[self.fiber-self.fos] == n.min(self.zchi2_ssp[self.fiber-self.fos]))[i][0])
+            pmat = n.zeros((4663,5))
+            pmat[:,0] = self.ssptemps[tuple(ssploc[:-1])][ssploc[-1]+667:ssploc[-1]+4663+667]
+            pmat[:,1:] = n.transpose(poly_array(4, 4663))
+            ninv = n.diag(self.ivar[self.fiber])
+            coeffvec = n.linalg.solve(n.dot(n.transpose(pmat),n.dot(ninv,pmat)),n.dot(n.transpose(pmat),n.dot(ninv,self.specs[self.fiber])))
+            model1 = n.dot(pmat,coeffvec)
+            a.plot(self.wave, model1, color='black')
+            
+            # Overplot best fit spEigenStar
             #ssploc = []
-            #for i in xrange(len(self.zchi2_ssp.shape)-1):
-            #    ssploc.append(n.where(self.zchi2_ssp[self.fiber-self.fos] == n.min(self.zchi2_ssp[self.fiber-self.fos]))[i][0])
+            #for i in xrange(len(self.zchi2_star.shape)-1):
+            #    ssploc.append(n.where(self.zchi2_star[self.fiber-self.fos] == n.min(self.zchi2_star[self.fiber-self.fos]))[i][0])
             #pmat = n.zeros((4663,5))
-            #pmat[:,0] = self.ssptemps[tuple(ssploc[:-1])][ssploc[-1]+667:ssploc[-1]+4663+667]
+            #pmat[:,0] = self.startemps2[tuple(ssploc[:-1])][ssploc[-1]+653:ssploc[-1]+4663+653] #653 for spEigenStar, 864 for CAP grids, 667 for Charlie's SSPs
             #pmat[:,1:] = n.transpose(poly_array(4, 4663))
             #ninv = n.diag(self.ivar[self.fiber])
             #coeffvec = n.linalg.solve(n.dot(n.transpose(pmat),n.dot(ninv,pmat)),n.dot(n.transpose(pmat),n.dot(ninv,self.specs[self.fiber])))
-            #model1 = n.dot(pmat,coeffvec)
-            #a.plot(self.wave, model1, color='black')
-            
-            # Overplot best fit spEigenStar
-            ssploc = []
-            for i in xrange(len(self.zchi2_star.shape)-1):
-                ssploc.append(n.where(self.zchi2_star[self.fiber-self.fos] == n.min(self.zchi2_star[self.fiber-self.fos]))[i][0])
-            pmat = n.zeros((4663,5))
-            pmat[:,0] = self.startemps2[tuple(ssploc[:-1])][ssploc[-1]+653:ssploc[-1]+4663+653] #653 for spEigenStar, 864 for CAP grids, 667 for Charlie's SSPs
-            pmat[:,1:] = n.transpose(poly_array(4, 4663))
-            ninv = n.diag(self.ivar[self.fiber])
-            coeffvec = n.linalg.solve(n.dot(n.transpose(pmat),n.dot(ninv,pmat)),n.dot(n.transpose(pmat),n.dot(ninv,self.specs[self.fiber])))
-            model2 = n.dot(pmat,coeffvec)
-            a.plot(self.wave, model2, color='blue')
-            a.set_ylim([n.min(model2)-5, n.max(model2)+5])
+            #model2 = n.dot(pmat,coeffvec)
+            #a.plot(self.wave, model2, color='blue')
+            #a.set_ylim([n.min(model2)-5, n.max(model2)+5])
             
             # Overplot best-fit CAP star
-            ssploc = []
-            for i in xrange(len(self.zchi2_cap.shape)-1):
-                ssploc.append(n.where(self.zchi2_cap[self.fiber-self.fos] == n.min(self.zchi2_cap[self.fiber-self.fos]))[i][0])
-            pmat = n.zeros((4663,5))
-            pmat[:,0] = self.startemps1[tuple(ssploc[:-1])][ssploc[-1]+864:ssploc[-1]+4663+864] #653 for spEigenStar, 864 for CAP grids, 667 for Charlie's SSPs
-            pmat[:,1:] = n.transpose(poly_array(4, 4663))
-            ninv = n.diag(self.ivar[self.fiber])
-            coeffvec = n.linalg.solve(n.dot(n.transpose(pmat),n.dot(ninv,pmat)),n.dot(n.transpose(pmat),n.dot(ninv,self.specs[self.fiber])))
-            model3 = n.dot(pmat,coeffvec)
-            a.plot(self.wave, model3, color='black')
+            #ssploc = []
+            #for i in xrange(len(self.zchi2_cap.shape)-1):
+            #    ssploc.append(n.where(self.zchi2_cap[self.fiber-self.fos] == n.min(self.zchi2_cap[self.fiber-self.fos]))[i][0])
+            #pmat = n.zeros((4663,5))
+            #pmat[:,0] = self.startemps1[tuple(ssploc[:-1])][ssploc[-1]+864:ssploc[-1]+4663+864] #653 for spEigenStar, 864 for CAP grids, 667 for Charlie's SSPs
+            #pmat[:,1:] = n.transpose(poly_array(4, 4663))
+            #ninv = n.diag(self.ivar[self.fiber])
+            #coeffvec = n.linalg.solve(n.dot(n.transpose(pmat),n.dot(ninv,pmat)),n.dot(n.transpose(pmat),n.dot(ninv,self.specs[self.fiber])))
+            #model3 = n.dot(pmat,coeffvec)
+            #a.plot(self.wave, model3, color='black')
 
         a.set_xlabel('Wavelength (Angstroms)')
         a.set_ylabel('Flux in some units')
