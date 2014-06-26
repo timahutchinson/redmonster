@@ -16,6 +16,7 @@ from redmonster.datamgr import sdss
 from redmonster.datamgr import io
 from scipy import optimize as opt
 import gc
+import multifit as mf
 
 #import pixelsplines as pxs
 
@@ -154,6 +155,14 @@ inst_proj_fib = [misc.gaussproj(wavebound_vmodel[idx_lo[k]:idx_hi[k]+2],
                                 sigwave_input[k], wavebound_fib[k])
                  for k in xrange(SpC.nspec_fib)]
 
+# (See if our packaged function returns the same thing:)
+matrix_list, idx_list, nsamp_list = mf.multi_projector(wavebound_fib, sigwave_fib, coeff0, coeff1)
+k = 1
+p.plot(wave_fib[k], matrix_list[k] * big_grid[15,12,idx_list[k]:idx_list[k]+nsamp_list[k]], hold=False)
+p.plot(wave_fib[k], inst_proj_fib[k] * big_grid[15,12,idx_lo[k]:idx_hi[k]+1], hold=True)
+# Yes, seems to be correct!
+
+
 # Eventually we want to loop over redshift-lags and
 # velocity-dispersions, but for testing right now, we will
 # just dial in the "known" values so that we can get some sort
@@ -185,9 +194,9 @@ for i_exp in xrange(SpC.nspec_fib):
 #    p.plot(wave_fib[k], proj_grid[k][j_age], hold=hold_val[k])
 # Looks good!!
 
-# For the polynomial terms, let's try linear for now:
+# For the polynomial terms, let's try quadratic for now:
 # npoly_fib = [2] * SpC.nspec_fib
-npoly = 2
+npoly = 3
 
 # This will build the non-negative polynomial component grids for
 # each of the exposures.  For now, I *think* we want the same polynomial
@@ -226,6 +235,22 @@ p.plot(big_wave, big_model, '.', hold=True)
 
 chisq = n.sum((big_data-big_model)**2 * big_ivar)
 # So, "rnorm" from nnls is the square root of chi-squared...
+
+# See if our velocity broadened grids match up
+# to those from the expernal precomputation:
+junk, bjunk, ijunk = io.read_ndArch('../templates/ndArch-ssp_hires_galaxy-v002.fits')
+wjunk = 10.**(ijunk['coeff0'] + ijunk['coeff1'] * n.arange(ijunk['nwave']))
+j_v = 25
+i_a = 8
+p.plot(wjunk, junk[j_v,i_a], hold=False)
+p.plot(wave_vmodel, big_grid[j_v,i_a], hold=True)
+
+# Yes, they are the same...
+
+
+
+
+
 
 
 
