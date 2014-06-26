@@ -185,6 +185,50 @@ for i_exp in xrange(SpC.nspec_fib):
 #    p.plot(wave_fib[k], proj_grid[k][j_age], hold=hold_val[k])
 # Looks good!!
 
+# For the polynomial terms, let's try linear for now:
+# npoly_fib = [2] * SpC.nspec_fib
+npoly = 2
+
+# This will build the non-negative polynomial component grids for
+# each of the exposures.  For now, I *think* we want the same polynomial
+# amplitude for each of the exposures...
+maxloglam = max([max(this_loglam) for this_loglam in SpC.loglam_fib])
+minloglam = min([min(this_loglam) for this_loglam in SpC.loglam_fib])
+normbase_fib = [(this_loglam - minloglam) / (maxloglam - minloglam)
+                for this_loglam in SpC.loglam_fib]
+
+npix_fib = [len(this_flux) for this_flux in SpC.flux_fib]
+poly_grid = [n.zeros((2*npoly, npix_this), dtype=float) for npix_this in npix_fib]
+
+for ipoly in xrange(npoly):
+    for jfib in xrange(SpC.nspec_fib):
+        poly_grid[jfib][2*ipoly] = normbase_fib[jfib]**ipoly
+        poly_grid[jfib][2*ipoly+1] = - normbase_fib[jfib]**ipoly
+
+# Now we prep everything for the amplitude fitting:
+big_a = n.hstack(proj_grid)
+big_data = n.hstack(SpC.flux_fib)
+big_ivar = n.hstack(SpC.invvar_fib)
+big_poly = n.hstack(poly_grid)
+big_ap = n.vstack((big_a, big_poly))
+# Following just for plotting reference:
+big_wave = n.hstack(wave_fib)
+
+# Scaling as necessary for scipy.optimize.nnls:
+big_dscale = big_data * n.sqrt(big_ivar)
+big_ascale = big_ap * n.sqrt(big_ivar).reshape((1,-1))
+
+coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
+big_model = n.dot(big_ap.T, coeffs)
+
+p.plot(big_wave, big_data, '.', hold=False)
+p.plot(big_wave, big_model, '.', hold=True)
+
+chisq = n.sum((big_data-big_model)**2 * big_ivar)
+# So, "rnorm" from nnls is the square root of chi-squared...
+
+
+
 # We are close, but not there yet.
 # We still need to:
 #   1. Supplement with polynomials as appropriate
