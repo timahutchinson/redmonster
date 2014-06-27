@@ -108,7 +108,35 @@ p.imshow(chisq_arr, **myargs)
 p.colorbar()
 
 # Pick out the overall minimum chi-squared:
+minchisq = chisq_arr.min()
 
+j_z_best = n.argmin(chisq_arr) // n_vdisp
+i_v_best = n.argmin(chisq_arr) % n_vdisp
+
+# Re-do the fit there:
+a_list = MP.project_model_grid(data[i_v_best], pixlag=pixlagvec[j_z_best])
+big_a = n.hstack(a_list)
+big_ap = n.vstack((big_a, big_poly))
+big_ascale = big_ap * n.sqrt(big_ivar).reshape((1,-1))
+coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
+big_model = n.dot(big_ap.T, coeffs)
+
+ap_list = [n.vstack((a_list[k], poly_grid[k])) for k in xrange(SpC.nspec_fib)]
+model_list = [n.dot(this_ap.T, coeffs) for this_ap in ap_list]
+
+
+
+
+
+
+
+# Look at this in posterior terms:
+prob_arr = n.exp(-0.5 * (chisq_arr - minchisq))
+prob_arr /= prob_arr.sum()
+
+p.plot(zbase, prob_arr.sum(axis=1), hold=False)
+
+p.plot(baselines[0], prob_arr.sum(axis=0), drawstyle='steps-mid', hold=False)
 
 
 # Scaling as necessary for scipy.optimize.nnls:
