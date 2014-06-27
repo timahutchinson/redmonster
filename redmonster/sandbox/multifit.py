@@ -25,7 +25,8 @@ def multi_projector(wavebound_list, sigma_list, coeff0, coeff1):
         npix_j is the number of pixels in the j'th spectrum
         Must be monotonically increasing or something will crash.
       sigma_list: List of instrumental Gaussian sigma dispersion
-        parameter vectors.  Each vector to be of length npix_j
+        parameter vectors.  Each vector to be of length npix_j.
+        Should be in same units as wavebound_list.
       coeff0: log10-angstroms (vacuum, rest frame) of the zeroth
         pixel of the constant log10-lambda grid from which the
         projection matrices should broadcast to the individual
@@ -87,3 +88,125 @@ def multi_projector(wavebound_list, sigma_list, coeff0, coeff1):
                                   wavebound_list[k]) for k in xrange(nspec)]
     # Return results:
     return matrix_list, idx_list, nsamp_list
+
+class MultiProjector:
+    """
+    Class to take a list of spectro wavelength baselines and
+    associated instrumental dispersion parameters and return
+    an object that implements projection from uniform log10-lambda
+    baseline model grid.
+
+    This is basically an object-wrapper to the function
+      multi_projector
+    See the documentation for that function for more information
+    on the internals of this class.
+    
+    Arguments:
+      wavebound_list: List of 1D vectors each containing the
+        pixel boundaries of the individual spectra.  Each
+        vector is taken to be of length npix_j + 1, where
+        npix_j is the number of pixels in the j'th spectrum
+        Must be monotonically increasing or something will crash.
+      sigma_list: List of instrumental Gaussian sigma dispersion
+        parameter vectors.  Each vector to be of length npix_j
+      coeff0: log10-angstroms (vacuum, rest frame) of the zeroth
+        pixel of the constant log10-lambda grid from which the
+        projection matrices should broadcast to the individual
+        spectra.
+      coeff1: delta log10-angstroms per pixel of the constant
+        log10-lambda grid from which the projection matrices
+        should broadcast to the individual spectra.
+
+    Written: bolton@utah@iac 2014junio
+    """
+    def __init__(self, wavebound_list, sigma_list, coeff0, coeff1):
+        """
+        Constructor for the MultiProjector object.
+
+        Arguments:
+        wavebound_list: List of 1D vectors each containing the
+          pixel boundaries of the individual spectra.  Each
+          vector is taken to be of length npix_j + 1, where
+          npix_j is the number of pixels in the j'th spectrum
+          Must be monotonically increasing or something will crash.
+        sigma_list: List of instrumental Gaussian sigma dispersion
+          parameter vectors.  Each vector to be of length npix_j
+        coeff0: log10-angstroms (vacuum, rest frame) of the zeroth
+          pixel of the constant log10-lambda grid from which the
+          projection matrices should broadcast to the individual
+          spectra.
+        coeff1: delta log10-angstroms per pixel of the constant
+          log10-lambda grid from which the projection matrices
+          should broadcast to the individual spectra.
+        """
+        self.nspec = len(wavebound_list)
+        self.npix_list = [len(this_sigma) for this_sigma in sigma_list]
+        self.coeff0 = coeff0
+        self.coeff1 = coeff1
+        self.matrix_list, self.idx_list, self.nsamp_list = \
+            multi_projector(wavebound_list, sigma_list, coeff0, coeff1)
+    def project_model_grid(self, model_grid, pixlag=0, coeff0=None):
+        """
+        Function to project a grid of constant-log10-lambda models onto
+        the individual frames of multiple spectra, with pixel-redshift
+        
+        Arguments:
+          model_grid: ndarray of models gridded in constant log10-Angstroms.
+            Wavelength dimension must be final dimension.  Any number of
+            leading dimensions is allowed.
+          pixlag: pixel-redshift to apply when placing projection matrices
+            within model loglam grids.  By convention, pixlag > 0 is redshift
+            and pixlag < 0 is blieshift.
+          coeff0: Override value if the model grid has a zero-pixel
+            log10-Angstrom value other than that which is in self.coeff0.
+            This will be converted to pixels and rounded to an integer value.
+        """
+        # Do we need to offset for a different coeff0?
+        if coeff0 is None:
+            ishift = 0
+        else:
+            # If argument coeff0 is greater than self.coeff0, then
+            # we need to index our matrices into lower-numbered
+            # indices within the model baseline.  If this corresponds
+            # to a positive 'ishift' value as it does here, then it
+            # corresponds to subtraction when building the slices
+            # in the code immediately below.
+            ishift = int(round((coeff0 - self.coeff0) / self.coeff1))
+        # Build a list of slices within the model grid:
+        slice_list = [slice(self.idx_list[k]-pixlag-ishift,
+                            self.idx_list[k]+self.nsamp_list[k]-pixlag-ishift)
+                      for k in xrange(self.nspec)]
+        # How many pixels in the model grids?
+        npix_model = model_grid.shape[-1]
+        # Dimensionality of the model-grid space:
+        dimshape_model = model_grid.shape[:-1]
+        # Total number of models for looping:
+        nmodels = model_grid.size // npix_model
+        # Make a flattened view of the model grids for looping:
+        model_flatgrid = model_grid.reshape((nmodels, npix_model))
+        # Initialize output list, in flattened form:
+        outgrid_list = [n.zeros((nmodels, this_npix), dtype=float)
+                        for this_npix in self.npix_list]
+        # Now loop over exposures and models:
+        for j_spec in xrange(self.nspec):
+            for i_mod in xrange(nmodels):
+                outgrid_list[j_spec][i_mod] = self.matrix_list[j_spec] \
+                  * model_flatgrid[i_mod,slice_list[j_spec]]
+            # Resize the output grid to match the input model-space dimensions:
+            outgrid_list[j_spec].resize(dimshape_model + (self.npix_list[j_spec],))
+        return outgrid_list
+    def single_poly_nonneg(self, npoly):
+        """
+        Method to generate a single global (model-space) observed-frame
+        non-negative polynomial basis and project it through the projection matrices
+        into the frames of the individual spectra.
+        """
+        idx_lo = min(self.idx_list)
+        idx_hi = max(n.asarray(self.idx_list) + n.asarray(self.nsamp_list))
+        npix_poly = idx_hi - idx_lo
+        poly_base = n.arange(npix_poly) / float(npix_poly-1)
+        poly_grid = n.zeros((2*int(round(npoly)), npix_poly), dtype=float)
+        for ipoly in xrange(int(round(npoly))):
+            poly_grid[2*ipoly] = poly_base**ipoly
+            poly_grid[2*ipoly+1] = - poly_base**ipoly
+        return self.project_model_grid(poly_grid, pixlag=idx_lo)
