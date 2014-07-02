@@ -21,13 +21,19 @@ import multifit as mf
 #import pixelsplines as pxs
 
 # Set the following:
-# export BOSS_SPECTRO_REDUX='/data/BOSS/redux/dr10mini'
+# export BOSS_SPECTRO_REDUX=/data/BOSS/redux/dr10mini
 # export RUN2D=v5_5_12
 # export RUN1D=v5_5_12
 
-plate = 3686
-mjd = 55268
-fiberid = 265
+# Absorption-line galaxy:
+#plate = 3686
+#mjd = 55268
+#fiberid = 265
+
+# Emission-line galaxy:
+plate = 4399
+mjd = 55811
+fiberid = 476
 
 # Get the data:
 SpC = sdss.SpCFrameAll(plate, mjd)
@@ -63,17 +69,23 @@ sigma_fib = [1.e-4 * n.log(10.) * wave_fib[k] * SpC.disp_fib[k] for k in xrange(
 # Initialize the projector object for this fiber:
 MP = mf.MultiProjector(wavebound_fib, sigma_fib, infodict['coeff0'], infodict['coeff1'])
 
-
 # Pick a polynomial order and initialize a grid for it:
 npoly = 3
 poly_grid = MP.single_poly_nonneg(npoly)
 
 
 # Cheating values from idlspec2d:
-z_best = 0.63034
-v_best = 172.
+# Abs. line gal.:
+#z_best = 0.63034
+#v_best = 172.
+# Em. line gal:
+z_best = 0.8568
+v_best = 100. # just made this up...
 idx_v = n.argmin(n.abs(baselines[0] - v_best))
 pixlag = int(round(n.log10(1. + z_best) / infodict['coeff1']))
+
+# Test the emission-line basis:
+line_grid = MP.make_emline_basis(z=z_best)
 
 # Set up a local redshift baseline:
 zpix_hw = 15
@@ -95,7 +107,8 @@ for i_v in xrange(n_vdisp):
     print i_v
     for j_z in xrange(n_zbase):
         big_a = n.hstack(MP.project_model_grid(data[i_v], pixlag=pixlagvec[j_z]))
-        big_ap = n.vstack((big_a, big_poly))
+        big_em = n.hstack(MP.make_emline_basis(z=zbase[j_z], vdisp=v_best))
+        big_ap = n.vstack((big_a, big_em, big_poly))
         big_ascale = big_ap * n.sqrt(big_ivar).reshape((1,-1))
         coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
         chisq_arr[j_z, i_v] = rnorm**2
@@ -115,18 +128,26 @@ i_v_best = n.argmin(chisq_arr) % n_vdisp
 
 # Re-do the fit there:
 a_list = MP.project_model_grid(data[i_v_best], pixlag=pixlagvec[j_z_best])
+#em_list = MP.make_emline_basis(z=zbase[j_z_best], vdisp=v_best)
+em_list = MP.make_emline_basis(z=zbase[j_z_best], vdisp=0.)
 big_a = n.hstack(a_list)
-big_ap = n.vstack((big_a, big_poly))
+big_em = n.hstack(em_list)
+big_ap = n.vstack((big_a, big_em, big_poly))
 big_ascale = big_ap * n.sqrt(big_ivar).reshape((1,-1))
 coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
 big_model = n.dot(big_ap.T, coeffs)
 
-ap_list = [n.vstack((a_list[k], poly_grid[k])) for k in xrange(SpC.nspec_fib)]
+ap_list = [n.vstack((a_list[k], em_list[k], poly_grid[k])) for k in xrange(SpC.nspec_fib)]
 model_list = [n.dot(this_ap.T, coeffs) for this_ap in ap_list]
 
+hold_val = SpC.nspec_fib * [True]
+hold_val[0] = False
 
+for k in xrange(SpC.nspec_fib):
+    p.plot(wave_fib[k], SpC.flux_fib[k] * (SpC.invvar_fib[k] > 0), 'k', hold=hold_val[k])
 
-
+for k in xrange(SpC.nspec_fib):
+    p.plot(wave_fib[k], model_list[k], 'g', lw=2, hold=True)
 
 
 

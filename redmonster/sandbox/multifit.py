@@ -9,6 +9,39 @@
 
 import numpy as n
 from redmonster.math import misc
+import copy
+
+# These globals almost certainly belong somewhere else:
+
+gal_emline_wave = n.asarray([
+    3727.0917,
+    3729.8754,
+    4102.8916,
+    4341.6843,
+    4862.6830,
+    4960.2949,
+    5008.2397,
+    6549.8590,
+    6564.6140,
+    6585.2685,
+    6718.2943,
+    6732.6782])
+
+gal_emline_name = n.asarray([
+    '[O_II] 3725',
+    '[O_II] 3727',
+    'H_delta',
+    'H_gamma',
+    'H_beta',
+    '[O_III] 4959',
+    '[O_III] 5007',
+    '[N_II] 6548',
+    'H_alpha',
+    '[N_II] 6583',
+    '[S_II] 6716',
+    '[S_II] 6730'])
+
+c_kms = 2.99792458e5
 
 def multi_projector(wavebound_list, sigma_list, coeff0, coeff1):
     """
@@ -143,6 +176,10 @@ class MultiProjector:
         self.npix_list = [len(this_sigma) for this_sigma in sigma_list]
         self.coeff0 = coeff0
         self.coeff1 = coeff1
+        self.wavebound_list = copy.deepcopy(wavebound_list)
+        self.sigma_list = copy.deepcopy(sigma_list)
+        self.wavecen_list = [0.5 * (this_bound[1:] + this_bound[:-1])
+                             for this_bound in wavebound_list]
         self.matrix_list, self.idx_list, self.nsamp_list = \
             multi_projector(wavebound_list, sigma_list, coeff0, coeff1)
     def project_model_grid(self, model_grid, pixlag=0, coeff0=None):
@@ -195,11 +232,31 @@ class MultiProjector:
             # Resize the output grid to match the input model-space dimensions:
             outgrid_list[j_spec].resize(dimshape_model + (self.npix_list[j_spec],))
         return outgrid_list
+    def make_emline_basis(self, z=0., vdisp=0.):
+        """
+        Method to generate a list of Gaussian emission-line basis functions
+        at a particular redshift and velocity width in the observed frame
+        of the individual exposures.
+        """
+        # Compute observed wavelength of emission lines:
+        lambda_obs = (1. + z) * gal_emline_wave
+        # Compute intrinsic velocity width of lines, in wavelength units
+        sigma_line = lambda_obs * vdisp / c_kms
+        # Interpolate for instrumental sigma values:
+        lsf_list = [n.interp(lambda_obs, self.wavecen_list[k], self.sigma_list[k])
+                    for k in xrange(self.nspec)]
+        # Add intrinsic and instrumental in quadrature:
+        linesigma_list = [n.sqrt(sigma_line**2 + this_lsf**2)
+                          for this_lsf in lsf_list]
+        # Generate projection matrices from amplitudes to pixels:
+        return [n.asarray(misc.gaussbasis(self.wavebound_list[k], lambda_obs,
+                                          linesigma_list[k]).T.todense())
+                for k in xrange(self.nspec)]
     def single_poly_nonneg(self, npoly):
         """
         Method to generate a single global (model-space) observed-frame
-        non-negative polynomial basis and project it through the projection matrices
-        into the frames of the individual spectra.
+        non-negative polynomial basis of order 'npoly' and project it through
+        the projection matrices into the frames of the individual spectra.
         """
         idx_lo = min(self.idx_list)
         idx_hi = max(n.asarray(self.idx_list) + n.asarray(self.nsamp_list))
