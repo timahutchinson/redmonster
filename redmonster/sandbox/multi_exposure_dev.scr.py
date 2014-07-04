@@ -67,7 +67,12 @@ sigma_fib = [1.e-4 * n.log(10.) * wave_fib[k] * SpC.disp_fib[k] for k in xrange(
 
 
 # Initialize the projector object for this fiber:
-MP = mf.MultiProjector(wavebound_fib, sigma_fib, infodict['coeff0'], infodict['coeff1'])
+MP = mf.MultiProjector(wavebound_list=wavebound_fib,
+                       sigma_list=sigma_fib,
+                       flux_list=SpC.flux_fib,
+                       invvar_list=SpC.invvar_fib,
+                       coeff0=infodict['coeff0'],
+                       coeff1=infodict['coeff1'])
 
 # Pick a polynomial order and initialize a grid for it:
 npoly = 3

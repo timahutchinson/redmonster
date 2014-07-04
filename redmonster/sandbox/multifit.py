@@ -129,10 +129,12 @@ class MultiProjector:
     an object that implements projection from uniform log10-lambda
     baseline model grid.
 
-    This is basically an object-wrapper to the function
+    This started as an object-wrapper to the function
       multi_projector
     See the documentation for that function for more information
-    on the internals of this class.
+    on the non-trivial internals of this class.
+    The class has since evolved to a more expansive container
+    for and interface to spectra and their associated vectors.
     
     Arguments:
       wavebound_list: List of 1D vectors each containing the
@@ -142,6 +144,12 @@ class MultiProjector:
         Must be monotonically increasing or something will crash.
       sigma_list: List of instrumental Gaussian sigma dispersion
         parameter vectors.  Each vector to be of length npix_j
+      flux_list: List of fluxes of spectra, in f-lambda units,
+        with the per-lambda units matching those of the baseline
+        specified by wavebound_list (but with npix_j rather than
+        npix_j + 1 as the length of each vector).
+      invvar_list: List of inverse variance vectors associated
+        with flux_list.
       coeff0: log10-angstroms (vacuum, rest frame) of the zeroth
         pixel of the constant log10-lambda grid from which the
         projection matrices should broadcast to the individual
@@ -152,7 +160,12 @@ class MultiProjector:
 
     Written: bolton@utah@iac 2014junio
     """
-    def __init__(self, wavebound_list, sigma_list, coeff0, coeff1):
+    def __init__(self,
+                 wavebound_list=None,
+                 sigma_list=None,
+                 flux_list=None,
+                 invvar_list=None,
+                 coeff0=None, coeff1=None):
         """
         Constructor for the MultiProjector object.
 
@@ -164,6 +177,12 @@ class MultiProjector:
           Must be monotonically increasing or something will crash.
         sigma_list: List of instrumental Gaussian sigma dispersion
           parameter vectors.  Each vector to be of length npix_j
+        flux_list: List of fluxes of spectra, in f-lambda units,
+          with the per-lambda units matching those of the baseline
+          specified by wavebound_list (but with npix_j rather than
+          npix_j + 1 as the length of each vector).
+        invvar_list: List of inverse variance vectors associated
+          with flux_list.
         coeff0: log10-angstroms (vacuum, rest frame) of the zeroth
           pixel of the constant log10-lambda grid from which the
           projection matrices should broadcast to the individual
@@ -178,6 +197,8 @@ class MultiProjector:
         self.coeff1 = coeff1
         self.wavebound_list = copy.deepcopy(wavebound_list)
         self.sigma_list = copy.deepcopy(sigma_list)
+        self.flux_list = copy.deepcopy(flux_list)
+        self.invvar_list = copy.deepcopy(invvar_list)
         self.wavecen_list = [0.5 * (this_bound[1:] + this_bound[:-1])
                              for this_bound in wavebound_list]
         self.matrix_list, self.idx_list, self.nsamp_list = \
@@ -267,3 +288,48 @@ class MultiProjector:
             poly_grid[2*ipoly] = poly_base**ipoly
             poly_grid[2*ipoly+1] = - poly_base**ipoly
         return self.project_model_grid(poly_grid, pixlag=idx_lo)
+    def grid_chisq(self,
+                   model_grid=None,
+                   n_linear_dims=0,
+                   pixlags=None,
+                   emline_vlist=None,
+                   coeff0=None,
+                   npoly=0):
+        """
+        Method to compute chi-squared for the spectro data over a parameterized
+        grid of models, including redshifting, nonnegative linear superpositions,
+        and emission lines.
+
+        Arguments:
+          model_grid: grid of models with constant dlog10wave/dpix equal
+            to the value of 'coeff1' with which the MultiProjector object
+            was created (otherwise nothing works right).  Dimensions are:
+              n0 x n1 x ... x nJ x nWave,
+            where the first dimensions index parameters of the models,
+            and the last dimension indexes the (constant-log10-lambda)
+            wavelength dimension.
+          n_linear_dims: The default assumption is that all model parameter
+            dimensions are to be considered non-linear and to be given their
+            own corresponding dimension in the output chi-squared grid.
+            However, it is possible for some of the trailing dimensions to be
+            treated as linear dimensions, in which case at each point in the
+            non-linear grid, the data will be fit as a non-negative linear
+            combination of all the corresponding model vectors across the
+            linear dimensions.
+            **NOTE** that any linear dimensions MUST come AFTER all the
+            nonlinear dimensions in the ordering of parameter dimensions
+            of the model grid
+          pixlags: vector of integer pixel 'lags' (shifts) within the
+            constant-log10-lambda grid to explore in order to implement
+            the redshift dimension.  Positive pixlags are by convention taken
+            to be redshifts.  A value of zero is rest-frame.
+          emline_vlist: vector of emission linewidths in km/s to allow
+            as an additional dimension to the fit.
+          coeff0: log10-Angstroms of zero pixel of the model grid,
+            if different than value with which object was created.
+          npoly: order of additive polynomial background to fit in
+            combination with models.
+        """
+        # Now I just need to write it!
+        pass
+
