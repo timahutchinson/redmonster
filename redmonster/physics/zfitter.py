@@ -17,7 +17,7 @@ class Zfitter:
         #self.zwarning = zwarning if zwarning else n.zeros(zchi2.shape[0])
         self.zwarning = n.zeros(zchi2.shape[0])
 
-    def z_refine(self):
+    def z_refine2(self):
         for ifiber in xrange(self.zchi2.shape[0]):
             zminpos = n.where(self.zchi2[ifiber] == n.min(self.zchi2[ifiber]))
             vecpos = ()
@@ -39,12 +39,12 @@ class Zfitter:
                 #print self.best_z[ifiber]
                 self.flag_small_dchi2(ifiber, bestzvec) # Flag fibers with small delta chi2 in redshift
 
-    def z_refine2(self):
+    def z_refine(self):
         for ifiber in xrange(self.zchi2.shape[0]):
-            zchi2min = n.zeros( self.zchi2.shape[-1])
+            bestzvec = n.zeros( self.zchi2.shape[-1])
             for iz in xrange(self.zchi2.shape[-1]):
                 bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
-            posinvec = n.where( bestzvec[iz] == n.min(bestzvec[iz]) )[0][0]
+            posinvec = n.where( bestzvec == n.min(bestzvec) )[0][0]
             if (posinvec == 0) or (posinvec == bestzvec.shape[0]-1): # Flag and skip interpolation fit if best chi2 is at edge of z-range
                 self.flag_z_fitlimit(ifiber)
                 # self.best_z[ifiber] THIS STILL NEEDS TO BE SET

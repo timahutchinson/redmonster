@@ -49,7 +49,6 @@ class Zfinder:
     
     
     def set_SSP_test(self, npoly=None): # FOR TESTING - Skips SSP processing and just reads from templates.fits to speed things up
-        hdu = fits.open('/Users/Tim/Documents/Workstuff/BOSS/Python/templates.fits')
         self.templates = hdu[0].data
         self.tempwave = hdu[1].data.LAMBDA
         self.origshape = self.templates.shape

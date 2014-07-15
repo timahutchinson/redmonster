@@ -39,5 +39,8 @@ zfit_star = zfitter.Zfitter(zchi2_star, zstar.zbase)
 zfit_star.z_refine()
 
 ''' Flagging throughout redmonster is done individually by the classes responsible for handling the relevant computations.  To have an 'overall' flag for each fiber, the individual flags need to be combined. '''
-ssp_flag = (specs.zwarning | zssp.zwarning) | zfit_ssp.zwarning
-star_flag = (specs.zwarning | zstar.zwarning) | zfit_star.zwarning
+ssp_flags = n.zeros(len(fiberid))
+star_flags = n.zeros(len(fiberid))
+for ifiber in xrange(len(fiberid)):
+    ssp_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zssp.zwarning[ifiber])) | int(zfit_ssp.zwarning[ifiber])
+    star_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zstar.zwarning[ifiber])) | int(zfit_star.zwarning[ifiber])
