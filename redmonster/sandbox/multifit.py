@@ -214,7 +214,7 @@ class MultiProjector:
             leading dimensions is allowed.
           pixlag: pixel-redshift to apply when placing projection matrices
             within model loglam grids.  By convention, pixlag > 0 is redshift
-            and pixlag < 0 is blieshift.
+            and pixlag < 0 is blueshift.
           coeff0: Override value if the model grid has a zero-pixel
             log10-Angstrom value other than that which is in self.coeff0.
             This will be converted to pixels and rounded to an integer value.
@@ -331,5 +331,17 @@ class MultiProjector:
             combination with models.
         """
         # Now I just need to write it!
+        # Default for coeff0:
+        if coeff0 is None:
+            coeff0 = self.coeff0
+        # Shape of the model grid:
+        model_shape = model_grid.shape
+        
+        # Do we need to add a dimension for emission-line widths?
+        # Do we even want to handle these this way?
+
+
+
+        
         pass
 
