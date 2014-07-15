@@ -39,6 +39,26 @@ class Zfitter:
                 #print self.best_z[ifiber]
                 self.flag_small_dchi2(ifiber, bestzvec) # Flag fibers with small delta chi2 in redshift
 
+    def z_refine2(self):
+        for ifiber in xrange(self.zchi2.shape[0]):
+            zchi2min = n.zeros( self.zchi2.shape[-1])
+            for iz in xrange(self.zchi2.shape[-1]):
+                bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
+            posinvec = n.where( bestzvec[iz] == n.min(bestzvec[iz]) )[0][0]
+            if (posinvec == 0) or (posinvec == bestzvec.shape[0]-1): # Flag and skip interpolation fit if best chi2 is at edge of z-range
+                self.flag_z_fitlimit(ifiber)
+                # self.best_z[ifiber] THIS STILL NEEDS TO BE SET
+            else:
+                xp = n.linspace(self.zbase[posinvec-1], self.zbase[posinvec+1], 1000)
+                f = quadfit(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2])
+                fit = quad_for_fit(xp, f[0], f[1], f[2])
+                p.plot(xp, fit, color='red')
+                p.plot(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2], 'ko', hold=True)
+                self.best_z[ifiber] = xp[n.where(fit == n.min(fit))[0][0]]
+                self.z_err[ifiber] = self.estimate_z_err(xp, fit)
+                #print self.best_z[ifiber]
+                self.flag_small_dchi2(ifiber, bestzvec) # Flag fibers with small delta chi2 in redshift
+
     def estimate_z_err(self, xp, fit):
         fitminloc = n.where(fit == n.min(fit)) # Index of lowest chi2
         z_err = abs(xp[fitminloc]-xp[abs(n.min(fit)+1-fit).argmin()]) # abs() of difference between z_(chi2_min) and z_(chi2_min_+1)
