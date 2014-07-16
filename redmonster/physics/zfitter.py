@@ -47,7 +47,8 @@ class Zfitter:
             posinvec = n.where( bestzvec == n.min(bestzvec) )[0][0]
             if (posinvec == 0) or (posinvec == bestzvec.shape[0]-1): # Flag and skip interpolation fit if best chi2 is at edge of z-range
                 self.flag_z_fitlimit(ifiber)
-                # self.best_z[ifiber] THIS STILL NEEDS TO BE SET
+                self.best_z[ifiber] = -1.
+                self.z_err[ifiber] = -1.
             else:
                 xp = n.linspace(self.zbase[posinvec-1], self.zbase[posinvec+1], 1000)
                 f = quadfit(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2])
