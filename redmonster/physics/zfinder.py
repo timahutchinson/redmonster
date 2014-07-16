@@ -100,6 +100,7 @@ class Zfinder:
         
         # Create arrays for use in routine
         zchi2arr = n.zeros((specs.shape[0], self.templates_flat.shape[0], num_z)) # Create chi2 array of shape (# of fibers, template_parameter_1, ... , template_parameter_N, # of redshifts)
+        temp_zwarning = n.zeros(zchi2arr.shape)
         polyarr = poly_array(self.npoly, specs.shape[1]) # Compute poly terms, noting that they will stay fixed with the data - assumes data is passed in as shape (nfibers, npix)
         pmat = n.zeros( (self.npoly+1, self.npoly+1, self.fftnaxis1), dtype=float)
         bvec = n.zeros( (self.npoly+1, self.fftnaxis1), dtype=float)
@@ -137,12 +138,15 @@ class Zfinder:
                         for l in range(num_z):
                             f = n.linalg.solve(pmat[:,:,l+zminpix],bvec[:,l+zminpix])
                             zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
+                            if (f[0] < 0): temp_zwarning[i,j,l] = int(temp_zwarning[i,j,l]) | flag_val_neg_model
                     else:
                         for l in range(num_z):
                             f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
-                            if (f[0] < 0.): self.zwarning[i] = int(self.zwarning[i]) ^ flag_val_neg_model
+                            if (f[0] < 0.): temp_zwarning[i,j,l] = int(temp_zwarning[i,j,l]) | flag_val_neg_model
                             zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
-        #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
+        for i in xrange(self.zwarning.shape[0]): # Use only neg_model flag from best fit model/redshift and add it to self.zwarning
+            minpos = ( n.where(zchi2arr == n.min(zchi2arr))[1][0] , n.where(zchi2arr == n.min(zchi2arr))[2][0] )
+            self.zwarning[i] = int(self.zwarning[i]) | int(temp_zwarning[i,minpos[0],minpos[1]])
         zchi2arr = n.reshape(zchi2arr, (specs.shape[0],) + self.origshape[:-1] + (num_z,) )
         bestl = n.where(zchi2arr == n.min(zchi2arr))[-1][0]
         if bounds_set:
