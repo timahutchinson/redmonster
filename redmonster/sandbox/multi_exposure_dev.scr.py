@@ -72,11 +72,12 @@ MP = mf.MultiProjector(wavebound_list=wavebound_fib,
                        flux_list=SpC.flux_fib,
                        invvar_list=SpC.invvar_fib,
                        coeff0=infodict['coeff0'],
-                       coeff1=infodict['coeff1'])
+                       coeff1=infodict['coeff1'],
+                       npoly=3)
 
 # Pick a polynomial order and initialize a grid for it:
-npoly = 3
-poly_grid = MP.single_poly_nonneg(npoly)
+#npoly = 3
+#poly_grid = MP.single_poly_nonneg(npoly)
 
 
 # Cheating values from idlspec2d:
@@ -102,19 +103,19 @@ n_zbase = len(pixlagvec)
 chisq_arr = n.zeros((n_zbase, n_vdisp), dtype=float)
 
 # Stuff that we reuse in the fitting:
-big_data = n.hstack(SpC.flux_fib)
-big_ivar = n.hstack(SpC.invvar_fib)
-big_poly = n.hstack(poly_grid)
-big_wave = n.hstack(wave_fib)
-big_dscale = big_data * n.sqrt(big_ivar)
+#big_data = n.hstack(SpC.flux_fib)
+#big_ivar = n.hstack(SpC.invvar_fib)
+#big_poly = n.hstack(poly_grid)
+#big_wave = n.hstack(wave_fib)
+big_dscale = MP.big_data * n.sqrt(MP.big_ivar)
 
 for i_v in xrange(n_vdisp):
     print i_v
     for j_z in xrange(n_zbase):
         big_a = n.hstack(MP.project_model_grid(data[i_v], pixlag=pixlagvec[j_z]))
         big_em = n.hstack(MP.make_emline_basis(z=zbase[j_z], vdisp=v_best))
-        big_ap = n.vstack((big_a, big_em, big_poly))
-        big_ascale = big_ap * n.sqrt(big_ivar).reshape((1,-1))
+        big_ap = n.vstack((big_a, big_em, MP.big_poly))
+        big_ascale = big_ap * n.sqrt(MP.big_ivar).reshape((1,-1))
         coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
         chisq_arr[j_z, i_v] = rnorm**2
 

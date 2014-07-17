@@ -165,7 +165,8 @@ class MultiProjector:
                  sigma_list=None,
                  flux_list=None,
                  invvar_list=None,
-                 coeff0=None, coeff1=None):
+                 coeff0=None, coeff1=None,
+                 npoly=3):
         """
         Constructor for the MultiProjector object.
 
@@ -190,6 +191,8 @@ class MultiProjector:
         coeff1: delta log10-angstroms per pixel of the constant
           log10-lambda grid from which the projection matrices
           should broadcast to the individual spectra.
+        npoly: polynomial background order for use in fitting,
+          defaulting to 3 (quadratic).
         """
         self.nspec = len(wavebound_list)
         self.npix_list = [len(this_sigma) for this_sigma in sigma_list]
@@ -201,8 +204,12 @@ class MultiProjector:
         self.invvar_list = copy.deepcopy(invvar_list)
         self.wavecen_list = [0.5 * (this_bound[1:] + this_bound[:-1])
                              for this_bound in wavebound_list]
+        self.big_data = n.hstack(self.flux_list)
+        self.big_ivar = n.hstack(self.invvar_list)
+        self.big_wave = n.hstack(self.wavecen_list)
         self.matrix_list, self.idx_list, self.nsamp_list = \
             multi_projector(wavebound_list, sigma_list, coeff0, coeff1)
+        self.set_npoly(npoly)
     def project_model_grid(self, model_grid, pixlag=0, coeff0=None):
         """
         Function to project a grid of constant-log10-lambda models onto
@@ -288,6 +295,14 @@ class MultiProjector:
             poly_grid[2*ipoly] = poly_base**ipoly
             poly_grid[2*ipoly+1] = - poly_base**ipoly
         return self.project_model_grid(poly_grid, pixlag=idx_lo)
+    def set_npoly(self, npoly):
+        """
+        Method to set the polynomial background order for use in fitting,
+        and to precompute arrays that use it.
+        """
+        self.npoly = npoly
+        self.poly_grid = self.single_poly_nonneg(npoly)
+        self.big_poly = n.hstack(self.poly_grid)
     def grid_chisq(self,
                    model_grid=None,
                    n_linear_dims=0,
