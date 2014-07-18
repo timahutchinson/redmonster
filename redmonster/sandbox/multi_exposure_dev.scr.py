@@ -75,6 +75,9 @@ MP = mf.MultiProjector(wavebound_list=wavebound_fib,
                        coeff1=infodict['coeff1'],
                        npoly=3)
 
+MP.set_models(data, baselines=baselines, n_linear_dims=1)
+MP.set_emvdisp([100.])
+
 # Pick a polynomial order and initialize a grid for it:
 #npoly = 3
 #poly_grid = MP.single_poly_nonneg(npoly)
@@ -112,7 +115,7 @@ big_dscale = MP.big_data * n.sqrt(MP.big_ivar)
 for i_v in xrange(n_vdisp):
     print i_v
     for j_z in xrange(n_zbase):
-        big_a = n.hstack(MP.project_model_grid(data[i_v], pixlag=pixlagvec[j_z]))
+        big_a = n.hstack(MP.project_model_grid(MP.model_grid[i_v], pixlag=pixlagvec[j_z]))
         big_em = n.hstack(MP.make_emline_basis(z=zbase[j_z], vdisp=v_best))
         big_ap = n.vstack((big_a, big_em, MP.big_poly))
         big_ascale = big_ap * n.sqrt(MP.big_ivar).reshape((1,-1))
