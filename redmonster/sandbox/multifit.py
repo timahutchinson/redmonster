@@ -165,7 +165,8 @@ class MultiProjector:
                  sigma_list=None,
                  flux_list=None,
                  invvar_list=None,
-                 coeff0=None, coeff1=None):
+                 coeff0=None, coeff1=None,
+                 npoly=3):
         """
         Constructor for the MultiProjector object.
 
@@ -190,6 +191,8 @@ class MultiProjector:
         coeff1: delta log10-angstroms per pixel of the constant
           log10-lambda grid from which the projection matrices
           should broadcast to the individual spectra.
+        npoly: polynomial background order for use in fitting,
+          defaulting to 3 (quadratic).
         """
         self.nspec = len(wavebound_list)
         self.npix_list = [len(this_sigma) for this_sigma in sigma_list]
@@ -201,8 +204,13 @@ class MultiProjector:
         self.invvar_list = copy.deepcopy(invvar_list)
         self.wavecen_list = [0.5 * (this_bound[1:] + this_bound[:-1])
                              for this_bound in wavebound_list]
+        self.big_data = n.hstack(self.flux_list)
+        self.big_ivar = n.hstack(self.invvar_list)
+        self.big_wave = n.hstack(self.wavecen_list)
         self.matrix_list, self.idx_list, self.nsamp_list = \
             multi_projector(wavebound_list, sigma_list, coeff0, coeff1)
+        self.set_npoly(npoly)
+        self.emvdisp = []
     def project_model_grid(self, model_grid, pixlag=0, coeff0=None):
         """
         Function to project a grid of constant-log10-lambda models onto
@@ -288,18 +296,21 @@ class MultiProjector:
             poly_grid[2*ipoly] = poly_base**ipoly
             poly_grid[2*ipoly+1] = - poly_base**ipoly
         return self.project_model_grid(poly_grid, pixlag=idx_lo)
-    def grid_chisq(self,
-                   model_grid=None,
-                   n_linear_dims=0,
-                   pixlags=None,
-                   emline_vlist=None,
-                   coeff0=None,
-                   npoly=0):
+    def set_npoly(self, npoly):
         """
-        Method to compute chi-squared for the spectro data over a parameterized
-        grid of models, including redshifting, nonnegative linear superpositions,
-        and emission lines.
-
+        Method to set the polynomial background order for use in fitting,
+        and to precompute arrays that use it.
+        """
+        self.npoly = npoly
+        self.poly_grid = self.single_poly_nonneg(npoly)
+        self.big_poly = n.hstack(self.poly_grid)
+    def set_models(self,
+                   model_grid,
+                   baselines=None,
+                   n_linear_dims=0,
+                   coeff0=None):
+        """
+        Method to associate redshift template models with the object.
         Arguments:
           model_grid: grid of models with constant dlog10wave/dpix equal
             to the value of 'coeff1' with which the MultiProjector object
@@ -307,10 +318,15 @@ class MultiProjector:
               n0 x n1 x ... x nJ x nWave,
             where the first dimensions index parameters of the models,
             and the last dimension indexes the (constant-log10-lambda)
-            wavelength dimension.
+            wavelength dimension.  Should be numpy ndarray.
+          baselines: list of 1d vector ndarrays holding the parameter
+            baselines corresponding to the dimensions of the model grid.
+            This is most conveniently supplied from the output of
+            read_ndArch.  This argument is optional, but you may have
+            troubles down the line if you don't 
           n_linear_dims: The default assumption is that all model parameter
             dimensions are to be considered non-linear and to be given their
-            own corresponding dimension in the output chi-squared grid.
+            own corresponding dimension in an eventual chi-squared grid.
             However, it is possible for some of the trailing dimensions to be
             treated as linear dimensions, in which case at each point in the
             non-linear grid, the data will be fit as a non-negative linear
@@ -319,29 +335,78 @@ class MultiProjector:
             **NOTE** that any linear dimensions MUST come AFTER all the
             nonlinear dimensions in the ordering of parameter dimensions
             of the model grid
+          coeff0: log10-Angstroms of zero pixel of the model grid,
+            if different than value with which object was created.
+            Supplying a value for this variable will change the coeff0
+            attribute of the object.
+        Note: we may eventually want to change this routine to just take
+          an ndArch filename as its argument.  That might be simpler.
+        Note: we probably want to put in some checking for legitimate
+          values of n_linear_dims.
+        """
+        self.model_grid = model_grid.copy()
+        if (baselines is not None):
+            self.baselines = copy.deepcopy(baselines)
+        self.n_linear_dims = n_linear_dims
+        if (coeff0 is not None):
+            self.coeff0 = coeff0
+    def set_emvdisp(self, emline_vlist=None):
+        """
+        Method to set the list of (Gaussian) emission-line widths
+        to consider as a non-linear parameter grid dimension when
+        performing redshift model fits.  Should be a list or a
+        1d ndarray of values in km/s for the line 'sigma' values.
+        Call with no arguments to remove emission-line components.
+        """
+        if (emline_vlist is not None):
+            self.emvdisp = emline_vlist
+        else:
+            self.emvdisp = []
+    def grid_chisq(self, pixlags):
+        """
+        Method to compute chi-squared for the spectro data over a parameterized
+        grid of models, including redshifting, nonnegative linear superpositions,
+        and emission lines.
+
+        Argument:
           pixlags: vector of integer pixel 'lags' (shifts) within the
             constant-log10-lambda grid to explore in order to implement
             the redshift dimension.  Positive pixlags are by convention taken
             to be redshifts.  A value of zero is rest-frame.
-          emline_vlist: vector of emission linewidths in km/s to allow
-            as an additional dimension to the fit.
-          coeff0: log10-Angstroms of zero pixel of the model grid,
-            if different than value with which object was created.
-          npoly: order of additive polynomial background to fit in
-            combination with models.
         """
-        # Now I just need to write it!
-        # Default for coeff0:
-        if coeff0 is None:
-            coeff0 = self.coeff0
-        # Shape of the model grid:
-        model_shape = model_grid.shape
-        
-        # Do we need to add a dimension for emission-line widths?
-        # Do we even want to handle these this way?
-
-
-
+        # Figure out what dimensionality we need for the chi-squared grid
+        # in the initial working (flattened) form (including always a dimension
+        # for the emission-line velocity widths):
+        n_nonlin_dims = len(self.model_grid.shape) - self.n_linear_dims - 1
+        nonlin_shape = self.model_grid.shape[:n_nonlin_dims]
+        nonlin_len = n.prod(n.asarray(nonlin_shape, dtype=int))
+        # Number of model pixels:
+        npix_mod = self.model_grid.shape[-1]
+        # Number of pixels in the linear dimension:
+        linear_len = (self.model_grid.size // npix_mod) // nonlin_len
+        # View of the model grid reshaped to what we need:
+        model_grid_reshape = self.model_grid.reshape((nonlin_len, linear_len, npix_mod))
+        # Sort out number of pixlags to consider:
+        pixlags_local = n.asarray(pixlags).ravel()
+        n_pixlag = len(n.asarray(pixlags_local))
+        # Number of emission-line widths:
+        n_vline = len(self.emvdisp)
+        # Necessary size of emission-line width dimension
+        # (have to have an indexing placeholder even if no emission lines)
+        vline_len = n.maximum(n_vline, 1)
+        self.chisq_grid = n.zeros((nonlin_len, vline_len, n_pixlag), dtype=float)
+        # Now the loop over non-linear parameters,redshift, and emision-line parameters:
         
         pass
 
+
+n_nonlin_dims = 1
+nonlin_shape = MP.model_grid.shape[:n_nonlin_dims]
+nonlin_len = n.prod(n.asarray(nonlin_shape, dtype=int))
+# Number of model pixels:
+npix_mod = MP.model_grid.shape[-1]
+# Number of pixels in the linear dimension:
+linear_len = (MP.model_grid.size // npix_mod) // nonlin_len
+# View of the model grid reshaped to what we need:
+model_grid_reshape = MP.model_grid.reshape((nonlin_len, linear_len, npix_mod))
+model_grid_reshape.shape
