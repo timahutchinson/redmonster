@@ -10,6 +10,7 @@
 import numpy as n
 from redmonster.math import misc
 import copy
+from scipy import optimize as opt
 
 # These globals almost certainly belong somewhere else:
 
@@ -206,6 +207,8 @@ class MultiProjector:
                              for this_bound in wavebound_list]
         self.big_data = n.hstack(self.flux_list)
         self.big_ivar = n.hstack(self.invvar_list)
+        self.big_sqrt_ivar = n.sqrt(self.big_ivar)
+        self.big_dscale = self.big_data * self.big_sqrt_ivar
         self.big_wave = n.hstack(self.wavecen_list)
         self.matrix_list, self.idx_list, self.nsamp_list = \
             multi_projector(wavebound_list, sigma_list, coeff0, coeff1)
@@ -337,10 +340,10 @@ class MultiProjector:
             of the model grid
           coeff0: log10-Angstroms of zero pixel of the model grid,
             if different than value with which object was created.
-            Supplying a value for this variable will change the coeff0
-            attribute of the object.
         Note: we may eventually want to change this routine to just take
-          an ndArch filename as its argument.  That might be simpler.
+          an ndArch filename as its argument.  That might be simpler,
+          and would also allow for more robust compatibility checking
+          between the data-object and the templates.
         Note: we probably want to put in some checking for legitimate
           values of n_linear_dims.
         """
@@ -349,7 +352,9 @@ class MultiProjector:
             self.baselines = copy.deepcopy(baselines)
         self.n_linear_dims = n_linear_dims
         if (coeff0 is not None):
-            self.coeff0 = coeff0
+            self.model_coeff0 = coeff0
+        else:
+            self.model_coeff0 = self.coeff0
     def set_emvdisp(self, emline_vlist=None):
         """
         Method to set the list of (Gaussian) emission-line widths
@@ -389,24 +394,78 @@ class MultiProjector:
         # Sort out number of pixlags to consider:
         pixlags_local = n.asarray(pixlags).ravel()
         n_pixlag = len(n.asarray(pixlags_local))
+        # Compute redshift baseline:
+        zbase = 10.**(pixlags_local * self.coeff1) - 1.
         # Number of emission-line widths:
         n_vline = len(self.emvdisp)
         # Necessary size of emission-line width dimension
         # (have to have an indexing placeholder even if no emission lines)
         vline_len = n.maximum(n_vline, 1)
         self.chisq_grid = n.zeros((nonlin_len, vline_len, n_pixlag), dtype=float)
-        # Now the loop over non-linear parameters,redshift, and emision-line parameters:
-        
-        pass
+        # Initialize the list of basis grids with the polynomial grid and
+        # placeholders for the parameter and emission-line grids:
+        self.current_basis_list = [self.poly_grid, []]
+        if (n_vline > 0):
+            self.current_basis_list.append([])
+        # Now the loop over redshift, emission-line, and non-linear parameters:
+        for i_lag in xrange(n_pixlag):
+            proj_model_grid = self.project_model_grid(model_grid_reshape,
+                                                      pixlag=pixlags_local[i_lag],
+                                                      coeff0=self.model_coeff0)
+            #print this_model_grid.shape
+            #print nonlin_len
+            for j_line in xrange(vline_len):
+                if (n_vline > 0):
+                    self.current_basis_list[2] = self.make_emline_basis(z=zbase[i_lag],
+                                                        vdisp=self.emvdisp[j_line])
+                for k_par in xrange(nonlin_len):
+                    self.current_basis_list[1] = [this_model[k_par] for this_model in proj_model_grid]
+                    self.fit_current_basis()
+                    self.chisq_grid[k_par,j_line,i_lag] = self.current_chisq
+    def fit_current_basis(self):
+        """
+        Method to fit self.current_basis_list to the data and
+        populate the results of the fit into self.fit_result
+
+        This is meant to be called by routines/methods that handle the
+        proper setting of self.current_basis_list.
+
+        self.current_basis_list is a list of lists!
+
+        At the outer level, it is a list of distinct model components
+        (e.g., emission lines, polynomial background, continuum, whatever.)
+
+        At the next level, the elements in the outer level list are lists
+        of the matrices that represent those model components in the frames
+        of the individual data vectors.
+        """
+        if (len(self.current_basis_list) > 1):
+            big_a = n.vstack([n.hstack(this_grid) for this_grid in self.current_basis_list])
+        else:
+            big_a = n.hstack(self.current_basis_list[0])
+        big_ascale = big_a * self.big_sqrt_ivar.reshape((1,-1))
+        coeffs, rnorm = opt.nnls(big_ascale.T, self.big_dscale)
+        self.current_chisq = rnorm**2
+        self.current_big_coeffs = coeffs
+
+#        big_a = n.hstack(MP.project_model_grid(MP.model_grid[i_v], pixlag=pixlagvec[j_z]))
+#        big_em = n.hstack(MP.make_emline_basis(z=zbase[j_z], vdisp=v_best))
+#        big_ap = n.vstack((big_a, big_em, MP.big_poly))
+#        big_ascale = big_ap * n.sqrt(MP.big_ivar).reshape((1,-1))
+#        coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
+#        chisq_arr[j_z, i_v] = rnorm**2
 
 
-n_nonlin_dims = 1
-nonlin_shape = MP.model_grid.shape[:n_nonlin_dims]
-nonlin_len = n.prod(n.asarray(nonlin_shape, dtype=int))
-# Number of model pixels:
-npix_mod = MP.model_grid.shape[-1]
-# Number of pixels in the linear dimension:
-linear_len = (MP.model_grid.size // npix_mod) // nonlin_len
-# View of the model grid reshaped to what we need:
-model_grid_reshape = MP.model_grid.reshape((nonlin_len, linear_len, npix_mod))
-model_grid_reshape.shape
+
+
+
+#n_nonlin_dims = 1
+#nonlin_shape = MP.model_grid.shape[:n_nonlin_dims]
+#nonlin_len = n.prod(n.asarray(nonlin_shape, dtype=int))
+## Number of model pixels:
+#npix_mod = MP.model_grid.shape[-1]
+## Number of pixels in the linear dimension:
+#linear_len = (MP.model_grid.size // npix_mod) // nonlin_len
+## View of the model grid reshaped to what we need:
+#model_grid_reshape = MP.model_grid.reshape((nonlin_len, linear_len, npix_mod))
+#model_grid_reshape.shape

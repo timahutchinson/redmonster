@@ -26,14 +26,14 @@ import multifit as mf
 # export RUN1D=v5_5_12
 
 # Absorption-line galaxy:
-#plate = 3686
-#mjd = 55268
-#fiberid = 265
+plate = 3686
+mjd = 55268
+fiberid = 265
 
 # Emission-line galaxy:
-plate = 4399
-mjd = 55811
-fiberid = 476
+#plate = 4399
+#mjd = 55811
+#fiberid = 476
 
 # Get the data:
 SpC = sdss.SpCFrameAll(plate, mjd)
@@ -75,32 +75,70 @@ MP = mf.MultiProjector(wavebound_list=wavebound_fib,
                        coeff1=infodict['coeff1'],
                        npoly=3)
 
+
+
+# Code for the ELG case:
 MP.set_models(data, baselines=baselines, n_linear_dims=1)
 MP.set_emvdisp([100.])
 
-# Pick a polynomial order and initialize a grid for it:
-#npoly = 3
-#poly_grid = MP.single_poly_nonneg(npoly)
+
+
+# Cheating values from idlspec2d:
+z_best = 0.8568
+v_best = 100. # just made this up...
+pixlag = int(round(n.log10(1. + z_best) / infodict['coeff1']))
+# Set up a local redshift baseline:
+zpix_hw = 15
+pixlagvec = n.arange(2.*zpix_hw+1, dtype=int) - zpix_hw + pixlag
+zbase = 10.**(pixlagvec * infodict['coeff1']) - 1.
+n_zbase = len(pixlagvec)
+
+MP.grid_chisq(pixlagvec)
+
+
+
+# Code for the LRG case:
+MP.set_models(data, baselines=baselines, n_linear_dims=1)
+MP.set_emvdisp()
+
 
 
 # Cheating values from idlspec2d:
 # Abs. line gal.:
-#z_best = 0.63034
-#v_best = 172.
-# Em. line gal:
-z_best = 0.8568
-v_best = 100. # just made this up...
+z_best = 0.63034
+v_best = 172.
 idx_v = n.argmin(n.abs(baselines[0] - v_best))
 pixlag = int(round(n.log10(1. + z_best) / infodict['coeff1']))
-
-# Test the emission-line basis:
-line_grid = MP.make_emline_basis(z=z_best)
 
 # Set up a local redshift baseline:
 zpix_hw = 15
 pixlagvec = n.arange(2.*zpix_hw+1, dtype=int) - zpix_hw + pixlag
 zbase = 10.**(pixlagvec * infodict['coeff1']) - 1.
 n_zbase = len(pixlagvec)
+
+MP.grid_chisq(pixlagvec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Initialize a chi-squared array:
 chisq_arr = n.zeros((n_zbase, n_vdisp), dtype=float)
