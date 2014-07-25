@@ -93,7 +93,7 @@ pixlagvec = n.arange(2.*zpix_hw+1, dtype=int) - zpix_hw + pixlag
 zbase = 10.**(pixlagvec * infodict['coeff1']) - 1.
 n_zbase = len(pixlagvec)
 
-MP.grid_chisq(pixlagvec)
+MP.grid_chisq_zmapper(pixlagvec)
 
 
 
@@ -116,11 +116,14 @@ pixlagvec = n.arange(2.*zpix_hw+1, dtype=int) - zpix_hw + pixlag
 zbase = 10.**(pixlagvec * infodict['coeff1']) - 1.
 n_zbase = len(pixlagvec)
 
-MP.grid_chisq(pixlagvec)
+MP.grid_chisq_zmapper(pixlagvec)
 
 
+p.imshow(MP.chisq_grid.squeeze(), **myargs)
 
 
+MP.n_linear_dims = 0
+MP.grid_chisq_zmapper(pixlagvec)
 
 
 

@@ -367,17 +367,37 @@ class MultiProjector:
             self.emvdisp = emline_vlist
         else:
             self.emvdisp = []
-    def grid_chisq(self, pixlags):
+    def grid_chisq_zmapper(self, pixlags, squeeze_dims=True):
         """
         Method to compute chi-squared for the spectro data over a parameterized
         grid of models, including redshifting, nonnegative linear superpositions,
         and emission lines.
 
-        Argument:
+        Look to the methods
+           set_models
+           set_npoly
+           set_emvdisp
+        before calling this routine.
+
+        Arguments:
           pixlags: vector of integer pixel 'lags' (shifts) within the
             constant-log10-lambda grid to explore in order to implement
             the redshift dimension.  Positive pixlags are by convention taken
             to be redshifts.  A value of zero is rest-frame.
+          squeeze_dims: (Default is True) removes length-1 dimensions
+            from the output, which you may want to override if you get
+            confused about which dimension is which.
+
+        'Returns'
+          This method affects its output through the
+            chisq_grid
+          attribute of the object.
+          The dimensions of this grid correspond in order to:
+            1. nonlinear parameter dimensions of self.model_grid
+               (see set_models for linear versus nonlinear handling)
+            2. an emission-line width dimension
+               (see set_emvdisp for how this is specified)
+            3. the redshift dimension specified by 'pixlags'
         """
         # Figure out what dimensionality we need for the chi-squared grid
         # in the initial working (flattened) form (including always a dimension
@@ -422,6 +442,12 @@ class MultiProjector:
                     self.current_basis_list[1] = [this_model[k_par] for this_model in proj_model_grid]
                     self.fit_current_basis()
                     self.chisq_grid[k_par,j_line,i_lag] = self.current_chisq
+        # Now need to resize the chi-squared grid array
+        new_shape = self.model_grid.shape[:n_nonlin_dims] + self.chisq_grid.shape[1:]
+        self.chisq_grid.resize(new_shape)
+        # Get rid of length-1 dimensions:
+        if squeeze_dims:
+            self.chisq_grid.resize(self.chisq_grid.squeeze().shape)
     def fit_current_basis(self):
         """
         Method to fit self.current_basis_list to the data and
@@ -447,25 +473,4 @@ class MultiProjector:
         coeffs, rnorm = opt.nnls(big_ascale.T, self.big_dscale)
         self.current_chisq = rnorm**2
         self.current_big_coeffs = coeffs
-
-#        big_a = n.hstack(MP.project_model_grid(MP.model_grid[i_v], pixlag=pixlagvec[j_z]))
-#        big_em = n.hstack(MP.make_emline_basis(z=zbase[j_z], vdisp=v_best))
-#        big_ap = n.vstack((big_a, big_em, MP.big_poly))
-#        big_ascale = big_ap * n.sqrt(MP.big_ivar).reshape((1,-1))
-#        coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
-#        chisq_arr[j_z, i_v] = rnorm**2
-
-
-
-
-
-#n_nonlin_dims = 1
-#nonlin_shape = MP.model_grid.shape[:n_nonlin_dims]
-#nonlin_len = n.prod(n.asarray(nonlin_shape, dtype=int))
-## Number of model pixels:
-#npix_mod = MP.model_grid.shape[-1]
-## Number of pixels in the linear dimension:
-#linear_len = (MP.model_grid.size // npix_mod) // nonlin_len
-## View of the model grid reshaped to what we need:
-#model_grid_reshape = MP.model_grid.reshape((nonlin_len, linear_len, npix_mod))
-#model_grid_reshape.shape
+        # Next item is to put in an optional "full output" suite...
