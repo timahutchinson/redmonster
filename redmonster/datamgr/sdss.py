@@ -42,6 +42,7 @@ class SpCFrameAll:
         self.xpos_list = [fits.getdata(this_file, 7) for this_file in self.spCFrame_files]
         self.superflat_list = [fits.getdata(this_file, 8) for this_file in self.spCFrame_files]
         self.n_exposures = len(self.spCFrame_files)
+
     def set_fiber(self, fiberid):
         self.fiberid_now = fiberid
         self.i_exp = []
