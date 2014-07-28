@@ -44,6 +44,20 @@ gal_emline_name = n.asarray([
 
 c_kms = 2.99792458e5
 
+def npix2slices(npix_list):
+    """
+    Routine to take a list (or whatever) of pixel indices,
+    and return list of slices to those elements within a single
+    array that results from end-to-end stacking of arrays with
+    those individual lengths.
+    """
+    slice_hi = n.asarray(npix_list).cumsum()
+    slice_lo = n.roll(slice_hi, 1)
+    slice_lo[0] = 0
+    return [slice(slice_lo[k], slice_hi[k])
+            for k in xrange(len(slice_hi))]
+
+
 def multi_projector(wavebound_list, sigma_list, coeff0, coeff1):
     """
     Function to take a list of spectro wavelength baselines and
@@ -205,11 +219,20 @@ class MultiProjector:
         self.invvar_list = copy.deepcopy(invvar_list)
         self.wavecen_list = [0.5 * (this_bound[1:] + this_bound[:-1])
                              for this_bound in wavebound_list]
-        self.big_data = n.hstack(self.flux_list)
-        self.big_ivar = n.hstack(self.invvar_list)
+        # Concatenated ("big") arrays:
+        if (self.nspec > 1):
+            self.big_data = n.hstack(self.flux_list)
+            self.big_ivar = n.hstack(self.invvar_list)
+            self.big_wave = n.hstack(self.wavecen_list)
+        else:
+            self.big_data = self.flux_list[0]
+            self.big_ivar = self.invvar_list[0]
+            self.big_wave = self.wavecen_list[0]
         self.big_sqrt_ivar = n.sqrt(self.big_ivar)
         self.big_dscale = self.big_data * self.big_sqrt_ivar
-        self.big_wave = n.hstack(self.wavecen_list)
+        # Build list of slices into the "big" arrays:
+        self.big_slice_list = npix2slices(self.npix_list)
+        # Build the model projection matrices:
         self.matrix_list, self.idx_list, self.nsamp_list = \
             multi_projector(wavebound_list, sigma_list, coeff0, coeff1)
         self.set_npoly(npoly)
@@ -415,7 +438,7 @@ class MultiProjector:
         pixlags_local = n.asarray(pixlags).ravel()
         n_pixlag = len(n.asarray(pixlags_local))
         # Compute redshift baseline:
-        zbase = 10.**(pixlags_local * self.coeff1) - 1.
+        self.zbase = 10.**(pixlags_local * self.coeff1) - 1.
         # Number of emission-line widths:
         n_vline = len(self.emvdisp)
         # Necessary size of emission-line width dimension
@@ -428,6 +451,8 @@ class MultiProjector:
         if (n_vline > 0):
             self.current_basis_list.append([])
         # Now the loop over redshift, emission-line, and non-linear parameters:
+        # (We initialize a marginalized chi-squared versus z):
+        self.chisq_versus_z = n.zeros(n_pixlag, dtype=float)
         for i_lag in xrange(n_pixlag):
             proj_model_grid = self.project_model_grid(model_grid_reshape,
                                                       pixlag=pixlags_local[i_lag],
@@ -436,19 +461,26 @@ class MultiProjector:
             #print nonlin_len
             for j_line in xrange(vline_len):
                 if (n_vline > 0):
-                    self.current_basis_list[2] = self.make_emline_basis(z=zbase[i_lag],
+                    self.current_basis_list[2] = self.make_emline_basis(z=self.zbase[i_lag],
                                                         vdisp=self.emvdisp[j_line])
                 for k_par in xrange(nonlin_len):
                     self.current_basis_list[1] = [this_model[k_par] for this_model in proj_model_grid]
                     self.fit_current_basis()
                     self.chisq_grid[k_par,j_line,i_lag] = self.current_chisq
+            # Marginalized minimum chi-squared:
+            self.chisq_versus_z[i_lag] = self.chisq_grid[:,:,i_lag].min()
         # Now need to resize the chi-squared grid array
         new_shape = self.model_grid.shape[:n_nonlin_dims] + self.chisq_grid.shape[1:]
         self.chisq_grid.resize(new_shape)
         # Get rid of length-1 dimensions:
         if squeeze_dims:
             self.chisq_grid.resize(self.chisq_grid.squeeze().shape)
-    def fit_current_basis(self):
+        # Multidimensional indices to the minimum chi-squared point in the grid,
+        # and the value at that point (just for checking and convenience)
+        self.argmin_chisq_grid = n.unravel_index(self.chisq_grid.argmin(),
+                                                 self.chisq_grid.shape)
+        self.min_chisq_grid = self.chisq_grid.min()
+    def fit_current_basis(self, full_compute=False):
         """
         Method to fit self.current_basis_list to the data and
         populate the results of the fit into self.fit_result
@@ -464,6 +496,10 @@ class MultiProjector:
         At the next level, the elements in the outer level list are lists
         of the matrices that represent those model components in the frames
         of the individual data vectors.
+
+        The optional argument full_compute, which defaults to False,
+        triggers computation of other interesting things and population
+        of those things into properties of the object
         """
         if (len(self.current_basis_list) > 1):
             big_a = n.vstack([n.hstack(this_grid) for this_grid in self.current_basis_list])
@@ -473,4 +509,14 @@ class MultiProjector:
         coeffs, rnorm = opt.nnls(big_ascale.T, self.big_dscale)
         self.current_chisq = rnorm**2
         self.current_big_coeffs = coeffs
-        # Next item is to put in an optional "full output" suite...
+        if full_compute:
+            self.current_big_model = n.dot(self.current_big_coeffs, big_a)
+            self.current_icovar = n.dot(big_ascale, big_ascale.T)
+            self.current_model_list = [self.current_big_model[this_slice]
+                                       for this_slice in self.big_slice_list]
+        else:
+            self.current_big_model = None
+            self.current_icovar = None
+            self.current_model_list = None
+        # Next item is to put in code to split up model components...
+        # And to write chisquared-minimization code...
