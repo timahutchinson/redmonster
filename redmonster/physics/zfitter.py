@@ -54,7 +54,7 @@ class Zfitter:
                 f = quadfit(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2])
                 fit = quad_for_fit(xp, f[0], f[1], f[2])
                 p.plot(xp, fit, color='red')
-                p.plot(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2], 'ko', hold=True)
+                p.plot(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2], 'ko', hold=False)
                 self.best_z[ifiber] = xp[n.where(fit == n.min(fit))[0][0]]
                 self.z_err[ifiber] = self.estimate_z_err(xp, fit)
                 #print self.best_z[ifiber]
