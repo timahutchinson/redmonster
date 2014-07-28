@@ -10,7 +10,7 @@ from os.path import join
 from redmonster.math.misc import poly_array
 from scipy.signal import boxcar
 
-class Plot_fit:
+class Plot_Fit:
 
     def __init__(self, master, zchi2_ssp=None, zchi2_star=None, zchi2_cap=None, fiber_offset=0):
         self.master = master

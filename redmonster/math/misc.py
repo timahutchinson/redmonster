@@ -184,6 +184,12 @@ def gaussproj(pixbound_in, sigma_in, pixbound_out, h_order=0, nsigma=6.0):
     resampling-with-broadening.  If you just want to resample without
     broadening, you probably want to use pixelsplines instead.
 
+    Also note: when sigma changes with wavelength, there is some
+    higher-order non-conservation of surface brightness because we have
+    elected to implement exact flux conservation.  This may be
+    objectionable but it is also probably irrelevant in most practical
+    circumstances!  Someone may solve this someday...
+
     Written: bolton@utah@iac 2014junio
     """
     # How many input and output pixels?

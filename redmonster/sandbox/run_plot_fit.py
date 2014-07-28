@@ -8,7 +8,7 @@ from astropy.io import fits
 from os import environ
 from os.path import join
 from redmonster.math.misc import poly_array
-from plot_fits import Plot_fit
+from plot_fits import Plot_Fit
 
 zchi2_ssp = fits.open('/Users/Tim/zchi2_ssp.fits')[0].data
 zchi2_star = fits.open('/Users/Tim/zchi2_star.fits')[0].data

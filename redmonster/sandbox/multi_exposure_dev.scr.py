@@ -16,17 +16,24 @@ from redmonster.datamgr import sdss
 from redmonster.datamgr import io
 from scipy import optimize as opt
 import gc
+import multifit as mf
 
 #import pixelsplines as pxs
 
 # Set the following:
-# export BOSS_SPECTRO_REDUX='/data/BOSS/redux/dr10mini'
+# export BOSS_SPECTRO_REDUX=/data/BOSS/redux/dr10mini
 # export RUN2D=v5_5_12
 # export RUN1D=v5_5_12
 
+# Absorption-line galaxy:
 plate = 3686
 mjd = 55268
 fiberid = 265
+
+# Emission-line galaxy:
+#plate = 4399
+#mjd = 55811
+#fiberid = 476
 
 # Get the data:
 SpC = sdss.SpCFrameAll(plate, mjd)
@@ -38,13 +45,223 @@ spZbest_file = os.getenv('BOSS_SPECTRO_REDUX') + '/' + os.getenv('RUN2D') + '/' 
 
 spz = fits.getdata(spZbest_file, 1)
 
+
 # Get the models:
-data, baselines, infodict = io.read_ndArch('../templates/ndArch-ssp_hires_galaxy-v001.fits')
+data, baselines, infodict = io.read_ndArch('../templates/ndArch-ssp_hires_galaxy-v002.fits')
 loglam_ssp = infodict['coeff0'] + infodict['coeff1'] * n.arange(infodict['nwave'])
 logbound_ssp = misc.cen2bound(loglam_ssp)
 wave_ssp = 10.**loglam_ssp
 wavebound_ssp = 10.**logbound_ssp
-n_age = data.shape[0]
+n_vdisp = data.shape[0]
+n_age = data.shape[1]
+
+
+# Build the various wavelength arrays for the fiber:
+logbound_fib = [misc.cen2bound(this_loglam) for this_loglam in SpC.loglam_fib]
+wave_fib = [10.**this_loglam for this_loglam in SpC.loglam_fib]
+wavebound_fib = [10.**this_logbound for this_logbound in logbound_fib]
+
+
+# Convert sigma from SDSS-coadd-pixel units to Angstroms:
+sigma_fib = [1.e-4 * n.log(10.) * wave_fib[k] * SpC.disp_fib[k] for k in xrange(SpC.nspec_fib)]
+
+
+# Initialize the projector object for this fiber:
+MP = mf.MultiProjector(wavebound_list=wavebound_fib,
+                       sigma_list=sigma_fib,
+                       flux_list=SpC.flux_fib,
+                       invvar_list=SpC.invvar_fib,
+                       coeff0=infodict['coeff0'],
+                       coeff1=infodict['coeff1'],
+                       npoly=3)
+
+
+
+# Code for the ELG case:
+MP.set_models(data, baselines=baselines, n_linear_dims=1)
+MP.set_emvdisp([100.])
+
+
+
+# Cheating values from idlspec2d:
+z_best = 0.8568
+v_best = 100. # just made this up...
+pixlag = int(round(n.log10(1. + z_best) / infodict['coeff1']))
+# Set up a local redshift baseline:
+zpix_hw = 15
+pixlagvec = n.arange(2.*zpix_hw+1, dtype=int) - zpix_hw + pixlag
+zbase = 10.**(pixlagvec * infodict['coeff1']) - 1.
+n_zbase = len(pixlagvec)
+
+MP.grid_chisq_zmapper(pixlagvec)
+
+
+
+# Code for the LRG case:
+MP.set_models(data, baselines=baselines, n_linear_dims=1)
+MP.set_emvdisp()
+
+
+
+# Cheating values from idlspec2d:
+# Abs. line gal.:
+z_best = 0.63034
+v_best = 172.
+idx_v = n.argmin(n.abs(baselines[0] - v_best))
+pixlag = int(round(n.log10(1. + z_best) / infodict['coeff1']))
+
+# Set up a local redshift baseline:
+zpix_hw = 15
+pixlagvec = n.arange(2.*zpix_hw+1, dtype=int) - zpix_hw + pixlag
+zbase = 10.**(pixlagvec * infodict['coeff1']) - 1.
+n_zbase = len(pixlagvec)
+
+MP.grid_chisq_zmapper(pixlagvec)
+
+
+p.imshow(MP.chisq_grid.squeeze(), **myargs)
+
+
+MP.n_linear_dims = 0
+MP.grid_chisq_zmapper(pixlagvec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Initialize a chi-squared array:
+chisq_arr = n.zeros((n_zbase, n_vdisp), dtype=float)
+
+# Stuff that we reuse in the fitting:
+#big_data = n.hstack(SpC.flux_fib)
+#big_ivar = n.hstack(SpC.invvar_fib)
+#big_poly = n.hstack(poly_grid)
+#big_wave = n.hstack(wave_fib)
+big_dscale = MP.big_data * n.sqrt(MP.big_ivar)
+
+for i_v in xrange(n_vdisp):
+    print i_v
+    for j_z in xrange(n_zbase):
+        big_a = n.hstack(MP.project_model_grid(MP.model_grid[i_v], pixlag=pixlagvec[j_z]))
+        big_em = n.hstack(MP.make_emline_basis(z=zbase[j_z], vdisp=v_best))
+        big_ap = n.vstack((big_a, big_em, MP.big_poly))
+        big_ascale = big_ap * n.sqrt(MP.big_ivar).reshape((1,-1))
+        coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
+        chisq_arr[j_z, i_v] = rnorm**2
+
+
+myargs = {'interpolation': 'nearest', 'origin': 'lower',
+          'hold': False, 'cmap': p.cm.hot}
+
+p.imshow(chisq_arr, **myargs)
+p.colorbar()
+
+# Pick out the overall minimum chi-squared:
+minchisq = chisq_arr.min()
+
+j_z_best = n.argmin(chisq_arr) // n_vdisp
+i_v_best = n.argmin(chisq_arr) % n_vdisp
+
+# Re-do the fit there:
+a_list = MP.project_model_grid(data[i_v_best], pixlag=pixlagvec[j_z_best])
+#em_list = MP.make_emline_basis(z=zbase[j_z_best], vdisp=v_best)
+em_list = MP.make_emline_basis(z=zbase[j_z_best], vdisp=0.)
+big_a = n.hstack(a_list)
+big_em = n.hstack(em_list)
+big_ap = n.vstack((big_a, big_em, big_poly))
+big_ascale = big_ap * n.sqrt(big_ivar).reshape((1,-1))
+coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
+big_model = n.dot(big_ap.T, coeffs)
+
+ap_list = [n.vstack((a_list[k], em_list[k], poly_grid[k])) for k in xrange(SpC.nspec_fib)]
+model_list = [n.dot(this_ap.T, coeffs) for this_ap in ap_list]
+
+hold_val = SpC.nspec_fib * [True]
+hold_val[0] = False
+
+for k in xrange(SpC.nspec_fib):
+    p.plot(wave_fib[k], SpC.flux_fib[k] * (SpC.invvar_fib[k] > 0), 'k', hold=hold_val[k])
+
+for k in xrange(SpC.nspec_fib):
+    p.plot(wave_fib[k], model_list[k], 'g', lw=2, hold=True)
+
+
+
+# Look at this in posterior terms:
+prob_arr = n.exp(-0.5 * (chisq_arr - minchisq))
+prob_arr /= prob_arr.sum()
+
+p.plot(zbase, prob_arr.sum(axis=1), hold=False)
+
+p.plot(baselines[0], prob_arr.sum(axis=0), drawstyle='steps-mid', hold=False)
+
+
+# Scaling as necessary for scipy.optimize.nnls:
+big_dscale = big_data * n.sqrt(big_ivar)
+
+
+coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
+big_model = n.dot(big_ap.T, coeffs)
+
+p.plot(big_wave, big_data, '.', hold=False)
+p.plot(big_wave, big_model, '.', hold=True)
+
+chisq = n.sum((big_data-big_model)**2 * big_ivar)
+        
+
+
+# Fitting just at the best redshift and vdisp...
+
+# Project just this velocity grid to the redshift of interest:
+proj_grid = MP.project_model_grid(data[idx_v], pixlag=pixlag)
+
+big_a = n.hstack(proj_grid)
+big_data = n.hstack(SpC.flux_fib)
+big_ivar = n.hstack(SpC.invvar_fib)
+big_poly = n.hstack(poly_grid)
+big_ap = n.vstack((big_a, big_poly))
+# Following just for plotting reference:
+big_wave = n.hstack(wave_fib)
+
+# Scaling as necessary for scipy.optimize.nnls:
+big_dscale = big_data * n.sqrt(big_ivar)
+big_ascale = big_ap * n.sqrt(big_ivar).reshape((1,-1))
+
+coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
+big_model = n.dot(big_ap.T, coeffs)
+
+p.plot(big_wave, big_data, '.', hold=False)
+p.plot(big_wave, big_model, '.', hold=True)
+
+chisq = n.sum((big_data-big_model)**2 * big_ivar)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # What we probably want to do is build the broadening matrix from
 # the higher resolution at more or less the same rest-frame coverage,
@@ -154,6 +371,21 @@ inst_proj_fib = [misc.gaussproj(wavebound_vmodel[idx_lo[k]:idx_hi[k]+2],
                                 sigwave_input[k], wavebound_fib[k])
                  for k in xrange(SpC.nspec_fib)]
 
+# (See if our packaged function returns the same thing:)
+matrix_list, idx_list, nsamp_list = mf.multi_projector(wavebound_fib, sigwave_fib, coeff0, coeff1)
+k = 1
+p.plot(wave_fib[k], matrix_list[k] * big_grid[15,12,idx_list[k]:idx_list[k]+nsamp_list[k]], hold=False)
+p.plot(wave_fib[k], inst_proj_fib[k] * big_grid[15,12,idx_lo[k]:idx_hi[k]+1], hold=True)
+# Yes, seems to be correct!
+
+# (Try OOP interface):
+MP = mf.MultiProjector(wavebound_fib, sigwave_fib, coeff0, coeff1)
+k = 4
+p.plot(wave_fib[k], MP.matrix_list[k] * big_grid[15,12,idx_list[k]:idx_list[k]+nsamp_list[k]], hold=False)
+p.plot(wave_fib[k], inst_proj_fib[k] * big_grid[15,12,idx_lo[k]:idx_hi[k]+1], hold=True)
+# That also looks fine.
+
+
 # Eventually we want to loop over redshift-lags and
 # velocity-dispersions, but for testing right now, we will
 # just dial in the "known" values so that we can get some sort
@@ -177,6 +409,16 @@ for i_exp in xrange(SpC.nspec_fib):
         proj_grid[i_exp][j_age] = inst_proj_fib[i_exp] * \
                                   big_grid[idx_v,j_age,idx_lo[i_exp]-pixlag:idx_hi[i_exp]+1-pixlag]
 
+# Make a function to do that:
+proj_grid_new = MP.project_model_grid(big_grid, pixlag=pixlag)
+
+i_exp = 5
+j_age = 3
+p.plot(wave_fib[i_exp], proj_grid[i_exp][j_age], hold=False)
+p.plot(wave_fib[i_exp], proj_grid_new[i_exp][idx_v,j_age], hold=True)
+p.plot(wave_fib[i_exp], proj_grid_new[i_exp][idx_v+5,j_age], hold=True)
+
+# Woohoo! That works.
 
 #hold_val = [True] * SpC.nspec_fib
 #hold_val[0] = False
@@ -184,6 +426,74 @@ for i_exp in xrange(SpC.nspec_fib):
 #for k in xrange(SpC.nspec_fib):
 #    p.plot(wave_fib[k], proj_grid[k][j_age], hold=hold_val[k])
 # Looks good!!
+
+# For the polynomial terms, let's try quadratic for now:
+# npoly_fib = [2] * SpC.nspec_fib
+npoly = 3
+
+poly_grid = MP.single_poly_nonneg(npoly)
+
+for ispec in xrange(MP.nspec):
+    p.plot(wave_fib[ispec], poly_grid[ispec][4], hold=hold_val[ispec])
+
+
+
+
+# This will build the non-negative polynomial component grids for
+# each of the exposures.  For now, I *think* we want the same polynomial
+# amplitude for each of the exposures...
+maxloglam = max([max(this_loglam) for this_loglam in SpC.loglam_fib])
+minloglam = min([min(this_loglam) for this_loglam in SpC.loglam_fib])
+normbase_fib = [(this_loglam - minloglam) / (maxloglam - minloglam)
+                for this_loglam in SpC.loglam_fib]
+
+npix_fib = [len(this_flux) for this_flux in SpC.flux_fib]
+poly_grid = [n.zeros((2*npoly, npix_this), dtype=float) for npix_this in npix_fib]
+
+for ipoly in xrange(npoly):
+    for jfib in xrange(SpC.nspec_fib):
+        poly_grid[jfib][2*ipoly] = normbase_fib[jfib]**ipoly
+        poly_grid[jfib][2*ipoly+1] = - normbase_fib[jfib]**ipoly
+
+# Now we prep everything for the amplitude fitting:
+big_a = n.hstack(proj_grid)
+big_data = n.hstack(SpC.flux_fib)
+big_ivar = n.hstack(SpC.invvar_fib)
+big_poly = n.hstack(poly_grid)
+big_ap = n.vstack((big_a, big_poly))
+# Following just for plotting reference:
+big_wave = n.hstack(wave_fib)
+
+# Scaling as necessary for scipy.optimize.nnls:
+big_dscale = big_data * n.sqrt(big_ivar)
+big_ascale = big_ap * n.sqrt(big_ivar).reshape((1,-1))
+
+coeffs, rnorm = opt.nnls(big_ascale.T, big_dscale)
+big_model = n.dot(big_ap.T, coeffs)
+
+p.plot(big_wave, big_data, '.', hold=False)
+p.plot(big_wave, big_model, '.', hold=True)
+
+chisq = n.sum((big_data-big_model)**2 * big_ivar)
+# So, "rnorm" from nnls is the square root of chi-squared...
+
+# See if our velocity broadened grids match up
+# to those from the expernal precomputation:
+junk, bjunk, ijunk = io.read_ndArch('../templates/ndArch-ssp_hires_galaxy-v002.fits')
+wjunk = 10.**(ijunk['coeff0'] + ijunk['coeff1'] * n.arange(ijunk['nwave']))
+j_v = 25
+i_a = 8
+p.plot(wjunk, junk[j_v,i_a], hold=False)
+p.plot(wave_vmodel, big_grid[j_v,i_a], hold=True)
+
+# Yes, they are the same...
+
+
+
+
+
+
+
 
 # We are close, but not there yet.
 # We still need to:
