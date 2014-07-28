@@ -32,43 +32,43 @@ class Zfinder:
         self.t2_fft = n.fft.fft(self.templates_flat**2)
     
 
-    def read_template(self):
-        self.templates, self.baselines, self.infodict = read_ndArch(join(self.specdir,'templates',self.fname))
-        self.origshape = self.templates.shape
-        self.ntemps = self.templates[...,0].size
-        self.fftnaxis1 = two_pad(self.origshape[-1])
-        self.tempwave = 10**(self.infodict['coeff0'] + n.arange(self.infodict['nwave'])*self.infodict['coeff1'])
-        templates_pad = n.zeros( self.origshape[:-1]+(self.fftnaxis1,) )
-        templates_pad[...,:self.origshape[-1]] = self.templates
-        self.templates = templates_pad
+#def read_template(self):
+#        self.templates, self.baselines, self.infodict = read_ndArch(join(self.specdir,'templates',self.fname))
+#        self.origshape = self.templates.shape
+#        self.ntemps = self.templates[...,0].size
+#        self.fftnaxis1 = two_pad(self.origshape[-1])
+#        self.tempwave = 10**(self.infodict['coeff0'] + n.arange(self.infodict['nwave'])*self.infodict['coeff1'])
+#        templates_pad = n.zeros( self.origshape[:-1]+(self.fftnaxis1,) )
+#        templates_pad[...,:self.origshape[-1]] = self.templates
+#        self.templates = templates_pad
     
     
-    def set_SSP(self, npoly=None):
-        ssp_stuff = SSP_Prep(velmin=100, velstep=100, nvel=3) # THIS MAY NOT BE THE BEST WAY TO DO THIS
-        self.templates, self.tempwave, self.coeff1 = ssp_stuff.specs, ssp_stuff.wave, ssp_stuff.coeff1
+    #    def set_SSP(self, npoly=None):
+    #    ssp_stuff = SSP_Prep(velmin=100, velstep=100, nvel=3) # THIS MAY NOT BE THE BEST WAY TO DO THIS
+    #    self.templates, self.tempwave, self.coeff1 = ssp_stuff.specs, ssp_stuff.wave, ssp_stuff.coeff1
     
     
-    def set_SSP_test(self, npoly=None): # FOR TESTING - Skips SSP processing and just reads from templates.fits to speed things up
-        self.templates = hdu[0].data
-        self.tempwave = hdu[1].data.LAMBDA
-        self.origshape = self.templates.shape
-        self.ntemps = n.prod(self.templates.shape[:-1])
-        self.fftnaxis1 = two_pad(self.origshape[-1])
-        templates_pad = n.zeros( self.origshape[:-1] + (self.fftnaxis1,))
-        templates_pad[...,:self.origshape[-1]] = self.templates
-        self.templates = templates_pad
+    # def set_SSP_test(self, npoly=None): # FOR TESTING - Skips SSP processing and just reads from templates.fits to speed things up
+    #        self.templates = hdu[0].data
+    #    self.tempwave = hdu[1].data.LAMBDA
+    #    self.origshape = self.templates.shape
+    #    self.ntemps = n.prod(self.templates.shape[:-1])
+    #    self.fftnaxis1 = two_pad(self.origshape[-1])
+    #    templates_pad = n.zeros( self.origshape[:-1] + (self.fftnaxis1,))
+    #    templates_pad[...,:self.origshape[-1]] = self.templates
+    #    self.templates = templates_pad
     
     
-    def set_star(self, npoly=None):
-        hdu = fits.open('/Applications/itt/idl70/lib/idlspec2d-v5_6_4/templates/spEigenStar-55734.fits')
-        self.templates = hdu[0].data
-        self.tempwave = 10**(hdu[0].header['COEFF0'] + hdu[0].header['COEFF1']*n.arange(hdu[0].header['NAXIS1']))
-        self.origshape = self.templates.shape
-        self.fftnaxis1 = two_pad(self.origshape[-1])
-        templates_pad = n.zeros( self.origshape[:-1] + (self.fftnaxis1,))
-        templates_pad[...,:self.origshape[-1]] = self.templates
-        self.templates = templates_pad
-        self.hdr = hdu[0].header
+    #def set_star(self, npoly=None):
+    #    hdu = fits.open('/Applications/itt/idl70/lib/idlspec2d-v5_6_4/templates/spEigenStar-55734.fits')
+    #    self.templates = hdu[0].data
+    #    self.tempwave = 10**(hdu[0].header['COEFF0'] + hdu[0].header['COEFF1']*n.arange(hdu[0].header['NAXIS1']))
+    #    self.origshape = self.templates.shape
+    #    self.fftnaxis1 = two_pad(self.origshape[-1])
+    #    templates_pad = n.zeros( self.origshape[:-1] + (self.fftnaxis1,))
+    #    templates_pad[...,:self.origshape[-1]] = self.templates
+    #    self.templates = templates_pad
+    #    self.hdr = hdu[0].header
     
     
     def create_z_baseline(self, loglam0):
