@@ -118,6 +118,17 @@ n_zbase = len(pixlagvec)
 
 MP.grid_chisq_zmapper(pixlagvec)
 
+holdvec = MP.nspec * [True]
+holdvec[0] = False
+for i_spec in xrange(MP.nspec):
+    p.plot(MP.wavecen_list[i_spec], MP.flux_list[i_spec], hold=holdvec[i_spec])
+
+for i_spec in xrange(MP.nspec):
+    p.plot(MP.wavecen_list[i_spec], MP.current_model_list[i_spec], hold=True)
+
+
+
+
 
 p.imshow(MP.chisq_grid.squeeze(), **myargs)
 

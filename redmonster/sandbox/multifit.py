@@ -469,6 +469,18 @@ class MultiProjector:
                     self.chisq_grid[k_par,j_line,i_lag] = self.current_chisq
             # Marginalized minimum chi-squared:
             self.chisq_versus_z[i_lag] = self.chisq_grid[:,:,i_lag].min()
+        # Multidimensional coordinates of the minimum point for internal use:
+        k_par_best, j_line_best, i_lag_best = n.unravel_index(self.chisq_grid.argmin(),
+                                                              self.chisq_grid.shape)
+        # Make the "current" basis the same as the "best" basis and re-run the fit:
+        proj_model_grid = self.project_model_grid(model_grid_reshape,
+                                                  pixlag=pixlags_local[i_lag_best],
+                                                  coeff0=self.model_coeff0)
+        self.current_basis_list[1] = [this_model[k_par_best] for this_model in proj_model_grid]
+        if (n_vline > 0):
+            self.current_basis_list[2] = self.make_emline_basis(z=self.zbase[i_lag_best],
+                                                        vdisp=self.emvdisp[j_line_best])
+        self.fit_current_basis(full_compute=True)
         # Now need to resize the chi-squared grid array
         new_shape = self.model_grid.shape[:n_nonlin_dims] + self.chisq_grid.shape[1:]
         self.chisq_grid.resize(new_shape)
