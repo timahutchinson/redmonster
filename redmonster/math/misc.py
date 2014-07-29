@@ -1,3 +1,8 @@
+# Collection of miscellaneous functions used in redmonster that have no home in other modules
+#
+# Tim Hutchinson, April-August 2014
+# t.hutchinson@utah.edu
+
 import numpy as n
 from scipy import special as spc
 from scipy import sparse

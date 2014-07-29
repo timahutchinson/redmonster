@@ -1,4 +1,9 @@
-''' Initial top-level script to run redmonster on a single plate, with options to use only a subset of fibers.  Each spPlate file is assumed to be in $BOSS_SPECTRO_REDUX/$RUN2D/pppp/ where pppp is the 4-digit plate-id '''
+# Initial top-level script to run redmonster on a single plate, with options to use only a
+# subset of fibers.  Each spPlate file is assumed to be in $BOSS_SPECTRO_REDUX/$RUN2D/pppp/
+# where pppp is the 4-digit plate-id.
+#
+# Tim Hutchinson, July 2014
+# t.hutchinson@utah.edu
 
 import numpy as n
 from astropy.io import fits

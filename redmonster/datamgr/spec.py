@@ -1,3 +1,8 @@
+# Read SDSS spPlate files for use in redmonster
+#
+# Tim Hutchinson, May 2014
+# t.hutchinson@utah.edu
+
 from os import environ
 from os.path import exists, join
 from astropy.io import fits

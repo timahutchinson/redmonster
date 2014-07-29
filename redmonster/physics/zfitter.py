@@ -1,4 +1,8 @@
-# Routine to refine redshifts found in zfinder.py
+# Subgrid refinement and error estimation of redshift value found by redmonster.physics.zfinder.py .
+# Interpolates both between redshift pixel lags and between model parameters.
+#
+# Tim Hutchinson, May 2014
+# t.hutchinson@utah.edu
 
 import numpy as n
 from redmonster.math.misc import quadfit

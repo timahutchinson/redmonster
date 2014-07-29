@@ -1,3 +1,9 @@
+# First pass redshift finder of redmonster.  Able to search entire parameter-space and redshift-space
+# of models in increments of d(loglam)/d(pixel)
+#
+# Tim Hutchinson, May 2014
+# t.hutchinson@utah.edu
+
 import numpy as n
 from os import environ
 from os.path import join, exists
@@ -32,15 +38,15 @@ class Zfinder:
         self.t2_fft = n.fft.fft(self.templates_flat**2)
     
 
-#def read_template(self):
-#        self.templates, self.baselines, self.infodict = read_ndArch(join(self.specdir,'templates',self.fname))
-#        self.origshape = self.templates.shape
-#        self.ntemps = self.templates[...,0].size
-#        self.fftnaxis1 = two_pad(self.origshape[-1])
-#        self.tempwave = 10**(self.infodict['coeff0'] + n.arange(self.infodict['nwave'])*self.infodict['coeff1'])
-#        templates_pad = n.zeros( self.origshape[:-1]+(self.fftnaxis1,) )
-#        templates_pad[...,:self.origshape[-1]] = self.templates
-#        self.templates = templates_pad
+    def read_template(self):
+        self.templates, self.baselines, self.infodict = read_ndArch(join(self.specdir,'templates',self.fname))
+        self.origshape = self.templates.shape
+        self.ntemps = self.templates[...,0].size
+        self.fftnaxis1 = two_pad(self.origshape[-1])
+        self.tempwave = 10**(self.infodict['coeff0'] + n.arange(self.infodict['nwave'])*self.infodict['coeff1'])
+        templates_pad = n.zeros( self.origshape[:-1]+(self.fftnaxis1,) )
+        templates_pad[...,:self.origshape[-1]] = self.templates
+        self.templates = templates_pad
     
     
     #    def set_SSP(self, npoly=None):

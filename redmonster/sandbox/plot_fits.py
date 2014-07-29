@@ -1,3 +1,10 @@
+# GUI used for quickly plotting BOSS spectra.  Also allows overplotting of best-fit template as
+# determined by redmonster pipeline.  Sort of a redmonster version of plotspec.pro, though currently
+# with less bells and whistles.
+#
+# Tim Hutchinson, April 2014
+# thutchinson@utah.edu
+
 from Tkinter import *
 import numpy as n
 import matplotlib

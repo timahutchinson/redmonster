@@ -1,3 +1,10 @@
+# Prepare Charlie Conroy's SSP templates for use in redmonster
+#
+# Tim Hutchinson, April 2014
+# t.hutchinson@utah.edu
+#
+# May 2014 - now probably defunct, replaced by redmonster.templates.ssp_ztemplate.py
+
 import numpy as n
 from os import environ
 from os.path import join,exists

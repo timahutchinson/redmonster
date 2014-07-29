@@ -1,4 +1,9 @@
-# Import statements
+# Write redmonster output files
+#
+# Tim Hutchinson, May 2014
+# t.hutchinson@utah.edu
+#
+# July 2014 - now probably defunct, replaced by redmonster.datamgr.io.py
 
 class Output:
 

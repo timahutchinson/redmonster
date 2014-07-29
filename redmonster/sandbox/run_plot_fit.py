@@ -1,3 +1,8 @@
+# Command line execution for plot_fit.py
+#
+# Tim Hutchinson, April 2014
+# t.hutchinson@utah.edu
+
 from Tkinter import *
 import numpy as n
 import matplotlib
