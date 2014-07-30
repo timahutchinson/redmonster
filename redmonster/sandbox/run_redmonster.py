@@ -15,8 +15,8 @@ import matplotlib.pyplot as p
 p.interactive(True)
 
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
-plate = 3686
-mjd = 55268
+plate = 4389
+mjd = 55539
 fiberid = [i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 
 
@@ -33,10 +33,10 @@ zchi2_ssp = zssp.zchi2(specs.flux, specs.loglambda, specs.ivar)
 zstar = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
 zchi2_star = zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
 
-''' Instantiate zfitter to do subgrid fitting.  zchi2_ssp is chi^2 array from zfinder object above, and zssp.zbase is redshift-pixel baseline over the range explored by zfinder. '''
+''' Instantiate Zfitter to do subgrid fitting.  zchi2_ssp is chi^2 array from zfinder object above, and zssp.zbase is redshift-pixel baseline over the range explored by zfinder. '''
 zfit_ssp = zfitter.Zfitter(zchi2_ssp, zssp.zbase)
 
-''' Do actual subgrid refinement and fitting.  "Best fit" redshifts will be in [nfibers] shaped array in zfit_*****.best_z , and associated errors are in zfit_*****.z_err .  This routine also flags for small delta chi^2 and if the global minimum chi^2 is on an edge of the input chi^2 array. '''
+''' Do actual subgrid refinement and fitting.  Best-fit and second-best-fit redshifts will be in [nfibers,2] shaped array in zfit_*****.z , and associated errors are in zfit_*****.z_err .  This routine also flags for small delta chi^2 and if the global minimum chi^2 is on an edge of the input chi^2 array. z_refine() includes an optional parameter, 'width', which specifies half the width of a window around the global chi2 minimum in which local minima are ignored during calculation of second-best redshift and flagging small delta-chi2.  If not specified, 'width' defaults to 15.'''
 zfit_ssp.z_refine()
 
 ''' Same as above for second template. '''
