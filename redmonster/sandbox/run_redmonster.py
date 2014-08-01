@@ -26,7 +26,7 @@ specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 ''' Instantiate zfinder object that will do z-finding for the entire plate using a single template.  Here, fname is the template filename, assumed to be in $REDMONSTER_DIR/templates/ . npoly specifies number of polynomial terms to be used in finding, zmin and zmax are upper and lower bounds of the redshift range to be explored. '''
 zssp = zfinder.Zfinder(fname='ndArch-ssp_em_galaxy-v000.fits', type='GALAXY', npoly=4, zmin=-0.01, zmax=1.2)
 
-''' Run actual fitting routine on the object created above. zssp.zchi2arr is array of of minimum chi^2 values of shape [nfibers, ndim_1, ndim_2, ..., ndim_N, nredshifts], where ndim_i is the i'th dimension of the template file.'''
+''' Run actual fitting routine on the object created above. zssp.zchi2arr is array of of minimum chi^2 values of shape [nfibers, ndim_1, ndim_2, ..., ndim_N, nredshifts], where ndim_i is the i'th dimension of the template file.  Input flux need not be SDSS data - any spectra binned in constant log(lambda) will work.'''
 zssp.zchi2(specs.flux, specs.loglambda, specs.ivar)
 
 ''' New object and fitting for a different template. '''
@@ -43,7 +43,7 @@ zfit_ssp.z_refine()
 zfit_star = zfitter.Zfitter(zstar.zchi2arr, zstar.zbase)
 zfit_star.z_refine()
 
-''' Compare chi2 surfaces from each template and classify each object accordingly. '''
+''' Compare chi2 surfaces from each template and classify each object accordingly. Arguments are number of pixels in DATA spectrum, followed by each object created by Zfinder.  This function can currently handle up to five objects from five separate templates.'''
 zpick = zpicker.Zpicker(specs.npix, zssp, zstar)
 
 ''' Flagging throughout redmonster is done individually by the classes responsible for handling the relevant computations.  To have an 'overall' flag for each fiber, the individual flags need to be combined. '''
