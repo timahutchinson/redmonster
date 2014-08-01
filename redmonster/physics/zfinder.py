@@ -20,12 +20,13 @@ from matplotlib import pyplot as p
 
 class Zfinder:
     
-    def __init__(self, fname=None, config=None, npoly=None, zmin=None, zmax=None):
+    def __init__(self, fname=None, type=None, npoly=None, zmin=None, zmax=None):
         self.fname = fname
-        self.config = config
+        self.type = type
         self.npoly = npoly if npoly else 4
         self.zmin = float(zmin)
         self.zmax = float(zmax)
+        self.zchi2arr = None
         try: self.specdir = environ['REDMONSTER_DIR']
         except: self.specdir = None
         #if self.config.lower() == 'ssp': self.set_SSP(npoly=npoly)
@@ -131,8 +132,8 @@ class Zfinder:
             thisz = ((10**(specloglam[0]))/self.tempwave[bestl+zminpix])-1
         else:
             thisz = ((10**(specloglam[0]))/self.tempwave[bestl])-1
-        #print thisz
-        return zchi2arr
+        #return zchi2arr
+        self.zchi2arr = zchi2arr
 
 
 
