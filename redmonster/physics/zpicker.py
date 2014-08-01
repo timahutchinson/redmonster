@@ -31,8 +31,38 @@ class Zpicker:
             if objclass4: self.minrchi2[ifiber,3] = n.min(objclass4.zchi2arr[ifiber]) / (self.npixflux - objclass4.npoly)
             if objclass5: self.minrchi2[ifiber,4] = n.min(objclass5.zchi2arr[ifiber]) / (self.npixflux - objclass5.npoly)
             minpos = self.minrchi2[ifiber].argmin()
-            if minpos == 0: self.type.append(objclass1.type)
-            elif minpos == 1: self.type.append(objclass2.type)
-            elif minpos == 2: self.type.append(objclass3.type)
-            elif minpos == 3: self.type.append(objclass4.type)
-            elif minpos == 4: self.type.append(objclass5.type)
+            if minpos == 0:
+                self.type.append(objclass1.type)
+                minloc = n.unravel_index(objclass1.zchi2arr[ifiber].argmin(), objclass1.zchi2arr[ifiber].shape)[:-1]
+                d = {}
+                for i in xrange(len(minloc)):
+                    d[objclass1.infodict['par_names'][i]] = objclass1.baselines[i][minloc[i]]
+                self.subtype.append(d)
+            elif minpos == 1:
+                self.type.append(objclass2.type)
+                minloc = n.unravel_index(objclass2.zchi2arr[ifiber].argmin(), objclass2.zchi2arr[ifiber].shape)[:-1]
+                d = {}
+                for i in xrange(len(minloc)):
+                    d[objclass2.infodict['par_names'][i]] = objclass2.baselines[i][minloc[i]]
+                self.subtype.append(d)
+            elif minpos == 2:
+                self.type.append(objclass3.type)
+                minloc = n.unravel_index(objclass3.zchi2arr[ifiber].argmin(), objclass3.zchi2arr[ifiber].shape)[:-1]
+                d = {}
+                for i in xrange(len(minloc)):
+                    d[objclass3.infodict['par_names'][i]] = objclass3.baselines[i][minloc[i]]
+                self.subtype.append(d)
+            elif minpos == 3:
+                self.type.append(objclass4.type)
+                minloc = n.unravel_index(objclass4.zchi2arr[ifiber].argmin(), objclass4.zchi2arr[ifiber].shape)[:-1]
+                d = {}
+                for i in xrange(len(minloc)):
+                    d[objclass4.infodict['par_names'][i]] = objclass4.baselines[i][minloc[i]]
+                self.subtype.append(d)
+            elif minpos == 4:
+                self.type.append(objclass5.type)
+                minloc = n.unravel_index(objclass5.zchi2arr[ifiber].argmin(), objclass5.zchi2arr[ifiber].shape)[:-1]
+                d = {}
+                for i in xrange(len(minloc)):
+                    d[objclass5.infodict['par_names'][i]] = objclass5.baselines[i][minloc[i]]
+                self.subtype.append(d)
