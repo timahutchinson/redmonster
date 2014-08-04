@@ -7,6 +7,10 @@
 
 import numpy as n
 from astropy.io import fits
+from os import environ
+from os.path import exists, join
+from astropy.io import fits
+from time import gmtime, strftime
 
 def read_ndArch(fname):
     """
@@ -198,10 +202,83 @@ def write_ndArch(data, baselines, infodict):
 # Tim Hutchinson, University of Utah, August 2014
 # t.hutchinson@utah.edu
 
-class write_redmonster:
+class Write_Redmonster:
+    '''
+    Class to write output file at the end of running redmonster.  
+    
+    The zpick argumentis simply the entire object created by running
+    redmonster.physics.zpicker.py . The dest argument is a string
+    containing the path in which to save the output file.
+    
+    If no dest argument is given, or the path does not exist, then the write_rm() method
+    will default to writing in $BOSS_SPECTRO_REDUX/$RUN2D/pppp/$RUN1D/ .  If the
+    necessary environmental variables are also not specified, it will write in
+    directory in which it is being run.
+    
+    The default behavior is to clobber any older version of the output file in the
+    given directory.  Setting clobber=False will cause a new version to be written.
+    '''
+    def __init__(self, zpick, dest=None, clobber=True):
+        self.clobber = clobber
+        if dest and exists(dest): self.dest = dest
+        else:
+            bsr = environ['BOSS_SPECTRO_REDUX']
+            run2d = environ['RUN2D']
+            run1d = environ['RUN1D']
+            if bsr and run2d and run1d:
+                testpath = join(bsr, run2d, '%s' % zpick.plate, run1d)
+                if exists(testpath): self.dest = testpath
+                else: self.dest = 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)
+            else: self.dest = 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)
+        self.write_rm(zpick, dest)
 
-    def __init__(self, ):
-        pass
+    def write_rm(self, zpick, dest):
+        prihdu = fits.PrimaryHDU(header=zpick.hdr)
+        col1 = fits.Column(name='Z', format='E', array=zpick.z)
+        col2 = fits.Column(name='Z_ERR', format='E', array=zpick.z_err)
+        col3 = fits.Column(name='CLASS', format='6A', array=zpick.type)
+        col4 = fits.Column(name='SUBCLASS', format='6A', array=zpick.subtype)
+        col5 = fits.Column(name='FIBERID', format='J', array=zpick.fiberid)
+        cols = fits.ColDefs([col1, col2, col3, col4, col5])
+        tbhdu = fits.new_table(cols)
+        thdulist = fits.HDUList([prihdu, tbhdu])
+        if self.clobber:
+            if self.dest: thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)))
+            else: thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))
+        else:
+            if self.dest: thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
+            else: thdulist.writeto('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

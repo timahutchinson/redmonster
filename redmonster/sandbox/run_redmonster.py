@@ -15,9 +15,9 @@ import matplotlib.pyplot as p
 p.interactive(True)
 
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
-plate = 4389
-mjd = 55539
-fiberid = [i for i in xrange(1000)] # fiberid must be a list, not a numpy array
+plate = 3686
+mjd = 55268
+fiberid = [i+100 for i in xrange(1)] # fiberid must be a list, not a numpy array
 
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
@@ -44,7 +44,7 @@ zfit_star = zfitter.Zfitter(zstar.zchi2arr, zstar.zbase)
 zfit_star.z_refine()
 
 ''' Compare chi2 surfaces from each template and classify each object accordingly. Arguments are number of pixels in DATA spectrum, followed by each object created by Zfinder.  This function can currently handle up to five objects from five separate templates.'''
-zpick = zpicker.Zpicker(specs.npix, zssp, zstar)
+zpick = zpicker.Zpicker(specs, zssp, zfit_ssp, zstar, zfit_star)
 
 ''' Flagging throughout redmonster is done individually by the classes responsible for handling the relevant computations.  To have an 'overall' flag for each fiber, the individual flags need to be combined. '''
 ssp_flags = n.zeros(len(fiberid))
@@ -52,3 +52,6 @@ star_flags = n.zeros(len(fiberid))
 for ifiber in xrange(len(fiberid)):
     ssp_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zssp.zwarning[ifiber])) | int(zfit_ssp.zwarning[ifiber])
     star_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zstar.zwarning[ifiber])) | int(zfit_star.zwarning[ifiber])
+
+''' Write output file.  Arguments are zpick from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
+output = io.Write_Redmonster(zpick)
