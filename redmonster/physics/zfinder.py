@@ -1,7 +1,7 @@
 # First pass redshift finder of redmonster.  Able to search entire parameter-space and redshift-space
 # of models in increments of d(loglam)/d(pixel)
 #
-# Tim Hutchinson, May 2014
+# Tim Hutchinson, University of Utah @ IAC, May 2014
 # t.hutchinson@utah.edu
 
 import numpy as n

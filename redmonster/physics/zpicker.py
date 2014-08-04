@@ -3,7 +3,7 @@
 # zpick.type, a list of len()=nfibers where each entry is a string of objclassN.type for the
 # best reduced chi2 amongst all input classes.
 #
-# Tim Hutchinson, July 2014
+# Tim Hutchinson, University of Utah, July 2014
 # t.hutchinson@utah.edu
 
 import numpy as n
@@ -11,9 +11,10 @@ import numpy as n
 class Zpicker:
 
     def __init__(self, npixflux, objclass1=None, objclass2=None, objclass3=None, objclass4=None, objclass5=None):
+        self.npixflux = npixflux
         self.type = []
         self.subtype = []
-        self.npixflux = npixflux
+        self.z = n.zeros( (objclass1.zchi2arr.shape[0], self.npixflux) )
         self.objclass1 = objclass1
         if not objclass2: self.nclass = 1
         elif objclass2 and not objclass3: nclass = 2

@@ -1,7 +1,7 @@
 # Subgrid refinement and error estimation of redshift value found by redmonster.physics.zfinder.py .
 # Interpolates both between redshift pixel lags and between model parameters.
 #
-# Tim Hutchinson, May 2014
+# Tim Hutchinson, University of Utah @ IAC, May 2014
 # t.hutchinson@utah.edu
 
 import numpy as n

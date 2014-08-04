@@ -1,6 +1,6 @@
 # Command line execution for plot_fit.py
 #
-# Tim Hutchinson, April 2014
+# Tim Hutchinson, University of Utah, April 2014
 # t.hutchinson@utah.edu
 
 from Tkinter import *

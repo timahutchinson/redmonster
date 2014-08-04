@@ -2,7 +2,7 @@
 # subset of fibers.  Each spPlate file is assumed to be in $BOSS_SPECTRO_REDUX/$RUN2D/pppp/
 # where pppp is the 4-digit plate-id.
 #
-# Tim Hutchinson, July 2014
+# Tim Hutchinson, University of Utah, July 2014
 # t.hutchinson@utah.edu
 
 import numpy as n

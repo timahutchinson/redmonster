@@ -1,6 +1,6 @@
 # Read SDSS spPlate files for use in redmonster
 #
-# Tim Hutchinson, May 2014
+# Tim Hutchinson, University of Utah @ IAC, May 2014
 # t.hutchinson@utah.edu
 
 from os import environ

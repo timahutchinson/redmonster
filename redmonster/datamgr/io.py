@@ -1,6 +1,6 @@
 # read_ndArch.py
 #
-# Code for reading and writing ndArch files
+# Code for reading ndArch files
 #
 # bolton@utah@iac 2014mayo
 #
@@ -105,6 +105,13 @@ def read_ndArch(fname):
             infodict['par_axistype'][ipar] = 'named'
     return data, baselines, infodict
 
+# write_ndArch.py
+#
+# Code for writing ndArch files
+#
+# bolton@utah@iac 2014mayo
+#
+
 def write_ndArch(data, baselines, infodict):
     """
     Write archetype spectrum grid data to and ndArch file.
@@ -184,3 +191,27 @@ def write_ndArch(data, baselines, infodict):
         else:
             pass
     hdu.writeto(infodict['filename'], clobber=True)
+
+
+# Write output files after running entirety of redmonster
+#
+# Tim Hutchinson, University of Utah, August 2014
+# t.hutchinson@utah.edu
+
+class write_redmonster:
+
+    def __init__(self, ):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
+
