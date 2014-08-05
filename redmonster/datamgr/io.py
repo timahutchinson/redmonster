@@ -228,26 +228,37 @@ class Write_Redmonster:
             if bsr and run2d and run1d:
                 testpath = join(bsr, run2d, '%s' % zpick.plate, run1d)
                 if exists(testpath): self.dest = testpath
-                else: self.dest = 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)
-            else: self.dest = 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)
+                #else: self.dest = 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)
+                else: self.dest = None
+            #else: self.dest = 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)
+            else: self.dest = None
         self.write_rm(zpick, dest)
 
     def write_rm(self, zpick, dest):
         prihdu = fits.PrimaryHDU(header=zpick.hdr)
-        col1 = fits.Column(name='Z', format='E', array=zpick.z)
-        col2 = fits.Column(name='Z_ERR', format='E', array=zpick.z_err)
-        col3 = fits.Column(name='CLASS', format='6A', array=zpick.type)
-        col4 = fits.Column(name='SUBCLASS', format='6A', array=zpick.subtype)
-        col5 = fits.Column(name='FIBERID', format='J', array=zpick.fiberid)
-        cols = fits.ColDefs([col1, col2, col3, col4, col5])
+        col1 = fits.Column(name='Z1', format='E', array=zpick.z[:,0])
+        col2 = fits.Column(name='Z2', format='E', array=zpick.z[:,1])
+        col3 = fits.Column(name='Z_ERR1', format='E', array=zpick.z_err[:,0])
+        col4 = fits.Column(name='Z_ERR2', format='E', array=zpick.z_err[:,1])
+        col5 = fits.Column(name='CLASS', format='6A', array=zpick.type)
+        # Change dictionary values of subclass to strings to be written into fits file.  eval('dictstring') will turn them back into dictionaries later.
+        subclass = n.array(map(repr,zpick.subtype))
+        maxlen = max(map(len,subclass))
+        col6 = fits.Column(name='SUBCLASS', format='%iA'%maxlen, array=zpick.subtype)
+        col7 = fits.Column(name='FIBERID', format='J', array=zpick.fiberid)
+        cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7])
         tbhdu = fits.new_table(cols)
         thdulist = fits.HDUList([prihdu, tbhdu])
         if self.clobber:
-            if self.dest: thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)))
-            else: thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))
+            if self.dest: thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)), clobber=True)
+            else: thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd), clobber=True)
         else:
-            if self.dest: thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
-            else: thdulist.writeto('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+            if self.dest:
+                if exists(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))): thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
+                else: thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
+            else:
+                if exists('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd)): thdulist.writeto('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                else: thdulist.writeto('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd))
 
 
 
