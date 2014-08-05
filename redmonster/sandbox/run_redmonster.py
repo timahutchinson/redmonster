@@ -55,3 +55,9 @@ for ifiber in xrange(len(fiberid)):
 
 ''' Write output file.  Arguments are zpick from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
 output = io.Write_Redmonster(zpick)
+
+# Things left to do
+#
+# 1. Incorporate flags into, probably, zpicker and subseqently Write_Redmonster
+# 2. Incorporate Adam's spCFrame fittings somewhere
+# 3. Function to turn variable resolution data into coadded log(lambda) data?
