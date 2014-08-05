@@ -61,3 +61,8 @@ output = io.Write_Redmonster(zpick)
 # 1. Incorporate flags into, probably, zpicker and subseqently Write_Redmonster
 # 2. Incorporate Adam's spCFrame fittings somewhere
 # 3. Function to turn variable resolution data into coadded log(lambda) data?
+# 4. Quasar templates?
+# 5. BOSS CMASS data testing
+#       Look in to delta chi2 thresholds to trigger failure
+#       Look at completeness vs. purity
+# 6. WISE selected LRG targets (SEQUELS/SDSS-IV)
