@@ -43,7 +43,7 @@ class Zfitter:
                 #print self.best_z[ifiber]
                 self.flag_small_dchi2(ifiber, bestzvec) # Flag fibers with small delta chi2 in redshift
 
-    def z_refine(self, width=15):
+    def z_refine(self, threshold=46.6, width=15):
         for ifiber in xrange(self.zchi2.shape[0]):
             bestzvec = n.zeros( self.zchi2.shape[-1])
             for iz in xrange(self.zchi2.shape[-1]):
@@ -76,14 +76,14 @@ class Zfitter:
                         fit = quad_for_fit(xp, f[0], f[1], f[2])
                         self.z[ifiber,1] = xp[n.where(fit == n.min(fit))[0][0]]
                         self.z_err[ifiber,1] = self.estimate_z_err(xp, fit)
-                self.flag_small_dchi2(ifiber, bestzvec, width=width) # Flag fibers with small delta chi2 in redshift
+                self.flag_small_dchi2(ifiber, bestzvec, threshold=threshold, width=width) # Flag fibers with small delta chi2 in redshift
 
     def estimate_z_err(self, xp, fit):
         fitminloc = n.where(fit == n.min(fit)) # Index of lowest chi2
         z_err = abs(xp[fitminloc]-xp[abs(n.min(fit)+1-fit).argmin()]) # abs() of difference between z_(chi2_min) and z_(chi2_min_+1)
         return z_err
 
-    def flag_small_dchi2(self, ifiber, zvector, threshold=46.6, width=15): # zvector: vector of minimum chi2 in parameter-space at each redshift
+    def flag_small_dchi2(self, ifiber, zvector, threshold, width): # zvector: vector of minimum chi2 in parameter-space at each redshift
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
         do_flag = False
         globminloc = n.where(zvector == n.min(zvector))[0][0]

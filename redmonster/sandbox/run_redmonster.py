@@ -7,7 +7,7 @@
 
 import numpy as n
 from astropy.io import fits
-from redmonster.datamgr import spec
+from redmonster.datamgr import spec, io
 from redmonster.physics import zfinder, zfitter, zpicker
 from redmonster.sandbox import yanny as y
 from time import gmtime, strftime
