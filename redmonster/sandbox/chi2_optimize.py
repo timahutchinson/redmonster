@@ -108,7 +108,8 @@ pool = mp.Pool(num_proc)
 completeness, purity = pool.map(run_redmonster,threshold_vals)
 print strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
-
+completeness = n.array(completeness)
+purity = n.array(purity)
 
 
 
