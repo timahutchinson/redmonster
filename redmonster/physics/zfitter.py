@@ -18,6 +18,7 @@ class Zfitter:
         self.zbase = zbase
         self.z = n.zeros((zchi2.shape[0],2))
         self.z_err = n.zeros((zchi2.shape[0],2))
+        self.minvector = []
         #self.zwarning = zwarning if zwarning else n.zeros(zchi2.shape[0])
         self.zwarning = n.zeros(zchi2.shape[0])
 
@@ -45,6 +46,7 @@ class Zfitter:
 
     def z_refine(self, threshold=46.6, width=15):
         for ifiber in xrange(self.zchi2.shape[0]):
+            self.minvector.append(n.unravel_index(self.zchi2.argmin(),self.zchi2.shape))
             bestzvec = n.zeros( self.zchi2.shape[-1])
             for iz in xrange(self.zchi2.shape[-1]):
                 bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
@@ -63,13 +65,13 @@ class Zfitter:
                 self.z[ifiber,0] = xp[n.where(fit == n.min(fit))[0][0]]
                 self.z_err[ifiber,0] = self.estimate_z_err(xp, fit)
                 # Find second-best redshift, just to have it
+                zspline = gs.GridSpline(bestzvec)
+                zminlocs = n.round(zspline.get_min())
+                zminvals = zspline.get_val(zminlocs)
                 if len(zminvals) == 1:
                     self.z[ifiber,1] = -1.
                     self.z_err[ifiber,1] = -1.
                 else:
-                    zspline = gs.GridSpline(bestzvec)
-                    zminlocs = n.round(zspline.get_min())
-                    zminvals = zspline.get_val(zminlocs)
                     imin = 0
                     while (self.z[ifiber,1] == 0):
                         imin += 1

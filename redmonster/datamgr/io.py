@@ -240,13 +240,18 @@ class Write_Redmonster:
         col2 = fits.Column(name='Z2', format='E', array=zpick.z[:,1])
         col3 = fits.Column(name='Z_ERR1', format='E', array=zpick.z_err[:,0])
         col4 = fits.Column(name='Z_ERR2', format='E', array=zpick.z_err[:,1])
-        col5 = fits.Column(name='CLASS', format='6A', array=zpick.type)
+        classx = n.array(map(repr,zpick.type))
+        maxlen = max(map(len,classx))
+        col5 = fits.Column(name='CLASS', format='%iA'%maxlen, array=zpick.type)
         # Change dictionary values of subclass to strings to be written into fits file.  eval('dictstring') will turn them back into dictionaries later.
         subclass = n.array(map(repr,zpick.subtype))
         maxlen = max(map(len,subclass))
-        col6 = fits.Column(name='SUBCLASS', format='%iA'%maxlen, array=zpick.subtype)
+        col6 = fits.Column(name='SUBCLASS', format='%iA'%maxlen, array=subclass)
         col7 = fits.Column(name='FIBERID', format='J', array=zpick.fiberid)
-        cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7])
+        minvec = n.array(map(repr,zpick.minvector)) # Change tuples of minvector to strings to be written into fits file.  eval('minvector') will turn them back into tuples later.
+        maxlen = max(map(len,subclass))
+        col8 = fits.Column(name='MINVECTOR', format='%iA'%maxlen, array=minvec)
+        cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8])
         tbhdu = fits.new_table(cols)
         thdulist = fits.HDUList([prihdu, tbhdu])
         if self.clobber:
