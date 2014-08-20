@@ -63,19 +63,23 @@ class Zfitter:
                 self.z[ifiber,0] = xp[n.where(fit == n.min(fit))[0][0]]
                 self.z_err[ifiber,0] = self.estimate_z_err(xp, fit)
                 # Find second-best redshift, just to have it
-                zspline = gs.GridSpline(bestzvec)
-                zminlocs = n.round(zspline.get_min())
-                zminvals = zspline.get_val(zminlocs)
-                imin = 0
-                while (self.z[ifiber,1] == 0):
-                    imin += 1
-                    secpos = zminlocs[n.where(zminvals == n.sort(zminvals)[imin])[0][0]]
-                    if abs(posinvec - secpos) > width:
-                        xp = n.linspace(self.zbase[secpos-1], self.zbase[secpos+1], 1000)
-                        f = quadfit(self.zbase[secpos-1:secpos+2], bestzvec[secpos-1:secpos+2])
-                        fit = quad_for_fit(xp, f[0], f[1], f[2])
-                        self.z[ifiber,1] = xp[n.where(fit == n.min(fit))[0][0]]
-                        self.z_err[ifiber,1] = self.estimate_z_err(xp, fit)
+                if len(zminvals) == 1:
+                    self.z[ifiber,1] = -1.
+                    self.z_err[ifiber,1] = -1.
+                else:
+                    zspline = gs.GridSpline(bestzvec)
+                    zminlocs = n.round(zspline.get_min())
+                    zminvals = zspline.get_val(zminlocs)
+                    imin = 0
+                    while (self.z[ifiber,1] == 0):
+                        imin += 1
+                        secpos = zminlocs[n.where(zminvals == n.sort(zminvals)[imin])[0][0]]
+                        if abs(posinvec - secpos) > width:
+                            xp = n.linspace(self.zbase[secpos-1], self.zbase[secpos+1], 1000)
+                            f = quadfit(self.zbase[secpos-1:secpos+2], bestzvec[secpos-1:secpos+2])
+                            fit = quad_for_fit(xp, f[0], f[1], f[2])
+                            self.z[ifiber,1] = xp[n.where(fit == n.min(fit))[0][0]]
+                            self.z_err[ifiber,1] = self.estimate_z_err(xp, fit)
                 self.flag_small_dchi2(ifiber, bestzvec, threshold=threshold, width=width) # Flag fibers with small delta chi2 in redshift
 
     def estimate_z_err(self, xp, fit):

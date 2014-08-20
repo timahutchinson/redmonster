@@ -37,8 +37,8 @@ completeness = []
 purity = []
 
 # Loop over various dchi2 thresholds
-for inc in xrange(2):
-    this_thresh = 46.6 + inc
+for inc in xrange(10):
+    this_thresh = 41.6 + inc
     threshold_vals.append(this_thresh)
     specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
     zssp = zfinder.Zfinder(fname='ndArch-ssp_em_galaxy-v000.fits', type='GALAXY', npoly=4, zmin=-0.01, zmax=1.2)
