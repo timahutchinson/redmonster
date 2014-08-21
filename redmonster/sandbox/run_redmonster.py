@@ -66,3 +66,4 @@ output = io.Write_Redmonster(zpick)
 #       Look in to delta chi2 thresholds to trigger failure
 #       Look at completeness vs. purity
 # 6. WISE selected LRG targets (SEQUELS/SDSS-IV)
+#
