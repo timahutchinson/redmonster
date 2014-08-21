@@ -33,7 +33,6 @@ zperson = zperson3686[startfib:startfib+nfib]
 plate = 3686
 mjd = 55268
 
-threshold_vals = []
 completeness = []
 purity = []
 
@@ -66,7 +65,8 @@ for inc in xrange(2):
 #-------------------------------------------------------------------------------------------------------
 
 
-threshold_vals = [41,42]
+#threshold_vals = [41,42]
+threshold_vals = [35.+i for i in xrange(10)]
 
 def run_redmonster(this_thresh):
     #global completeness
