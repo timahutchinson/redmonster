@@ -51,7 +51,6 @@ ssp_flags = n.zeros(len(fiberid))
 star_flags = n.zeros(len(fiberid))
 for ifiber in xrange(len(fiberid)):
     ssp_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zssp.zwarning[ifiber])) | int(zfit_ssp.zwarning[ifiber])
-    star_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zstar.zwarning[ifiber])) | int(zfit_star.zwarning[ifiber])
 
 ''' Write output file.  Arguments are zpick from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
 output = io.Write_Redmonster(zpick)
@@ -66,4 +65,4 @@ output = io.Write_Redmonster(zpick)
 #       Look in to delta chi2 thresholds to trigger failure
 #       Look at completeness vs. purity
 # 6. WISE selected LRG targets (SEQUELS/SDSS-IV)
-#
+#    star_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zstar.zwarning[ifiber])) | int(zfit_star.zwarning[ifiber])

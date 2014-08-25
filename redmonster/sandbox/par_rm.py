@@ -1,4 +1,8 @@
 # Run redmonster on a cluster using multiprocessesing
+#
+# Tim Hutchinson, University of Utah, August 2014
+# t.hutchinson@utah.edu
+
 
 import numpy as n
 import matplotlib.pyplot as p
