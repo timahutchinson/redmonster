@@ -68,8 +68,11 @@ class Zfitter:
                 zspline = gs.GridSpline(bestzvec)
                 zminlocs = n.round(zspline.get_min())
                 zminvals = zspline.get_val(zminlocs)
-                imin = 0
-                if len(zminvals) != 1:
+                if len(zminvals) == 1:
+                    self.z[ifiber,1] = -1.
+                    self.z_err[ifiber,1] = -1.
+                else:
+                    imin = 0
                     while (self.z[ifiber,1] == 0):
                         imin += 1
                         secpos = zminlocs[n.where(zminvals == n.sort(zminvals)[imin])[0][0]]
@@ -82,10 +85,7 @@ class Zfitter:
                 else:
                     self.z[ifiber,1] = -1.
                     self.z_err[ifiber,1] = -1.
-                self.flag_small_dchi2(ifiber, bestzvec, width=width) # Flag fibers with small delta chi2 in redshift
-
-    def estimate_z_err(self, xp, fit):
-        fitminloc = n.where(fit == n.min(fit)) # Index of lowest chi2
+                self.flag_small_dchi2(ifiber, bestzvec, threshold=threshold, width=width) # Flag fibers with small delta chi2 in redshift
         z_err = abs(xp[fitminloc]-xp[abs(n.min(fit)+1-fit).argmin()]) # abs() of difference between z_(chi2_min) and z_(chi2_min_+1)
         return z_err
 
