@@ -1,7 +1,7 @@
 # First pass redshift finder of redmonster.  Able to search entire parameter-space and redshift-space
 # of models in increments of d(loglam)/d(pixel)
 #
-# Tim Hutchinson, May 2014
+# Tim Hutchinson, University of Utah @ IAC, May 2014
 # t.hutchinson@utah.edu
 
 import numpy as n
@@ -20,9 +20,9 @@ from matplotlib import pyplot as p
 
 class Zfinder:
     
-    def __init__(self, fname=None, type=None, npoly=None, zmin=None, zmax=None):
+    def __init__(self, fname=None, npoly=None, zmin=None, zmax=None):
         self.fname = fname
-        self.type = type
+        self.type = None
         self.npoly = npoly if npoly else 4
         self.zmin = float(zmin)
         self.zmax = float(zmax)
@@ -41,6 +41,7 @@ class Zfinder:
 
     def read_template(self):
         self.templates, self.baselines, self.infodict = read_ndArch(join(self.specdir,'templates',self.fname))
+        self.type = self.infodict['class']
         self.origshape = self.templates.shape
         self.ntemps = self.templates[...,0].size
         self.fftnaxis1 = two_pad(self.origshape[-1])

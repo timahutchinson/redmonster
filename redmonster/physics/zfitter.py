@@ -1,7 +1,7 @@
 # Subgrid refinement and error estimation of redshift value found by redmonster.physics.zfinder.py .
 # Interpolates both between redshift pixel lags and between model parameters.
 #
-# Tim Hutchinson, May 2014
+# Tim Hutchinson, University of Utah @ IAC, May 2014
 # t.hutchinson@utah.edu
 
 import numpy as n
@@ -18,6 +18,7 @@ class Zfitter:
         self.zbase = zbase
         self.z = n.zeros((zchi2.shape[0],2))
         self.z_err = n.zeros((zchi2.shape[0],2))
+        self.minvector = []
         #self.zwarning = zwarning if zwarning else n.zeros(zchi2.shape[0])
         self.zwarning = n.zeros(zchi2.shape[0])
 
@@ -43,8 +44,9 @@ class Zfitter:
                 #print self.best_z[ifiber]
                 self.flag_small_dchi2(ifiber, bestzvec) # Flag fibers with small delta chi2 in redshift
 
-    def z_refine(self, width=15):
+    def z_refine(self, threshold=46.6, width=15):
         for ifiber in xrange(self.zchi2.shape[0]):
+            self.minvector.append(n.unravel_index(self.zchi2.argmin(),self.zchi2.shape))
             bestzvec = n.zeros( self.zchi2.shape[-1])
             for iz in xrange(self.zchi2.shape[-1]):
                 bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
@@ -87,7 +89,7 @@ class Zfitter:
         z_err = abs(xp[fitminloc]-xp[abs(n.min(fit)+1-fit).argmin()]) # abs() of difference between z_(chi2_min) and z_(chi2_min_+1)
         return z_err
 
-    def flag_small_dchi2(self, ifiber, zvector, threshold=46.6, width=15): # zvector: vector of minimum chi2 in parameter-space at each redshift
+    def flag_small_dchi2(self, ifiber, zvector, threshold, width): # zvector: vector of minimum chi2 in parameter-space at each redshift
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
         do_flag = False
         globminloc = n.where(zvector == n.min(zvector))[0][0]

@@ -1,6 +1,6 @@
 # Read SDSS spPlate files for use in redmonster
 #
-# Tim Hutchinson, May 2014
+# Tim Hutchinson, University of Utah @ IAC, May 2014
 # t.hutchinson@utah.edu
 
 from os import environ
@@ -13,6 +13,7 @@ from redmonster.math.misc import flux_check
 class Spec:
 
     def __init__(self, plate=None, mjd=None, fiberid=None, data_range=None):
+        self.hdr = None
         self.flux = None
         self.ivar = None
         self.loglambda = None
@@ -29,22 +30,27 @@ class Spec:
         try: self.run2d = environ['RUN2D']
         except: self.run2d = None
         self.set_plate_mjd(plate=plate, mjd=mjd, fiberid=fiberid, data_range=data_range)
-        self.ivar = flux_check(self.flux, self.ivar)
-        self.zwarning = n.zeros(self.flux.shape[0])
-    
+        if exists(self.platepath):
+            self.ivar = flux_check(self.flux, self.ivar)
+            self.zwarning = n.zeros(self.flux.shape[0])
+        else: print '%s does not exist.' % self.platepath # This should probably be logged eventually as well
+
     def set_plate_mjd(self, plate=None, mjd=None, fiberid=None, data_range=None):
         self.plate = plate
         self.mjd = mjd
         if self.topdir and self.run2d and self.plate and self.mjd:
-            self.platepath = join(self.topdir,self.run2d,"%s" % self.plate,"spPlate-%s-%s.fits" % (self.plate,self.mjd))
-            if exists(self.platepath): self.set_data()
-            if data_range: self.chop_data(data_range)
-            if fiberid != None: self.set_fibers(fiberid)
+            self.platepath = join(self.topdir, self.run2d, "%s" % self.plate, "spPlate-%s-%s.fits" % (self.plate,self.mjd))
+            if exists(self.platepath):
+                self.set_data()
+                if data_range: self.chop_data(data_range)
+                if fiberid != None: self.set_fibers(fiberid)
+                else: self.fiberid = [fib for fib in xrange(1000)]
     
     def set_data(self):
         if self.platepath and exists(self.platepath): hdu = fits.open(self.platepath)
         else: print "Missing path to %r" % self.platepath
         try:
+            self.hdr = hdu[0].header
             self.flux = hdu[0].data
             self.ivar = hdu[1].data
             self.loglambda = hdu[0].header['COEFF0'] + n.arange(hdu[0].header['NAXIS1']) * hdu[0].header['COEFF1']

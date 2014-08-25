@@ -2,12 +2,12 @@
 # subset of fibers.  Each spPlate file is assumed to be in $BOSS_SPECTRO_REDUX/$RUN2D/pppp/
 # where pppp is the 4-digit plate-id.
 #
-# Tim Hutchinson, July 2014
+# Tim Hutchinson, University of Utah, July 2014
 # t.hutchinson@utah.edu
 
 import numpy as n
 from astropy.io import fits
-from redmonster.datamgr import spec
+from redmonster.datamgr import spec, io
 from redmonster.physics import zfinder, zfitter, zpicker
 from redmonster.sandbox import yanny as y
 from time import gmtime, strftime
@@ -24,13 +24,13 @@ fiberid = [i for i in xrange(50)] # fiberid must be a list, not a numpy array
 specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 
 ''' Instantiate zfinder object that will do z-finding for the entire plate using a single template.  Here, fname is the template filename, assumed to be in $REDMONSTER_DIR/templates/ . npoly specifies number of polynomial terms to be used in finding, zmin and zmax are upper and lower bounds of the redshift range to be explored. '''
-zssp = zfinder.Zfinder(fname='ndArch-ssp_em_galaxy-v000.fits', type='GALAXY', npoly=4, zmin=-0.01, zmax=1.2)
+zssp = zfinder.Zfinder(fname='ndArch-ssp_em_galaxy-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
 
 ''' Run actual fitting routine on the object created above. zssp.zchi2arr is array of of minimum chi^2 values of shape [nfibers, ndim_1, ndim_2, ..., ndim_N, nredshifts], where ndim_i is the i'th dimension of the template file.  Input flux need not be SDSS data - any spectra binned in constant log(lambda) will work.'''
 zssp.zchi2(specs.flux, specs.loglambda, specs.ivar)
 
 ''' New object and fitting for a different template. '''
-zstar = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', type='STAR', npoly=4, zmin=-.005, zmax=.005)
+zstar = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
 zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
 
 ''' Instantiate Zfitter to do subgrid fitting.  zchi2_ssp is chi^2 array from zfinder object above, and zssp.zbase is redshift-pixel baseline over the range explored by zfinder. '''
@@ -44,7 +44,7 @@ zfit_star = zfitter.Zfitter(zstar.zchi2arr, zstar.zbase)
 zfit_star.z_refine()
 
 ''' Compare chi2 surfaces from each template and classify each object accordingly. Arguments are number of pixels in DATA spectrum, followed by each object created by Zfinder.  This function can currently handle up to five objects from five separate templates.'''
-zpick = zpicker.Zpicker(specs.npix, zssp, zstar)
+zpick = zpicker.Zpicker(specs, zssp, zfit_ssp, zstar, zfit_star)
 
 ''' Flagging throughout redmonster is done individually by the classes responsible for handling the relevant computations.  To have an 'overall' flag for each fiber, the individual flags need to be combined. '''
 ssp_flags = n.zeros(len(fiberid))
@@ -52,3 +52,18 @@ star_flags = n.zeros(len(fiberid))
 for ifiber in xrange(len(fiberid)):
     ssp_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zssp.zwarning[ifiber])) | int(zfit_ssp.zwarning[ifiber])
     star_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zstar.zwarning[ifiber])) | int(zfit_star.zwarning[ifiber])
+
+''' Write output file.  Arguments are zpick from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
+output = io.Write_Redmonster(zpick)
+
+# Things left to do
+#
+# 1. Incorporate flags into, probably, zpicker and subseqently Write_Redmonster
+# 2. Incorporate Adam's spCFrame fittings somewhere
+# 3. Function to turn variable resolution data into coadded log(lambda) data?
+# 4. Quasar templates?
+# 5. BOSS CMASS data testing
+#       Look in to delta chi2 thresholds to trigger failure
+#       Look at completeness vs. purity
+# 6. WISE selected LRG targets (SEQUELS/SDSS-IV)
+#
