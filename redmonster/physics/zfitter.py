@@ -82,9 +82,9 @@ class Zfitter:
                             fit = quad_for_fit(xp, f[0], f[1], f[2])
                             self.z[ifiber,1] = xp[n.where(fit == n.min(fit))[0][0]]
                             self.z_err[ifiber,1] = self.estimate_z_err(xp, fit)
-                else:
-                    self.z[ifiber,1] = -1.
-                    self.z_err[ifiber,1] = -1.
+                        else:
+                            self.z[ifiber,1] = -1.
+                            self.z_err[ifiber,1] = -1.
                 self.flag_small_dchi2(ifiber, bestzvec, threshold=threshold, width=width) # Flag fibers with small delta chi2 in redshift
         z_err = abs(xp[fitminloc]-xp[abs(n.min(fit)+1-fit).argmin()]) # abs() of difference between z_(chi2_min) and z_(chi2_min_+1)
         return z_err
