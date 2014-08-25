@@ -41,7 +41,7 @@ def parallel_rm( (plate,mjd,fiberid) ):
     #output = io.Write_Redmonster(zpick, dest='~/scratch', clobber=True)
 
 # Read yanny file
-x = y.yanny(filename='/Users/boltonlab3/Downloads/spInspect_alltest_bolton.par.txt', np=True)
+x = y.yanny(filename='spInspect_alltest_bolton.par.txt', np=True)
 
 # Get fibers, zpipe, zperson for each plate
 args = n.where(x['BOSSOBJECT']['plate'] == 3686)[0]
@@ -116,14 +116,16 @@ for i in args:
     zpipe3860.append( x['BOSSOBJECT'][i][5])
     zperson3860.append( x['BOSSOBJECT'][i][6])
 
+
+
+
 args1= [(3686, 55268, fibers3686),(3687, 55269, fibers3687),(3804, 55267, fibers3804),(3805, 55269, fibers3805),(3853, 55268, fibers3853),(3855, 55268, fibers3855),(3856, 55269, fibers3856),(3860, 55269, fibers3860)]
 
-'''
+
+
 num_proc = 8
 pool = mp.Pool(num_proc)
 result = pool.map(parallel_rm,args1)
-'''
-
 
 
 
