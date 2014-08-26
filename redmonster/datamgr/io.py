@@ -251,7 +251,8 @@ class Write_Redmonster:
         minvec = n.array(map(repr,zpick.minvector)) # Change tuples of minvector to strings to be written into fits file.  eval('minvector') will turn them back into tuples later.
         maxlen = max(map(len,subclass))
         col8 = fits.Column(name='MINVECTOR', format='%iA'%maxlen, array=minvec)
-        cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8])
+        col9 = fits.Column(name='ZWARNING', format='E', array=zpick.zwarning)
+        cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9])
         tbhdu = fits.new_table(cols)
         thdulist = fits.HDUList([prihdu, tbhdu])
         if self.clobber:

@@ -55,7 +55,7 @@ ssp_flags = misc.comb_flags(specs, zssp, zfit_ssp)
 ''' Compare chi2 surfaces from each template and classify each object accordingly. Arguments data object (in a format identical to that created by Spec), followed by each object created by Zfinder.  This function can currently handle up to five objects from five separate templates. If specs is a user created data object rather than one created by redmonster.datamgr.spec, it must contain specs.npix, the number of pixels in a single spectrum.'''
 zpick = zpicker.Zpicker(specs, zssp, zfit_ssp, ssp_flags, zstar, zfit_star, star_flags)
 
-''' Write output file.  Arguments are zpick from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
+''' Write output file.  Arguments are zpick object from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
 output = io.Write_Redmonster(zpick)
 
 # Things left to do

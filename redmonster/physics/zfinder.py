@@ -29,9 +29,6 @@ class Zfinder:
         self.zchi2arr = None
         try: self.specdir = environ['REDMONSTER_DIR']
         except: self.specdir = None
-        #if self.config.lower() == 'ssp': self.set_SSP(npoly=npoly)
-        #if self.config.lower() == 'ssptest': self.set_SSP_test(npoly=npoly)
-        #if self.config.lower() == 'star': self.set_star(npoly=npoly)
         self.read_template()
         self.npars = len(self.templates.shape) - 1
         self.templates_flat = n.reshape(self.templates, (-1,self.fftnaxis1))
@@ -67,13 +64,12 @@ class Zfinder:
         flag_val_neg_model = int('0b1000',2)
         #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
         self.create_z_baseline(specloglam[0])
-        #import pdb; pdb.set_trace()
         if (self.zmin != None) and (self.zmax != None) and (self.zmax > self.zmin):
             bounds_set = True
             zminpix, zmaxpix = self.conv_zbounds()
             num_z = zmaxpix - zminpix + 1 # Number of pixels to be fitted in redshift
             self.zbase = self.zbase[zminpix:zminpix+num_z]
-            print zminpix
+            #print zminpix
         else:
             bounds_set = False
             num_z = self.origshape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
