@@ -80,6 +80,14 @@ def quadfit(ind, dep):
     f = n.linalg.solve(A,dep)
     return f
 
+def comb_flags(specobj, zfindobj, zfitobj):
+    nfib = len(specobj.fiberid)
+    flags = n.zeros(nfib)
+    for ifiber in xrange(nfib):
+        if hasattr(specobj, 'zwarning'): flags[ifiber] = (int(specobj.zwarning[ifiber]) | int(zfindobj.zwarning[ifiber])) | int(zfitobj.zwarning[ifiber])
+        else: flags[fiber] = int(zfindobj.zwarning[ifiber]) | int(zfitobj.zwarning[ifiber])
+    return flags
+
 def gaussflux(pixbound, cen, sig, h_order=0):
     """
     For monotonically increasing pixel boundaries specified by 'pixbound'
