@@ -55,7 +55,7 @@ class Zfitter:
                     while (self.z[ifiber,1] == 0):
                         imin += 1
                         secpos = zminlocs[n.where(zminvals == n.sort(zminvals)[imin])[0][0]]
-                        if abs(posinvec - secpos) > width:
+                        if (abs(posinvec - secpos) > width) & (secpos != 0) & (secpos != bestzvec.shape[0]-1) :
                             xp = n.linspace(self.zbase[secpos-1], self.zbase[secpos+1], 1000)
                             f = quadfit(self.zbase[secpos-1:secpos+2], bestzvec[secpos-1:secpos+2])
                             fit = quad_for_fit(xp, f[0], f[1], f[2])
