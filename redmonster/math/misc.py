@@ -81,12 +81,28 @@ def quadfit(ind, dep):
     return f
 
 def comb_flags(specobj, zfindobj, zfitobj):
+    '''
+        Takes objects instead of just flags
+    '''
     nfib = len(specobj.fiberid)
     flags = n.zeros(nfib)
     for ifiber in xrange(nfib):
         if hasattr(specobj, 'zwarning'): flags[ifiber] = (int(specobj.zwarning[ifiber]) | int(zfindobj.zwarning[ifiber])) | int(zfitobj.zwarning[ifiber])
         else: flags[fiber] = int(zfindobj.zwarning[ifiber]) | int(zfitobj.zwarning[ifiber])
     return flags
+
+def comb_flags_2(specobj, zfitflags):
+    '''
+        Takes flags instead of objects
+    '''
+    nfib = len(specobj.fiberid)
+    flags = n.zeros(nfib)
+    for ifiber in xrange(nfib):
+        if hasattr(specobj, 'zwarning'): flags[ifiber] = (int(specobj.zwarning[ifiber]) | int(zfitflags[ifiber])
+        else: flags[fiber] = int(zfitflags[ifiber])
+    return flags
+
+#--------------------------------------------------------------------------------------------------------------------------------------------
 
 def gaussflux(pixbound, cen, sig, h_order=0):
     """

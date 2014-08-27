@@ -29,6 +29,7 @@ class Zpicker:
         elif zfind3 and not zfind4: nclass = 3
         elif zfind4 and not zfind5: nclass = 4
         else: nclass = 5
+        self.nclass = nclass
         self.minrchi2 = n.zeros( (zfind1.zchi2arr.shape[0],nclass) )
         self.classify_obj(zfind1, zfit1, flags1, zfind2, zfit2, flags2, zfind3, zfit3, flags3, zfind4, zfit4, flags4, zfind5, zfit5, flags5)
     

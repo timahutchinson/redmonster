@@ -5,6 +5,7 @@ from redmonster.sandbox import yanny as y
 from astropy.io import fits
 from redmonster.datamgr import spec, io
 from redmonster.physics import zfinder, zfitter, zpicker
+from redmonster.math import misc
 from time import gmtime, strftime
 import multiprocessing as mp
 
@@ -110,6 +111,8 @@ print strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
 completeness = n.array(completeness)
 purity = n.array(purity)
+
+
 
 
 
