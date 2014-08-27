@@ -32,7 +32,7 @@ class Zpicker:
         self.minrchi2 = n.zeros( (zfind1.zchi2arr.shape[0],nclass) )
         self.classify_obj(zfind1, zfit1, flags1, zfind2, zfit2, flags2, zfind3, zfit3, flags3, zfind4, zfit4, flags4, zfind5, zfit5, flags5)
     
-    def classify_obj(self, zfind1, zfit1, flgas1, zfind2, zfit2, flags2, zfind3, zfit3, flags3, zfind4, zfit4, flags4, zfind5, zfit5, flags5):
+    def classify_obj(self, zfind1, zfit1, flags1, zfind2, zfit2, flags2, zfind3, zfit3, flags3, zfind4, zfit4, flags4, zfind5, zfit5, flags5):
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
         for ifiber in xrange(zfind1.zchi2arr.shape[0]):
             self.minrchi2[ifiber,0] = n.min(zfind1.zchi2arr[ifiber]) / (self.npixflux - zfind1.npoly) # Calculate reduced chi**2 values to compare templates of differing lengths
