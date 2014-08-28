@@ -107,22 +107,36 @@ def find_comp_purity(this_thresh, args):
         mjd = iarg[1]
         fiberid = iarg[2]
         zperson = iarg[3]
+        
         specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
-        hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2s/chi2arr-%s-ssp_em_galaxy.fits' % plate)
+        
+        hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-ssp_em_galaxy.fits' % plate)
         sspchi2arr = hdu[0].data
-        zbase = hdu[1].data.ZBASE
-        hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2s/chi2arr-%s-spEigenStar-55734.fits' % plate)
+        zbasessp = hdu[1].data.ZBASE
+        
+        hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-spEigenStar-55734.fits' % plate)
         starchi2arr = hdu[0].data
-        zfit_ssp = zfitter.Zfitter(sspchi2arr, zbase)
+        zbasestar = hdu[1].data
+        
+        zfit_ssp = zfitter.Zfitter(sspchi2arr, zbasessp)
         zfit_ssp.z_refine(threshold=this_thresh)
-        zfit_star = zfitter.Zfitter(starchi2arr, zbase)
+        
+        zfit_star = zfitter.Zfitter(starchi2arr, zbasestar)
         zfit_star.zrefine(threshold=this_thresh)
+        
         ssp_flags = misc.comb_flags_2(specs, zfit_ssp.zwarning)
         star_flags = misc.comb_flags_2(specs, zfit_star.zwarning)
+        
         zpick = Hacked_zpicker(specs, sspchi2arr, zfit_ssp, ssp_flags, starchi2arr, zfit_star, star_flags)
+        
         purity.append( (len(n.where(zpick.zwarning == 0)))/float(len(fiberid)) )
         
         completeness.append( (len(n.where(abs(zpick.z[:,0]-zperson) <= .0001)))/float(len(fiberid)) )
+
+    this_comp = n.mean(completeness)
+    this_pur = n.mean(purity)
+
+    return this_comp, this_pur
 
 
 
