@@ -178,7 +178,7 @@ class Hacked_zpicker:
                 argsort = self.minrchi2[ifiber].argsort()
                 if len(argsort) > 1:
                     if argsort[1] == 1:
-                        if ( n.min(zchi2arr2[ifiber]) - n.min(zchi2arr1[ifiber]) ) < zfit1.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val #THIS THRESHOLD PROBABLY ISN'T RIGHT AND NEEDS TO BE CHANGED
+                        if ( n.min(zchi2arr2[ifiber]) - n.min(zchi2arr1[ifiber]) ) < zfit1.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val #THIS THRESHOLD PROBABLY ISN'T RIGHT AND NEEDS TO BE CHANGED
             
             elif minpos == 1: # Means overall chi2 minimum came from template 2
                 self.type.append('STAR')
@@ -187,7 +187,7 @@ class Hacked_zpicker:
                 self.zwarning = n.append(self.zwarning, flags2[ifiber])
                 argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
-                    if ( n.min(zchi2arr1[ifiber]) - n.min(zchi2arr2[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zchi2arr1[ifiber]) - n.min(zchi2arr2[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
 
 
 
