@@ -89,26 +89,19 @@ for i in args:
 
 args1= [(3686, 55268, fibers3686, zperson3686),(3687, 55269, fibers3687, zperson3687),(3804, 55267, fibers3804, zperson3804),(3805, 55269, fibers3805, zperson3805),(3853, 55268, fibers3853, zperson3853),(3855, 55268, fibers3855, zperson3855),(3856, 55269, fibers3856, zperson3856),(3860, 55269, fibers3860, zperson3860)]
 
-#threshold_vals = [41,42]
-threshold_vals = [35.+i for i in xrange(10)]
-
+threshold_vals = [25.+(.2*i) for i in xrange(200)]
 completeness = []
 purity = []
-
-this_thresh = 46.6
-
-'''
-print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
-thiscomp, thispur = find_comp_purity(this_thresh, [args1[0]])
-print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
-'''
 
 # ----------------------------------------------------------------------------------------------------------
 
 def find_comp_purity(this_thresh, args):
     purity = []
     completeness = []
+    run = 1
     for iarg in args:
+        print 'Running plate %s of 8' % (run)
+        run += 1
         plate = iarg[0]
         mjd = iarg[1]
         fiberid = iarg[2]
@@ -136,9 +129,9 @@ def find_comp_purity(this_thresh, args):
         
         zpick = Hacked_zpicker(specs, sspchi2arr, zfit_ssp, ssp_flags, starchi2arr, zfit_star, star_flags)
         
-        purity.append( (len(n.where(zpick.zwarning == 0)))/float(len(fiberid)) )
+        completeness.append( (len(n.where(zpick.zwarning == 0)[0]))/float(len(fiberid)) )
         
-        completeness.append( (len(n.where(abs(zpick.z[:,0]-zperson) <= .0001)))/float(len(fiberid)) )
+        purity.append( (len(n.where(abs(zpick.z[:,0]-zperson) <= .0005)[0]))/float(len(fiberid)) )
 
     this_comp = n.mean(completeness)
     this_pur = n.mean(purity)
@@ -158,6 +151,7 @@ class Hacked_zpicker:
         self.minvector = []
         self.zwarning = []
         self.z = n.zeros( (zchi2arr1.shape[0],2) )
+        self.z_err = n.zeros( (zchi2arr1.shape[0],2) )
         if zchi2arr2 == None: self.nclass = 1
         else: self.nclass = 2
         self.minrchi2 = n.zeros( (zchi2arr1.shape[0], self.nclass) )
@@ -173,6 +167,8 @@ class Hacked_zpicker:
             if minpos == 0: # Means overall chi2 minimum came from template 1
                 self.type.append('GALAXY')
                 self.minvector.append(zfit1.minvector[ifiber])
+                self.z[ifiber] = zfit1.z[ifiber]
+                self.z_err[ifiber] = zfit1.z_err[ifiber]
                 minloc = n.unravel_index(zchi2arr1[ifiber].argmin(), zchi2arr1[ifiber].shape)[:-1]
                 self.zwarning = n.append(self.zwarning, flags1[ifiber])
                 argsort = self.minrchi2[ifiber].argsort()
@@ -183,15 +179,37 @@ class Hacked_zpicker:
             elif minpos == 1: # Means overall chi2 minimum came from template 2
                 self.type.append('STAR')
                 self.minvector.append(zfit2.minvector[ifiber])
+                self.z[ifiber] = zfit2.z[ifiber]
+                self.z_err[ifiber] = zfit2.z_err[ifiber]
                 minloc = n.unravel_index(zchi2arr2[ifiber].argmin(), zchi2arr2[ifiber].shape)[:-1]
                 self.zwarning = n.append(self.zwarning, flags2[ifiber])
                 argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
                     if ( n.min(zchi2arr1[ifiber]) - n.min(zchi2arr2[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
 
+#--------------------------------------
+
+print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
+threshnum = 1
+for this_thresh in threshold_vals:
+    print 'Running threshhold %s of %s'% (threshnum,len(threshold_vals))
+    threshnum += 1
+    thiscomp, thispur = find_comp_purity(this_thresh, args1)
+    completeness.append(thiscomp)
+    purity.append(thispur)
+print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing     
 
 
 
+# Write output to fits file
+prihdu = fits.PrimaryHDU()
+col1 = fits.Column(name='COMPLETENESS', format='E', array=n.asarray(completeness))
+col2 = fits.Column(name='PURITY', format='E', array=n.asarray(purity))
+col3 = fits.Column(name='THRESHOLDS', format='E', array=n.asarray(threshold_vals))
+cols = fits.ColDefs([col1,col2,col3])
+tbhdu = fits.new_table(cols)
+thdulist = fits.HDUList([prihdu,tbhdu])
+thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity.fits')
 
 
 
