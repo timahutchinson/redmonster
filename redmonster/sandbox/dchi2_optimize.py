@@ -11,7 +11,7 @@ from redmonster.math import misc
 from time import gmtime, strftime
 
 # Read yanny file
-x = y.yanny(filename='/Users/boltonlab3/boss/spInspect_alltest_bolton.par.txt', np=True)
+x = y.yanny(filename='spInspect_alltest_bolton.par.txt', np=True)
 
 # Get fibers, zpipe, zperson for each plate
 args = n.where(x['BOSSOBJECT']['plate'] == 3686)[0]
@@ -86,17 +86,18 @@ for i in args:
     zpipe3860.append( x['BOSSOBJECT'][i][5])
     zperson3860.append( x['BOSSOBJECT'][i][6])
 
+
+args1= [(3686, 55268, fibers3686, zperson3686),(3687, 55269, fibers3687, zperson3687),(3804, 55267, fibers3804, zperson3804),(3805, 55269, fibers3805, zperson3805),(3853, 55268, fibers3853, zperson3853),(3855, 55268, fibers3855, zperson3855),(3856, 55269, fibers3856, zperson3856),(3860, 55269, fibers3860, zperson3860)]
+
 #threshold_vals = [41,42]
 threshold_vals = [35.+i for i in xrange(10)]
 
 completeness = []
 purity = []
 
-#plates = [3686,3687,3804,3805,3853,3855,3856,3860]
-#mjds = [55268,55269,55267,55269,55268,55268,55269,55269]
+this_thresh = 46.6
 
-args1= [(3686, 55268, fibers3686, zperson3686),(3687, 55269, fibers3687, zperson3687),(3804, 55267, fibers3804, zperson3804),(3805, 55269, fibers3805, zperson3805),(3853, 55268, fibers3853, zperson3853),(3855, 55268, fibers3855, zperson3855),(3856, 55269, fibers3856, zperson3856),(3860, 55269, fibers3860, zperson3860)]
-
+#thiscomp, thispur = find_comp_purity(this_thresh, args1[0])
 
 # ----------------------------------------------------------------------------------------------------------
 
@@ -111,13 +112,13 @@ def find_comp_purity(this_thresh, args):
         
         specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
         
-        #hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-ssp_em_galaxy.fits' % plate)
-        hdu = fits.open('/Users/boltonlab3/scratch/chi2arr-%s-ssp_em_galaxy.fits' % plate)
+        hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-ssp_em_galaxy.fits' % plate)
+        #hdu = fits.open('/Users/boltonlab3/scratch/chi2arr-%s-ssp_em_galaxy.fits' % plate)
         sspchi2arr = hdu[0].data
         zbasessp = hdu[1].data.ZBASE
         
-        #hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-spEigenStar.fits' % plate)
-        hdu = fits.open('/Users/boltonlab3/scratch/chi2arr-%s-spEigenStar.fits' % plate)
+        hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-spEigenStar.fits' % plate)
+        #hdu = fits.open('/Users/boltonlab3/scratch/chi2arr-%s-spEigenStar.fits' % plate)
         starchi2arr = hdu[0].data
         zbasestar = hdu[1].data.ZBASE
         

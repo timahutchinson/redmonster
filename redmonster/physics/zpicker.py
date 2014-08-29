@@ -57,13 +57,13 @@ class Zpicker:
                 argsort = self.minrchi2[ifiber].argsort()
                 if len(argsort) > 1:
                     if argsort[1] == 1:
-                        if ( n.min(zfind2.zchi2arr[ifiber]) - n.min(zfind1.zchi2arr[ifiber]) ) < zfit1.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val #THIS THRESHOLD PROBABLY ISN'T RIGHT AND NEEDS TO BE CHANGED
+                        if ( n.min(zfind2.zchi2arr[ifiber]) - n.min(zfind1.zchi2arr[ifiber]) ) < zfit1.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val #THIS THRESHOLD PROBABLY ISN'T RIGHT AND NEEDS TO BE CHANGED
                     elif argsort[1] == 2:
-                        if ( n.min(zfind3.zchi2arr[ifiber]) - n.min(zfind1.zchi2arr[ifiber]) ) < zfit1.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                        if ( n.min(zfind3.zchi2arr[ifiber]) - n.min(zfind1.zchi2arr[ifiber]) ) < zfit1.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                     elif argsort[1] == 3:
-                        if ( n.min(zfind4.zchi2arr[ifiber]) - n.min(zfind1.zchi2arr[ifiber]) ) < zfit1.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                        if ( n.min(zfind4.zchi2arr[ifiber]) - n.min(zfind1.zchi2arr[ifiber]) ) < zfit1.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                     elif argsort[1] == 4:
-                        if ( n.min(zfind5.zchi2arr[ifiber]) - n.min(zfind1.zchi2arr[ifiber]) ) < zfit1.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                        if ( n.min(zfind5.zchi2arr[ifiber]) - n.min(zfind1.zchi2arr[ifiber]) ) < zfit1.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
         
             elif minpos == 1: # Means overall chi2 minimum came from template 2
                 self.type.append(zfind2.type)
@@ -78,13 +78,13 @@ class Zpicker:
                 self.zwarning = n.append(self.zwarning, flags2[ifiber])
                 argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
-                    if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind2.zchi2arr[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind2.zchi2arr[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 2:
-                    if ( n.min(zfind3.zchi2arr[ifiber]) - n.min(zfind2.zchi2arr[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind3.zchi2arr[ifiber]) - n.min(zfind2.zchi2arr[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 3:
-                    if ( n.min(zfind4.zchi2arr[ifiber]) - n.min(zfind2.zchi2arr[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind4.zchi2arr[ifiber]) - n.min(zfind2.zchi2arr[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 4:
-                    if ( n.min(zfind5.zchi2arr[ifiber]) - n.min(zfind2.zchi2arr[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind5.zchi2arr[ifiber]) - n.min(zfind2.zchi2arr[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
 
             elif minpos == 2: # Means overall chi2 minimum came from template 3
                 self.type.append(zfind3.type)
@@ -98,13 +98,13 @@ class Zpicker:
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags3[ifiber])
                 if argsort[1] == 0:
-                    if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind3.zchi2arr[ifiber]) ) < zfit3.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind3.zchi2arr[ifiber]) ) < zfit3.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 1:
-                    if ( n.min(zfind2.zchi2arr[ifiber]) - n.min(zfind3.zchi2arr[ifiber]) ) < zfit3.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind2.zchi2arr[ifiber]) - n.min(zfind3.zchi2arr[ifiber]) ) < zfit3.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 3:
-                    if ( n.min(zfind4.zchi2arr[ifiber]) - n.min(zfind3.zchi2arr[ifiber]) ) < zfit3.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind4.zchi2arr[ifiber]) - n.min(zfind3.zchi2arr[ifiber]) ) < zfit3.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 4:
-                    if ( n.min(zfind5.zchi2arr[ifiber]) - n.min(zfind3.zchi2arr[ifiber]) ) < zfit3.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind5.zchi2arr[ifiber]) - n.min(zfind3.zchi2arr[ifiber]) ) < zfit3.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
 
             elif minpos == 3: # Means overall chi2 minimum came from template 4
                 self.type.append(zfind4.type)
@@ -118,13 +118,13 @@ class Zpicker:
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags4[ifiber])
                 if argsort[1] == 0:
-                    if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind4.zchi2arr[ifiber]) ) < zfit4.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind4.zchi2arr[ifiber]) ) < zfit4.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 1:
-                    if ( n.min(zfind2.zchi2arr[ifiber]) - n.min(zfind4.zchi2arr[ifiber]) ) < zfit4.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind2.zchi2arr[ifiber]) - n.min(zfind4.zchi2arr[ifiber]) ) < zfit4.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 2:
-                    if ( n.min(zfind3.zchi2arr[ifiber]) - n.min(zfind4.zchi2arr[ifiber]) ) < zfit4.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind3.zchi2arr[ifiber]) - n.min(zfind4.zchi2arr[ifiber]) ) < zfit4.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 4:
-                    if ( n.min(zfind5.zchi2arr[ifiber]) - n.min(zfind4.zchi2arr[ifiber]) ) < zfit4.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind5.zchi2arr[ifiber]) - n.min(zfind4.zchi2arr[ifiber]) ) < zfit4.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
 
 
             elif minpos == 4: # Means overall chi2 minimum came from template 5
@@ -139,13 +139,13 @@ class Zpicker:
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags5[ifiber])
                 if argsort[1] == 0:
-                    if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind5.zchi2arr[ifiber]) ) < zfit5.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind5.zchi2arr[ifiber]) ) < zfit5.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 1:
-                    if ( n.min(zfind2.zchi2arr[ifiber]) - n.min(zfind5.zchi2arr[ifiber]) ) < zfit5.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind2.zchi2arr[ifiber]) - n.min(zfind5.zchi2arr[ifiber]) ) < zfit5.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 2:
-                    if ( n.min(zfind3.zchi2arr[ifiber]) - n.min(zfind5.zchi2arr[ifiber]) ) < zfit5.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind3.zchi2arr[ifiber]) - n.min(zfind5.zchi2arr[ifiber]) ) < zfit5.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 3:
-                    if ( n.min(zfind4.zchi2arr[ifiber]) - n.min(zfind5.zchi2arr[ifiber]) ) < zfit5.threshold: self.zwarning[ifiber] = self.zwarning[ifiber] | flag_val
+                    if ( n.min(zfind4.zchi2arr[ifiber]) - n.min(zfind5.zchi2arr[ifiber]) ) < zfit5.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
 
 
 
