@@ -113,7 +113,6 @@ def find_comp_purity(this_thresh, args):
         mjd = iarg[1]
         fiberid = iarg[2]
         zperson = iarg[3]
-        import pdb; pdb.set_trace()
         specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
         
         hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-ssp_em_galaxy.fits' % plate)

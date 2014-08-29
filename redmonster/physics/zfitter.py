@@ -29,7 +29,6 @@ class Zfitter:
             bestzvec = n.zeros( self.zchi2.shape[-1])
             for iz in xrange(self.zchi2.shape[-1]):
                 bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
-            import pdb; pdb.set_trace()
             posinvec = n.where( bestzvec == n.min(bestzvec) )[0][0]
             if (posinvec == 0) or (posinvec == bestzvec.shape[0]-1): # Flag and skip interpolation fit if best chi2 is at edge of z-range
                 self.flag_z_fitlimit(ifiber)
