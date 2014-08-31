@@ -131,7 +131,10 @@ def find_comp_purity(this_thresh, args):
         
         completeness.append( (len(n.where(zpick.zwarning == 0)[0]))/float(len(fiberid)) )
         
-        purity.append( (len(n.where(abs(zpick.z[:,0]-zperson) <= .0005)[0]))/float(len(fiberid)) )
+        purity_set = zpick.z[n.where(zpick.zwarning == 0)[0],0]
+        purity_zperson = n.asarray(zperson)[n.where(zpick.zwarning == 0)[0]]
+        #purity.append( (len(n.where(abs(zpick.z[:,0]-zperson) <= .0005)[0]))/float(len(fiberid)) )
+        purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
 
     this_comp = n.mean(completeness)
     this_pur = n.mean(purity)
