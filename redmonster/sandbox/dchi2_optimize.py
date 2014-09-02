@@ -9,6 +9,7 @@ from redmonster.datamgr import spec, io
 from redmonster.physics import zfinder, zfitter, zpicker
 from redmonster.math import misc
 from time import gmtime, strftime
+from scipy.optimize import curve_fit
 
 # Read yanny file
 x = y.yanny(filename='spInspect_alltest_bolton.par.txt', np=True)
@@ -89,7 +90,9 @@ for i in args:
 
 args1= [(3686, 55268, fibers3686, zperson3686),(3687, 55269, fibers3687, zperson3687),(3804, 55267, fibers3804, zperson3804),(3805, 55269, fibers3805, zperson3805),(3853, 55268, fibers3853, zperson3853),(3855, 55268, fibers3855, zperson3855),(3856, 55269, fibers3856, zperson3856),(3860, 55269, fibers3860, zperson3860)]
 
-threshold_vals = [25.+(.2*i) for i in xrange(200)]
+print 'Total number of galaxies:' + str(len(fibers3686)+len(fibers3687)+len(fibers3804)+len(fibers3805)+len(fibers3853)+len(fibers3855)+len(fibers3856)+len(fibers3860))
+
+threshold_vals = [5.+(.2*i) for i in xrange(100)]
 completeness = []
 purity = []
 
@@ -131,7 +134,10 @@ def find_comp_purity(this_thresh, args):
         
         completeness.append( (len(n.where(zpick.zwarning == 0)[0]))/float(len(fiberid)) )
         
-        purity.append( (len(n.where(abs(zpick.z[:,0]-zperson) <= .0005)[0]))/float(len(fiberid)) )
+        purity_set = zpick.z[n.where(zpick.zwarning == 0)[0],0]
+        purity_zperson = n.asarray(zperson)[n.where(zpick.zwarning == 0)[0]]
+        #purity.append( (len(n.where(abs(zpick.z[:,0]-zperson) <= .0005)[0]))/float(len(fiberid)) )
+        purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
 
     this_comp = n.mean(completeness)
     this_pur = n.mean(purity)
@@ -213,10 +219,56 @@ thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity.
 
 
 
+# Scatter plot of completeness vs purity
+p.scatter(pur,comp,c=thresh)
+p.plot(1,1,'rx',label='Ideal')
+p.axis([.945,1.005,.93,1.005])
+p.xlabel('Purity',size=14)
+p.ylabel('Completeness',size=14)
+p.title('Purity vs. Completeness for 4864 CMASS Galaxies',size=16)
+cbar = p.colorbar()
+cbar.set_label(r'$\delta \chi^2$ Threshold',size=14)
+p.gca().figure.canvas.draw()
+p.legend(loc=4)
+print 'Completeness at optimal point is ' + str(comp[dist.argmin()])
+print 'Purity at optimal point is ' + str(pur[dist.argmin()])
+# Optional connecting line
+def func(x,a,b):
+    return a*x+b
 
+xdata = n.array([pur[dist.argmin()],1.0])
+ydata=n.array([comp[dist.argmin()],1.])
+popt,pcov = curve_fit(func,xdata,ydata)
+xfit = n.linspace(xdata[0],xdata[1],100)
+yfit = func(xfit,popt[0],popt[1])
+p.plot(xfit,yfit,color='black',label='Shortest Distance',hold=True)
+p.legend(loc=4)
 
+# Plot of threshold vs distance
+dist = n.sqrt( (1-comp)**2 + (1-pur)**2 )
+p.plot(thresh,dist,'b.')
+p.xlabel(r'$\delta \chi^2$ Threshold',size=14)
+p.ylabel('Distance',size=14)
+p.title(r'$\delta \chi^2$ Threshold vs. Distance from (1.0,1.0)',size=16)
 
+# Zoom in around global minimum and fit quadratic, then plot
+ydata = dist[dist.argmin()-2:dist.argmin()+4]
+xdata = thresh[dist.argmin()-2:dist.argmin()+4]
+def func(x,a,b,c):
+    return a*(x**2)+b*x+c
 
+popt,pcov = curve_fit(func,xdata,ydata)
+xfit = n.linspace(xdata[0],xdata[-1],100)
+yfit = func(xfit,popt[0],popt[1],popt[2])
+p.plot(xdata,ydata,'ko',label='Data')
+p.plot(xfit,yfit,color='red',label='Fit')
+p.xlabel(r'$\delta \chi^2$ Threshold',size=14)
+p.ylabel('Distance',size=14)
+p.title(r'$\delta \chi^2$ Threshold vs. Distance from (1.0,1.0) Near Global Minimum',size=16)
+p.legend()
+
+# Use minimum of quadratic as 'best' overall dchi2 threshold
+print 'Best dchi2 threshold is ' + str(xfit[yfit.argmin()])
 
 
 
