@@ -218,7 +218,7 @@ thdulist = fits.HDUList([prihdu,tbhdu])
 thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity.fits', clobber=True)
 
 
-
+'''
 # Scatter plot of completeness vs purity
 p.scatter(pur,comp,c=thresh)
 p.plot(1,1,'rx',label='Ideal')
@@ -269,7 +269,7 @@ p.legend()
 
 # Use minimum of quadratic as 'best' overall dchi2 threshold
 print 'Best dchi2 threshold is ' + str(xfit[yfit.argmin()])
-
+'''
 
 
 
