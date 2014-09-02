@@ -209,7 +209,7 @@ col3 = fits.Column(name='THRESHOLDS', format='E', array=n.asarray(threshold_vals
 cols = fits.ColDefs([col1,col2,col3])
 tbhdu = fits.new_table(cols)
 thdulist = fits.HDUList([prihdu,tbhdu])
-thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity.fits')
+thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity.fits', clobber=True)
 
 
 
