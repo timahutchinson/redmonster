@@ -1,0 +1,130 @@
+;+
+; NAME:
+;       READ_SPEC 
+;
+; PURPOSE:
+;      Function to convert a *.spec file into an IDL structure.  
+;      Input may be an array of filenames.
+;
+; CALLING SEQUENCE:
+;   res = read_spec(file)
+;
+; KEYWORD PARAMETERS:
+;   miles - set this keyword when reading in spectra based on Miles 
+;   NB: you should not need to set these keywords if you are running
+;       the latest version of fsps (v2.3)
+;
+; MODIFICATION HISTORY: 
+;   ? - created by CFC
+;   09/09/11 - Updated to read in files that have arbitrary wavelength
+;              arrays and where the first full line is the wavelength array
+;
+;-
+;-----------------------------------------------------------------;
+
+FUNCTION READ_SPEC1, file,lam,nli
+
+  openr,lun,file,/get_lun
+
+  ;burn the header
+  char = '#'
+  WHILE strmid(char,0,1) EQ '#' DO BEGIN
+     readf,lun,char
+  ENDWHILE 
+
+  ;check if the spec file is of the "new" type, where both 
+  ;the number of age steps and the number of spectral elements are included
+  char = strsplit(char,' ',/extr)
+  IF n_elements(char) GT 1 THEN BEGIN
+     nt = LONG(char[0])
+     nl = LONG(char[1]) 
+  ENDIF ELSE BEGIN
+     nt = LONG(char[0])
+     nl = nli
+  ENDELSE
+
+  str  = {agegyr:0.0,logmass:0.0,loglbol:0.0,logsfr:0.0,spec:fltarr(nl),$
+          lambda:fltarr(nl)}
+  str   = replicate(str,nt)
+  tspec = fltarr(nl)
+  t = 0.
+  m = 0.
+  l = 0.
+  s = 0.
+
+  ;if the number of spectral elements is passed, then the first
+  ;line here is the wavelength array.
+  IF n_elements(char) GT 1 THEN BEGIN
+     readf,lun,tspec
+     lam = tspec
+  ENDIF
+
+  FOR i=0,nt-1 DO BEGIN
+     
+     readf,lun,t,m,l,s
+     str[i].agegyr  = 10^t/1E9
+     str[i].logmass = m
+     str[i].loglbol = l
+     str[i].logsfr  = s
+
+     readf,lun,tspec
+     str[i].spec   = tspec
+     str[i].lambda = lam
+     
+  ENDFOR
+  
+  close,lun
+  free_lun,lun
+
+  RETURN,str
+
+END
+
+;------------------------------------------------------------;
+;------------------------------------------------------------;
+
+FUNCTION READ_SPEC, file, miles=miles,pickles=pickles,$
+                    m42=m42,uvm=uvm,emiles=emiles
+
+  ct = n_elements(file)
+
+  spsdir = getenv('SPS_HOME')
+  IF spsdir EQ '' THEN BEGIN
+     print,'READ_SPEC ERROR: spsdir environment '+$
+           'variable not set, returning...'
+     return,0
+  ENDIF
+  spsdir = spsdir+'/SPECTRA/'
+
+  IF keyword_set(miles) THEN BEGIN
+     readcol,spsdir+'/MILES/miles.lambda',lam,/silent
+  ENDIF ELSE BEGIN
+     readcol,spsdir+'/BaSeL3.1/basel.lambda',lam,/silent
+  ENDELSE
+     
+  nl = n_elements(lam)
+
+  ff = findfile(file[0],count=ctf)
+  IF ctf EQ 0 THEN BEGIN
+     print,'READ_SPEC ERROR: file not found: ',file
+     return,0
+  ENDIF
+
+  spec = strpos(file[0],'spec')
+  IF spec EQ -1 THEN BEGIN
+     print,'READ_SPEC ERROR: you did not pass a .spec file, returning'
+     return,0
+  ENDIF
+
+  astr = read_spec1(file[0],lam,nl)
+
+  IF ct GT 1 THEN BEGIN
+     str = replicate(astr[0],n_elements(astr),ct)
+     str[*,0] = astr
+     FOR i=1,ct-1 DO str[*,i] = read_spec1(file[i],lam,nl)
+  ENDIF ELSE str = astr
+  
+  RETURN, str
+
+END
+
