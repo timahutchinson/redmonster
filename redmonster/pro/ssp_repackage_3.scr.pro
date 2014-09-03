@@ -6,6 +6,7 @@
 ;
 ; 3rd iteration, 3 sept 2014
 
+; I THINK you have to say ".com read_spec" before you run this script!
 
 ;infile = 'SSP_Padova_RRLIB_Kroupa_Z0.0190.out.spec'
 ;infiles = file_search('/data/SSP/SSP_*.spec')
