@@ -21,9 +21,9 @@ import multifit as mf
 #import pixelsplines as pxs
 
 # Set the following:
-# export BOSS_SPECTRO_REDUX=/data/BOSS/redux/dr10mini
-# export RUN2D=v5_5_12
-# export RUN1D=v5_5_12
+#export BOSS_SPECTRO_REDUX=/data/BOSS/redux/dr10mini
+#export RUN2D=v5_5_12
+#export RUN1D=v5_5_12
 
 # Absorption-line galaxy:
 plate = 3686
@@ -118,19 +118,34 @@ n_zbase = len(pixlagvec)
 
 MP.grid_chisq_zmapper(pixlagvec)
 
+MP.plot_current_models((MP.nspec//2,2))
+
+
+myargs = {'interpolation': 'nearest', 'hold': False, 'origin': 'lower', 'cmap': m.cm.hot}
+
+
+
 holdvec = MP.nspec * [True]
 holdvec[0] = False
 for i_spec in xrange(MP.nspec):
-    p.plot(MP.wavecen_list[i_spec], MP.flux_list[i_spec], hold=holdvec[i_spec])
+    p.plot(MP.wavecen_list[i_spec], MP.flux_list[i_spec], 'k', hold=holdvec[i_spec])
 
 for i_spec in xrange(MP.nspec):
-    p.plot(MP.wavecen_list[i_spec], MP.current_model_list[i_spec], hold=True)
+    p.plot(MP.wavecen_list[i_spec], MP.current_model_list[i_spec], 'b', hold=True)
+
+
+
+junk = p.figure()
+for i_spec in xrange(MP.nspec):
+    junk.add_subplot(n_vert, n_horiz, i_spec+1)
+    p.plot(MP.wavecen_list[i_spec], MP.flux_list[i_spec], 'k', hold=False)
 
 
 
 
 
-p.imshow(MP.chisq_grid.squeeze(), **myargs)
+p.imshow(MP.chisq_grid.squeeze() - MP.chisq_grid.min(), **myargs)
+p.colorbar()
 
 
 MP.n_linear_dims = 0
