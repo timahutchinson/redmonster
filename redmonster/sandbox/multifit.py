@@ -11,6 +11,7 @@ import numpy as n
 from redmonster.math import misc
 import copy
 from scipy import optimize as opt
+from matplotlib import pyplot as p
 
 # These globals almost certainly belong somewhere else:
 
@@ -531,4 +532,24 @@ class MultiProjector:
             self.current_icovar = None
             self.current_model_list = None
         # Next item is to put in code to split up model components...
-        # And to write chisquared-minimization code...
+    def plot_current_models(self, shape=None):
+        """
+        Method to plot current model against data
+        Assumes that fit_current_basis has been called
+        with full_compute=True
+
+        Argument:
+          shape: tuple of (n_vertical, n_horizontal) that specifies
+            how to arrange the spectra.  Default is (self.nspec, 1)
+        """
+        if shape is None:
+            n_vert = self.nspec
+            n_horiz = 1
+        else:
+            n_vert = shape[0]
+            n_horiz = shape[1]
+        self.specplot = p.figure()
+        for i_spec in xrange(self.nspec):
+            self.specplot.add_subplot(n_vert, n_horiz, i_spec+1)
+            p.plot(self.wavecen_list[i_spec], self.flux_list[i_spec], 'k', hold=False)
+            p.plot(self.wavecen_list[i_spec], self.current_model_list[i_spec], 'b', hold=True)
