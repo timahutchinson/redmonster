@@ -198,7 +198,7 @@ class Hacked_zpicker:
                     if ( n.min(zchi2arr1[ifiber]) - n.min(zchi2arr2[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
 
 #--------------------------------------
-
+'''
 print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
 threshnum = 1
 for this_thresh in threshold_vals:
@@ -275,18 +275,32 @@ p.legend()
 print 'Best dchi2 threshold is ' + str(xfit[yfit.argmin()])
 
 # Make same plot for IDL outputs
-for i in xrange(8):
-    plate = args1[i][0]
-    mjd = args1[i][1]
-    fibers = args1[i][2]
-    zperson = args1[i][3]
-    hdu = fits.open( join(environ['BOSS_SPECTRO_REDUX'],environ['RUN2D'],str(plate), environ['RUN1D'],'spZbest-%s-%s.fits' % (plate,mjd)) )
-    dof	= hdu[1].data.DOF[fibers]
-    rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO[fibers]
-    z =	hdu[1].data.Z_NOQSO[fibers]
-    chi2diff = rchi2diff*dof
-
-
+thresh = [5+(.2*j) for j in xrange(300)]
+pur_idl = []
+comp_idl = []
+for this_thres in thresh:
+    purity = []
+    completeness = []
+    for i in xrange(8):
+        plate = args1[i][0]
+        mjd = args1[i][1]
+        fibers = args1[i][2]
+        zperson = args1[i][3]
+        hdu = fits.open( join(environ['BOSS_SPECTRO_REDUX'],environ['RUN2D'],str(plate), environ['RUN1D'],'spZbest-%s-%s.fits' % (plate,mjd)) )
+        dof = hdu[1].data.DOF[fibers]
+        rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO[fibers]
+        z = hdu[1].data.Z_NOQSO[fibers]
+        flags = hdu[1].data.ZWARNING_NOQSO
+        chi2diff = rchi2diff*dof
+        completeness = n.append( len( n.where(flags == 0)[0])) # CHANGE THIS TO ONLY CHECK SMALL DCHI2 FLAG VAL
+        purity_set = z[n.where(flags == 0)[0]]
+        purity_zperson = n.asarray(zperson)[n.where(flags == 0)[0]]
+        purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
+    this_comp = n.mean(completeness)
+    this_pur = n.mean(purity)
+    comp_idl.append(this_comp)
+    pur_idl.append(this_pur)
+    
 '''
 
 
