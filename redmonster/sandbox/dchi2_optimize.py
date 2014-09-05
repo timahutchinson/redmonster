@@ -9,6 +9,8 @@ from redmonster.datamgr import spec, io
 from redmonster.physics import zfinder, zfitter, zpicker
 from redmonster.math import misc
 from time import gmtime, strftime
+from os.path import join
+from os import environ
 from scipy.optimize import curve_fit
 
 # Read yanny file
@@ -218,7 +220,7 @@ thdulist = fits.HDUList([prihdu,tbhdu])
 thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity.fits', clobber=True)
 
 
-'''
+
 # Scatter plot of completeness vs purity
 p.scatter(pur,comp,c=thresh)
 p.plot(1,1,'rx',label='Ideal')
@@ -269,6 +271,21 @@ p.legend()
 
 # Use minimum of quadratic as 'best' overall dchi2 threshold
 print 'Best dchi2 threshold is ' + str(xfit[yfit.argmin()])
+
+# Make same plot for IDL outputs
+for i in xrange(8):
+    plate = args1[i][0]
+    mjd = args1[i][1]
+    fibers = args1[i][2]
+    zperson = args1[i][3]
+    hdu = fits.open( join(environ['BOSS_SPECTRO_REDUX'],environ['RUN2D'],str(plate), environ['RUN1D'],'spZbest-%s-%s.fits' % (plate,mjd)) )
+    dof = hdu[1].data.DOF[fibers]
+    rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO[fibers]
+    z = hdu[1].data.Z_NOQSO[fibers]
+    chi2diff = rchi2diff*dof
+    
+    
+    
 '''
 
 
