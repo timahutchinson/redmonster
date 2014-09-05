@@ -9,6 +9,8 @@ from redmonster.datamgr import spec, io
 from redmonster.physics import zfinder, zfitter, zpicker
 from redmonster.math import misc
 from time import gmtime, strftime
+from os.path import join
+from os import environ
 from scipy.optimize import curve_fit
 from os.path import join
 from os import environ
