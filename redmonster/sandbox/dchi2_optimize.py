@@ -273,14 +273,15 @@ p.legend()
 
 # Use minimum of quadratic as 'best' overall dchi2 threshold
 print 'Best dchi2 threshold is ' + str(xfit[yfit.argmin()])
-
+'''
 # Make same plot for IDL outputs
 thresh = [5+(.2*j) for j in xrange(300)]
 pur_idl = []
 comp_idl = []
-for this_thres in thresh:
+for this_thresh in thresh:
     purity = []
     completeness = []
+    print 'Thresh' + str(this_thresh)
     for i in xrange(8):
         plate = args1[i][0]
         mjd = args1[i][1]
@@ -290,9 +291,9 @@ for this_thres in thresh:
         dof = hdu[1].data.DOF[fibers]
         rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO[fibers]
         z = hdu[1].data.Z_NOQSO[fibers]
-        flags = hdu[1].data.ZWARNING_NOQSO
+        flags = hdu[1].data.ZWARNING_NOQSO[fibers]
         chi2diff = rchi2diff*dof
-        completeness = n.append( len( n.where(flags == 0)[0])) # CHANGE THIS TO ONLY CHECK SMALL DCHI2 FLAG VAL
+        completeness.append( len( n.where(flags == 0)[0])) # CHANGE THIS TO ONLY CHECK SMALL DCHI2 FLAG VAL
         purity_set = z[n.where(flags == 0)[0]]
         purity_zperson = n.asarray(zperson)[n.where(flags == 0)[0]]
         purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
@@ -301,8 +302,6 @@ for this_thres in thresh:
     comp_idl.append(this_comp)
     pur_idl.append(this_pur)
     
-'''
-
 
 
 
