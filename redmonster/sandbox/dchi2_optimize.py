@@ -220,7 +220,7 @@ thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity.
 
 '''
 # Scatter plot of completeness vs purity
-p.scatter(pur,comp,c=thresh)
+p.scatter(pur,comp,c=thresh,label='Python')
 p.plot(1,1,'rx',label='Ideal')
 p.axis([.945,1.005,.93,1.005])
 p.xlabel('Purity',size=14)
