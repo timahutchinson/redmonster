@@ -136,10 +136,11 @@ def find_comp_purity(this_thresh, args):
         
         zpick = Hacked_zpicker(specs, sspchi2arr, zfit_ssp, ssp_flags, starchi2arr, zfit_star, star_flags)
         
-        completeness.append( (len(n.where(zpick.zwarning == 0)[0]))/float(len(fiberid)) )
+        #completeness.append( (len(n.where(zpick.zwarning == 0)[0]))/float(len(fiberid)) )
+        completeness.append( (len(n.where((zpick.zwarning.astype(int) & 4) == 0)[0]))/float(len(fiberid)) )
         
-        purity_set = zpick.z[n.where(zpick.zwarning == 0)[0],0]
-        purity_zperson = n.asarray(zperson)[n.where(zpick.zwarning == 0)[0]]
+        purity_set = zpick.z[n.where((zpick.zwarning.astype(int) & 4) == 0)[0],0]
+        purity_zperson = n.asarray(zperson)[n.where((zpick.zwarning.astype(int) & 4) == 0)[0]]
         #purity.append( (len(n.where(abs(zpick.z[:,0]-zperson) <= .0005)[0]))/float(len(fiberid)) )
         purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
 
@@ -293,9 +294,9 @@ for this_thresh in thresh:
         z = hdu[1].data.Z_NOQSO[fibers]
         flags = hdu[1].data.ZWARNING_NOQSO[fibers]
         chi2diff = rchi2diff*dof
-        completeness.append( len( n.where(flags == 0)[0])) # CHANGE THIS TO ONLY CHECK SMALL DCHI2 FLAG VAL
-        purity_set = z[n.where(flags == 0)[0]]
-        purity_zperson = n.asarray(zperson)[n.where(flags == 0)[0]]
+        completeness.append( len( n.where(chi2diff > this_thresh)[0]) / float(len(fibers)) ) # CHANGE THIS TO ONLY CHECK SMALL DCHI2 FLAG VAL
+        purity_set = z[n.where(chi2diff > this_thresh)[0]]
+        purity_zperson = n.asarray(zperson)[n.where(chi2diff > this_thresh)[0]]
         purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
     this_comp = n.mean(completeness)
     this_pur = n.mean(purity)
