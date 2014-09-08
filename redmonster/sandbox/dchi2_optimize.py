@@ -109,7 +109,7 @@ for i in xrange(8):
     numgals += len(args[i][2])
 print 'Total number of galaxies:' + str(numgals)
 
-threshold_vals = [5.+(.2*i) for i in xrange(100)]
+threshold_vals = [45.+(.2*i) for i in xrange(100)]
 completeness = []
 purity = []
 
@@ -232,7 +232,7 @@ col3 = fits.Column(name='THRESHOLDS', format='E', array=n.asarray(threshold_vals
 cols = fits.ColDefs([col1,col2,col3])
 tbhdu = fits.new_table(cols)
 thdulist = fits.HDUList([prihdu,tbhdu])
-thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity_5-25.fits', clobber=True)
+thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity_45-65.fits', clobber=True)
 
 
 '''
