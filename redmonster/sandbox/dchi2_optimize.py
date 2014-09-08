@@ -218,7 +218,7 @@ threshnum = 1
 for this_thresh in threshold_vals:
     print 'Running threshold %s of %s'% (threshnum,len(threshold_vals))
     threshnum += 1
-    thiscomp, thispur = find_comp_purity(this_thresh, args1)
+    thiscomp, thispur = find_comp_purity(this_thresh, args)
     completeness.append(thiscomp)
     purity.append(thispur)
 print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing     
@@ -235,7 +235,22 @@ thdulist = fits.HDUList([prihdu,tbhdu])
 thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity_5-25.fits', clobber=True)
 
 
+
 '''
+# Read and concatenate files
+comp = n.array([])
+pur = n.array)[])
+thresh = n.array([])
+comp = n.append(comp, fits.open('comp_purity_5-25.fits')[1].data.COMPLETENESS)
+pur = n.append(pur, fits.open('comp_purity_5-25.fits')[1].data.PURITY)
+thresh = n.append(thresh, fits.open('comp_purity_5-25.fits')[1].data.THRESHOLDS)
+comp = n.append(comp, fits.open('comp_purity_25-45.fits')[1].data.COMPLETENESS)
+pur = n.append(pur, fits.open('comp_purity_25-45.fits')[1].data.PURITY)
+thresh = n.append(thresh, fits.open('comp_purity_25-45.fits')[1].data.THRESHOLDS)
+comp = n.append(comp, fits.open('comp_purity_45-65.fits')[1].data.COMPLETENESS)
+pur = n.append(pur, fits.open('comp_purity_45-65.fits')[1].data.PURITY)
+thresh = n.append(thresh, fits.open('comp_purity_45-65.fits')[1].data.THRESHOLDS)
+
 # Scatter plot of completeness vs purity
 p.scatter(pur,comp,c=thresh)
 p.plot(1,1,'rx',label='Ideal')
@@ -287,6 +302,9 @@ p.legend()
 # Use minimum of quadratic as 'best' overall dchi2 threshold
 print 'Best dchi2 threshold is ' + str(xfit[yfit.argmin()])
 
+
+
+
 # Make same plot for IDL outputs
 thresh = [5+(.2*j) for j in xrange(300)]
 pur_idl = []
@@ -296,17 +314,17 @@ for this_thresh in thresh:
     completeness = []
     print 'Thresh' + str(this_thresh)
     for i in xrange(8):
-        plate = args1[i][0]
-        mjd = args1[i][1]
-        fibers = args1[i][2]
-        zperson = args1[i][3]
+        plate = args[i][0]
+        mjd = args[i][1]
+        fibers = args[i][2]
+        zperson = args[i][3]
         hdu = fits.open( join(environ['BOSS_SPECTRO_REDUX'],environ['RUN2D'],str(plate), environ['RUN1D'],'spZbest-%s-%s.fits' % (plate,mjd)) )
         dof = hdu[1].data.DOF[fibers]
         rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO[fibers]
         z = hdu[1].data.Z_NOQSO[fibers]
         flags = hdu[1].data.ZWARNING_NOQSO[fibers]
         chi2diff = rchi2diff*dof
-        completeness.append( len( n.where(chi2diff > this_thresh)[0]) / float(len(fibers)) ) # CHANGE THIS TO ONLY CHECK SMALL DCHI2 FLAG VAL
+        completeness.append( len( n.where(chi2diff > this_thresh)[0]) / float(len(fibers)) )
         purity_set = z[n.where(chi2diff > this_thresh)[0]]
         purity_zperson = n.asarray(zperson)[n.where(chi2diff > this_thresh)[0]]
         purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
@@ -314,8 +332,8 @@ for this_thresh in thresh:
     this_pur = n.mean(purity)
     comp_idl.append(this_comp)
     pur_idl.append(this_pur)
-    
 '''
+
 
 
 
