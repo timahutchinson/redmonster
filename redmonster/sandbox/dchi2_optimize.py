@@ -94,7 +94,20 @@ for i in args:
 
 args1= [(3686, 55268, fibers3686, zperson3686),(3687, 55269, fibers3687, zperson3687),(3804, 55267, fibers3804, zperson3804),(3805, 55269, fibers3805, zperson3805),(3853, 55268, fibers3853, zperson3853),(3855, 55268, fibers3855, zperson3855),(3856, 55269, fibers3856, zperson3856),(3860, 55269, fibers3860, zperson3860)]
 
-print 'Total number of galaxies:' + str(len(fibers3686)+len(fibers3687)+len(fibers3804)+len(fibers3805)+len(fibers3853)+len(fibers3855)+len(fibers3856)+len(fibers3860))
+
+
+# Remove fiber numbers from each plate that have zperson = -9.
+args = []
+for i in xrange(8):
+    badzfibs = n.where(n.asarray(args1[i][3]) == -9.)[0]
+    keepfibs = n.delete(n.asarray(args1[i][2]),badzfibs).tolist()
+    keepzperson = n.delete(n.asarray(args1[i][3]),badzfibs).tolist()
+    args.append( (args1[i][0],args1[i][1],keepfibs,keepzperson) )
+
+numgals = 0
+for i in xrange(8):
+    numgals += len(args[i][2])
+print 'Total number of galaxies:' + str(numgals)
 
 threshold_vals = [5.+(.2*i) for i in xrange(100)]
 completeness = []
@@ -199,17 +212,16 @@ class Hacked_zpicker:
                     if ( n.min(zchi2arr1[ifiber]) - n.min(zchi2arr2[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
 
 #--------------------------------------
-'''
+
 print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
 threshnum = 1
 for this_thresh in threshold_vals:
-    print 'Running threshhold %s of %s'% (threshnum,len(threshold_vals))
+    print 'Running threshold %s of %s'% (threshnum,len(threshold_vals))
     threshnum += 1
-    thiscomp, thispur = find_comp_purity(this_thresh, args1)
+    thiscomp, thispur = find_comp_purity(this_thresh, args)
     completeness.append(thiscomp)
     purity.append(thispur)
 print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing     
-
 
 
 # Write output to fits file
@@ -220,9 +232,24 @@ col3 = fits.Column(name='THRESHOLDS', format='E', array=n.asarray(threshold_vals
 cols = fits.ColDefs([col1,col2,col3])
 tbhdu = fits.new_table(cols)
 thdulist = fits.HDUList([prihdu,tbhdu])
-thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity.fits', clobber=True)
+thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity_5-25.fits', clobber=True)
 
 
+
+'''
+# Read and concatenate files
+comp = n.array([])
+pur = n.array)[])
+thresh = n.array([])
+comp = n.append(comp, fits.open('comp_purity_5-25.fits')[1].data.COMPLETENESS)
+pur = n.append(pur, fits.open('comp_purity_5-25.fits')[1].data.PURITY)
+thresh = n.append(thresh, fits.open('comp_purity_5-25.fits')[1].data.THRESHOLDS)
+comp = n.append(comp, fits.open('comp_purity_25-45.fits')[1].data.COMPLETENESS)
+pur = n.append(pur, fits.open('comp_purity_25-45.fits')[1].data.PURITY)
+thresh = n.append(thresh, fits.open('comp_purity_25-45.fits')[1].data.THRESHOLDS)
+comp = n.append(comp, fits.open('comp_purity_45-65.fits')[1].data.COMPLETENESS)
+pur = n.append(pur, fits.open('comp_purity_45-65.fits')[1].data.PURITY)
+thresh = n.append(thresh, fits.open('comp_purity_45-65.fits')[1].data.THRESHOLDS)
 
 # Scatter plot of completeness vs purity
 p.scatter(pur,comp,c=thresh,label='Python')
@@ -274,7 +301,10 @@ p.legend()
 
 # Use minimum of quadratic as 'best' overall dchi2 threshold
 print 'Best dchi2 threshold is ' + str(xfit[yfit.argmin()])
-'''
+
+
+
+
 # Make same plot for IDL outputs
 thresh = [5+(.2*j) for j in xrange(300)]
 pur_idl = []
@@ -284,17 +314,17 @@ for this_thresh in thresh:
     completeness = []
     print 'Thresh' + str(this_thresh)
     for i in xrange(8):
-        plate = args1[i][0]
-        mjd = args1[i][1]
-        fibers = args1[i][2]
-        zperson = args1[i][3]
+        plate = args[i][0]
+        mjd = args[i][1]
+        fibers = args[i][2]
+        zperson = args[i][3]
         hdu = fits.open( join(environ['BOSS_SPECTRO_REDUX'],environ['RUN2D'],str(plate), environ['RUN1D'],'spZbest-%s-%s.fits' % (plate,mjd)) )
         dof = hdu[1].data.DOF[fibers]
         rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO[fibers]
         z = hdu[1].data.Z_NOQSO[fibers]
         flags = hdu[1].data.ZWARNING_NOQSO[fibers]
         chi2diff = rchi2diff*dof
-        completeness.append( len( n.where(chi2diff > this_thresh)[0]) / float(len(fibers)) ) # CHANGE THIS TO ONLY CHECK SMALL DCHI2 FLAG VAL
+        completeness.append( len( n.where(chi2diff > this_thresh)[0]) / float(len(fibers)) )
         purity_set = z[n.where(chi2diff > this_thresh)[0]]
         purity_zperson = n.asarray(zperson)[n.where(chi2diff > this_thresh)[0]]
         purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
@@ -302,7 +332,7 @@ for this_thresh in thresh:
     this_pur = n.mean(purity)
     comp_idl.append(this_comp)
     pur_idl.append(this_pur)
-    
+'''
 
 
 
