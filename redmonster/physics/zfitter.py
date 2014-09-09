@@ -19,7 +19,6 @@ class Zfitter:
         self.z = n.zeros((zchi2.shape[0],2))
         self.z_err = n.zeros((zchi2.shape[0],2))
         self.minvector = []
-        #self.zwarning = zwarning if zwarning else n.zeros(zchi2.shape[0])
         self.zwarning = n.zeros(zchi2.shape[0])
 
     def z_refine(self, threshold=46.6, width=15):
