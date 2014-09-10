@@ -228,9 +228,7 @@ class Write_Redmonster:
             if bsr and run2d and run1d:
                 testpath = join(bsr, run2d, '%s' % zpick.plate, run1d)
                 if exists(testpath): self.dest = testpath
-                #else: self.dest = 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)
                 else: self.dest = None
-            #else: self.dest = 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)
             else: self.dest = None
         self.write_rm(zpick, dest)
 

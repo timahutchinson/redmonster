@@ -23,76 +23,108 @@ args = n.where(x['BOSSOBJECT']['plate'] == 3686)[0]
 fibers3686 = []
 zpipe3686 = []
 zperson3686 = []
+classperson3686 = []
+comments3686 = []
 for i in args:
     fibers3686.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3686.append( x['BOSSOBJECT'][i][5])
     zperson3686.append( x['BOSSOBJECT'][i][6])
+    classperson3686.append( x['BOSSOBJECT'][i][7])
+    comments3686.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3687)[0]
 fibers3687 = []
 zpipe3687 = []
 zperson3687 = []
+classperson3687 = []
+comments3687 = []
 for i in args:
     fibers3687.append( x['BOSSOBJECT'][i][2]-1 )
     zpipe3687.append( x['BOSSOBJECT'][i][5])
     zperson3687.append( x['BOSSOBJECT'][i][6])
+    classperson3687.append( x['BOSSOBJECT'][i][7])
+    comments3687.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3804)[0]
 fibers3804 = []
 zpipe3804 = []
 zperson3804 = []
+classperson3804 = []
+comments3804 = []
 for i in args:
     fibers3804.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3804.append( x['BOSSOBJECT'][i][5])
     zperson3804.append( x['BOSSOBJECT'][i][6])
+    classperson3804.append( x['BOSSOBJECT'][i][7])
+    comments3804.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3805)[0]
 fibers3805 = []
 zpipe3805 = []
 zperson3805 = []
+classperson3805 = []
+comments3805 = []
 for i in args:
     fibers3805.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3805.append( x['BOSSOBJECT'][i][5])
     zperson3805.append( x['BOSSOBJECT'][i][6])
+    classperson3805.append( x['BOSSOBJECT'][i][7])
+    comments3805.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3853)[0]
 fibers3853 = []
 zpipe3853 = []
 zperson3853 = []
+classperson3853 = []
+comments3853 = []
 for i in args:
     fibers3853.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3853.append( x['BOSSOBJECT'][i][5])
     zperson3853.append( x['BOSSOBJECT'][i][6])
+    classperson3853.append( x['BOSSOBJECT'][i][7])
+    comments3853.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3855)[0]
 fibers3855 = []
 zpipe3855 = []
 zperson3855 = []
+classperson3855 = []
+comments3855 = []
 for i in args:
     fibers3855.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3855.append( x['BOSSOBJECT'][i][5])
     zperson3855.append( x['BOSSOBJECT'][i][6])
+    classperson3855.append( x['BOSSOBJECT'][i][7])
+    comments3855.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3856)[0]
 fibers3856 = []
 zpipe3856 = []
 zperson3856 = []
+classperson3856 = []
+comments3856 = []
 for i in args:
     fibers3856.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3856.append( x['BOSSOBJECT'][i][5])
     zperson3856.append( x['BOSSOBJECT'][i][6])
+    classperson3856.append( x['BOSSOBJECT'][i][7])
+    comments3856.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3860)[0]
 fibers3860 = []
 zpipe3860 = []
 zperson3860 = []
+classperson3860 = []
+comments3860 = []
 for i in args:
     fibers3860.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3860.append( x['BOSSOBJECT'][i][5])
     zperson3860.append( x['BOSSOBJECT'][i][6])
+    classperson3856.append( x['BOSSOBJECT'][i][7])
+    comments3860.append( x['BOSSOBJECT'][i][8])
 
 
-args1= [(3686, 55268, fibers3686, zperson3686),(3687, 55269, fibers3687, zperson3687),(3804, 55267, fibers3804, zperson3804),(3805, 55269, fibers3805, zperson3805),(3853, 55268, fibers3853, zperson3853),(3855, 55268, fibers3855, zperson3855),(3856, 55269, fibers3856, zperson3856),(3860, 55269, fibers3860, zperson3860)]
+args1= [(3686, 55268, fibers3686, zperson3686, classperson3686, comments3686),(3687, 55269, fibers3687, zperson3687, classperson3687, comments3687),(3804, 55267, fibers3804, zperson3804, classperson3804, comments3804),(3805, 55269, fibers3805, zperson3805, classperson3805, comments3805),(3853, 55268, fibers3853, zperson3853, classperson3853, comments3853),(3855, 55268, fibers3855, zperson3855, classperson3855, comments3855),(3856, 55269, fibers3856, zperson3856, classperson3856, comments3856),(3860, 55269, fibers3860, zperson3860, classperson3860, comments3860)]
 
 
 
@@ -102,7 +134,9 @@ for i in xrange(8):
     badzfibs = n.where(n.asarray(args1[i][3]) == -9.)[0]
     keepfibs = n.delete(n.asarray(args1[i][2]),badzfibs).tolist()
     keepzperson = n.delete(n.asarray(args1[i][3]),badzfibs).tolist()
-    args.append( (args1[i][0],args1[i][1],keepfibs,keepzperson) )
+    keepclassperson = n.delete(n.asarray(args1[i][4]),badzfibs).tolist()
+    keepcommentsperson = n.delete(n.asarray(args1[i][5]),badzfibs).tolist()
+    args.append( (args1[i][0],args1[i][1],keepfibs,keepzperson,keepclassperson,keepcommentsperson) )
 
 numgals = 0
 for i in xrange(8):
@@ -126,8 +160,13 @@ def find_comp_purity(this_thresh, args):
         mjd = iarg[1]
         fiberid = iarg[2]
         zperson = iarg[3]
-        specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
         
+        origlen = float(len(fiberid))
+        badfibs = n.where(n.asarray(iargs[5]) != 'v5_4_9 ok')[0]
+        usefiberid = n.delete(n.asarray(fiberid),badfibs).tolist()
+        usezperson = n.delete(n.asarray(zperson),badfibs).tolist()
+
+        specs = spec.Spec(plate=plate, mjd=mjd, fiberid=usefiberid)
         hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-ssp_em_galaxy.fits' % plate)
         #hdu = fits.open('/Users/boltonlab3/scratch/chi2arr-%s-ssp_em_galaxy.fits' % plate)
         sspchi2arr = hdu[0].data
@@ -150,10 +189,10 @@ def find_comp_purity(this_thresh, args):
         zpick = Hacked_zpicker(specs, sspchi2arr, zfit_ssp, ssp_flags, starchi2arr, zfit_star, star_flags)
         
         #completeness.append( (len(n.where(zpick.zwarning == 0)[0]))/float(len(fiberid)) )
-        completeness.append( (len(n.where((zpick.zwarning.astype(int) & 4) == 0)[0]))/float(len(fiberid)) )
+        completeness.append( (len(n.where((zpick.zwarning.astype(int) & 4) == 0)[0]))/float(len(usefiberid)) )
         
         purity_set = zpick.z[n.where((zpick.zwarning.astype(int) & 4) == 0)[0],0]
-        purity_zperson = n.asarray(zperson)[n.where((zpick.zwarning.astype(int) & 4) == 0)[0]]
+        purity_zperson = n.asarray(usezperson)[n.where((zpick.zwarning.astype(int) & 4) == 0)[0]]
         #purity.append( (len(n.where(abs(zpick.z[:,0]-zperson) <= .0005)[0]))/float(len(fiberid)) )
         purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
 
@@ -239,7 +278,7 @@ thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity_
 '''
 # Read and concatenate files
 comp = n.array([])
-pur = n.array)[])
+pur = n.array([])
 thresh = n.array([])
 comp = n.append(comp, fits.open('comp_purity_5-25.fits')[1].data.COMPLETENESS)
 pur = n.append(pur, fits.open('comp_purity_5-25.fits')[1].data.PURITY)
@@ -252,18 +291,20 @@ pur = n.append(pur, fits.open('comp_purity_45-65.fits')[1].data.PURITY)
 thresh = n.append(thresh, fits.open('comp_purity_45-65.fits')[1].data.THRESHOLDS)
 
 # Scatter plot of completeness vs purity
-p.scatter(pur,comp,c=thresh)
+p.scatter(pur,comp,c=thresh,label='Python')
 p.plot(1,1,'rx',label='Ideal')
 p.axis([.945,1.005,.93,1.005])
 p.xlabel('Purity',size=14)
 p.ylabel('Completeness',size=14)
-p.title('Purity vs. Completeness for 4864 CMASS Galaxies',size=16)
+p.title('Purity vs. Completeness for %s CMASS Targets' % numgals,size=16)
 cbar = p.colorbar()
 cbar.set_label(r'$\delta \chi^2$ Threshold',size=14)
 p.gca().figure.canvas.draw()
 p.legend(loc=4)
+dist = n.sqrt( (1-comp)**2 + (1-pur)**2 )
 print 'Completeness at optimal point is ' + str(comp[dist.argmin()])
 print 'Purity at optimal point is ' + str(pur[dist.argmin()])
+print 'Threshold at optimal point is ' + str(thresh[dist.argmin()])
 # Optional connecting line
 def func(x,a,b):
     return a*x+b
@@ -304,7 +345,6 @@ print 'Best dchi2 threshold is ' + str(xfit[yfit.argmin()])
 
 
 
-
 # Make same plot for IDL outputs
 thresh = [5+(.2*j) for j in xrange(300)]
 pur_idl = []
@@ -318,23 +358,33 @@ for this_thresh in thresh:
         mjd = args[i][1]
         fibers = args[i][2]
         zperson = args[i][3]
+        
+        # Find fibers with comments indicating they are okay
+        origlen = float(len(fibers))
+        badfibs = n.where(n.asarray(args[i][5]) != 'v5_4_9 ok')[0]
+        usefibers = n.delete(n.asarray(fibers),badfibs).tolist()
+        usezperson = n.delete(n.asarray(zperson),badfibs).tolist()
+        
         hdu = fits.open( join(environ['BOSS_SPECTRO_REDUX'],environ['RUN2D'],str(plate), environ['RUN1D'],'spZbest-%s-%s.fits' % (plate,mjd)) )
-        dof = hdu[1].data.DOF[fibers]
-        rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO[fibers]
-        z = hdu[1].data.Z_NOQSO[fibers]
-        flags = hdu[1].data.ZWARNING_NOQSO[fibers]
+        dof = hdu[1].data.DOF[usefibers]
+        rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO[usefibers]
+        z = hdu[1].data.Z_NOQSO[usefibers]
+        flags = hdu[1].data.ZWARNING_NOQSO[usefibers]
         chi2diff = rchi2diff*dof
-        completeness.append( len( n.where(chi2diff > this_thresh)[0]) / float(len(fibers)) )
+        completeness.append( len( n.where(chi2diff > this_thresh)[0]) / origlen )
         purity_set = z[n.where(chi2diff > this_thresh)[0]]
-        purity_zperson = n.asarray(zperson)[n.where(chi2diff > this_thresh)[0]]
+        purity_zperson = n.asarray(usezperson)[n.where(chi2diff > this_thresh)[0]]
         purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
     this_comp = n.mean(completeness)
     this_pur = n.mean(purity)
     comp_idl.append(this_comp)
     pur_idl.append(this_pur)
+
+p.scatter(pur_idl, comp_idl, c=thresh, marker='>', label='IDL', hold=True)
+p.legend(loc=4)
+
+
 '''
-
-
 
 
 
