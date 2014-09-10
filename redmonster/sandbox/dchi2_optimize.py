@@ -250,6 +250,7 @@ class Hacked_zpicker:
                 argsort = self.minrchi2[i].argsort()
                 if argsort[1] == 0:
                     if ( n.min(zchi2arr1[ifiber]) - n.min(zchi2arr2[ifiber]) ) < zfit2.threshold: self.zwarning[i] = int(self.zwarning[i]) | flag_val
+            i += 1
 
 #--------------------------------------
 
