@@ -162,7 +162,7 @@ def find_comp_purity(this_thresh, args):
         zperson = iarg[3]
         
         origlen = float(len(fiberid))
-        badfibs = n.where(n.asarray(iargs[5]) != 'v5_4_9 ok')[0]
+        badfibs = n.where(n.asarray(iarg[5]) != 'v5_4_9 ok')[0]
         usefiberid = n.delete(n.asarray(fiberid),badfibs).tolist()
         usezperson = n.delete(n.asarray(zperson),badfibs).tolist()
 
