@@ -273,7 +273,7 @@ thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity_
 '''
 # Read and concatenate files
 comp = n.array([])
-pur = n.array)[])
+pur = n.array([])
 thresh = n.array([])
 comp = n.append(comp, fits.open('comp_purity_5-25.fits')[1].data.COMPLETENESS)
 pur = n.append(pur, fits.open('comp_purity_5-25.fits')[1].data.PURITY)
@@ -286,7 +286,7 @@ pur = n.append(pur, fits.open('comp_purity_45-65.fits')[1].data.PURITY)
 thresh = n.append(thresh, fits.open('comp_purity_45-65.fits')[1].data.THRESHOLDS)
 
 # Scatter plot of completeness vs purity
-p.scatter(pur,comp,c=thresh)
+p.scatter(pur,comp,c=thresh,label='Python')
 p.plot(1,1,'rx',label='Ideal')
 p.axis([.945,1.005,.93,1.005])
 p.xlabel('Purity',size=14)
@@ -296,8 +296,10 @@ cbar = p.colorbar()
 cbar.set_label(r'$\delta \chi^2$ Threshold',size=14)
 p.gca().figure.canvas.draw()
 p.legend(loc=4)
+dist = n.sqrt( (1-comp)**2 + (1-pur)**2 )
 print 'Completeness at optimal point is ' + str(comp[dist.argmin()])
 print 'Purity at optimal point is ' + str(pur[dist.argmin()])
+print 'Threshold at optimal point is ' + str(thresh[dist.argmin()])
 # Optional connecting line
 def func(x,a,b):
     return a*x+b
