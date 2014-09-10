@@ -23,76 +23,108 @@ args = n.where(x['BOSSOBJECT']['plate'] == 3686)[0]
 fibers3686 = []
 zpipe3686 = []
 zperson3686 = []
+classperson3686 = []
+comments3686 = []
 for i in args:
     fibers3686.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3686.append( x['BOSSOBJECT'][i][5])
     zperson3686.append( x['BOSSOBJECT'][i][6])
+    classperson3686.append( x['BOSSOBJECT'][i][7])
+    comments3686.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3687)[0]
 fibers3687 = []
 zpipe3687 = []
 zperson3687 = []
+classperson3687 = []
+comments3687 = []
 for i in args:
     fibers3687.append( x['BOSSOBJECT'][i][2]-1 )
     zpipe3687.append( x['BOSSOBJECT'][i][5])
     zperson3687.append( x['BOSSOBJECT'][i][6])
+    classperson3687.append( x['BOSSOBJECT'][i][7])
+    comments3687.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3804)[0]
 fibers3804 = []
 zpipe3804 = []
 zperson3804 = []
+classperson3804 = []
+comments3804 = []
 for i in args:
     fibers3804.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3804.append( x['BOSSOBJECT'][i][5])
     zperson3804.append( x['BOSSOBJECT'][i][6])
+    classperson3804.append( x['BOSSOBJECT'][i][7])
+    comments3804.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3805)[0]
 fibers3805 = []
 zpipe3805 = []
 zperson3805 = []
+classperson3805 = []
+comments3805 = []
 for i in args:
     fibers3805.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3805.append( x['BOSSOBJECT'][i][5])
     zperson3805.append( x['BOSSOBJECT'][i][6])
+    classperson3805.append( x['BOSSOBJECT'][i][7])
+    comments3805.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3853)[0]
 fibers3853 = []
 zpipe3853 = []
 zperson3853 = []
+classperson3853 = []
+comments3853 = []
 for i in args:
     fibers3853.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3853.append( x['BOSSOBJECT'][i][5])
     zperson3853.append( x['BOSSOBJECT'][i][6])
+    classperson3853.append( x['BOSSOBJECT'][i][7])
+    comments3853.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3855)[0]
 fibers3855 = []
 zpipe3855 = []
 zperson3855 = []
+classperson3855 = []
+comments3855 = []
 for i in args:
     fibers3855.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3855.append( x['BOSSOBJECT'][i][5])
     zperson3855.append( x['BOSSOBJECT'][i][6])
+    classperson3855.append( x['BOSSOBJECT'][i][7])
+    comments3855.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3856)[0]
 fibers3856 = []
 zpipe3856 = []
 zperson3856 = []
+classperson3856 = []
+comments3856 = []
 for i in args:
     fibers3856.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3856.append( x['BOSSOBJECT'][i][5])
     zperson3856.append( x['BOSSOBJECT'][i][6])
+    classperson3856.append( x['BOSSOBJECT'][i][7])
+    comments3856.append( x['BOSSOBJECT'][i][8])
 
 args = n.where(x['BOSSOBJECT']['plate'] == 3860)[0]
 fibers3860 = []
 zpipe3860 = []
 zperson3860 = []
+classperson3860 = []
+comments3860 = []
 for i in args:
     fibers3860.append( x['BOSSOBJECT'][i][2]-1)
     zpipe3860.append( x['BOSSOBJECT'][i][5])
     zperson3860.append( x['BOSSOBJECT'][i][6])
+    classperson3856.append( x['BOSSOBJECT'][i][7])
+    comments3860.append( x['BOSSOBJECT'][i][8])
 
 
-args1= [(3686, 55268, fibers3686, zperson3686),(3687, 55269, fibers3687, zperson3687),(3804, 55267, fibers3804, zperson3804),(3805, 55269, fibers3805, zperson3805),(3853, 55268, fibers3853, zperson3853),(3855, 55268, fibers3855, zperson3855),(3856, 55269, fibers3856, zperson3856),(3860, 55269, fibers3860, zperson3860)]
+args1= [(3686, 55268, fibers3686, zperson3686, classperson3686, comments3686),(3687, 55269, fibers3687, zperson3687, classperson3687, comments3687),(3804, 55267, fibers3804, zperson3804, classperson3804, comments3804),(3805, 55269, fibers3805, zperson3805, classperson3805, comments3805),(3853, 55268, fibers3853, zperson3853, classperson3853, comments3853),(3855, 55268, fibers3855, zperson3855, classperson3855, comments3855),(3856, 55269, fibers3856, zperson3856, classperson3856, comments3856),(3860, 55269, fibers3860, zperson3860, classperson3860, comments3860)]
 
 
 
@@ -102,7 +134,9 @@ for i in xrange(8):
     badzfibs = n.where(n.asarray(args1[i][3]) == -9.)[0]
     keepfibs = n.delete(n.asarray(args1[i][2]),badzfibs).tolist()
     keepzperson = n.delete(n.asarray(args1[i][3]),badzfibs).tolist()
-    args.append( (args1[i][0],args1[i][1],keepfibs,keepzperson) )
+    keepclassperson = n.delete(n.asarray(args1[i][4]),badzfibs).tolist()
+    keepcommentsperson = n.delete(n.asarray(args1[i][5]),badzfibs).tolist()
+    args.append( (args1[i][0],args1[i][1],keepfibs,keepzperson,keepclassperson,keepcommentsperson) )
 
 numgals = 0
 for i in xrange(8):
