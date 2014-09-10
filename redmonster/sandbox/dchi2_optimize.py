@@ -160,8 +160,13 @@ def find_comp_purity(this_thresh, args):
         mjd = iarg[1]
         fiberid = iarg[2]
         zperson = iarg[3]
-        specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
         
+        origlen = float(len(fiberid))
+        badfibs = n.where(n.asarray(iargs[5]) != 'v5_4_9 ok')[0]
+        usefiberid = n.delete(n.asarray(fiberid),badfibs).tolist()
+        usezperson = n.delete(n.asarray(zperson),badfibs).tolist()
+
+        specs = spec.Spec(plate=plate, mjd=mjd, fiberid=usefiberid)
         hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-ssp_em_galaxy.fits' % plate)
         #hdu = fits.open('/Users/boltonlab3/scratch/chi2arr-%s-ssp_em_galaxy.fits' % plate)
         sspchi2arr = hdu[0].data
@@ -184,10 +189,10 @@ def find_comp_purity(this_thresh, args):
         zpick = Hacked_zpicker(specs, sspchi2arr, zfit_ssp, ssp_flags, starchi2arr, zfit_star, star_flags)
         
         #completeness.append( (len(n.where(zpick.zwarning == 0)[0]))/float(len(fiberid)) )
-        completeness.append( (len(n.where((zpick.zwarning.astype(int) & 4) == 0)[0]))/float(len(fiberid)) )
+        completeness.append( (len(n.where((zpick.zwarning.astype(int) & 4) == 0)[0]))/float(len(usefiberid)) )
         
         purity_set = zpick.z[n.where((zpick.zwarning.astype(int) & 4) == 0)[0],0]
-        purity_zperson = n.asarray(zperson)[n.where((zpick.zwarning.astype(int) & 4) == 0)[0]]
+        purity_zperson = n.asarray(usezperson)[n.where((zpick.zwarning.astype(int) & 4) == 0)[0]]
         #purity.append( (len(n.where(abs(zpick.z[:,0]-zperson) <= .0005)[0]))/float(len(fiberid)) )
         purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
 
@@ -291,7 +296,7 @@ p.plot(1,1,'rx',label='Ideal')
 p.axis([.945,1.005,.93,1.005])
 p.xlabel('Purity',size=14)
 p.ylabel('Completeness',size=14)
-p.title('Purity vs. Completeness for 4864 CMASS Galaxies',size=16)
+p.title('Purity vs. Completeness for %s CMASS Targets' % numgals,size=16)
 cbar = p.colorbar()
 cbar.set_label(r'$\delta \chi^2$ Threshold',size=14)
 p.gca().figure.canvas.draw()
@@ -340,7 +345,6 @@ print 'Best dchi2 threshold is ' + str(xfit[yfit.argmin()])
 
 
 
-
 # Make same plot for IDL outputs
 thresh = [5+(.2*j) for j in xrange(300)]
 pur_idl = []
@@ -354,23 +358,33 @@ for this_thresh in thresh:
         mjd = args[i][1]
         fibers = args[i][2]
         zperson = args[i][3]
+        
+        # Find fibers with comments indicating they are okay
+        origlen = float(len(fibers))
+        badfibs = n.where(n.asarray(args[i][5]) != 'v5_4_9 ok')[0]
+        usefibers = n.delete(n.asarray(fibers),badfibs).tolist()
+        usezperson = n.delete(n.asarray(zperson),badfibs).tolist()
+        
         hdu = fits.open( join(environ['BOSS_SPECTRO_REDUX'],environ['RUN2D'],str(plate), environ['RUN1D'],'spZbest-%s-%s.fits' % (plate,mjd)) )
-        dof = hdu[1].data.DOF[fibers]
-        rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO[fibers]
-        z = hdu[1].data.Z_NOQSO[fibers]
-        flags = hdu[1].data.ZWARNING_NOQSO[fibers]
+        dof = hdu[1].data.DOF[usefibers]
+        rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO[usefibers]
+        z = hdu[1].data.Z_NOQSO[usefibers]
+        flags = hdu[1].data.ZWARNING_NOQSO[usefibers]
         chi2diff = rchi2diff*dof
-        completeness.append( len( n.where(chi2diff > this_thresh)[0]) / float(len(fibers)) )
+        completeness.append( len( n.where(chi2diff > this_thresh)[0]) / origlen )
         purity_set = z[n.where(chi2diff > this_thresh)[0]]
-        purity_zperson = n.asarray(zperson)[n.where(chi2diff > this_thresh)[0]]
+        purity_zperson = n.asarray(usezperson)[n.where(chi2diff > this_thresh)[0]]
         purity.append( (len(n.where(abs(purity_set-purity_zperson) <= .0005)[0]))/float(len(purity_set)) )
     this_comp = n.mean(completeness)
     this_pur = n.mean(purity)
     comp_idl.append(this_comp)
     pur_idl.append(this_pur)
+
+p.scatter(pur_idl, comp_idl, c=thresh, marker='>', label='IDL', hold=True)
+p.legend(loc=4)
+
+
 '''
-
-
 
 
 
