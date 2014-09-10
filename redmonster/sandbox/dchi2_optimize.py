@@ -186,7 +186,7 @@ def find_comp_purity(this_thresh, args):
         ssp_flags = misc.comb_flags_2(specs, zfit_ssp.zwarning)
         star_flags = misc.comb_flags_2(specs, zfit_star.zwarning)
         
-        zpick = Hacked_zpicker(specs, sspchi2arr, zfit_ssp, ssp_flags, starchi2arr, zfit_star, star_flags)
+        zpick = Hacked_zpicker(specs, usefiberid, sspchi2arr, zfit_ssp, ssp_flags, starchi2arr, zfit_star, star_flags)
         
         #completeness.append( (len(n.where(zpick.zwarning == 0)[0]))/float(len(fiberid)) )
         completeness.append( (len(n.where((zpick.zwarning.astype(int) & 4) == 0)[0]))/float(len(usefiberid)) )
