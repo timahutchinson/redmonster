@@ -208,47 +208,49 @@ def find_comp_purity(this_thresh, args):
 
 class Hacked_zpicker:
     
-    def __init__(self, specobj, zchi2arr1, zfit1, flags1, zchi2arr2=None, zfit2=None, flags2=None):
+    def __init__(self, specobj, fiberid, zchi2arr1, zfit1, flags1, zchi2arr2=None, zfit2=None, flags2=None):
         self.npixflux = specobj.npix
         self.type = []
         self.minvector = []
         self.zwarning = []
-        self.z = n.zeros( (zchi2arr1.shape[0],2) )
-        self.z_err = n.zeros( (zchi2arr1.shape[0],2) )
+        self.z = n.zeros( (len(fiberid),2) )
+        self.z_err = n.zeros( (len(fiberid),2) )
         if zchi2arr2 == None: self.nclass = 1
         else: self.nclass = 2
-        self.minrchi2 = n.zeros( (zchi2arr1.shape[0], self.nclass) )
-        self.classify_obj(zchi2arr1, zfit1, flags1, zchi2arr2, zfit2, flags2)
+        self.minrchi2 = n.zeros( (len(fiberid), self.nclass) )
+        self.classify_obj(fiberid, zchi2arr1, zfit1, flags1, zchi2arr2, zfit2, flags2)
     
-    def classify_obj(self, zchi2arr1, zfit1, flags1, zchi2arr2, zfit2, flags2):
+    def classify_obj(self, fiberid, zchi2arr1, zfit1, flags1, zchi2arr2, zfit2, flags2):
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
-        for ifiber in xrange(zchi2arr1.shape[0]):
-            self.minrchi2[ifiber,0] = n.min(zchi2arr1[ifiber]) / (self.npixflux) # Calculate reduced chi**2 values to compare templates of differing lengths
-            if zchi2arr2 != None: self.minrchi2[ifiber,1] = n.min(zchi2arr2[ifiber]) / (self.npixflux)
-            minpos = self.minrchi2[ifiber].argmin() # Location of best chi2 of array of best (individual template) chi2s
+        i = 0
+        for ifiber in fiberid:
+            self.minrchi2[i,0] = n.min(zchi2arr1[ifiber]) / (self.npixflux) # Calculate reduced chi**2 values to compare templates of differing lengths
+            if zchi2arr2 != None: self.minrchi2[i,1] = n.min(zchi2arr2[ifiber]) / (self.npixflux)
+            minpos = self.minrchi2[i].argmin() # Location of best chi2 of array of best (individual template) chi2s
             
             if minpos == 0: # Means overall chi2 minimum came from template 1
                 self.type.append('GALAXY')
                 self.minvector.append(zfit1.minvector[ifiber])
-                self.z[ifiber] = zfit1.z[ifiber]
-                self.z_err[ifiber] = zfit1.z_err[ifiber]
+                self.z[i] = zfit1.z[ifiber]
+                self.z_err[i] = zfit1.z_err[ifiber]
                 minloc = n.unravel_index(zchi2arr1[ifiber].argmin(), zchi2arr1[ifiber].shape)[:-1]
                 self.zwarning = n.append(self.zwarning, flags1[ifiber])
-                argsort = self.minrchi2[ifiber].argsort()
+                argsort = self.minrchi2[i].argsort()
                 if len(argsort) > 1:
                     if argsort[1] == 1:
-                        if ( n.min(zchi2arr2[ifiber]) - n.min(zchi2arr1[ifiber]) ) < zfit1.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val #THIS THRESHOLD PROBABLY ISN'T RIGHT AND NEEDS TO BE CHANGED
+                        if ( n.min(zchi2arr2[ifiber]) - n.min(zchi2arr1[ifiber]) ) < zfit1.threshold: self.zwarning[i] = int(self.zwarning[i]) | flag_val #THIS THRESHOLD PROBABLY ISN'T RIGHT AND NEEDS TO BE CHANGED
             
             elif minpos == 1: # Means overall chi2 minimum came from template 2
                 self.type.append('STAR')
                 self.minvector.append(zfit2.minvector[ifiber])
-                self.z[ifiber] = zfit2.z[ifiber]
-                self.z_err[ifiber] = zfit2.z_err[ifiber]
+                self.z[i] = zfit2.z[ifiber]
+                self.z_err[i] = zfit2.z_err[ifiber]
                 minloc = n.unravel_index(zchi2arr2[ifiber].argmin(), zchi2arr2[ifiber].shape)[:-1]
                 self.zwarning = n.append(self.zwarning, flags2[ifiber])
-                argsort = self.minrchi2[ifiber].argsort()
+                argsort = self.minrchi2[i].argsort()
                 if argsort[1] == 0:
-                    if ( n.min(zchi2arr1[ifiber]) - n.min(zchi2arr2[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
+                    if ( n.min(zchi2arr1[ifiber]) - n.min(zchi2arr2[ifiber]) ) < zfit2.threshold: self.zwarning[i] = int(self.zwarning[i]) | flag_val
+            i += 1
 
 #--------------------------------------
 
