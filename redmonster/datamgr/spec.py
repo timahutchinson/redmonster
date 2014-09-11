@@ -25,13 +25,14 @@ class Spec:
         self.npix = None
         self.coeff0 = None
         self.coeff1 = None
+        self.dof = None
         try: self.topdir = environ['BOSS_SPECTRO_REDUX']
         except: self.topdir = None
         try: self.run2d = environ['RUN2D']
         except: self.run2d = None
         self.set_plate_mjd(plate=plate, mjd=mjd, fiberid=fiberid, data_range=data_range)
         if exists(self.platepath):
-            self.ivar = flux_check(self.flux, self.ivar)
+            self.ivar, self.dof = flux_check(self.flux, self.ivar)
             self.zwarning = n.zeros(self.flux.shape[0])
         else: print '%s does not exist.' % self.platepath # This should probably be logged eventually as well
 

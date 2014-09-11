@@ -1,6 +1,6 @@
 # Initial top-level script to run redmonster on a single plate, with options to use only a
 # subset of fibers.  Each spPlate file is assumed to be in $BOSS_SPECTRO_REDUX/$RUN2D/pppp/
-# where pppp is the 4-digit plate-id.
+# where pppp is the 4-digit plate-id.  Templates are assumed to be in $REDMONSTER_DIR/templates/
 #
 # Tim Hutchinson, University of Utah, July 2014
 # t.hutchinson@utah.edu
@@ -45,14 +45,10 @@ zfit_star = zfitter.Zfitter(zstar.zchi2arr, zstar.zbase)
 zfit_star.z_refine()
 
 ''' Flagging throughout redmonster is done individually by the classes responsible for handling the relevant computations.  To have an 'overall' flag for each fiber, the individual flags need to be combined. '''
-ssp_flags = n.zeros(len(fiberid))
-star_flags = n.zeros(len(fiberid))
-for ifiber in xrange(len(fiberid)):
-    ssp_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zssp.zwarning[ifiber])) | int(zfit_ssp.zwarning[ifiber])
-
 ssp_flags = misc.comb_flags(specs, zssp, zfit_ssp)
+star_flags = misc.comb_flags(specs, zstar, zfit_star)
 
-''' Compare chi2 surfaces from each template and classify each object accordingly. Arguments data object (in a format identical to that created by Spec), followed by each object created by Zfinder.  This function can currently handle up to five objects from five separate templates. If specs is a user created data object rather than one created by redmonster.datamgr.spec, it must contain specs.npix, the number of pixels in a single spectrum.'''
+''' Compare chi2 surfaces from each template and classify each object accordingly. Arguments are data object (in a format identical to that created by Spec), followed by each object created by Zfinder.  This function can currently handle up to five objects from five separate templates. If specs is a user created data object rather than one created by redmonster.datamgr.spec, it must contain specs.npix, the number of pixels in a single spectrum.'''
 zpick = zpicker.Zpicker(specs, zssp, zfit_ssp, ssp_flags, zstar, zfit_star, star_flags)
 
 ''' Write output file.  Arguments are zpick object from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''

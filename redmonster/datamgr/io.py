@@ -250,7 +250,9 @@ class Write_Redmonster:
         maxlen = max(map(len,subclass))
         col8 = fits.Column(name='MINVECTOR', format='%iA'%maxlen, array=minvec)
         col9 = fits.Column(name='ZWARNING', format='E', array=zpick.zwarning)
-        cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9])
+        col10 = fits.Column(name='DOF', format='E', array=zpick.dof)
+        cols11 = fits.Column(name='NPOLY', format='E', array=zpick.npoly)
+        cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10])
         tbhdu = fits.new_table(cols)
         thdulist = fits.HDUList([prihdu, tbhdu])
         if self.clobber:

@@ -24,6 +24,8 @@ class Zpicker:
         self.z = n.zeros( (zfind1.zchi2arr.shape[0],2) )
         self.z_err = n.zeros( (zfind1.zchi2arr.shape[0],2) )
         self.zwarning = []
+        self.npoly = []
+        self.dof = specobj.dof.copy()
         if not zfind2: self.nclass = 1
         elif zfind2 and not zfind3: nclass = 2
         elif zfind3 and not zfind4: nclass = 3
@@ -36,11 +38,18 @@ class Zpicker:
     def classify_obj(self, zfind1, zfit1, flags1, zfind2, zfit2, flags2, zfind3, zfit3, flags3, zfind4, zfit4, flags4, zfind5, zfit5, flags5):
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
         for ifiber in xrange(zfind1.zchi2arr.shape[0]):
-            self.minrchi2[ifiber,0] = n.min(zfind1.zchi2arr[ifiber]) / (self.npixflux - zfind1.npoly) # Calculate reduced chi**2 values to compare templates of differing lengths
-            if zfind2: self.minrchi2[ifiber,1] = n.min(zfind2.zchi2arr[ifiber]) / (self.npixflux - zfind2.npoly)
-            if zfind3: self.minrchi2[ifiber,2] = n.min(zfind3.zchi2arr[ifiber]) / (self.npixflux - zfind3.npoly)
-            if zfind4: self.minrchi2[ifiber,3] = n.min(zfind4.zchi2arr[ifiber]) / (self.npixflux - zfind4.npoly)
-            if zfind5: self.minrchi2[ifiber,4] = n.min(zfind5.zchi2arr[ifiber]) / (self.npixflux - zfind5.npoly)
+            #self.minrchi2[ifiber,0] = n.min(zfind1.zchi2arr[ifiber]) / (self.npixflux - zfind1.npoly) # Calculate reduced chi**2 values to compare templates of differing lengths
+            #if zfind2: self.minrchi2[ifiber,1] = n.min(zfind2.zchi2arr[ifiber]) / (self.npixflux - zfind2.npoly)
+            #if zfind3: self.minrchi2[ifiber,2] = n.min(zfind3.zchi2arr[ifiber]) / (self.npixflux - zfind3.npoly)
+            #if zfind4: self.minrchi2[ifiber,3] = n.min(zfind4.zchi2arr[ifiber]) / (self.npixflux - zfind4.npoly)
+            #if zfind5: self.minrchi2[ifiber,4] = n.min(zfind5.zchi2arr[ifiber]) / (self.npixflux - zfind5.npoly)
+            # Try using specobj.dof instead, because it accounts for masked pixels
+            self.minrchi2[ifiber,0] = n.min(zfind1.zchi2arr[ifiber]) / (self.dof - zfind1.npoly) # Calculate reduced chi**2 values to compare templates of differing lengths
+            if zfind2: self.minrchi2[ifiber,1] = n.min(zfind2.zchi2arr[ifiber]) / (self.dof - zfind2.npoly)
+            if zfind3: self.minrchi2[ifiber,2] = n.min(zfind3.zchi2arr[ifiber]) / (self.dof - zfind3.npoly)
+            if zfind4: self.minrchi2[ifiber,3] = n.min(zfind4.zchi2arr[ifiber]) / (self.dof - zfind4.npoly)
+            if zfind5: self.minrchi2[ifiber,4] = n.min(zfind5.zchi2arr[ifiber]) / (self.dof - zfind5.npoly)
+
             minpos = self.minrchi2[ifiber].argmin() # Location of best chi2 of array of best (individual template) chi2s
             
             if minpos == 0: # Means overall chi2 minimum came from template 1
@@ -54,6 +63,8 @@ class Zpicker:
                     d[zfind1.infodict['par_names'][i]] = zfind1.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags1[ifiber])
+                self.dof[ifiber] -= zfind1.npoly
+                self.npoly.append(zfind1.npoly)
                 argsort = self.minrchi2[ifiber].argsort()
                 if len(argsort) > 1:
                     if argsort[1] == 1:
@@ -76,6 +87,8 @@ class Zpicker:
                     d[zfind2.infodict['par_names'][i]] = zfind2.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags2[ifiber])
+                self.dof[ifiber] = self.dof[fiber] - zfind2.npoly
+                self.npoly.append(zfind2.npoly)
                 argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
                     if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind2.zchi2arr[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
@@ -97,6 +110,9 @@ class Zpicker:
                     d[zfind3.infodict['par_names'][i]] = zfind3.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags3[ifiber])
+                self.dof[ifiber] = self.dof[ifiber] - zfind3.npoly
+                self.npoly.append(zfind3.npoly)
+                argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
                     if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind3.zchi2arr[ifiber]) ) < zfit3.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 1:
@@ -117,6 +133,9 @@ class Zpicker:
                     d[zfind4.infodict['par_names'][i]] = zfind4.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags4[ifiber])
+                self.dof[ifiber] = self.dof[fiber] - zfind4.npoly
+                self.npoly.append(zfind4.npoly)
+                argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
                     if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind4.zchi2arr[ifiber]) ) < zfit4.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 1:
@@ -138,6 +157,9 @@ class Zpicker:
                     d[zfind5.infodict['par_names'][i]] = zfind5.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags5[ifiber])
+                self.dof[ifiber] = self.dof[ifiber] - zfind5.npoly
+                self.npoly.append(zfind5.npoly)
+                argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
                     if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind5.zchi2arr[ifiber]) ) < zfit5.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
                 elif argsort[1] == 1:
