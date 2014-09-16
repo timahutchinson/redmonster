@@ -1,6 +1,6 @@
 # Collection of miscellaneous functions used in redmonster that have no home in other modules
 #
-# Tim Hutchinson, April-August 2014
+# Tim Hutchinson, April-September 2014
 # t.hutchinson@utah.edu
 
 import numpy as n
@@ -9,6 +9,8 @@ from scipy import sparse
 
 # Function to find where S/N is unreasonably large or where flux is unphysically negative
 def flux_check(flux, ivars):
+    dof = n.zeros(flux.shape[0])
+    npix = flux.shape[1]
     for i in range(flux.shape[0]):
         ct = n.where(abs(flux[i]) * n.sqrt(ivars[i]) > 200.)[0].shape[0]
         # CHANGE NEXT LINE SO IT ADDS TO LOG FILE RATHER THAN PRINTS
@@ -18,7 +20,9 @@ def flux_check(flux, ivars):
             # ALSO CHANGE TO ADD TO LOG
             print 'WARNING: Fiber #%s has %s pixels with Flux < -10*Noise' % (i+1,len(badpix))
             ivars[i] = mask_pixels(badpix, ivars[i])
-    return ivars
+        nummasks = len( n.where(ivars[i] == 0)[0] )
+        dof[i] = npix - nummasks
+    return ivars, dof
 
 # Mask unphysically negative pixels + neighboring two pixels in both directions
 def mask_pixels(badpix, ivars):
