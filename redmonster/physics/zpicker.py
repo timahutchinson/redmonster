@@ -18,6 +18,7 @@ class Zpicker:
         if specobj.mjd: self.mjd = specobj.mjd
         if specobj.fiberid: self.fiberid = specobj.fiberid
         if specobj.hdr: self.hdr = specobj.hdr
+        self.fname = []
         self.type = []
         self.subtype = []
         self.minvector = []
@@ -57,6 +58,7 @@ class Zpicker:
                 self.minvector.append(zfit1.minvector[ifiber])
                 self.z[ifiber] = zfit1.z[ifiber]
                 self.z_err[ifiber] = zfit1.z_err[ifiber]
+                self.fname.append(zfind1.fname)
                 minloc = n.unravel_index(zfind1.zchi2arr[ifiber].argmin(), zfind1.zchi2arr[ifiber].shape)[:-1]
                 d = {}
                 for i in xrange(len(minloc)):
@@ -81,6 +83,7 @@ class Zpicker:
                 self.minvector.append(zfit2.minvector[ifiber])
                 self.z[ifiber] = zfit2.z[ifiber]
                 self.z_err[ifiber] = zfit2.z_err[ifiber]
+                self.fname.append(zfind2.fname)
                 minloc = n.unravel_index(zfind2.zchi2arr[ifiber].argmin(), zfind2.zchi2arr[ifiber].shape)[:-1]
                 d = {}
                 for i in xrange(len(minloc)):
@@ -104,6 +107,7 @@ class Zpicker:
                 self.minvector.append(zfit3.minvector[ifiber])
                 self.z[ifiber] = zfit3.z[ifiber]
                 self.z_err[ifiber] = zfit3.z_err[ifiber]
+                self.fname.append(zfind3.fname)
                 minloc = n.unravel_index(zfind3.zchi2arr[ifiber].argmin(), zfind3.zchi2arr[ifiber].shape)[:-1]
                 d = {}
                 for i in xrange(len(minloc)):
@@ -127,6 +131,7 @@ class Zpicker:
                 self.minvector.append(zfit4.minvector[ifiber])
                 self.z[ifiber] = zfit4.z[ifiber]
                 self.z_err[ifiber] = zfit4.z_err[ifiber]
+                self.fname.append(zfind4.fname)
                 minloc = n.unravel_index(zfind4.zchi2arr[ifiber].argmin(), zfind4.zchi2arr[ifiber].shape)[:-1]
                 d = {}
                 for i in xrange(len(minloc)):
@@ -151,6 +156,7 @@ class Zpicker:
                 self.minvector.append(zfit5.minvector[ifiber])
                 self.z[ifiber] = zfit5.z[ifiber]
                 self.z_err[ifiber] = zfit5.z_err[ifiber]
+                self.fname.append(zfind5.fname)
                 minloc = n.unravel_index(zfind5.zchi2arr[ifiber].argmin(), zfind5.zchi2arr[ifiber].shape)[:-1]
                 d = {}
                 for i in xrange(len(minloc)):

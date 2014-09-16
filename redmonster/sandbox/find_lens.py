@@ -43,11 +43,13 @@ class Find_Lens:
             print 'Checking fiber #' + str(i) + ' of ' + str(chi2arr.shape[0])
             for j in xrange(chi2arr.shape[-1]):
                 self.bestchi2vecs[i,j] = n.min(chi2arr[i,...,j])
-            self.chi2mins[i] = n.min(bestchi2vecs[i])
+            self.chi2mins[i] = n.min(self.bestchi2vecs[i])
         self.checklocs = n.where( self.chi2mins >= (float(threshold)*dof) )[0]
+        print '%s fibers have possible lenses!' % len(self.checklocs)
+        print self.checklocs
         # For each fiber in checklocs, refit a linear combination of templates at best and second best z, separated from global min by width
-        for loc in checklocs:
-            fit_linear_combo(loc)
+        for loc in self.checklocs:
+            self.fit_linear_combo(loc)
 
     def fit_linear_combo(self, loc):
         # Find locations of best and second best z from chi2 surfaces
@@ -55,14 +57,14 @@ class Find_Lens:
         minloc = chi2vec.argmin()
         if (minloc > self.width) & (minloc < (chi2vec.shape[0]-self.width)):
             minlessarg = chi2vec[:minloc-self.width].argmin()
-            minmorearg = chi2vec[minloc+self.width:].argmin() + (minloc+width) # Argmin gives index within the slice; a value of 2 from chi2vec[minloc:].argmin() means minloc+2 was the minimum
+            minmorearg = chi2vec[minloc+self.width:].argmin() + (minloc+self.width) # Argmin gives index within the slice; a value of 2 from chi2vec[minloc:].argmin() means minloc+2 was the minimum
             secondminloc = minlessarg if (chi2vec[minlessarg] < chi2vec[minmorearg]) else minmorearg
         elif (minloc < self.width):
             secondminloc = chi2vec[minloc+self.width:].argmin() + (minloc+width)
         else:
             secondminloc = chi2vec[:minloc-self.width].argmin()
         # Read in template
-        temps = fits.open(join(environ['REDMONSTER_DIR'],'templates',self.fname))[0].data
+        temps = fits.open(join(environ['REDMONSTER_DIR'],'templates',self.fname[0]))[0].data
         flattemps = n.reshape(temps, (-1,temps.shape[-1]))
         fitchi2s = n.zeros( (flattemps.shape[0],flattemps.shape[0]) )
         data = self.flux[loc]
@@ -81,5 +83,5 @@ class Find_Lens:
                 pmattrans = n.transpose(pmat)
                 a = n.dot(n.dot(pmattrans,ninv),pmat)
                 b = n.dot(n.dot(pmattrans,ninv),data)
-                f = n.linalg.solve(a,b) # Maybe this should use nnls instead of solve to preserve physicality
+                f = n.linalg.solve(a,b) # Maybe this should use nnls instead of solve to preserve physicality?
                 fitchi2s[i,j] = sn2_data - n.dot(n.dot(f,a),f)
