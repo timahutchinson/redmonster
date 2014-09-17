@@ -45,11 +45,11 @@ class Zpicker:
             #if zfind4: self.minrchi2[ifiber,3] = n.min(zfind4.zchi2arr[ifiber]) / (self.npixflux - zfind4.npoly)
             #if zfind5: self.minrchi2[ifiber,4] = n.min(zfind5.zchi2arr[ifiber]) / (self.npixflux - zfind5.npoly)
             # Try using specobj.dof instead, because it accounts for masked pixels
-            self.minrchi2[ifiber,0] = n.min(zfind1.zchi2arr[ifiber]) / (self.dof - zfind1.npoly) # Calculate reduced chi**2 values to compare templates of differing lengths
-            if zfind2: self.minrchi2[ifiber,1] = n.min(zfind2.zchi2arr[ifiber]) / (self.dof - zfind2.npoly)
-            if zfind3: self.minrchi2[ifiber,2] = n.min(zfind3.zchi2arr[ifiber]) / (self.dof - zfind3.npoly)
-            if zfind4: self.minrchi2[ifiber,3] = n.min(zfind4.zchi2arr[ifiber]) / (self.dof - zfind4.npoly)
-            if zfind5: self.minrchi2[ifiber,4] = n.min(zfind5.zchi2arr[ifiber]) / (self.dof - zfind5.npoly)
+            self.minrchi2[ifiber,0] = n.min(zfind1.zchi2arr[ifiber]) / (self.dof[ifiber] - zfind1.npoly) # Calculate reduced chi**2 values to compare templates of differing lengths
+            if zfind2: self.minrchi2[ifiber,1] = n.min(zfind2.zchi2arr[ifiber]) / (self.dof[ifiber] - zfind2.npoly)
+            if zfind3: self.minrchi2[ifiber,2] = n.min(zfind3.zchi2arr[ifiber]) / (self.dof[ifiber] - zfind3.npoly)
+            if zfind4: self.minrchi2[ifiber,3] = n.min(zfind4.zchi2arr[ifiber]) / (self.dof[ifiber] - zfind4.npoly)
+            if zfind5: self.minrchi2[ifiber,4] = n.min(zfind5.zchi2arr[ifiber]) / (self.dof[ifiber] - zfind5.npoly)
 
             minpos = self.minrchi2[ifiber].argmin() # Location of best chi2 of array of best (individual template) chi2s
             
