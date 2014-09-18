@@ -90,7 +90,7 @@ class Zpicker:
                     d[zfind2.infodict['par_names'][i]] = zfind2.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags2[ifiber])
-                self.dof[ifiber] = self.dof[fiber] - zfind2.npoly
+                self.dof[ifiber] = self.dof[ifiber] - zfind2.npoly
                 self.npoly.append(zfind2.npoly)
                 argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
@@ -138,7 +138,7 @@ class Zpicker:
                     d[zfind4.infodict['par_names'][i]] = zfind4.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags4[ifiber])
-                self.dof[ifiber] = self.dof[fiber] - zfind4.npoly
+                self.dof[ifiber] = self.dof[ifiber] - zfind4.npoly
                 self.npoly.append(zfind4.npoly)
                 argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
