@@ -30,9 +30,10 @@ from time import gmtime, strftime
 
 class Find_Lens:
 
-    def __init__(self, specobj, chi2arr, dof, fname, threshold=1.5, width=15, npoly=4):
+    def __init__(self, specobj, chi2arr, type, dof, fname, threshold=1.5, width=15, npoly=4):
         self.flux = specobj.flux
         self.ivar = specobj.ivar
+        self.type = type
         self.dof = dof
         self.fname = fname
         self.threshold = threshold
@@ -52,11 +53,12 @@ class Find_Lens:
         # For each fiber in checklocs, refit a linear combination of templates at best and second best z, separated from global min by width
         ind = 0
         for loc in self.checklocs:
-            #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
-            print 'THIS INDEX NUMBER IS ' + str(ind) + '!!!!!!!!!!!!!!!!!!!!!!!!!'
-            chi2s[ind] = self.fit_linear_combo(loc)
-            ind += 1
-            #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
+            if type[loc] == 'ssp_em_galaxy':
+                #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
+                print 'THIS INDEX NUMBER IS ' + str(ind) + '!!!!!!!!!!!!!!!!!!!!!!!!!'
+                chi2s[ind] = self.fit_linear_combo(loc)
+                ind += 1
+                #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
 
     def fit_linear_combo(self, loc):
         # Find locations of best and second best z from chi2 surfaces
