@@ -55,7 +55,7 @@ class Zpicker:
             
             if minpos == 0: # Means overall chi2 minimum came from template 1
                 self.type.append(zfind1.type)
-                self.minvector.append(zfit1.minvector[ifiber])
+                self.minvector.append(zfit1.minvector[ifiber][1:])
                 self.z[ifiber] = zfit1.z[ifiber]
                 self.z_err[ifiber] = zfit1.z_err[ifiber]
                 self.fname.append(zfind1.fname)
@@ -80,7 +80,7 @@ class Zpicker:
         
             elif minpos == 1: # Means overall chi2 minimum came from template 2
                 self.type.append(zfind2.type)
-                self.minvector.append(zfit2.minvector[ifiber])
+                self.minvector.append(zfit2.minvector[ifiber][1:])
                 self.z[ifiber] = zfit2.z[ifiber]
                 self.z_err[ifiber] = zfit2.z_err[ifiber]
                 self.fname.append(zfind2.fname)
@@ -104,7 +104,7 @@ class Zpicker:
 
             elif minpos == 2: # Means overall chi2 minimum came from template 3
                 self.type.append(zfind3.type)
-                self.minvector.append(zfit3.minvector[ifiber])
+                self.minvector.append(zfit3.minvector[ifiber][1:])
                 self.z[ifiber] = zfit3.z[ifiber]
                 self.z_err[ifiber] = zfit3.z_err[ifiber]
                 self.fname.append(zfind3.fname)
@@ -128,7 +128,7 @@ class Zpicker:
 
             elif minpos == 3: # Means overall chi2 minimum came from template 4
                 self.type.append(zfind4.type)
-                self.minvector.append(zfit4.minvector[ifiber])
+                self.minvector.append(zfit4.minvector[ifiber][1:])
                 self.z[ifiber] = zfit4.z[ifiber]
                 self.z_err[ifiber] = zfit4.z_err[ifiber]
                 self.fname.append(zfind4.fname)
@@ -153,7 +153,7 @@ class Zpicker:
 
             elif minpos == 4: # Means overall chi2 minimum came from template 5
                 self.type.append(zfind5.type)
-                self.minvector.append(zfit5.minvector[ifiber])
+                self.minvector.append(zfit5.minvector[ifiber][1:])
                 self.z[ifiber] = zfit5.z[ifiber]
                 self.z_err[ifiber] = zfit5.z_err[ifiber]
                 self.fname.append(zfind5.fname)

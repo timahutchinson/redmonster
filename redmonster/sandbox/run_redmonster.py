@@ -18,7 +18,7 @@ p.interactive(True)
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
 plate = 3686
 mjd = 55268
-fiberid = [i+100 for i in xrange(1)] # fiberid must be a list, not a numpy array
+fiberid = [i+68 for i in xrange(1)] # fiberid must be a list, not a numpy array
 
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
@@ -56,7 +56,7 @@ output = io.Write_Redmonster(zpick)
 
 # Things left to do
 #
-# 1. Incorporate flags into, probably, zpicker and subseqently Write_Redmonster
+# DONE 1. Incorporate flags into, probably, zpicker and subseqently Write_Redmonster
 # 2. Incorporate Adam's spCFrame fittings somewhere
 # 3. Function to turn variable resolution data into coadded log(lambda) data?
 # 4. Quasar templates?
@@ -64,4 +64,3 @@ output = io.Write_Redmonster(zpick)
 #       Look in to delta chi2 thresholds to trigger failure
 #       Look at completeness vs. purity
 # 6. WISE selected LRG targets (SEQUELS/SDSS-IV)
-#    star_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zstar.zwarning[ifiber])) | int(zfit_star.zwarning[ifiber])
