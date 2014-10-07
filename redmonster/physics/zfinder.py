@@ -97,6 +97,7 @@ class Zfinder:
             poly_fft[:,i,:] = n.fft.fft(poly_pad[i] * ivar_pad)
         
         # Compute z for all fibers
+        
         for i in xrange(specs.shape[0]): # Loop over fibers
             print i
             if len(n.where(specs[i] != 0.)[0]) == 0: # If flux is all zeros, flag as unplugged according to BOSS zwarning flags and don't bother with doing fit
