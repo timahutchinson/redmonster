@@ -58,7 +58,8 @@ class Zfinder:
         return zminpix, zmaxpix
     
     
-    def zchi2(self, specs, specloglam, ivar):
+    def zchi2(self, specs, specloglam, ivar, npixstep=1):
+        self.npixstep = npixstep
         self.zwarning = n.zeros(specs.shape[0])
         flag_val_unplugged = int('0b10000000',2)
         flag_val_neg_model = int('0b1000',2)
@@ -67,12 +68,12 @@ class Zfinder:
         if (self.zmin != None) and (self.zmax != None) and (self.zmax > self.zmin):
             bounds_set = True
             zminpix, zmaxpix = self.conv_zbounds()
-            num_z = zmaxpix - zminpix + 1 # Number of pixels to be fitted in redshift
+            num_z = int(n.floor( (zmaxpix - zminpix) / npixstep )) #num_z = zmaxpix - zminpix + 1 # Number of pixels to be fitted in redshift
             self.zbase = self.zbase[zminpix:zminpix+num_z]
             #print zminpix
         else:
             bounds_set = False
-            num_z = self.origshape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
+            num_z = int(n.floor( (zself.origshape[-1] - specs.shape[-1]) / npixstep )) #num_z = self.origshape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
         
         # Create arrays for use in routine
         zchi2arr = n.zeros((specs.shape[0], self.templates_flat.shape[0], num_z)) # Create chi2 array of shape (# of fibers, template_parameter_1, ... , template_parameter_N, # of redshifts)
@@ -99,7 +100,7 @@ class Zfinder:
         # Compute z for all fibers
         
         for i in xrange(specs.shape[0]): # Loop over fibers
-            print i
+            print i, self.fname
             if len(n.where(specs[i] != 0.)[0]) == 0: # If flux is all zeros, flag as unplugged according to BOSS zwarning flags and don't bother with doing fit
                 self.zwarning[i] = int(self.zwarning[i]) ^ flag_val_unplugged
             else: # Otherwise, go ahead and do fit
@@ -112,15 +113,15 @@ class Zfinder:
                     bvec[0] = n.fft.ifft(self.t_fft[j] * data_fft[i].conj()).real
                     for ipos in xrange(self.npoly): pmat[ipos+1,0] = pmat[0,ipos+1] = n.fft.ifft(self.t_fft[j] * poly_fft[i,ipos].conj()).real
                     if bounds_set:
-                        for l in range(num_z):
+                        for l in n.arange(num_z)*self.npixstep: #for l in range(num_z):
                             f = n.linalg.solve(pmat[:,:,l+zminpix],bvec[:,l+zminpix])
-                            zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
-                            if (f[0] < 0): temp_zwarning[i,j,l] = int(temp_zwarning[i,j,l]) | flag_val_neg_model
+                            zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f) #zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
+                            if (f[0] < 0): temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model #if (f[0] < 0): temp_zwarning[i,j,l] = int(temp_zwarning[i,j,l]) | flag_val_neg_model
                     else:
-                        for l in range(num_z):
+                        for l in n.arange(num_z)*self.npixstep: #for l in range(num_z):
                             f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
-                            if (f[0] < 0.): temp_zwarning[i,j,l] = int(temp_zwarning[i,j,l]) | flag_val_neg_model
-                            zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
+                            if (f[0] < 0.): temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model #if (f[0] < 0.): temp_zwarning[i,j,l] = int(temp_zwarning[i,j,l]) | flag_val_neg_model
+                            zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f) #zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
         for i in xrange(self.zwarning.shape[0]): # Use only neg_model flag from best fit model/redshift and add it to self.zwarning
             minpos = ( n.where(zchi2arr[i] == n.min(zchi2arr[i]))[0][0] , n.where(zchi2arr[i] == n.min(zchi2arr[i]))[1][0] )
             self.zwarning[i] = int(self.zwarning[i]) | int(temp_zwarning[i,minpos[0],minpos[1]])
