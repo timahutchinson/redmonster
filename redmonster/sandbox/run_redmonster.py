@@ -24,7 +24,7 @@ fiberid = [i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
 specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 
-''' Instantiate zfinder object that will do z-finding for the entire plate using a single template.  Here, fname is the template filename, assumed to be in $REDMONSTER_DIR/templates/ . npoly specifies number of polynomial terms to be used in finding, zmin and zmax are upper and lower bounds of the redshift range to be explored. '''
+''' Instantiate zfinder object that will do z-finding for the entire plate using a single template.  Here, fname is the template filename, assumed to be in $REDMONSTER_DIR/templates/ . npoly specifies number of polynomial terms to be used in finding, zmin and zmax are upper and lower bounds of the redshift range to be explored. Optionally, npixstep can specify the width of pixel steps in doing the cross-correlation.  If left blank, it defaults to 1.'''
 zssp = zfinder.Zfinder(fname='ndArch-ssp_em_galaxy-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
 
 ''' Run actual fitting routine on the object created above. zssp.zchi2arr is array of of minimum chi^2 values of shape [nfibers, ndim_1, ndim_2, ..., ndim_N, nredshifts], where ndim_i is the i'th dimension of the template file.  Input flux need not be SDSS data - any spectra binned in constant log(lambda) will work.'''
@@ -64,8 +64,8 @@ output = io.Write_Redmonster(zpick)
 # DONE 1. Incorporate flags into, probably, zpicker and subseqently Write_Redmonster
 # 2. Incorporate Adam's spCFrame fittings somewhere
 # 3. Function to turn variable resolution data into coadded log(lambda) data?
-# 4. Quasar templates?
+# DONE 4. Quasar templates?
 # 5. BOSS CMASS data testing
-#       Look in to delta chi2 thresholds to trigger failure
-#       Look at completeness vs. purity
+# DONE      Look in to delta chi2 thresholds to trigger failure
+# DONE      Look at completeness vs. purity
 # 6. WISE selected LRG targets (SEQUELS/SDSS-IV)
