@@ -25,7 +25,7 @@ specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 # Use spEigenstars from IDL pipeline
 #ztemp = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
 # Use Nao's quasars
-ztemp = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=-.005, zmax=4.0)
+ztemp = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.5, zmax=4.0)
 
 ztemp.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=4)
 zfit_temp = zfitter.Zfitter(ztemp.zchi2arr, ztemp.zbase)
