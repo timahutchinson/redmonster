@@ -26,6 +26,7 @@ class Zfinder:
         self.npoly = npoly if npoly else 4
         self.zmin = float(zmin)
         self.zmax = float(zmax)
+        self.pixoffset = None
         self.zchi2arr = None
         try: self.specdir = environ['REDMONSTER_DIR']
         except: self.specdir = None
@@ -70,7 +71,7 @@ class Zfinder:
             zminpix, zmaxpix = self.conv_zbounds()
             num_z = int(n.floor( (zmaxpix - zminpix) / npixstep )) #num_z = zmaxpix - zminpix + 1 # Number of pixels to be fitted in redshift
             self.zbase = self.zbase[zminpix:zminpix+num_z]
-            #print zminpix
+            self.pixoffset = zminpix
         else:
             bounds_set = False
             num_z = int(n.floor( (zself.origshape[-1] - specs.shape[-1]) / npixstep )) #num_z = self.origshape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift
