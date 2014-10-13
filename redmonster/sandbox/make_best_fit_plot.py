@@ -54,7 +54,7 @@ p.legend()
 
 
 
-
+# Optionally, smooth data and then plot
 from astropy.convolution import convolve, Box1DKernel
 
 smoothed = convolve(specs.flux[0], Box1DKernel(5))
