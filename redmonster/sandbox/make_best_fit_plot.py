@@ -16,7 +16,7 @@ from redmonster.math.misc import poly_array
 
 plate = 3686 # Set plate, mjd, and fiberid here
 mjd = 55268
-fiberid = [937]
+fiberid = [58]
 
 specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 
@@ -25,7 +25,7 @@ specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 # Use spEigenstars from IDL pipeline
 #ztemp = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
 # Use Nao's quasars
-ztemp = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.5, zmax=4.0)
+ztemp = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.5, zmax=3.5)
 
 ztemp.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=1)
 zfit_temp = zfitter.Zfitter(ztemp.zchi2arr, ztemp.zbase)
