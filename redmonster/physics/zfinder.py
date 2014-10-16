@@ -69,9 +69,10 @@ class Zfinder:
         if (self.zmin != None) and (self.zmax != None) and (self.zmax > self.zmin):
             bounds_set = True
             zminpix, zmaxpix = self.conv_zbounds()
-            num_z = int(n.floor( (zmaxpix - zminpix) / npixstep )) #num_z = zmaxpix - zminpix + 1 # Number of pixels to be fitted in redshift
-            self.zbase = self.zbase[zminpix:zminpix+num_z]
             self.pixoffset = zminpix
+            num_z = int(n.floor( (zmaxpix - zminpix) / npixstep )) #num_z = zmaxpix - zminpix + 1 # Number of pixels to be fitted in redshift
+            zinds = zminpix + n.arange(num_z)*npixstep
+            self.zbase = self.zbase[zinds] #self.zbase = self.zbase[zminpix:zminpix+num_z]
         else:
             bounds_set = False
             num_z = int(n.floor( (zself.origshape[-1] - specs.shape[-1]) / npixstep )) #num_z = self.origshape[-1] - specs.shape[-1] + 1 # Number of pixels to be fitted in redshift

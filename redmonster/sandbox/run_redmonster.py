@@ -18,7 +18,7 @@ p.interactive(True)
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
 plate = 3686
 mjd = 55268
-fiberid = [i for i in xrange(1)] # fiberid must be a list, not a numpy array
+fiberid = [i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
@@ -34,7 +34,7 @@ zssp.zchi2(specs.flux, specs.loglambda, specs.ivar)
 zstar = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
 zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
 zqso = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.5, zmax=4.0)
-zqso.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=6)
+zqso.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=4)
 
 ''' Instantiate Zfitter to do subgrid fitting.  zchi2_ssp is chi^2 array from zfinder object above, and zssp.zbase is redshift-pixel baseline over the range explored by zfinder. '''
 zfit_ssp = zfitter.Zfitter(zssp.zchi2arr, zssp.zbase)
@@ -53,7 +53,7 @@ ssp_flags = misc.comb_flags(specs, zssp, zfit_ssp)
 star_flags = misc.comb_flags(specs, zstar, zfit_star)
 qso_flags = misc.comb_flags(specs, zqso, zfit_qso)
 
-''' Compare chi2 surfaces from each template and classify each object accordingly. Arguments are data object (in a format identical to that created by Spec), followed by each object created by Zfinder.  This function can currently handle up to five objects from five separate templates. If specs is a user created data object rather than one created by redmonster.datamgr.spec, it must contain specs.npix, the number of pixels in a single spectrum.'''
+''' Compare chi2 surfaces from each template and classify each object accordingly. Arguments are data object (in a format identical to that created by Spec), followed by each object created by Zfinder, Zfitter, and flags, in that order.  This function can currently handle up to five objects from five separate templates. If specs is a user created data object rather than one created by redmonster.datamgr.spec, it must contain specs.npix, the number of pixels in a single spectrum.'''
 zpick = zpicker.Zpicker(specs, zssp, zfit_ssp, ssp_flags, zstar, zfit_star, star_flags, zqso, zfit_qso, qso_flags)
 
 ''' Write output file.  Arguments are zpick object from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
@@ -66,6 +66,6 @@ output = io.Write_Redmonster(zpick)
 # 3. Function to turn variable resolution data into coadded log(lambda) data?
 # DONE 4. Quasar templates?
 # 5. BOSS CMASS data testing
-# DONE      Look in to delta chi2 thresholds to trigger failure
+# DONE      Look into delta chi2 thresholds to trigger failure
 # DONE      Look at completeness vs. purity
 # 6. WISE selected LRG targets (SEQUELS/SDSS-IV)

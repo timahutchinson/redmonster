@@ -27,7 +27,7 @@ specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 # Use Nao's quasars
 ztemp = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.5, zmax=3.5)
 
-ztemp.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=1)
+ztemp.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=4)
 zfit_temp = zfitter.Zfitter(ztemp.zchi2arr, ztemp.zbase)
 zfit_temp.z_refine()
 #temp_flags = misc.comb_flags(specs, ztemp, zfit_temp)
@@ -54,7 +54,7 @@ p.legend()
 
 
 
-
+# Optionally, smooth data and then plot
 from astropy.convolution import convolve, Box1DKernel
 
 smoothed = convolve(specs.flux[0], Box1DKernel(5))
