@@ -16,7 +16,7 @@ from redmonster.math.misc import poly_array
 
 plate = 3686 # Set plate, mjd, and fiberid here
 mjd = 55268
-fiberid = [58]
+fiberid = [857]
 
 specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 
