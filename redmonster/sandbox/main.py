@@ -116,6 +116,7 @@ def main(plate, mjd, templates, fiberid=None, zmin=None, zmax=None, npoly=None, 
 
     # Spec
     specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
+
     # Zfinder, Zfitter
     zfindobjs = []
     zfitobjs = []
@@ -131,10 +132,25 @@ def main(plate, mjd, templates, fiberid=None, zmin=None, zmax=None, npoly=None, 
             zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar, npixstep=npixstep[i] )
             zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr, zfindobjs[i].zbase) )
             zfitobjs[i].z_refine()
-    return zfindobjs, zfitobjs
-                
 
+    # Flags
+    flags = []
+    for i in xrange(len(zfindobjs)):
+        flags.append( misc.comb_flags(specs, zfindobjs[i], zfitobjs[i]) )
 
+    # Zpicker
+    if len(templates) == 1: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0])
+    elif len(templates) == 2: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1])
+    elif len(templates) == 3: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
+                                                      zfindobjs[2], zfitobjs[2], flags[2])
+    elif len(templates) == 4: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
+                                                      zfindobjs[2], zfitobjs[2], flags[2], zfindobjs[3], zfitobjs[3], flags[3])
+    elif len(templates) == 5: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
+                                                      zfindobjs[2], zfitobjs[2], flags[2], zfindobjs[3], zfitobjs[3], flags[3],
+                                                      zfindobjs[4], zfitobjs[4], flags[4])
+
+    # Write output
+    output = io.Write_Redmonster(zpick, dest='/Users/timhutchinson/compute/scratch/')
 
 
 
