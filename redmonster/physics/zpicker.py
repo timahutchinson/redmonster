@@ -27,6 +27,7 @@ class Zpicker:
         self.zwarning = []
         self.npoly = []
         self.dof = specobj.dof.copy()
+        self.npixstep = []
         if not zfind2: self.nclass = 1
         elif zfind2 and not zfind3: nclass = 2
         elif zfind3 and not zfind4: nclass = 3
@@ -67,6 +68,7 @@ class Zpicker:
                 self.zwarning = n.append(self.zwarning, flags1[ifiber])
                 self.dof[ifiber] -= zfind1.npoly
                 self.npoly.append(zfind1.npoly)
+                self.npixstep.append(zfind1.npixstep)
                 argsort = self.minrchi2[ifiber].argsort()
                 if len(argsort) > 1:
                     if argsort[1] == 1:
@@ -92,6 +94,7 @@ class Zpicker:
                 self.zwarning = n.append(self.zwarning, flags2[ifiber])
                 self.dof[ifiber] = self.dof[ifiber] - zfind2.npoly
                 self.npoly.append(zfind2.npoly)
+                self.npixstep.append(zfind2.npixstep)
                 argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
                     if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind2.zchi2arr[ifiber]) ) < zfit2.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
@@ -116,6 +119,7 @@ class Zpicker:
                 self.zwarning = n.append(self.zwarning, flags3[ifiber])
                 self.dof[ifiber] = self.dof[ifiber] - zfind3.npoly
                 self.npoly.append(zfind3.npoly)
+                self.npixstep.append(zfind3.npixstep)
                 argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
                     if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind3.zchi2arr[ifiber]) ) < zfit3.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
@@ -140,6 +144,7 @@ class Zpicker:
                 self.zwarning = n.append(self.zwarning, flags4[ifiber])
                 self.dof[ifiber] = self.dof[ifiber] - zfind4.npoly
                 self.npoly.append(zfind4.npoly)
+                self.npixstep.append(zfind4.npixstep)
                 argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
                     if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind4.zchi2arr[ifiber]) ) < zfit4.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
@@ -165,6 +170,7 @@ class Zpicker:
                 self.zwarning = n.append(self.zwarning, flags5[ifiber])
                 self.dof[ifiber] = self.dof[ifiber] - zfind5.npoly
                 self.npoly.append(zfind5.npoly)
+                self.npixstep.append(zfind5.npixstep)
                 argsort = self.minrchi2[ifiber].argsort()
                 if argsort[1] == 0:
                     if ( n.min(zfind1.zchi2arr[ifiber]) - n.min(zfind5.zchi2arr[ifiber]) ) < zfit5.threshold: self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val

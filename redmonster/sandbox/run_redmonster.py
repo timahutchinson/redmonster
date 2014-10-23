@@ -31,9 +31,10 @@ zssp = zfinder.Zfinder(fname='ndArch-ssp_em_galaxy-v000.fits', npoly=4, zmin=-0.
 zssp.zchi2(specs.flux, specs.loglambda, specs.ivar)
 
 ''' New objects and fitting for different templates. '''
-zstar = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
+#zstar = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
+zstar = zfinder.Zfinder(fname='ndArch-all-CAP-grids.fits', npoly=4, zmin=-.005, zmax=.005)
 zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
-zqso = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.5, zmax=4.0)
+zqso = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.5, zmax=3.5)
 zqso.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=4)
 
 ''' Instantiate Zfitter to do subgrid fitting.  zchi2_ssp is chi^2 array from zfinder object above, and zssp.zbase is redshift-pixel baseline over the range explored by zfinder. '''
