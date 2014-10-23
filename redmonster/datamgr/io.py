@@ -255,7 +255,8 @@ class Write_Redmonster:
         fname = n.array(map(repr,zpick.fname))
         maxlen = max(map(len,fname))
         col12 = fits.Column(name='FNAME', format='%iA'%maxlen, array=fname)
-        cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12])
+        col13 = fits.Column(name='NPIXSTEP', format='E', array=zpick.npixstep)
+        cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13])
         tbhdu = fits.new_table(cols)
         thdulist = fits.HDUList([prihdu, tbhdu])
         if self.clobber:
