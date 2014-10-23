@@ -22,7 +22,6 @@ class Zfinder:
     
     def __init__(self, fname=None, npoly=None, zmin=None, zmax=None):
         self.fname = fname
-        self.type = None
         self.npoly = npoly if npoly else 4
         self.zmin = float(zmin)
         self.zmax = float(zmax)
