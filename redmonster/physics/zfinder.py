@@ -58,7 +58,7 @@ class Zfinder:
         return zminpix, zmaxpix
     
     
-    def zchi2(self, specs, specloglam, ivar, npixstep=1):
+    def zchi2(self, specs, specloglam, ivar, npixstep=1, chi2file=False, plate=None, mjd=None):
         self.npixstep = npixstep
         self.zwarning = n.zeros(specs.shape[0])
         flag_val_unplugged = int('0b10000000',2)
@@ -134,6 +134,66 @@ class Zfinder:
             thisz = ((10**(specloglam[0]))/self.tempwave[bestl])-1
         #return zchi2arr
         self.zchi2arr = zchi2arr
+        self.store_models(specs, ivar)
+        if chi2file is True:
+            if (plate is not None) & (mjd is not None):
+                self.write_chi2arr(plate, mjd)
+            else:
+                print 'Plate number not given - unable to write chi2 file!'
+
+
+    def store_models(self, specs, ivar):
+        self.models = n.zeros( (specs.shape) )
+        for i in xrange(self.models.shape[0]):
+            minloc = n.unravel_index( self.zchi2arr[i].argmin(), self.zchi2arr[i].shape )
+            pmat = n.zeros( (specs.shape[-1],self.npoly+1) )
+            this_temp = self.templates[minloc[:-1]]
+            pmat[:,0] = this_temp[(minloc[-1]*self.npixstep)+self.pixoffset:(minloc[-1]*self.npixstep)+self.pixoffset+specs.shape[-1]]
+            polyarr = poly_array(self.npoly, specs.shape[-1])
+            pmat[:,1:] = n.transpose(polyarr)
+            ninv = n.diag(ivar[i])
+            f = n.linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat), n.dot( n.dot(n.transpose(pmat),ninv),specs[i]) )
+            self.models[i] = n.dot(pmat, f)
+
+
+    def write_chi2arr(self, plate, mjd):
+        prihdu = fits.PrimaryHDU(self.zchi2arr)
+        thdulist = fits.HDUList([prihdu])
+        try:
+            bsr = environ['BOSS_SPECTRO_REDUX']
+            run2d = environ['RUN2D']
+            run1d = environ['RUN1D']
+            if (bsr is not None) & (run2d is not None) & (run2d is not None):
+                testpath = join(bsr, run2d, '%s' % plate, run1d)
+                if exists(testpath): dest = testpath
+                else: dest = None
+        except:
+            dest = None
+        if dest is not None:
+            try:
+                thdulist.writeto(join(dest, '%s' % 'chi2arr-%s-%s-%s.fits' % (self.fname, plate, mjd)), clobber=True)
+            except:
+                print 'Environment variables not set or path does not exist - not writing chi2 file!'
+        else:
+            print 'Environment variables not set or path does not exist - not writing chi2 file!'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

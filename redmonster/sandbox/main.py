@@ -3,16 +3,20 @@
 # Required arguments:
 # plate (int): 4-digit plate number
 # mjd (int): 4-digit mjd for given plate
-# templates (list): List of template names to be run, up to a max of 5.  Template files must be in $REDMONSTER_DIR/templates/
+# templates (list of strings): List of template names, as strings, to be run, up to a max of 5.  Template files must be in $REDMONSTER_DIR/templates/
 #
 # Optional arguments:
-# fiberid (list): List of fibers to run.  If not specified, defaults to all fibers.
+# fiberid (list of ints): List of fibers, as ints, to run.  If not specified, defaults to all fibers.
 # zmin, zmax (list): Lists of minimum and maximum redshift for each template.  zmin and zmax must either be specified for
 #                    all templates or not at all.  If not given, all templates will be run over entire possible range.
-# npoly (list): List of number of polynomial terms for each template.  If not specified, defaults to 4 for all templates.
+# npoly (list of ints): List of number of polynomial terms for each template.  If not specified, defaults to 4 for all templates.
 #               If given, len(npoly) must equal len(templates)
-# npixstep (list): Size of pixel steps to use when doing cross-correlation.  If not given, defaults to 1 for all templates.
+# npixstep (list of ints): Size of pixel steps to use when doing cross-correlation.  If not given, defaults to 1 for all templates.
 #                  If given, len(npixstep) must equal len(templates)
+# dest (string): Full path to directory in which output fill will be written.  If not specified, defaults to
+#                $BOSS_SPECTRO_REDUX/$RUN2D/pppp/$RUN1D/ , where pppp is the 4 digit plate id.
+# clobber (Boolean): Default behavior is to overwrite older output files for same plate/mjd.  Setting to false will cause new
+#                    version to be written.
 #
 # Tim Hutchinson, University of Utah, October 2014
 # t.hutchinson@utah.edu
@@ -28,7 +32,7 @@ import matplotlib.pyplot as p
 p.interactive(True)
 import sys
 
-def main(plate, mjd, templates, fiberid=None, zmin=None, zmax=None, npoly=None, npixstep=None):
+def main(plate, mjd, templates, fiberid=None, zmin=None, zmax=None, npoly=None, npixstep=None, dest=None, clobber=True):
     # Check types and try to convert to proper types if necessary
     if fiberid is None: fiberid = [i for i in xrange(1000)]
     else:
@@ -150,7 +154,28 @@ def main(plate, mjd, templates, fiberid=None, zmin=None, zmax=None, npoly=None, 
                                                       zfindobjs[4], zfitobjs[4], flags[4])
 
     # Write output
-    output = io.Write_Redmonster(zpick, dest='/Users/timhutchinson/compute/scratch/')
+    if dest is None:
+        if clobber is False:
+            output = io.Write_Redmonster(zpick, clobber=False)
+        else:
+            output = io.Write_Redmonster(zpick)
+    else:
+        if type(dest) is str:
+            if clobber is False:
+                output = io.Write_Redmonster(zpick, dest=dest, clobber=False)
+            else:
+                output = io.Write_Redmonster(zpick, dest=dest)
+        else:
+            try:
+                dest = str(dest)
+                if clobber is False:
+                    output = io.Write_Redmonster(zpick, dest=dest, clobber=False)
+                else:
+                    output = io.Write_Redmonster(zpick, dest=dest)
+            except:
+                print 'Could not convert dest to string - writing to default directory and NOT clobbering old files!'
+                output = io.Write_Redmonster(zpick, clobber=False)
+
 
 
 

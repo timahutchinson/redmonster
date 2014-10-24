@@ -17,25 +17,27 @@ from astropy.convolution import convolve, Box1DKernel
 
 plate = 3686 # Set plate, mjd, and fiberid here
 mjd = 55268
-fiberid = [892] #935, 937
+fiberid = [89,100,102] #935, 937
 
 specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 
 # Use Charlie's SSPs
-#ztemp = zfinder.Zfinder(fname='ndArch-ssp_em_galaxy-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
-# Use Carlos' stellar templatesztemp = zfinder.Zfinder(fname='ndArch-all-CAP-grids.fits', npoly=4, zmin=-.005, zmax=.005)
+ztemp = zfinder.Zfinder(fname='ndArch-ssp_em_galaxy-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
+# Use Carlos' stellar templates
+#ztemp = zfinder.Zfinder(fname='ndArch-all-CAP-grids.fits', npoly=4, zmin=-.005, zmax=.005)
 # Use spEigenstars from IDL pipeline
 #ztemp = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
 # Use Nao's quasars
-ztemp = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.4, zmax=3.5)
+#ztemp = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.4, zmax=3.5)
 
-ztemp.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=4)
+ztemp.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=1)
 zfit_temp = zfitter.Zfitter(ztemp.zchi2arr, ztemp.zbase)
 zfit_temp.z_refine()
 #temp_flags = misc.comb_flags(specs, ztemp, zfit_temp)
 #zpick = zpicker.Zpicker(specs, ztemp, zfit_temp)
 
 # Solve for parameters, create model
+import pdb; pdb.set_trace()
 minloc = n.unravel_index( ztemp.zchi2arr.argmin(), ztemp.zchi2arr.shape )
 pmat = n.zeros( (specs.flux.shape[-1],ztemp.npoly+1) )
 this_temp = ztemp.templates[minloc[1:-1]]
