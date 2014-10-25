@@ -3,7 +3,7 @@
 \parskip=8pt
 \begin{document}
 
-\title{Documentation of Redmonster Output File}
+\title{Documentation of \texttt{redmonster} Output File}
 
 \author{Timothy A. Hutchinson}
 
@@ -12,7 +12,7 @@
 \section{Introduction}
 
 This document describes the format of the \textit{redmonster} file,
-which contains the spectroscopic redshifts and classifications of
+which contains the spectroscopic redshifts and classifications from
 the \texttt{redmonster} software.
 
 \section{File Format}
@@ -52,10 +52,12 @@ The general structure of the file is as follows:
 	\hline
 	HDU0 & NULL & Empty \\ \hline
 	HDU1 & Binary FITS Table & Object redshifts and classifications \\ \hline
-	HDU2 & NFIBERS x NPIX float image & Best-fit template model for each object \\
+	HDU2 & \texttt{nfibers} $\times$ \texttt{npix} float image & Best-fit template model for each object \\
 	\hline
 	\end{tabular}
 \end{center}
+
+\subsection{Header structure}
 
 The primary HDU header is identical to that of the \textit{spPlate} files.
 The header keywords are as follows:
@@ -77,103 +79,38 @@ The header keywords are as follows:
 	\end{tabular}
 \end{center}
 
+\subsection{Binary tables}
 
-\subsection{Header structure and requirements}
+The first binary FITS table contains all redshift and classification information.
+The data included is as follows, as specified by the binary table's header:
 
-The following primary header keywords are \textbf{required} to
-be present and defined as specified, in addition
-to header keywords required by the FITS standard itself:
+\begin{center}
+	\begin{tabular}{ | l | l | }
+	\hline
+	Z1 & Best redshift (least $\chi_r^2$) \\ \hline
+	Z2 & Second best redshift \\ \hline
+	Z\_ERR1 & 1-$\sigma$ error associated with Z1 \\ \hline
+	Z\_ERR2 & 1-$\sigma$ error associated with Z2 \\ \hline
+	CLASS & Object type classification \\ \hline
+	SUBCLASS & Best-fit template parameters \\ \hline
+	FIBERED & \textit{spPlate} fiber numbers used (0-based) \\ \hline
+	MINVECTOR & Coordinates of best-fit template in \textit{ndArch} file \\ \hline
+	ZWARNING & Warning flags (documented elsewhere) \\ \hline
+	DOF & Degrees of freedom used in calculating $\chi_r^2$ \\ \hline
+	NPOLY & Number of additive polynomials used \\ \hline
+	FNAME & Full name of \textit{ndArch} file of best-fit template \\
+	\hline
+	\end{tabular}
+\end{center}
 
-\noindent \texttt{CRPIX1}: Shall be set to the value 1, referencing the
-first sample point (``pixel'') along the wavelength axis (one-based indexing).
+In some cases (failure of fit, small $\Delta\chi^2$, etc.), redshift values have
+been set to -1.  In these cases, the associated errors have also been set to -1.
 
-\noindent \texttt{CRVAL1}: Shall specify the
-\textbf{base-10 logarithm} of the central wavelength
-\textbf{in vacuum Angstroms} of first pixel along the wavelength axis.
+The second binary FITS table contains an \texttt{nfibers} $\times$ \texttt{npix} float
+image comprised of the best-fit models (template plus polynomials at global
+minimum of $\chi^2$ surface) for each fiber.  
 
-\noindent \texttt{CDELT1}: Shall specify the pixel-to-pixel
-increment in \textbf{base-10 logarithm} of vacuum wavelength from
-one pixel to the next along the wavelength axis. \\
-
-
-The following primary header keyword is \textbf{required} in the
-case that the physical normalization of the templates is meaningful:
-
-\noindent \texttt{BUNIT}: String giving the units of the template spectra. \\
-
-The following primary header keyword is \textbf{required} in the
-case that the templates are given with respect to air wavelengths
-rather than vacuum:
-
-\noindent \texttt{AIRORVAC}: String that is either \texttt{'air'}
-or \texttt{'vac'} depending upon wavelength convention.
-(The only significant value is \texttt{'air'}, since
-anything else, including the absence of this keyword, will
-be interpreted as \texttt{'vac'}.) \\
-
-The following primary header keywords are supported as
-optional but \textbf{recommended}
-in some combination as appropriate:
-
-\noindent \texttt{CNAMEn}: For $n > 1$, a string giving the
-name of the physical parameter coordinate along the $n^{\mathrm{th}}$ axis.
-
-\noindent \texttt{CUNITn}: For $n > 1$, a string giving the
-units of the physical parameter coordinate along the $n^{\mathrm{th}}$ axis.
-
-\noindent \texttt{CRPIXn, CRVALn, CDELTn}: For $n > 1$, specifying
-the physical parameter baselines for axes corresponding to
-regularly gridded numerical physical parameters.
-
-\noindent \texttt{PVn\_j}: For $n > 1$ and for the case of irregularly gridded
-numerical physical parameters along axis $n$ , specifies the parameter value
-of the $j^{\mathrm{th}}$ point along the $n^{\mathrm{th}}$ axis.
-The index $j$ shall begin with 1 and increase in integer steps up to the
-size of the $n^{\mathrm{th}}$ axis, with one keyword per grid step.
-Note that the FITS standard currently limits the maximum size of axes
-that can be represented in this manner to 99, and that leading zero-padding
-is not allowed.
-
-\noindent \texttt{PSn\_j}: For $n > 1$ and for the case of non-numerical
-physical parameters along axis $n$ , specifies the parameter string value
-of the $j^{\mathrm{th}}$ point along the $n^{\mathrm{th}}$ axis.
-The index $j$ shall begin with 1 and increase in integer steps up to the
-size of the $n^{\mathrm{th}}$ axis, with one keyword per grid step.
-Note that the FITS standard currently limits the maximum size of axes
-that can be represented in this manner to 99, and that leading zero-padding
-is not allowed.
-
-\noindent \texttt{Nn\_j}: For $n > 1$ and for the case of arbitrary labels
-along axis $n$, specifies the label string for the $j^{\mathrm{th}}$
-point along the $n^{\mathrm{th}}$ axis.
-The index $j$ shall begin with 1 and increase in integer steps up to the
-size of the $n^{\mathrm{th}}$ axis, with one keyword per grid step.
-These keywords do not belong to the FITS standard,
-and can accommodate dimensionality up to 999.
-
-For any given axis beyond the first (wavelength) axis, the
-\texttt{redmonster} code will use information from the above keywords
-to construct parameter-grid baselines.  The precedence
-for establishing the baseline for each axis is
-first for \texttt{CRPIXn, CRVALn, CDELTn}, then for
-\texttt{PVn\_j}, then for \texttt{PSn\_j}, then
-for \texttt{Nn\_j}, then for a one-based integer baseline
-in the absence of a valid set of keywords of any of the preceding
-specified types.
-
-\section{Implementation}
-
-Reader and writer routines for \texttt{ndArch} files conforming
-to this proposed standard are implemented in the \texttt{redmonster.datamgr.io}
-module as \texttt{read\_ndArch} and \texttt{write\_ndArch}.
-(The location of these routines is subject to change
-with future package reorganizations.)
-Detailed documentation of these file-handling
-routines can be found in their embedded docstrings.
-
-A script called \texttt{test\_ndArch.py} is also provided,
-which generates a file named \texttt{ndArch-TEST-v00.fits},
-which in turn provides a unit test of the functioning of
-the \texttt{read\_ndArch} routine.
+Details for this part still need to be filled in once \texttt{io.py} is edited to write
+the models as well.
 
 \end{document}
