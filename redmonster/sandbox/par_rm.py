@@ -22,7 +22,7 @@ def parallel_rm( (plate,mjd,fiberid) ):
     prihdu = fits.PrimaryHDU(zssp.zchi2arr)
     col1 = fits.Column(name='ZBASE', format='E', array=zssp.zbase)
     cols = fits.ColDefs([col1])
-    tbhdu = fits.new_table(cols)
+    tbhdu = fits.BinTableHDU.from_columns(cols)
     thdulist = fits.HDUList([prihdu,tbhdu])
     thdulist.writeto('chi2arr-%s-%s.fits' % (plate, zssp.type), clobber=True)
     # ----
