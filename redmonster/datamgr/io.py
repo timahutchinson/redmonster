@@ -206,7 +206,7 @@ class Write_Redmonster:
     '''
     Class to write output file at the end of running redmonster.  
     
-    The zpick argumentis simply the entire object created by running
+    The zpick argument is simply the entire object created by running
     redmonster.physics.zpicker.py . The dest argument is a string
     containing the path in which to save the output file.
     
@@ -233,7 +233,11 @@ class Write_Redmonster:
         self.write_rm(zpick, dest)
 
     def write_rm(self, zpick, dest):
+        # Get old header, append new stuff
+        hdr = zpick.hdr
+        hdr.extend([('VERS_RM','v0.X','Version of redmonster used'),('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster completion'), ('NFIBERS', zpick.z.shape[0], 'Number of fibers')])
         prihdu = fits.PrimaryHDU(header=zpick.hdr)
+        # Columns for 1st BIN table
         col1 = fits.Column(name='Z1', format='E', array=zpick.z[:,0])
         col2 = fits.Column(name='Z2', format='E', array=zpick.z[:,1])
         col3 = fits.Column(name='Z_ERR1', format='E', array=zpick.z_err[:,0])
@@ -258,7 +262,9 @@ class Write_Redmonster:
         col13 = fits.Column(name='NPIXSTEP', format='E', array=zpick.npixstep)
         cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13])
         tbhdu = fits.new_table(cols)
-        thdulist = fits.HDUList([prihdu, tbhdu])
+        # ImageHDU of models
+        sechdu = fits.ImageHDU(data=zpick.models)
+        thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #thdulist = fits.HDUList([prihdu, tbhdu])
         if self.clobber:
             if self.dest: thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)), clobber=True)
             else: thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd), clobber=True)
