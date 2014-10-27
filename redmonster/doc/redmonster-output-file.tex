@@ -52,9 +52,8 @@ the file was written.
 
 \subsection{File type}
 
-All \texttt{redmonster} outputs are uncompressed FITS
-files with all relevant information in the primary HDU header and the first and second
-BIN tables.  The file size is approximately 20 MB.
+All \texttt{redmonster} outputs are uncompressed FITS files with all relevant information
+in the primary HDU header, a BIN table, and an imageHDU.  The file size is approximately 20 MB.
 
 \subsection{File structure}
 
@@ -73,21 +72,22 @@ The general structure of the file is as follows:
 \subsection{Header}
 
 The primary HDU header is nearly identical to that of the \textit{spPlate}
-files\footnote{Documented at http://data.sdss3.org/datamodel/index-files.html}, with a few minor additions specific to \texttt{redmonster}.  Those
-additions are as follows:
+files\footnote{Documented at http://data.sdss3.org/datamodel/index-files.html}, with a few minor
+additions specific to \texttt{redmonster}.  Those additions are as follows:
 
 \begin{center}
 	\begin{tabular}{ | l | l | }
 	\hline
-	VERSION\_RM & Version of \texttt{redmonster} that produced the file \\ \hline
-	DATE\_RM & Date and time (GMT) of \texttt{redmonster} completion \\
+	VERS\_RM & Version of \texttt{redmonster} that produced the file \\ \hline
+	DATE\_RM & Date and time (GMT) of \texttt{redmonster} completion \\ \hline
+	NFIBERS & Number of fibers used \\
 	\hline
 	\end{tabular}
 \end{center}
 
-\subsection{Binary tables}
+\subsection{Binary table}
 
-The first binary FITS table contains all redshift and classification information.
+The binary FITS table contains all redshift and classification information.
 The data included is as follows, specified by the binary table's header:
 
 \begin{center}
@@ -109,16 +109,20 @@ The data included is as follows, specified by the binary table's header:
 	\end{tabular}
 \end{center}
 
-In some cases (failure of fit, small $\Delta\chi^2$, etc.), redshift values have
-been set to -1.  In these cases, the associated errors have also been set to -1.
+There are a few things to note about the values in the BIN table.  First, in some cases
+(failure of fit, small $\Delta\chi^2$, etc.), redshift values have been set to -1.  In
+these cases, the associated errors have also been set to -1.  Second, for \textit{ndArch}
+files with multiple parameter dimensions, the dictionaries corresponding to those dimensions
+have been converted into a string when written to SUBCLASS.  The tuples comprising the
+values of MINVECTOR have been treated the same way.  Using the built-in python
+function \texttt{eval()} will convert them back to dictionaries and tuples, respectively.
 
-The second binary FITS table contains an \texttt{nfibers} $\times$ \texttt{npix} float
+\subsection{ImageHDU}
+
+The imageHDU contains an \texttt{nfibers} $\times$ \texttt{npix} float
 image comprised of the best-fit models (template + polynomials at global
 minimum of $\chi^2$ surface) for each fiber.  The models are in units of
 $10^{-17} erg\ cm^{-2} s^{-1} \AA^{-1}$
-
-Details for this part still need to be filled in once \texttt{io.py} is edited to write
-the models as well - I haven't gotten around to doing that yet.
 
 \section{\textit{chi2arr} File}
 
