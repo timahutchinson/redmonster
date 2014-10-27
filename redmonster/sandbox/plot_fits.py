@@ -7,6 +7,7 @@
 #
 # thutchinson@utah.edu
 
+
 from Tkinter import *
 import numpy as n
 import matplotlib
@@ -27,9 +28,8 @@ for file in glob.glob("*.txt"):
     print(file)
 '''
 
-class Plot_Fit:
-
-    def __init__(self, master):
+class Plot_Fit (Frame):
+    def __init__ (self,master):
         self.master = master
         self.plate = None
         self.mjd = None
@@ -40,6 +40,7 @@ class Plot_Fit:
         L3 = Label(master, text='Fiber')
         L3.grid(stick=E)
         self.e1 = Entry(master)
+        self.e1.bind()
         self.e1.grid(row=0, column=1)
         self.e2 = Entry(master)
         self.e2.grid(row=1, column=1)
@@ -48,14 +49,19 @@ class Plot_Fit:
         self.var = IntVar()
         c = Checkbutton(master, text='Overplot best-fit model', variable=self.var)
         c.grid(row=3, column=1)
+        L4 = Label(master, text='Smooth')
+        L4.grid(sticky=E)
+        self.e4 = Entry(master)
+        self.e4.grid(row=4, column=1)
         plot = Button(master, text='Plot', command=self.do_plot)
-        plot.grid(row=4, column=1)
+        plot.grid(row=5, column=1)
         qbutton = Button(master, text='QUIT', fg='red', command=master.destroy)
-        qbutton.grid(row=5, column=1)
+        qbutton.grid(row=6, column=1)
         nextfiber = Button(master, text='>', command=self.next_fiber)
         nextfiber.grid(row=1, column=4)
         prevfiber = Button(master, text='<', command=self.prev_fiber)
         prevfiber.grid(row=1, column=3)
+        Frame.__init__(self,master)
 
     def do_plot(self):
         if self.plate != int(self.e1.get()) or self.mjd != int(self.e2.get()):
@@ -75,8 +81,12 @@ class Plot_Fit:
         if self.var.get() == 0:
             a.plot(self.wave, self.specs[self.fiber], color='red')
         elif self.var.get() == 1:
-            a.plot(self.wave, convolve(self.specs[self.fiber], Box1DKernel(5)), color='red')
-            
+            smooth = self.e4.get()
+            if smooth is '':
+                a.plot(self.wave, self.specs[self.fiber], color='red')
+            else:
+                a.plot(self.wave, convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='red')
+
             # Overplot model
             loc = n.where(self.fiberid == self.fiber)[0]
             if len(loc) is not 0:
@@ -104,4 +114,5 @@ class Plot_Fit:
 
 root = Tk()
 app = Plot_Fit(root)
+app.update()
 root.mainloop()
