@@ -19,49 +19,44 @@ from os import environ
 from os.path import join, exists
 from redmonster.math.misc import poly_array
 from astropy.convolution import convolve, Box1DKernel
-'''
-from __future__ import print_function
-import glob
-import os
-os.chdir("/mydir")
-for file in glob.glob("*.txt"):
-    print(file)
-'''
 
-class Plot_Fit (Frame):
-    def __init__ (self,master):
-        self.master = master
+class Plot_Fit(Frame):
+    def __init__ (self):
+        self.root = Tk()
         self.plate = None
         self.mjd = None
-        L1 = Label(master, text='Plate')
+        L1 = Label(self.root, text='Plate')
         L1.grid(sticky=E)
-        L2 = Label(master, text='MJD')
+        L2 = Label(self.root, text='MJD')
         L2.grid(sticky=E)
-        L3 = Label(master, text='Fiber')
+        L3 = Label(self.root, text='Fiber')
         L3.grid(stick=E)
-        self.e1 = Entry(master)
+        self.e1 = Entry(self.root)
         self.e1.bind()
         self.e1.grid(row=0, column=1)
-        self.e2 = Entry(master)
+        self.e2 = Entry(self.root)
         self.e2.grid(row=1, column=1)
-        self.e3 = Entry(master)
+        fiber = StringVar()
+        fiber.set('100')
+        self.e3 = Entry(self.root, textvariable=fiber)
         self.e3.grid(row=2, column=1)
         self.var = IntVar()
-        c = Checkbutton(master, text='Overplot best-fit model', variable=self.var)
+        c = Checkbutton(self.root, text='Overplot best-fit model', variable=self.var)
         c.grid(row=3, column=1)
-        L4 = Label(master, text='Smooth')
+        L4 = Label(self.root, text='Smooth')
         L4.grid(sticky=E)
-        self.e4 = Entry(master)
+        self.e4 = Entry(self.root)
         self.e4.grid(row=4, column=1)
-        plot = Button(master, text='Plot', command=self.do_plot)
+        plot = Button(self.root, text='Plot', command=self.do_plot)
         plot.grid(row=5, column=1)
-        qbutton = Button(master, text='QUIT', fg='red', command=master.destroy)
+        qbutton = Button(self.root, text='QUIT', fg='red', command=self.root.destroy)
         qbutton.grid(row=6, column=1)
-        nextfiber = Button(master, text='>', command=self.next_fiber)
+        nextfiber = Button(self.root, text='>', command=self.next_fiber)
         nextfiber.grid(row=1, column=4)
-        prevfiber = Button(master, text='<', command=self.prev_fiber)
+        prevfiber = Button(self.root, text='<', command=self.prev_fiber)
         prevfiber.grid(row=1, column=3)
-        Frame.__init__(self,master)
+        Frame.__init__(self,self.root)
+        self.root.mainloop()
 
     def do_plot(self):
         if self.plate != int(self.e1.get()) or self.mjd != int(self.e2.get()):
@@ -96,7 +91,7 @@ class Plot_Fit (Frame):
 
         a.set_xlabel('Wavelength (Angstroms)')
         a.set_ylabel('Flux in some units')
-        canvas = FigureCanvasTkAgg(f, master=self.master)
+        canvas = FigureCanvasTkAgg(f, master=self.root)
         canvas.show()
         canvas.get_tk_widget().grid(row=5, column=5)
 
@@ -112,7 +107,16 @@ class Plot_Fit (Frame):
         self.e3.insert(0, str(self.fiber))
         self.do_plot()
 
-root = Tk()
-app = Plot_Fit(root)
+app = Plot_Fit()
 app.update()
-root.mainloop()
+
+
+
+'''
+    from __future__ import print_function
+    import glob
+    import os
+    os.chdir("/mydir")
+    for file in glob.glob("*.txt"):
+    print(file)
+    '''
