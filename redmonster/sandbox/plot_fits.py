@@ -25,36 +25,46 @@ class Plot_Fit(Frame):
         self.root = Tk()
         self.plate = None
         self.mjd = None
+        #
+        plate = StringVar()
+        plate.set('3686')
+        mjd = StringVar()
+        mjd.set('55268')
+        #
         L1 = Label(self.root, text='Plate')
         L1.grid(sticky=E)
         L2 = Label(self.root, text='MJD')
         L2.grid(sticky=E)
         L3 = Label(self.root, text='Fiber')
         L3.grid(stick=E)
-        self.e1 = Entry(self.root)
+        self.e1 = Entry(self.root, textvariable=plate)
         self.e1.bind()
         self.e1.grid(row=0, column=1)
-        self.e2 = Entry(self.root)
+        self.e2 = Entry(self.root, textvariable=mjd)
         self.e2.grid(row=1, column=1)
         fiber = StringVar()
-        fiber.set('100')
+        fiber.set('0')
         self.e3 = Entry(self.root, textvariable=fiber)
         self.e3.grid(row=2, column=1)
-        self.var = IntVar()
+        self.var = BooleanVar()
+        self.var.set(1)
         c = Checkbutton(self.root, text='Overplot best-fit model', variable=self.var)
         c.grid(row=3, column=1)
+        #
+        smooth = StringVar()
+        smooth.set('5')
         L4 = Label(self.root, text='Smooth')
         L4.grid(sticky=E)
-        self.e4 = Entry(self.root)
+        self.e4 = Entry(self.root, textvariable=smooth)
         self.e4.grid(row=4, column=1)
         plot = Button(self.root, text='Plot', command=self.do_plot)
         plot.grid(row=5, column=1)
         qbutton = Button(self.root, text='QUIT', fg='red', command=self.root.destroy)
         qbutton.grid(row=6, column=1)
         nextfiber = Button(self.root, text='>', command=self.next_fiber)
-        nextfiber.grid(row=1, column=4)
+        nextfiber.grid(row=2, column=4)
         prevfiber = Button(self.root, text='<', command=self.prev_fiber)
-        prevfiber.grid(row=1, column=3)
+        prevfiber.grid(row=2, column=3)
         Frame.__init__(self,self.root)
         self.root.mainloop()
 
@@ -69,9 +79,11 @@ class Plot_Fit(Frame):
             self.wave = 10**(hdu[0].header['COEFF0'] + n.arange(hdu[0].header['NAXIS1'])*hdu[0].header['COEFF1'])
             self.models = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[2].data
             self.fiberid = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.FIBERID
+            self.type = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS
+            self.z = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z1
         else:
             self.fiber = int(self.e3.get())
-        f = Figure(figsize=(10,6), dpi=100)
+        f = Figure(figsize=(15,9), dpi=100)
         a = f.add_subplot(111)
         if self.var.get() == 0:
             a.plot(self.wave, self.specs[self.fiber], color='red')
@@ -81,19 +93,23 @@ class Plot_Fit(Frame):
                 a.plot(self.wave, self.specs[self.fiber], color='red')
             else:
                 a.plot(self.wave, convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='red')
-
             # Overplot model
             loc = n.where(self.fiberid == self.fiber)[0]
             if len(loc) is not 0:
                 a.plot(self.wave, self.models[loc[0]], color='black')
+                a.set_title('Plate %s Fiber %s: z=%s class=%s' % (self.plate, self.fiber, self.z[loc][0], self.type[loc][0]))
             else:
                 print 'Fiber %s is not in redmonster-%s-%s.fits' % (self.fiber, self.plate, self.mjd)
+                a.set_title('Plate %s Fiber %s' % (self.plate, self.fiber))
 
-        a.set_xlabel('Wavelength (Angstroms)')
-        a.set_ylabel('Flux in some units')
+        a.set_xlabel('Wavelength ($\AA$)')
+        a.set_ylabel('Flux ($10^{-17} erg\ cm^2 s^{-1} \AA^{-1}$)')
         canvas = FigureCanvasTkAgg(f, master=self.root)
+        canvas.get_tk_widget().grid(row=0, column=5, rowspan=20)
+        toolbar_frame = Frame(self.root)
+        toolbar_frame.grid(row=20,column=5)
+        toolbar = NavigationToolbar2TkAgg( canvas, toolbar_frame )
         canvas.show()
-        canvas.get_tk_widget().grid(row=5, column=5)
 
     def next_fiber(self):
         self.fiber += 1
@@ -108,8 +124,6 @@ class Plot_Fit(Frame):
         self.do_plot()
 
 app = Plot_Fit()
-app.update()
-
 
 
 '''
