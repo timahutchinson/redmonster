@@ -269,7 +269,7 @@ col1 = fits.Column(name='COMPLETENESS', format='E', array=n.asarray(completeness
 col2 = fits.Column(name='PURITY', format='E', array=n.asarray(purity))
 col3 = fits.Column(name='THRESHOLDS', format='E', array=n.asarray(threshold_vals))
 cols = fits.ColDefs([col1,col2,col3])
-tbhdu = fits.new_table(cols)
+tbhdu = fits.BinTableHDU.from_columns(cols)
 thdulist = fits.HDUList([prihdu,tbhdu])
 thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity_45-65.fits', clobber=True)
 

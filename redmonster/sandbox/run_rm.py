@@ -19,7 +19,7 @@ def parallel_rm( (plate,mjd,fiberid) ):
     prihdu = fits.PrimaryHDU(zssp.zchi2arr)
     col1 = fits.Column(name='ZBASE', format='E', array=zssp.zbase)
     cols = fits.ColDefs([col1])
-    tbhdu = fits.new_table(cols)
+    tbhdu = fits.BinTableHDU.from_columns(cols)
     thdulist = fits.HDUList([prihdu,tbhdu])
     thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-%s.fits' % (plate, zssp.type), clobber=True)
     # ----
@@ -29,7 +29,7 @@ def parallel_rm( (plate,mjd,fiberid) ):
     prihdu = fits.PrimaryHDU(zstar.zchi2arr)
     col1 = fits.Column(name='ZBASE', format='E', array=zstar.zbase)
     cols = fits.ColDefs([col1])
-    tbhdu = fits.new_table(cols)
+    tbhdu = fits.BinTableHDU.from_columns(cols)
     thdulist = fits.HDUList([prihdu,tbhdu])
     thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-%s.fits' % (plate, zstar.type), clobber=True)
     # ----
