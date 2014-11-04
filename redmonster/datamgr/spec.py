@@ -91,7 +91,7 @@ class Spec:
     def flag_sky_fibers(self):
         flag_val = int('0b1',2) # From BOSS zwarning flag definitions
         for i in xrange(self.plugmap.shape[0]):
-            if ( self.plugmap[i]['OBJTYPE'] == 'sky'): self.zwarning = self.zwarning ^ flagval
+            if ( self.plugmap[i]['OBJTYPE'].lower() == 'sky'): self.zwarning = self.zwarning ^ flagval
 
 
 
