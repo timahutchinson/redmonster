@@ -8,7 +8,7 @@
 #
 
 import numpy as n
-from redmonster.math import misc
+from redmonster.physics import misc
 import copy
 from scipy import optimize as opt
 from matplotlib import pyplot as p

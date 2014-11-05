@@ -10,7 +10,7 @@ m.interactive(True)
 from matplotlib import pyplot as p
 from astropy.io import fits
 import os
-from redmonster.math import misc
+from redmonster.physics import misc
 
 
 class SpCFrameAll:

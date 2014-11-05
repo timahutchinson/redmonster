@@ -5,11 +5,11 @@
 # t.hutchinson@utah.edu
 
 import numpy as n
-from redmonster.math.misc import quadfit
+from redmonster.physics.misc import quadfit
 import matplotlib as m
 from matplotlib import pyplot as p
 m.interactive(True)
-from redmonster.math import grid_spline as gs
+from redmonster.physics import grid_spline as gs
 
 class Zfitter:
 

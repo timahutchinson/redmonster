@@ -8,7 +8,7 @@ from os.path import exists, join
 from astropy.io import fits
 import numpy as n
 from math import ceil, floor
-from redmonster.math.misc import flux_check
+from redmonster.physics.misc import flux_check
 
 class Spec:
 

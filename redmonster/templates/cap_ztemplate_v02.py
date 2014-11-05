@@ -7,9 +7,9 @@ from astropy.io import fits
 import os
 #import pixelsplines as pxs
 from redmonster.datamgr import io
-from redmonster.math import pixelsplines as pxs
+from redmonster.physics import pixelsplines as pxs
 import copy
-from redmonster.math import misc
+from redmonster.physics import misc
 from redmonster.physics import airtovac as a2v
 
 # cap_ztemplate_v01.py
