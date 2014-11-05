@@ -8,11 +8,11 @@ from astropy.io import fits
 from redmonster.datamgr import spec, io
 from redmonster.physics import zfinder, zfitter, zpicker
 from redmonster.sandbox import yanny as y
-from redmonster.math import misc
+from redmonster.physics import misc
 from time import gmtime, strftime
 import matplotlib.pyplot as p
 p.interactive(True)
-from redmonster.math.misc import poly_array
+from redmonster.physics.misc import poly_array
 from astropy.convolution import convolve, Box1DKernel
 
 plate = 3686 # Set plate, mjd, and fiberid here

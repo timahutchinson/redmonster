@@ -211,7 +211,7 @@ class Write_Redmonster:
     containing the path in which to save the output file.
     
     If no dest argument is given, or the path does not exist, then the write_rm() method
-    will default to writing in $BOSS_SPECTRO_REDUX/$RUN2D/pppp/$RUN1D/ .  If the
+    will default to writing in $REDMONSTER_SPECTRO_REDUX/$RUN2D/pppp/$RUN1D/ .  If the
     necessary environmental variables are also not specified, it will write in
     directory in which it is being run.
     
@@ -222,7 +222,7 @@ class Write_Redmonster:
         self.clobber = clobber
         if dest and exists(dest): self.dest = dest
         else:
-            bsr = environ['BOSS_SPECTRO_REDUX']
+            bsr = environ['REDMONSTER_SPECTRO_REDUX']
             run2d = environ['RUN2D']
             run1d = environ['RUN1D']
             if bsr and run2d and run1d:

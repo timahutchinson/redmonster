@@ -25,7 +25,7 @@ p.interactive(True)
 from os import environ
 from os.path import join, exists
 from astropy.io import fits
-from redmonster.math.misc import poly_array
+from redmonster.physics.misc import poly_array
 from time import gmtime, strftime
 
 class Find_Lens:

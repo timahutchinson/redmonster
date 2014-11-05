@@ -17,7 +17,7 @@ from matplotlib.figure import Figure
 from astropy.io import fits
 from os import environ
 from os.path import join, exists
-from redmonster.math.misc import poly_array
+from redmonster.physics.misc import poly_array
 from astropy.convolution import convolve, Box1DKernel
 
 class Plot_Fit(Frame):

@@ -10,7 +10,7 @@ m.interactive(True)
 from matplotlib import pyplot as p
 from astropy.io import fits
 import os
-from redmonster.math import misc
+from redmonster.physics import misc
 #from scipy import signal as sig
 from redmonster.datamgr import sdss
 from redmonster.datamgr import io
