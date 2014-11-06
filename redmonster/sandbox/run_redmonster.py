@@ -28,7 +28,7 @@ specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 zssp = zfinder.Zfinder(fname='ndArch-ssp_em_galaxy-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
 
 ''' Run actual fitting routine on the object created above. zssp.zchi2arr is array of of minimum chi^2 values of shape [nfibers, ndim_1, ndim_2, ..., ndim_N, nredshifts], where ndim_i is the i'th dimension of the template file.  Input flux need not be SDSS data - any spectra binned in constant log(lambda) will work.'''
-zssp.zchi2(specs.flux, specs.loglambda, specs.ivar)
+zssp.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
 
 ''' New objects and fitting for different templates. '''
 #zstar = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
