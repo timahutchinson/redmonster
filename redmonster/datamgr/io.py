@@ -7,7 +7,7 @@
 
 import numpy as n
 from astropy.io import fits
-from os import environ
+from os import environ, makedirs
 from os.path import exists, join
 from astropy.io import fits
 from time import gmtime, strftime
@@ -220,15 +220,30 @@ class Write_Redmonster:
     '''
     def __init__(self, zpick, dest=None, clobber=True):
         self.clobber = clobber
-        if dest and exists(dest): self.dest = dest
+        #if dest and exists(dest): self.dest = dest
+        if dest is not None:
+            if exists(dest):
+                self.dest = dest
+            else:
+                try:
+                    makedirs(dest)
+                    self.dest = dest
+                except:
+                    self.dest = None
         else:
             bsr = environ['REDMONSTER_SPECTRO_REDUX']
             run2d = environ['RUN2D']
             run1d = environ['RUN1D']
             if bsr and run2d and run1d:
                 testpath = join(bsr, run2d, '%s' % zpick.plate, run1d)
-                if exists(testpath): self.dest = testpath
-                else: self.dest = None
+                if exists(testpath):
+                    self.dest = testpath
+                else:
+                    try:
+                        makedirs(testpath)
+                        self.dest = testpath
+                    except:
+                        self.dest = None
             else: self.dest = None
         self.write_rm(zpick, dest)
 
@@ -266,15 +281,15 @@ class Write_Redmonster:
         sechdu = fits.ImageHDU(data=zpick.models)
         thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #thdulist = fits.HDUList([prihdu, tbhdu])
         if self.clobber:
-            if self.dest: thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)), clobber=True)
+            if self.dest is not None: thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)), clobber=True)
             else: thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd), clobber=True)
         else:
-            if self.dest:
+            if self.dest is not None:
                 if exists(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))): thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
-                else: thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
+                else: thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)))
             else:
-                if exists('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd)): thdulist.writeto('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
-                else: thdulist.writeto('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd))
+                if exists('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)): thdulist.writeto('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                else: thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))
 
 
 
