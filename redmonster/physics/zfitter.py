@@ -66,7 +66,8 @@ class Zfitter:
                 self.flag_small_dchi2(ifiber, bestzvec, threshold=threshold, width=width) # Flag fibers with small delta chi2 in redshift
 
     def estimate_z_err(self, xp, fit):
-        fitminloc = n.where(fit == n.min(fit))
+        fitminloc = n.where(fit == n.min(fit))[0]
+        if len( fitminloc ) is not 1: fitminloc = fitminloc[0] # Rarely, fit will have two equal global minima - use the first
         z_err = abs(xp[fitminloc]-xp[abs(n.min(fit)+1-fit).argmin()]) # abs() of difference between z_(chi2_min) and z_(chi2_min_+1)
         return z_err
 
