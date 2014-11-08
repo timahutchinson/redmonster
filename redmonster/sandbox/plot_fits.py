@@ -77,13 +77,13 @@ class Plot_Fit(Frame):
             hdu = fits.open(self.platepath)
             self.specs = hdu[0].data
             self.wave = 10**(hdu[0].header['COEFF0'] + n.arange(hdu[0].header['NAXIS1'])*hdu[0].header['COEFF1'])
-            self.models = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[2].data
-            self.fiberid = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.FIBERID
-            self.type = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS
-            self.z = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z1
+            self.models = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[2].data
+            self.fiberid = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.FIBERID
+            self.type = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS
+            self.z = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z1
         else:
             self.fiber = int(self.e3.get())
-        f = Figure(figsize=(15,9), dpi=100)
+        f = Figure(figsize=(10,6), dpi=100)
         a = f.add_subplot(111)
         if self.var.get() == 0:
             a.plot(self.wave, self.specs[self.fiber], color='red')

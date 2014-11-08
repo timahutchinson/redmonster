@@ -33,7 +33,7 @@ class Spec:
         self.set_plate_mjd(plate=plate, mjd=mjd, fiberid=fiberid, data_range=data_range)
         if exists(self.platepath):
             self.ivar, self.dof = flux_check(self.flux, self.ivar)
-            self.zwarning = n.zeros(self.flux.shape[0])
+        #self.zwarning = n.zeros(self.flux.shape[0])
         else: print '%s does not exist.' % self.platepath # This should probably be logged eventually as well
 
     def set_plate_mjd(self, plate=None, mjd=None, fiberid=None, data_range=None):
@@ -46,6 +46,7 @@ class Spec:
                 if data_range: self.chop_data(data_range)
                 if fiberid != None: self.set_fibers(fiberid)
                 else: self.fiberid = [fib for fib in xrange(1000)]
+                self.flag_sky_fibers()
     
     def set_data(self):
         if self.platepath and exists(self.platepath): hdu = fits.open(self.platepath)
@@ -89,9 +90,11 @@ class Spec:
             if self.skyflux.shape[0] != 1: self.skyflux = self.skyflux[fiberid]
 
     def flag_sky_fibers(self):
+        self.zwarning = n.zeros( len(self.fiberid) )
         flag_val = int('0b1',2) # From BOSS zwarning flag definitions
+        import pdb; pdb.set_trace()
         for i in xrange(self.plugmap.shape[0]):
-            if ( self.plugmap[i]['OBJTYPE'].lower() == 'sky'): self.zwarning = self.zwarning ^ flagval
+            if ( self.plugmap[i]['OBJTYPE'].lower() == 'sky'): self.zwarning[i] = int(self.zwarning[i]) ^ flag_val
 
 
 
