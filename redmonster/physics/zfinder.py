@@ -172,6 +172,7 @@ class Zfinder:
         if dest is not None:
             try:
                 thdulist.writeto(join(dest, '%s' % 'chi2arr-%s-%s-%s.fits' % (self.type, plate, mjd)), clobber=True)
+                print 'Writing chi2 file to %s' % join(dest, '%s' % 'chi2arr-%s-%s-%s.fits' % (self.type, plate, mjd))
             except:
                 print 'Environment variables not set or path does not exist - not writing chi2 file!'
         else:
