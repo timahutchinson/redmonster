@@ -1,4 +1,4 @@
-from redmonster.sandbox import main
+from redmonster.tools import main
 
 plates = [3686]
 mjds = [55268]
