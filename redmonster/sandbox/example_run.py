@@ -7,8 +7,8 @@ templates = ['ndArch-all-CAP-grids.fits', 'ndArch-ssp_em_galaxy-v000.fits', 'ndA
 zmin = [-.005,-.01,.4]
 zmax = [.005, 1.2, 3.5]
 npoly = [4,4,4]
-npixstep = [1,2,4]
-dest = '/Users/timhutchinson/compute/scratch'
+npixstep = [1,1,1]
+dest = '/Users/boltonlab3/scratch'
 
 for i in xrange(len(plates)):
-    main.main(plate=plates[i], mjd=mjds[i], templates=templates, fiberid=fiberid, zmin=zmin, zmax=zmax, npoly=npoly, npixstep=npixstep)
+    main.main(plate=plates[i], mjd=mjds[i], templates=templates, fiberid=fiberid, zmin=zmin, zmax=zmax, npoly=npoly, npixstep=npixstep, clobber=False)
