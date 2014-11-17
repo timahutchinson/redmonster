@@ -152,8 +152,11 @@ class Zfinder:
             polyarr = poly_array(self.npoly, specs.shape[-1])
             pmat[:,1:] = n.transpose(polyarr)
             ninv = n.diag(ivar[i])
-            f = n.linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat), n.dot( n.dot(n.transpose(pmat),ninv),specs[i]) )
-            self.models[i] = n.dot(pmat, f)
+            try: # Some eBOSS spectra have ivar[i] = 0 for all i
+                f = n.linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat), n.dot( n.dot(n.transpose(pmat),ninv),specs[i]) )
+                self.models[i] = n.dot(pmat, f)
+            except:
+                self.models[i] = n.zeros(specs.shape[-1])
 
 
     def write_chi2arr(self, plate, mjd):
