@@ -8,7 +8,7 @@
 import numpy as n
 from astropy.io import fits
 from redmonster.datamgr import spec, io
-from redmonster.physics import zfinder, zfitter, zpicker
+from redmonster.physics import zfinder, zfitter, zpicker, zpicker2
 from redmonster.sandbox import yanny as y
 from redmonster.physics import misc
 from time import gmtime, strftime
@@ -18,7 +18,7 @@ p.interactive(True)
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
 plate = 3686
 mjd = 55268
-fiberid = [i for i in xrange(1000)] # fiberid must be a list, not a numpy array
+fiberid = [100] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
@@ -55,7 +55,21 @@ star_flags = misc.comb_flags(specs, zstar, zfit_star)
 qso_flags = misc.comb_flags(specs, zqso, zfit_qso)
 
 ''' Compare chi2 surfaces from each template and classify each object accordingly. Arguments are data object (in a format identical to that created by Spec), followed by each object created by Zfinder, Zfitter, and flags, in that order.  This function can currently handle up to five objects from five separate templates. If specs is a user created data object rather than one created by redmonster.datamgr.spec, it must contain specs.npix, the number of pixels in a single spectrum.'''
-zpick = zpicker.Zpicker(specs, zssp, zfit_ssp, ssp_flags, zstar, zfit_star, star_flags, zqso, zfit_qso, qso_flags)
+#zpick = zpicker.Zpicker(specs, zssp, zfit_ssp, ssp_flags, zstar, zfit_star, star_flags, zqso, zfit_qso, qso_flags)
+zfindobjs=[]
+zfindobjs.append(zssp)
+zfindobjs.append(zstar)
+zfindobjs.append(zqso)
+zfitobjs=[]
+zfitobjs.append(zfit_ssp)
+zfitobjs.append(zfit_star)
+zfitobjs.append(zfit_qso)
+flags = []
+flags.append(ssp_flags)
+flags.append(star_flags)
+flags.append(qso_flags)
+
+zpick = zpicker2.Zpicker(specs, zfindobjs, zfitobjs, flags)
 
 ''' Write output file.  Arguments are zpick object from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
 output = io.Write_Redmonster(zpick)

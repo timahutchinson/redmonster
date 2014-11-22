@@ -83,7 +83,7 @@ class Plot_Fit(Frame):
             self.z = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z1
         else:
             self.fiber = int(self.e3.get())
-        f = Figure(figsize=(10,6), dpi=100)
+        f = Figure(figsize=(15,9), dpi=100)
         a = f.add_subplot(111)
         if self.var.get() == 0:
             a.plot(self.wave, self.specs[self.fiber], color='red')

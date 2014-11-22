@@ -12,7 +12,7 @@ import numpy as n
 
 class Zpicker:
 
-    def __init__(self, specobj, zfind1, zfit1, flags1, zfind2=None, zfit2=None, flags2=None, zfind3=None, zfit3=None, flags3=None, zfind4=None, zfit4=None, flags4=None, zfind5=None, zfit5=None, flags5=None):
+    def __init__(self, specobj, zfindobjs, zfitobjs, flags):
         self.npixflux = specobj.npix
         if specobj.plate: self.plate = specobj.plate
         if specobj.mjd: self.mjd = specobj.mjd
@@ -22,39 +22,84 @@ class Zpicker:
         self.type = []
         self.subtype = []
         self.minvector = []
-        self.z = n.zeros( (zfind1.zchi2arr.shape[0],2) )
-        self.z_err = n.zeros( (zfind1.zchi2arr.shape[0],2) )
-        self.zwarning = []
+        self.z = n.zeros( (zfindobjs[0].zchi2arr.shape[0],5) )
+        self.z_err = n.zeros( (zfindobjs[0].zchi2arr.shape[0],5) )
+        self.zwarning = n.zeros( (zfindobjs[0].zchi2arr.shape[0],5) )
         self.npoly = []
         self.dof = specobj.dof.copy()
         self.npixstep = []
         self.models = n.zeros( (specobj.flux.shape) )
-        if not zfind2: self.nclass = 1
-        elif zfind2 and not zfind3: nclass = 2
-        elif zfind3 and not zfind4: nclass = 3
-        elif zfind4 and not zfind5: nclass = 4
-        else: nclass = 5
-        self.nclass = nclass
-        self.minrchi2 = n.zeros( (zfind1.zchi2arr.shape[0],nclass) )
-        self.classify_obj(zfind1, zfit1, flags1, zfind2, zfit2, flags2, zfind3, zfit3, flags3, zfind4, zfit4, flags4, zfind5, zfit5, flags5)
+        self.nclass = len(zfindobjs)
+        self.minrchi2 = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.nclass*5) )
+        self.classify_obj(zfindobjs, zfitobjs, flags)
     
-    def classify_obj(self, zfind1, zfit1, flags1, zfind2, zfit2, flags2, zfind3, zfit3, flags3, zfind4, zfit4, flags4, zfind5, zfit5, flags5):
-        flag_val = int('0b100',2) # From BOSS zwarning flag definitions
-        for ifiber in xrange(zfind1.zchi2arr.shape[0]):
-            #self.minrchi2[ifiber,0] = n.min(zfind1.zchi2arr[ifiber]) / (self.npixflux - zfind1.npoly) # Calculate reduced chi**2 values to compare templates of differing lengths
-            #if zfind2: self.minrchi2[ifiber,1] = n.min(zfind2.zchi2arr[ifiber]) / (self.npixflux - zfind2.npoly)
-            #if zfind3: self.minrchi2[ifiber,2] = n.min(zfind3.zchi2arr[ifiber]) / (self.npixflux - zfind3.npoly)
-            #if zfind4: self.minrchi2[ifiber,3] = n.min(zfind4.zchi2arr[ifiber]) / (self.npixflux - zfind4.npoly)
-            #if zfind5: self.minrchi2[ifiber,4] = n.min(zfind5.zchi2arr[ifiber]) / (self.npixflux - zfind5.npoly)
-            # Try using specobj.dof instead, because it accounts for masked pixels
-            self.minrchi2[ifiber,0] = n.min(zfind1.zchi2arr[ifiber]) / (self.dof[ifiber] - zfind1.npoly) # Calculate reduced chi**2 values to compare templates of differing lengths
-            if zfind2: self.minrchi2[ifiber,1] = n.min(zfind2.zchi2arr[ifiber]) / (self.dof[ifiber] - zfind2.npoly)
-            if zfind3: self.minrchi2[ifiber,2] = n.min(zfind3.zchi2arr[ifiber]) / (self.dof[ifiber] - zfind3.npoly)
-            if zfind4: self.minrchi2[ifiber,3] = n.min(zfind4.zchi2arr[ifiber]) / (self.dof[ifiber] - zfind4.npoly)
-            if zfind5: self.minrchi2[ifiber,4] = n.min(zfind5.zchi2arr[ifiber]) / (self.dof[ifiber] - zfind5.npoly)
+    def classify_obj(self, zfindobjs, zfitobjs, flags):
+        flag_val = int('0b100',2) # From BOSS zwarning flag definitions for small dchi2
+        objtypes = []
+        for ifiber in xrange(zfindobjs[0].zchi2arr.shape[0]):
+            for itemp in xrange(self.nclass):
+                for i in xrange(5):
+                    self.minrchi2[ifiber,(itemp*5)+i] = n.min(zfindobjs[itemp].zchi2arr[ifiber]) / (self.dof[ifiber] - zfindobjs[itemp].npoly)
+                    zfindobjs[itemp].zchi2arr[ifiber][n.unravel_index(zfindobjs[itemp].zchi2arr[ifiber].argmin(), zfindobjs[itemp].zchi2arr[ifiber].shape)] = 10000000.
+                objtypes.append(zfindobjs[itemp].type)
+                objtypes.append(zfindobjs[itemp].type)
+                objtypes.append(zfindobjs[itemp].type)
+                objtypes.append(zfindobjs[itemp].type)
+                objtypes.append(zfindobjs[itemp].type)
 
-            minpos = self.minrchi2[ifiber].argmin() # Location of best chi2 of array of best (individual template) chi2s
+            import pdb; pdb.set_trace()
             
+            minpos = []
+            for ipos in xrange(5):
+                minpos.append(self.minrchi2[ifiber].argmin())
+                self.minrchi2[ifiber,minpos[ipos]] = 10000000.
+                while (int(flags[minpos[ipos]/5][ifiber]) & 8) == 8:
+                    minpos[ipos] = self.minrchi2[ifiber].argmin()
+                    self.minrchi2[ifiber,minpos[ipos]] = 10000000.
+                self.type.append(objtypes[ipos])
+            
+#            minpos1 = self.minrchi2[ifiber].argmin() # Location of best chi2 of array of best (individual template) chi2s
+#            self.minrchi2[ifiber,minpos1] = 10000000.
+#            while (flags[minpos1/5][ifiber] & 8) == 8:
+#                minpos1 = self.minrchi2[ifiber].argmin()
+#                minpos1 = self.minrchi2[ifiber,minpos1] = 10000000.
+#
+#            minpos2 = self.minrchi2[ifiber].argmin()
+#            self.minrchi2[ifiber,minpos2] = 10000000.
+#            while (flags[minpos2/5][ifiber] & 8) == 8:
+#                minpos2 = self.minrchi2[ifiber].argmin()
+#                minpos2 = self.minrchi2[ifiber,minpos2] = 10000000.
+#
+#            minpos3 = self.minrchi2[ifiber].argmin()
+#            self.minrchi2[ifiber,minpos3] = 10000000.
+#            while (flags[minpos3/5][ifiber] & 8) == 8:
+#                minpos3 = self.minrchi2[ifiber].argmin()
+#                minpos3 = self.minrchi2[ifiber,minpos3] = 10000000.
+#
+#            minpos4 = self.minrchi2[ifiber].argmin()
+#            self.minrchi2[ifiber,minpos4] = 10000000.
+#            while (flags[minpos4/5][ifiber] & 8) == 8:
+#                minpos4 = self.minrchi2[ifiber].argmin()
+#                minpos4 = self.minrchi2[ifiber,minpos4] = 10000000.
+#
+#            minpos5 = self.minrchi2[ifiber].argmin()
+#            self.minrchi2[ifiber,minpos5] = 10000000.
+#            while (flags[minpos5/5][ifiber] & 8) == 8:
+#                minpos5 = self.minrchi2[ifiber].argmin()
+#                minpos5 = self.minrchi2[ifiber,minpos5] = 10000000.
+
+
+
+
+
+
+
+
+
+
+
+
+
             if minpos == 0: # Means overall chi2 minimum came from template 1
                 self.type.append(zfind1.type)
                 self.minvector.append(zfit1.minvector[ifiber][1:])
