@@ -143,7 +143,7 @@ for i in xrange(8):
     numgals += len(args[i][2])
 print 'Total number of galaxies:' + str(numgals)
 
-threshold_vals = [5.+(.2*i) for i in xrange(100)]
+threshold_vals = [45.+(.2*i) for i in xrange(100)]
 completeness = []
 purity = []
 
@@ -162,7 +162,7 @@ def find_comp_purity(this_thresh, args):
         zperson = iarg[3]
         
         origlen = float(len(fiberid))
-        badfibs = n.where(n.asarray(iargs[5]) != 'v5_4_9 ok')[0]
+        badfibs = n.where(n.asarray(iarg[5]) != 'v5_4_9 ok')[0]
         usefiberid = n.delete(n.asarray(fiberid),badfibs).tolist()
         usezperson = n.delete(n.asarray(zperson),badfibs).tolist()
 
@@ -186,7 +186,7 @@ def find_comp_purity(this_thresh, args):
         ssp_flags = misc.comb_flags_2(specs, zfit_ssp.zwarning)
         star_flags = misc.comb_flags_2(specs, zfit_star.zwarning)
         
-        zpick = Hacked_zpicker(specs, sspchi2arr, zfit_ssp, ssp_flags, starchi2arr, zfit_star, star_flags)
+        zpick = Hacked_zpicker(specs, usefiberid, sspchi2arr, zfit_ssp, ssp_flags, starchi2arr, zfit_star, star_flags)
         
         #completeness.append( (len(n.where(zpick.zwarning == 0)[0]))/float(len(fiberid)) )
         completeness.append( (len(n.where((zpick.zwarning.astype(int) & 4) == 0)[0]))/float(len(usefiberid)) )
@@ -271,7 +271,7 @@ col3 = fits.Column(name='THRESHOLDS', format='E', array=n.asarray(threshold_vals
 cols = fits.ColDefs([col1,col2,col3])
 tbhdu = fits.BinTableHDU.from_columns(cols)
 thdulist = fits.HDUList([prihdu,tbhdu])
-thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity_5-25.fits', clobber=True)
+thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/comp_purity_45-65.fits', clobber=True)
 
 
 
