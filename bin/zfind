@@ -20,15 +20,8 @@ if not arg.mjd: parser.error("Please specify a valid --mjd")
 if arg.inifile and confdir:
     inifile = path.join(inidir,arg.inifile) if inidir else arg.inifile
 
-zfind = zfind.Zfind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
-zfind.reduce_plate_mjd(arg.plate,arg.mjd)
-
-"""
-this can still be run without the ini file, using the set_templates method:
-zfind = zfind.Zfind(dest=arg.dest, clobber=arg.clobber)
-zfind.set_templates(templates=[],zmin=[],zmax=[],npoly=[],npixstep=[])
-zfind.reduce_plate_mjd(arg.plate,arg.mjd)"""
-
+zf = zfind.Zfind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
+zf.reduce_plate_mjd(arg.plate,arg.mjd)
 
 
 """ usage
