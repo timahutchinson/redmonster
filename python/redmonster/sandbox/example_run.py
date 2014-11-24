@@ -1,4 +1,4 @@
-from redmonster.tools import main
+from redmonster.application import zfind
 
 plates = [8123]
 mjds = [56931]
@@ -10,5 +10,6 @@ npoly = [4,4,4]
 npixstep = [1,2,4]
 dest = '/Users/boltonlab3/scratch'
 
+
 for i in xrange(len(plates)):
-    main.main(plate=plates[i], mjd=mjds[i], templates=templates, fiberid=fiberid, zmin=zmin, zmax=zmax, npoly=npoly, npixstep=npixstep, clobber=False)
+    zfind.Zfind(plate=plates[i], mjd=mjds[i], templates=templates, fiberid=fiberid, zmin=zmin, zmax=zmax, npoly=npoly, npixstep=npixstep, clobber=False)
