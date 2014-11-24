@@ -32,7 +32,7 @@ import sys
 
 class Zfind:
 
-    def __init__(self, inifile=None, dest=None, clobber=True):
+    def __init__(self, inifile=None, dest=None, clobber=False):
         self.inifile = inifile
         self.dest = dest
         self.clobber = clobber
