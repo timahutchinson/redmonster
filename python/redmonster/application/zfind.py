@@ -36,7 +36,7 @@ class Zfind:
         self.inifile = inifile
         self.dest = dest
         self.clobber = clobber
-        if self.inifile: self:set_templates_from_inifile()
+        if self.inifile: self.set_templates_from_inifile()
 
     def set_templates_from_inifile(self):
         self.labels = []
