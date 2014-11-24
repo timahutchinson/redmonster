@@ -11,5 +11,7 @@ npixstep = [1,2,4]
 dest = '/Users/boltonlab3/scratch'
 
 
+zf = zfind.Zfind(dest=dest, clobber=False)
+zf.set_templates(templates=templates, zmin=zmin, zmax=zmax, npoly=npoly, npixstep=npixstep)
 for i in xrange(len(plates)):
-    zfind.Zfind(plate=plates[i], mjd=mjds[i], templates=templates, fiberid=fiberid, zmin=zmin, zmax=zmax, npoly=npoly, npixstep=npixstep, clobber=False)
+    zf.reduce_plate_mjd(plate=plates[i], mjd=mjds[i], fiberid=fiberid)
