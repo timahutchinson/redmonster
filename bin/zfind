@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser
+
+parser = ArgumentParser()
+parser.add_argument("-p", "--plate", help="Run Redmonster on this Plate",type=int,metavar="PLATE")
+parser.add_argument("-m", "--mjd", help="Run Redmonster on this MJD",type=int,metavar="MJD")
+parser.add_argument("-c", "--clobber", help="clobber this PLATE/MJD",action="store_true")
+parser.add_argument("-z", "--zmin", help="zmin for each template",type=float,nargs=3,metavar="ZMIN")
+parser.add_argument("-Z", "--zmax", help="zmax for each template",type=float,nargs=3,metavar="ZMAX")
+parser.add_argument("-n", "--npoly", help="npoly",type=int,nargs=3,metavar="NPOLY")
+parser.add_argument("-s", "--npixstep", help="npixstep",type=int,nargs=3,metavar="NPIXSTEP")
+parser.add_argument("-d", "--dest", help="overide REDMONSTER_SPECTRO_REDUX",type=str,metavar="DEST")
+parser.add_argument("-t", "--templates", help="overide REDMONSTER_TEMPLATES_DIR",type=str,metavar="TEMPLATES")
+arg = parser.parse_args()
+
+from redmonster.application import zfind
+zfind.Zfind(plate=arg.plate, mjd=arg.mjd, zmin=arg.zmin, zmax=arg.zmax, npoly=arg.npoly, npixstep=arg.npixstep, clobber=arg.clobber)
+
+""" usage
+runredmonster -p 8123 -m 56931 --zmin -.005 -.01 .4 --zmax .005 1.2 3.5 --npoly 4 4 4 --npixstep 1 2 4 --clobber"""
+
