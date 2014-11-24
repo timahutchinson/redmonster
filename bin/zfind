@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser
+from is import environ
+from redmonster.application import zfind
+
+try: confdir = environ['REDMONSTER_CONF_DIR']
+except: confdir = None
+
+
+parser = ArgumentParser()
+parser.add_argument("-p", "--plate", help="Run Redmonster on this Plate",type=int,metavar="PLATE")
+parser.add_argument("-m", "--mjd", help="Run Redmonster on this MJD",type=int,metavar="MJD")
+parser.add_argument("-i", "--inifile", help="templates configuration ini file [default zfind.ini]",type=str,metavar="INIFILE")
+parser.add_argument("-c", "--clobber", help="clobber this PLATE/MJD",action="store_true")
+parser.add_argument("-d", "--dest", help="overide REDMONSTER_SPECTRO_REDUX",type=str,metavar="DEST")
+
+arg = parser.parse_args()
+if not arg.plate: parser.error("Please specify a valid --plate")
+if not arg.mjd: parser.error("Please specify a valid --mjd")
+if arg.inifile and confdir:
+    inifile = path.join(inidir,arg.inifile) if inidir else arg.inifile
+
+zfind = zfind.Zfind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
+zfind.reduce_plate_mjd(arg.plate,arg.mjd)
+
+"""
+this can still be run without the ini file, using the set_templates method:
+zfind = zfind.Zfind(dest=arg.dest, clobber=arg.clobber)
+zfind.set_templates(templates=[],zmin=[],zmax=[],npoly=[],npixstep=[])
+zfind.reduce_plate_mjd(arg.plate,arg.mjd)"""
+
+
+
+""" usage
+zfind -p 8123 -m 56931 --inifile mytemplates.ini --clobber"""
+zfind -p 8123 -m 56931 --clobber"""
+
