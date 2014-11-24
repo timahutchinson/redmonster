@@ -23,6 +23,7 @@ class Zfitter:
 
     def z_refine(self, threshold=46.6, width=15):
         self.threshold = threshold
+        self.width = width
         for ifiber in xrange(self.zchi2.shape[0]):
             self.minvector.append( (ifiber,) + n.unravel_index(self.zchi2[ifiber].argmin(),self.zchi2[ifiber].shape))
             bestzvec = n.zeros( self.zchi2.shape[-1])

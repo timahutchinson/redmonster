@@ -6,6 +6,7 @@
 # each entry is a string of objclassN.type for the best reduced chi2 amongst all input classes.
 #
 # Tim Hutchinson, University of Utah, July 2014
+# Significantly rewritten by TH, November 2014
 # t.hutchinson@utah.edu
 
 import numpy as n
@@ -40,7 +41,8 @@ class Zpicker:
             for itemp in xrange(self.nclass):
                 for i in xrange(5):
                     self.minrchi2[ifiber,(itemp*5)+i] = n.min(zfindobjs[itemp].zchi2arr[ifiber]) / (self.dof[ifiber] - zfindobjs[itemp].npoly)
-                    zfindobjs[itemp].zchi2arr[ifiber][n.unravel_index(zfindobjs[itemp].zchi2arr[ifiber].argmin(), zfindobjs[itemp].zchi2arr[ifiber].shape)] = 10000000.
+                    loc = n.unravel_index(zfindobjs[itemp].zchi2arr[ifiber].argmin(), zfindobjs[itemp].zchi2arr[ifiber].shape)
+                    zfindobjs[itemp].zchi2arr[ifiber][loc[:-1]][(loc[-1]-zfitobjs[itemp].width):(loc[-1]+zfitobjs[itemp].width)] = 10000000.
                 objtypes.append(zfindobjs[itemp].type)
                 objtypes.append(zfindobjs[itemp].type)
                 objtypes.append(zfindobjs[itemp].type)
