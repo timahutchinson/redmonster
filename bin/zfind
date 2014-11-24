@@ -16,9 +16,9 @@ if not arg.plate: parser.error("Please specify a valid --plate")
 if not arg.mjd: parser.error("Please specify a valid --mjd")
 
 print "done"
-#from redmonster.application import zfind
-#zfind.Zfind(plate=arg.plate, mjd=arg.mjd, zmin=arg.zmin, zmax=arg.zmax, npoly=arg.npoly, npixstep=arg.npixstep, clobber=arg.clobber)
+from redmonster.application import zfind
+zfind.Zfind(plate=arg.plate, mjd=arg.mjd, zmin=arg.zmin, zmax=arg.zmax, npoly=arg.npoly, npixstep=arg.npixstep, clobber=arg.clobber)
 
 """ usage
-runredmonster -p 8123 -m 56931 --zmin -.005 -.01 .4 --zmax .005 1.2 3.5 --npoly 4 4 4 --npixstep 1 2 4 --clobber"""
+zfind -p 8123 -m 56931 --zmin -.005 -.01 .4 --zmax .005 1.2 3.5 --npoly 4 4 4 --npixstep 1 2 4 --clobber"""
 
