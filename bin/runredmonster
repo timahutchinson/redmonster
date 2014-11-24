@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser
+
+parser = ArgumentParser()
+parser.add_argument("-p", "--plate", help="Run Redmonster on this Plate",type=int,metavar="PLATE")
+parser.add_argument("-m", "--mjd", help="Run Redmonster on this MJD",type=int,metavar="MJD")
+parser.add_argument("-z", "--zmin", help="zmin for each template",type=float,metavar="ZMIN")
+parser.add_argument("-Z", "--zmax", help="zmax for each template",type=float,metavar="ZMAXu")
+
+arg = parser.parse_args()
+scusspath = arg.scusspath
+
+
+""" usage 
+    runredmonster --plate (-p) 8123 --mjd (-m) 56931 --zmin (-z) [-.005,-.01,.4] --zmax (-Z) [.005, 1.2, 3.5] --npoly (-n) [4,4,4] --npixstep (-s) [1,2,4] --dest (-d) path --clobber (-c)
+    
