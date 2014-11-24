@@ -17,8 +17,7 @@ parser.add_argument("-d", "--dest", help="overide REDMONSTER_SPECTRO_REDUX",type
 arg = parser.parse_args()
 if not arg.plate: parser.error("Please specify a valid --plate")
 if not arg.mjd: parser.error("Please specify a valid --mjd")
-if arg.inifile and confdir:
-    inifile = path.join(inidir,arg.inifile) if inidir else arg.inifile
+inifile = path.join(inidir,arg.inifile) if inidir else arg.inifile
 
 zf = zfind.Zfind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
 zf.reduce_plate_mjd(arg.plate,arg.mjd)
