@@ -48,16 +48,16 @@ class Zfind:
         
         if exists(self.inifile):
             self.option = SafeConfigParser()
-                self.option.optionxform = unicode
-                r = self.option.read(self.inifile)
-                if len(r) == 1:
-                    for section in self.option.sections()
-                        self.labels.append(section)
-                        self.templates.append(self.option.get(section,'template'))
-                        self.zmin.append(self.option.getfloat(section,'zmin'))
-                        self.zmax.append(self.option.getfloat(section,'zmax'))
-                        self.npoly.append(self.option.getint(section,'npoly'))
-                        self.npixstep.append(self.option.getint(section,'npixstep'))
+            self.option.optionxform = unicode
+            r = self.option.read(self.inifile)
+            if len(r) == 1:
+                for section in self.option.sections()
+                    self.labels.append(section)
+                    self.templates.append(self.option.get(section,'template'))
+                    self.zmin.append(self.option.getfloat(section,'zmin'))
+                    self.zmax.append(self.option.getfloat(section,'zmax'))
+                    self.npoly.append(self.option.getint(section,'npoly'))
+                    self.npixstep.append(self.option.getint(section,'npixstep'))
             self.set_templates()
         else: print "WARNING: %r does not exist" % self.inifile
                         
