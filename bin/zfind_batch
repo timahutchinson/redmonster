@@ -3,7 +3,7 @@ from pbs import queue
 queue = queue()
 nodes = 12
 walltime = '336:00:00'
-queue.create(label='redmonster',nodes=nodes,walltime=walltime)
+queue.create(label='zfind',nodes=nodes,walltime=walltime)
 
 
 plates = [8123]
