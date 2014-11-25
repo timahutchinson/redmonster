@@ -221,7 +221,6 @@ class Write_Redmonster:
     def __init__(self, zpick, dest=None, clobber=False):
         self.clobber = clobber
         #if dest and exists(dest): self.dest = dest
-        import pdb; pdb.set_trace()
         if dest is not None:
             if exists(dest):
                 self.dest = dest
