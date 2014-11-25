@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 from pbs import queue
 queue = queue()
+queue.verbose = True
 nodes = 12
 walltime = '336:00:00'
-queue.create(label='zfind',nodes=nodes,walltime=walltime)
+queue.create(label='zfind',alloc='sdss-kp',nodes=nodes,ppn=16,walltime=walltime)
 
 
 plates = [8123]
