@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
 from os import environ
-import os.path
+from os.path import join
 from redmonster.application import zfind
 
-try: confdir = environ['REDMONSTER_CONF_DIR']
-except: confdir = None
+try: inidir = environ['REDMONSTER_CONF_DIR']
+except: inidir = None
 
 
 parser = ArgumentParser()
@@ -18,7 +18,7 @@ parser.add_argument("-d", "--dest", help="overide REDMONSTER_SPECTRO_REDUX",type
 arg = parser.parse_args()
 if not arg.plate: parser.error("Please specify a valid --plate")
 if not arg.mjd: parser.error("Please specify a valid --mjd")
-inifile = os.path.join(inidir,arg.inifile) if inidir else arg.inifile
+inifile = join(inidir,arg.inifile) if inidir else arg.inifile
 
 zf = zfind.Zfind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
 zf.reduce_plate_mjd(arg.plate,arg.mjd)
