@@ -70,6 +70,12 @@ class Zfind:
             if not self.zmax: self.zmax = None
             if not self.npixstep: self.npixstep = None
             
+            print '%r' % self.labels
+            print '%r' % self.templates
+            print '%r' % self.zmin
+            print '%r' % self.zmax
+            print '%r' % self.npixstep
+            
             self.set_templates()
         else: print "WARNING: %r does not exist" % self.inifile
 
