@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from os import environ
 from os.path import join
+from glob import iglob
 from pbs import queue
 queue = queue()
 queue.verbose = True
@@ -11,11 +12,18 @@ try: topdir = environ['BOSS_SPECTRO_REDUX']
 except: topdir = None
 try: run2d = environ['RUN2D']
 except: run2d = None
-reduxdir = join(topdir,run2d) if topdir and run2d else None
+platedir = join(topdir,run2d,'*') if topdir and run2d else None
+
+plates=[]
+mjds=[]
+if platedir:
+    for p in iglob(platedir):
+        try: plate = int(p)
+        except: plate = None
+        if plate:
+        
 
 
-plates = [8123]
-mjds = [56931]
 
 queue.create(label='zfind',alloc='sdss-kp',nodes=nodes,ppn=16,walltime=walltime)
 for i,plate in enumerate(plates): queue.append("zfind -p %i -m %i " % (plate,mjds[i]))
