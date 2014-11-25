@@ -37,7 +37,6 @@ class Zfinder:
     
 
     def read_template(self):
-        import pdb; pdb.set_trace()
         self.templates, self.baselines, self.infodict = read_ndArch(join(self.templatesdir,self.fname))
         self.type = self.infodict['class']
         self.origshape = self.templates.shape

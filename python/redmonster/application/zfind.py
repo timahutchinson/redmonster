@@ -167,7 +167,6 @@ class Zfind:
             else: fiberid = map(int, fiberid)
 
         # Spec
-        print 'specs!'
         specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 
         # Zfinder, Zfitter
@@ -187,13 +186,11 @@ class Zfind:
                 zfitobjs[i].z_refine()
 
         # Flags
-        print 'flags!'
         flags = []
         for i in xrange(len(zfindobjs)):
             flags.append( misc.comb_flags(specs, zfindobjs[i], zfitobjs[i]) )
 
         # Zpicker
-        print 'zpicker!'
         if len(self.templates) == 1: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0])
         elif len(self.templates) == 2: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1])
         elif len(self.templates) == 3: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
@@ -205,7 +202,6 @@ class Zfind:
                                                           zfindobjs[4], zfitobjs[4], flags[4])
 
         # Write output
-        print 'outputs!'
         if self.dest is None:
             output = io.Write_Redmonster(zpick, clobber=self.clobber)
         else:
