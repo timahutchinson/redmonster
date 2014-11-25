@@ -5,7 +5,7 @@ from glob import iglob
 from pbs import queue
 queue = queue()
 queue.verbose = True
-nodes = 5
+nodes = 12
 walltime = '336:00:00'
 
 try: topdir = environ['BOSS_SPECTRO_REDUX']
@@ -28,12 +28,10 @@ if platedir:
         if plate and mjd:
             plates.append(plate)
             mjds.append(mjd)
-    print len(plates)
-    print mjds
 
 
 
 
-#queue.create(label='zfind',alloc='sdss-kp',nodes=nodes,ppn=16,walltime=walltime)
-#for i,plate in enumerate(plates): queue.append("zfind -p %i -m %i " % (plate,mjds[i]))
-#queue.commit(hard=True,submit=True)
+queue.create(label='zfind',alloc='sdss-kp',nodes=nodes,ppn=16,walltime=walltime)
+for i,plate in enumerate(plates): queue.append("zfind -p %i -m %i " % (plate,mjds[i]))
+queue.commit(hard=True,submit=True)
