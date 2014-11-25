@@ -9,5 +9,5 @@ queue.create(label='zfind',nodes=nodes,walltime=walltime)
 plates = [8123]
 mjds = [56931]
 
-for i,plate in enumerate(plates): queue.append("zfind -p %i -m %i " % (plate,mjds[i])
+for i,plate in enumerate(plates): queue.append("zfind -p %i -m %i " % (plate,mjds[i]))
 queue.commit(hard=True,submit=True)
