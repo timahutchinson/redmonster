@@ -63,6 +63,7 @@ class Zfind:
                     if self.option.has_option(section,'zmax'): self.zmax.append(self.option.getfloat(section,'zmax'))
                     if self.option.has_option(section,'npoly'): self.npoly.append(self.option.getint(section,'npoly'))
                     if self.option.has_option(section,'npixstep'): self.npixstep.append(self.option.getint(section,'npixstep'))
+            else: print "Cannot parse ini file %r" % self.inifile
             
             if not self.labels: self.labels = None
             if not self.templates: self.templates = None
