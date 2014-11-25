@@ -54,14 +54,20 @@ class Zfind:
             if len(r) == 1:
                 for section in self.option.sections():
                     self.labels.append(section)
-                    self.templates.append(self.option.get(section,'template'))
-                    self.zmin.append(self.option.getfloat(section,'zmin'))
-                    self.zmax.append(self.option.getfloat(section,'zmax'))
-                    self.npoly.append(self.option.getint(section,'npoly'))
-                    self.npixstep.append(self.option.getint(section,'npixstep'))
+                    if self.option.has_option(section,'template'): self.templates.append(self.option.get(section,'template'))
+                    if self.option.has_option(section,'zmin'): self.zmin.append(self.option.getfloat(section,'zmin'))
+                    if self.option.has_option(section,'zmax'): self.zmax.append(self.option.getfloat(section,'zmax'))
+                    if self.option.has_option(section,'npoly'): self.npoly.append(self.option.getint(section,'npoly'))
+                    if self.option.has_option(section,'npixstep'): self.npixstep.append(self.option.getint(section,'npixstep'))
             self.set_templates()
         else: print "WARNING: %r does not exist" % self.inifile
-                        
+
+        if not self.labels: self.labels = None
+        if not self.templates: self.templates = None
+        if not self.zmin: self.zmin = None
+        if not self.zmax: self.zmax = None
+        if not self.npixstep: self.npixstep = None
+
     def set_templates(self, templates=None, zmin=None, zmax=None, npoly=None, npixstep=None):
         if templates: self.templates = templates
         if zmin: self.zmin = zmin
