@@ -63,14 +63,16 @@ class Zfind:
                     if self.option.has_option(section,'zmax'): self.zmax.append(self.option.getfloat(section,'zmax'))
                     if self.option.has_option(section,'npoly'): self.npoly.append(self.option.getint(section,'npoly'))
                     if self.option.has_option(section,'npixstep'): self.npixstep.append(self.option.getint(section,'npixstep'))
+            
+            if not self.labels: self.labels = None
+            if not self.templates: self.templates = None
+            if not self.zmin: self.zmin = None
+            if not self.zmax: self.zmax = None
+            if not self.npixstep: self.npixstep = None
+            
             self.set_templates()
         else: print "WARNING: %r does not exist" % self.inifile
 
-        if not self.labels: self.labels = None
-        if not self.templates: self.templates = None
-        if not self.zmin: self.zmin = None
-        if not self.zmax: self.zmax = None
-        if not self.npixstep: self.npixstep = None
 
     def set_templates(self, templates=None, zmin=None, zmax=None, npoly=None, npixstep=None):
         if templates: self.templates = templates
