@@ -65,6 +65,7 @@ class Zfind:
             if not self.templates: self.templates = None
             if not self.zmin: self.zmin = None
             if not self.zmax: self.zmax = None
+            if not self.npoly: self.npoly = None
             if not self.npixstep: self.npixstep = None
             
             self.set_templates()
