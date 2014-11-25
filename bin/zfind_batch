@@ -34,6 +34,6 @@ if platedir:
 
 
 
-#queue.create(label='zfind',alloc='sdss-kp',nodes=nodes,ppn=16,walltime=walltime)
-#for i,plate in enumerate(plates): queue.append("zfind -p %i -m %i " % (plate,mjds[i]))
-#queue.commit(hard=True,submit=True)
+queue.create(label='zfind',alloc='sdss-kp',nodes=nodes,ppn=16,walltime=walltime)
+for i,plate in enumerate(plates): queue.append("zfind -p %i -m %i " % (plate,mjds[i]))
+queue.commit(hard=True,submit=True)
