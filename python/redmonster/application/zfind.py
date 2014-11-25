@@ -53,10 +53,6 @@ class Zfind:
             r = self.option.read(self.inifile)
             if len(r) == 1:
                 for section in self.option.sections():
-                    print section
-                    print "template=%r" % self.option.get(section,'template')
-                    print "zmin=%r" % self.option.get(section,'zmin')
-                    
                     self.labels.append(section)
                     if self.option.has_option(section,'template'): self.templates.append(self.option.get(section,'template'))
                     if self.option.has_option(section,'zmin'): self.zmin.append(self.option.getfloat(section,'zmin'))
@@ -70,12 +66,6 @@ class Zfind:
             if not self.zmin: self.zmin = None
             if not self.zmax: self.zmax = None
             if not self.npixstep: self.npixstep = None
-            
-            print '%r' % self.labels
-            print '%r' % self.templates
-            print '%r' % self.zmin
-            print '%r' % self.zmax
-            print '%r' % self.npixstep
             
             self.set_templates()
         else: print "WARNING: %r does not exist" % self.inifile
