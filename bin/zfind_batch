@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from os import environ
-from os.path import join
+from os.path import join, basename
 from glob import iglob
 from pbs import queue
 queue = queue()
@@ -17,14 +17,15 @@ platedir = join(topdir,run2d,'*') if topdir and run2d else None
 plates=[]
 mjds=[]
 if platedir:
-    for p in iglob(platedir):
-        try: plate = int(p)
+    for path in iglob(platedir):
+        print path
+        try: plate = int(basename(path))
         except: plate = None
-        if plate:
+        print '%r' % plate
         
 
 
 
-queue.create(label='zfind',alloc='sdss-kp',nodes=nodes,ppn=16,walltime=walltime)
-for i,plate in enumerate(plates): queue.append("zfind -p %i -m %i " % (plate,mjds[i]))
-queue.commit(hard=True,submit=True)
+#queue.create(label='zfind',alloc='sdss-kp',nodes=nodes,ppn=16,walltime=walltime)
+#for i,plate in enumerate(plates): queue.append("zfind -p %i -m %i " % (plate,mjds[i]))
+#queue.commit(hard=True,submit=True)
