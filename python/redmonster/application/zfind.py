@@ -51,7 +51,7 @@ class Zfind:
             self.option.optionxform = unicode
             r = self.option.read(self.inifile)
             if len(r) == 1:
-                for section in self.option.sections()
+                for section in self.option.sections():
                     self.labels.append(section)
                     self.templates.append(self.option.get(section,'template'))
                     self.zmin.append(self.option.getfloat(section,'zmin'))
