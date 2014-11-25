@@ -53,6 +53,10 @@ class Zfind:
             r = self.option.read(self.inifile)
             if len(r) == 1:
                 for section in self.option.sections():
+                    print section
+                    print "template=%r" % self.option.get(section,'template')
+                    print "zmin=%r" % self.option.get(section,'zmin')
+                    
                     self.labels.append(section)
                     if self.option.has_option(section,'template'): self.templates.append(self.option.get(section,'template'))
                     if self.option.has_option(section,'zmin'): self.zmin.append(self.option.getfloat(section,'zmin'))
