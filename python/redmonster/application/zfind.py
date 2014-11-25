@@ -65,6 +65,7 @@ class Zfind:
             if not self.templates: self.templates = None
             if not self.zmin: self.zmin = None
             if not self.zmax: self.zmax = None
+            if not self.npoly: self.npoly = None
             if not self.npixstep: self.npixstep = None
             
             self.set_templates()
@@ -174,7 +175,6 @@ class Zfind:
         zfitobjs = []
         if (self.zmin is not None) & (self.zmax is not None):
             for i in xrange(len(self.templates)):
-                import pdb; pdb.set_trace()
                 zfindobjs.append( zfinder.Zfinder(fname=self.templates[i], npoly=self.npoly[i], zmin=self.zmin[i], zmax=self.zmax[i]) )
                 zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar, npixstep=self.npixstep[i] )
                 zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr, zfindobjs[i].zbase) )
