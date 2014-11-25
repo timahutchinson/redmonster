@@ -20,8 +20,8 @@ if platedir:
     for path in iglob(platedir):
         spfile = basename(path)
         try:
-            plate = spfile[8:12]
-            mjd = spfile[13:18]
+            plate = int(spfile[8:12])
+            mjd = int(spfile[13:18])
         except:
             plate = None
             mjd = None
