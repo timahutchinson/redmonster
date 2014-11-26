@@ -245,9 +245,8 @@ class Write_Redmonster:
                     except:
                         self.dest = None
             else: self.dest = None
-        self.write_rm(zpick, dest)
 
-    def write_rm(self, zpick, dest):
+    def create_hdulist(self, zpick):
         # Get old header, append new stuff
         hdr = zpick.hdr
         hdr.extend([('VERS_RM','v0.X','Version of redmonster used'),('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster completion'), ('NFIBERS', zpick.z.shape[0], 'Number of fibers')])
@@ -279,36 +278,62 @@ class Write_Redmonster:
         tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
         # ImageHDU of models
         sechdu = fits.ImageHDU(data=zpick.models)
-        thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #thdulist = fits.HDUList([prihdu, tbhdu])
+        self.thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #self.thdulist = fits.HDUList([prihdu, tbhdu])
+    
+
+    def write_fiberid(self, zpick, dest):
+        self.create_hdulist(zpick)
+
         if self.clobber:
             if self.dest is not None:
-                thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)), clobber=self.clobber)
+                self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0])), clobber=self.clobber)
+                print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0]))
+            else:
+                self.thdulist.writeto('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0]), clobber=self.clobber)
+                print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd) )
+        else:
+            if self.dest is not None:
+                if exists(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0]))):
+                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
+                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                else:
+                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0])))
+                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0]))
+            else:
+                if exists('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0])):
+                    self.thdulist.writeto('redmonster-%s-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                else:
+                    self.thdulist.writeto('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0]))
+                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, zpick.fiberid[0]))
+
+
+
+    def write_plate(self, zpick, dest):
+        self.create_hdulist(zpick)
+        
+        if self.clobber:
+            if self.dest is not None:
+                self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)), clobber=self.clobber)
                 print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))
             else:
-                thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd), clobber=self.clobber)
+                self.thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd), clobber=self.clobber)
                 print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd) )
         else:
             if self.dest is not None:
                 if exists(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))):
-                    thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
+                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
                     print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
                 else:
-                    thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)))
+                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)))
                     print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))
             else:
                 if exists('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)):
-                    thdulist.writeto('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                    self.thdulist.writeto('redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
                     print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s.fits' % (zpick.plate, zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
                 else:
-                    thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))
+                    self.thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))
                     print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))
-
-
-
-
-
-
-
 
 
 

@@ -201,6 +201,8 @@ class Zfind:
                                                           zfindobjs[2], zfitobjs[2], flags[2], zfindobjs[3], zfitobjs[3], flags[3],
                                                           zfindobjs[4], zfitobjs[4], flags[4])
 
+        output = None
+
         # Write output
         if self.dest is None:
             output = io.Write_Redmonster(zpick, clobber=self.clobber)
@@ -215,10 +217,14 @@ class Zfind:
                     print 'Could not convert dest to string - writing to default directory and NOT clobbering old files!'
                     output = io.Write_Redmonster(zpick, clobber=False)
 
+        if output:
+            if len(zpick.fiberid) == 1: output.write_fiberid()
+            else: output.write_plate()
 
 
 
-        
+
+
 
 
 
