@@ -27,8 +27,8 @@ class Zfinder:
         self.zmax = float(zmax)
         self.pixoffset = None
         self.zchi2arr = None
-        try: self.specdir = environ['REDMONSTER_TEMPLATES_DIR']
-        except: self.specdir = None
+        try: self.templatesdir = environ['REDMONSTER_TEMPLATES_DIR']
+        except: self.templatesdir = None
         self.read_template()
         self.npars = len(self.templates.shape) - 1
         self.templates_flat = n.reshape(self.templates, (-1,self.fftnaxis1))
@@ -37,7 +37,7 @@ class Zfinder:
     
 
     def read_template(self):
-        self.templates, self.baselines, self.infodict = read_ndArch(join(self.specdir,'templates',self.fname))
+        self.templates, self.baselines, self.infodict = read_ndArch(join(self.templatesdir,self.fname))
         self.type = self.infodict['class']
         self.origshape = self.templates.shape
         self.ntemps = self.templates[...,0].size

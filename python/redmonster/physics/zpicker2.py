@@ -40,16 +40,13 @@ class Zpicker:
         for ifiber in xrange(zfindobjs[0].zchi2arr.shape[0]):
             for itemp in xrange(self.nclass):
                 for i in xrange(5):
+                    import pdb; pdb.set_trace()
                     self.minrchi2[ifiber,(itemp*5)+i] = n.min(zfindobjs[itemp].zchi2arr[ifiber]) / (self.dof[ifiber] - zfindobjs[itemp].npoly)
                     loc = n.unravel_index(zfindobjs[itemp].zchi2arr[ifiber].argmin(), zfindobjs[itemp].zchi2arr[ifiber].shape)
                     zfindobjs[itemp].zchi2arr[ifiber][loc[:-1]][(loc[-1]-zfitobjs[itemp].width):(loc[-1]+zfitobjs[itemp].width)] = 10000000.
-                objtypes.append(zfindobjs[itemp].type)
-                objtypes.append(zfindobjs[itemp].type)
-                objtypes.append(zfindobjs[itemp].type)
-                objtypes.append(zfindobjs[itemp].type)
-                objtypes.append(zfindobjs[itemp].type)
+                for i in xrange(5):
+                    objtypes.append(zfindobjs[itemp].type)
 
-            import pdb; pdb.set_trace()
             
             minpos = []
             for ipos in xrange(5):

@@ -218,7 +218,7 @@ class Write_Redmonster:
     The default behavior is to clobber any older version of the output file in the
     given directory.  Setting clobber=False will cause a new version to be written.
     '''
-    def __init__(self, zpick, dest=None, clobber=True):
+    def __init__(self, zpick, dest=None, clobber=False):
         self.clobber = clobber
         #if dest and exists(dest): self.dest = dest
         if dest is not None:
@@ -282,10 +282,10 @@ class Write_Redmonster:
         thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #thdulist = fits.HDUList([prihdu, tbhdu])
         if self.clobber:
             if self.dest is not None:
-                thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)), clobber=True)
+                thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd)), clobber=self.clobber)
                 print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd))
             else:
-                thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd), clobber=True)
+                thdulist.writeto('redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd), clobber=self.clobber)
                 print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s.fits' % (zpick.plate, zpick.mjd) )
         else:
             if self.dest is not None:

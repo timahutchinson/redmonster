@@ -1,22 +1,37 @@
 #!/usr/bin/env python
+from os import environ
+from os.path import join, basename
+from glob import iglob
 from pbs import queue
 queue = queue()
+queue.verbose = True
 nodes = 12
 walltime = '336:00:00'
-queue.create(label='redmonster',nodes=nodes,walltime=walltime)
+
+try: topdir = environ['BOSS_SPECTRO_REDUX']
+except: topdir = None
+try: run2d = environ['RUN2D']
+except: run2d = None
+platedir = join(topdir,run2d,'*','spPlate-*.fits') if topdir and run2d else None
+
+plates=[]
+mjds=[]
+if platedir:
+    for path in iglob(platedir):
+        spfile = basename(path)
+        try:
+            plate = int(spfile[8:12])
+            mjd = int(spfile[13:18])
+        except:
+            plate = None
+            mjd = None
+        if plate and mjd:
+            plates.append(plate)
+            mjds.append(mjd)
 
 
-plates = [8123]
-mjds = [56931]
-fiberid = [i for i in xrange(1000)]
-templates = ['ndArch-all-CAP-grids.fits', 'ndArch-ssp_em_galaxy-v000.fits', 'ndArch-QSO-V003.fits']
-zmin = [-.005,-.01,.4]
-zmax = [.005, 1.2, 3.5]
-npoly = [4,4,4]
-npixstep = [1,2,4]
-dest = '/Users/boltonlab3/scratch'
 
-for i in xrange(len(plates)):
-    main.main(plate=plates[i], mjd=mjds[i], templates=templates, fiberid=fiberid, zmin=zmin, zmax=zmax, npoly=npoly, npixstep=npixstep, clobber=False)
-for jj in range(N_nodes): queue.append("python example" % (command,N_nodes,jj,scusspath))
+
+queue.create(label='zfind',alloc='sdss-kp',nodes=nodes,ppn=16,walltime=walltime)
+for i,plate in enumerate(plates): queue.append("zfind -p %i -m %i " % (plate,mjds[i]))
 queue.commit(hard=True,submit=True)
