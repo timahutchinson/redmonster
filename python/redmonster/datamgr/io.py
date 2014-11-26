@@ -287,26 +287,26 @@ class Write_Redmonster:
 
         if self.clobber:
             if self.dest is not None:
-                self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])), clobber=self.clobber)
-                print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
+                self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])), clobber=self.clobber)
+                print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
             else:
-                self.thdulist.writeto('redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]), clobber=self.clobber)
-                print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd) )
+                self.thdulist.writeto('redmonster-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]), clobber=self.clobber)
+                print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd) )
         else:
             if self.dest is not None:
-                if exists(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))):
-                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
-                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                if exists(join(self.dest, '%s' % 'redmonster-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))):
+                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
+                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
                 else:
-                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])))
-                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
+                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])))
+                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
             else:
-                if exists('redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])):
-                    self.thdulist.writeto('redmonster-%s-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
-                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                if exists('redmonster-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])):
+                    self.thdulist.writeto('redmonster-%s-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
                 else:
-                    self.thdulist.writeto('redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
-                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
+                    self.thdulist.writeto('redmonster-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
+                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%04d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
 
 
 
