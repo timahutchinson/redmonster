@@ -8,6 +8,18 @@ queue.verbose = True
 nodes = 12
 walltime = '336:00:00'
 
+try: uufscell = environ['UUFSCELL']
+except: uufscell = None
+if 'kingspeak' in uufscell:
+    alloc = 'sdss-kp'
+    ppn=16
+elif 'ember' in uufscell:
+    alloc = 'bolton-em'
+    ppn=12
+else:
+    alloc = None
+    ppn=None
+
 try: topdir = environ['BOSS_SPECTRO_REDUX']
 except: topdir = None
 try: run2d = environ['RUN2D']
@@ -32,6 +44,6 @@ if platedir:
 
 
 
-queue.create(label='zfind',alloc='sdss-kp',nodes=nodes,ppn=16,walltime=walltime)
+queue.create(label='zfind',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
 for i,plate in enumerate(plates): queue.append("zfind -p %i -m %i " % (plate,mjds[i]))
 queue.commit(hard=True,submit=True)
