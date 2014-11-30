@@ -8,9 +8,10 @@
 import numpy as n
 from astropy.io import fits
 from os import environ, makedirs, getcwd
-from os.path import exists, join
+from os.path import exists, join, basename
 from astropy.io import fits
 from time import gmtime, strftime
+from glob import iglob
 
 def read_ndArch(fname):
     """
@@ -214,9 +215,9 @@ class Write_Redmonster:
     will default to writing in $REDMONSTER_SPECTRO_REDUX/$RUN2D/pppp/$RUN1D/ .  If the
     necessary environmental variables are also not specified, it will write in
     directory in which it is being run.
-    
-    The default behavior is to clobber any older version of the output file in the
-    given directory.  Setting clobber=False will cause a new version to be written.
+
+    The default behavior is to not clobber any older version of the output file in the
+    given directory.  Setting clobber=True will overwrite old versions of the output file.
     '''
     def __init__(self, zpick, dest=None, clobber=False):
         self.clobber = clobber
@@ -250,7 +251,7 @@ class Write_Redmonster:
     def create_hdulist(self):
         # Get old header, append new stuff
         hdr = self.zpick.hdr
-        hdr.extend([('VERS_RM','v0.X','Version of redmonster used'),('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster completion'), ('NFIBERS', self.zpick.z.shape[0], 'Number of fibers')])
+        hdr.extend([('VERS_RM','v0.-1','Version of redmonster used'),('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster completion'), ('NFIBERS', self.zpick.z.shape[0], 'Number of fibers')])
         prihdu = fits.PrimaryHDU(header=self.zpick.hdr)
         # Columns for 1st BIN table
         col1 = fits.Column(name='Z1', format='E', array=self.zpick.z[:,0])
@@ -337,8 +338,74 @@ class Write_Redmonster:
                     print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd))
 
 
+# Combine individual fiber fits files into a single plate file, or combine all plate files into an spAll-like file
+# To combine fiber files, create object for a given plate, mjd and call method combine_fibers()
+# To create spAll-like file, instantiate with no plate, mjd and call methond combine_plates()
+#
+# Tim Hutchinson, University of Utah, November 2014
+# t.hutchinson@utah.edu
+
+class Combine_Redmonster:
+
+    def __init__(self, plate=None, mjd=None):
+        self.plate = plate
+        self.mjd = mjd
 
 
+    def combine_fibers(self):
+        self.filepaths = []
+        self.type = []
+        self.subtype = []
+        self.fiberid = []
+        self.minvec = []
+        self.zwarning = []
+        self.dof = []
+        self.npoly = []
+        self.fname = []
+        self.npixstep = []
+        self.models = None
+
+        try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
+        except: topdir = None
+        try: run2d = environ['RUN2D']
+        except: run2d = None
+        try: run1d = environ['RUN1D']
+        except: run1d = None
+        fiberdir = join(topdir, run2d, self.plate, run1d, 'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if topdir and run2d and run1d else None
+
+        if fiberdir:
+            for path in iglob(fiberdir):
+                self.filepaths.append(path)
+                fiberfile = basename(path)
+                self.fiberid.append( int(fiberfile[22:25]) )
+            self.z = n.zeros( (len(self.fiberid),2) )
+            self.z_err = n.zeros( self.z.shape )
+            try: self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
+            except: self.hdr = None
+            npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].data.shape[1]
+            self.models = n.zeros( (self.z.shape[0],npix) )
+            for i, path in enumerate(self.filepaths):
+                hdu = fits.open(path)
+                self.z[i,0] = hdu[1].data.Z1[0]
+                self.z[i,1] = hdu[1].data.Z2[0]
+                self.z_err[i,0] = hdu[1].data.Z_ERR1[0]
+                self.z_err[i,1] = hdu[1].data.Z_ERR2[0]
+                self.type.append(hdu[1].data.CLASS[0])
+                self.subtype.append(hdu[1].data.SUBCLASS[0])
+                self.minvec.append(hdu[1].data.MINVEC[0])
+                self.zwarning.append(hdu[1].data.ZWARNING[0])
+                self.dof.append(hdu[1].data.DOF[0])
+                self.npoly.append(hdu[1].data.NPOLY[0])
+                self.fname.append(hdu[1].data.FNAME[0])
+                self.npixstep.append(hdu[1].data.NPIXSTEP[0])
+                self.models[i] = hdu[2].data[0]
+
+        output = Write_Redmonster(self)
+        output.write_plate()
+
+
+    def combine_plates(self):
+        pass
 
 
 
