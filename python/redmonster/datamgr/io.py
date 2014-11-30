@@ -380,9 +380,9 @@ class Combine_Redmonster:
                 self.fiberid.append( int(fiberfile[22:25]) )
             self.z = n.zeros( (len(self.fiberid),2) )
             self.z_err = n.zeros( self.z.shape )
-            try: self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
+            try: self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
             except: self.hdr = None
-            npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].data.shape[1]
+            npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].data.shape[1]
             self.models = n.zeros( (self.z.shape[0],npix) )
             for i, path in enumerate(self.filepaths):
                 hdu = fits.open(path)
