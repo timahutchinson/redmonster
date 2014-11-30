@@ -357,7 +357,7 @@ class Combine_Redmonster:
         self.type = []
         self.subtype = []
         self.fiberid = []
-        self.minvec = []
+        self.minvector = []
         self.zwarning = []
         self.dof = []
         self.npoly = []
@@ -392,7 +392,7 @@ class Combine_Redmonster:
                 self.z_err[i,1] = hdu[1].data.Z_ERR2[0]
                 self.type.append(hdu[1].data.CLASS[0])
                 self.subtype.append(hdu[1].data.SUBCLASS[0])
-                self.minvec.append(hdu[1].data.MINVECTOR[0])
+                self.minvector.append(hdu[1].data.MINVECTOR[0])
                 self.zwarning.append(hdu[1].data.ZWARNING[0])
                 self.dof.append(hdu[1].data.DOF[0])
                 self.npoly.append(hdu[1].data.NPOLY[0])
