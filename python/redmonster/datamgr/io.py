@@ -371,7 +371,7 @@ class Combine_Redmonster:
         except: run2d = None
         try: run1d = environ['RUN1D']
         except: run1d = None
-        fiberdir = join(topdir, run2d, self.plate, run1d, 'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if topdir and run2d and run1d else None
+        fiberdir = join(topdir, run2d, '%s' % self.plate, run1d, 'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if topdir and run2d and run1d else None
 
         if fiberdir:
             for path in iglob(fiberdir):
