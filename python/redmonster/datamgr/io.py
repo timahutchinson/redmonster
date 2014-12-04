@@ -405,7 +405,48 @@ class Combine_Redmonster:
 
 
     def combine_plates(self):
-        pass
+        self.filepaths = []
+        self.type = []
+        self.subtype = []
+        self.fiberid = []
+        self.minvector = []
+        self.zwarning = []
+        self.dof = []
+        self.npoly = []
+        self.fname = []
+        self.npixstep = []
+        self.models = None
+        self.plates = []
+
+        try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
+        except: topdir = None
+        try: run2d = environ['RUN2D']
+        except: run2d = None
+        try: run1d = environ['RUN1D']
+        except: run1d = None
+        platedir = join( topdir, run2d, '*') if topdir and run2d else None
+
+        if platedir:
+            for path in iglob(platedir):
+                self.plates.append( basename(path) )
+            for plate in self.plates:
+                mjds = []
+                try:
+                    for x in iglob( join( topdir, run2d, str(plate), run1d, 'redmonster-%s-*-000.fits' % plate) ):
+                        if mjds is not basename(x)[16:21]: mjds = basename(x)[16:21]
+                            else: mjds.append( basename(x)[16:21] )
+                except: mjds = None
+                if mjds is not None:
+                    for mjd in mjds:
+                        filepath = join( topdir, run2d, str(plate), run1d, 'redmonster-%s-%s.fits' % (plate, mjd))
+                        try: self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
+                        except: self.hdr = None
+                        npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].data.shape[1]
+                        if exists(filepath):
+
+
+
+
 
 
 
