@@ -26,8 +26,10 @@ if platedir:
             mjds = []
             try:
                 for x in iglob( join( topdir, run2d, str(plate), run1d, 'redmonster-%s-*-000.fits' % plate) ):
-                    if mjds is not basename(x)[16:21]: mjds = basename(x)[16:21]
-                    else: mjds.append( basename(x)[16:21] )
+                    if mjds is not basename(x)[16:21]:
+                        mjds = basename(x)[16:21]
+                    else:
+                        mjds.append( basename(x)[16:21] )
             except: mjds = None
             for mjd in mjds:
                 x = io.Combine_Redmonster(plate, mjd)
