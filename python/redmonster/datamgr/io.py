@@ -430,11 +430,12 @@ class Merge_Redmonster:
             for path in iglob(platedir):
                 self.plates.append( basename(path) )
                 self.fiberid = self.plates
+            self.plates.sort()
             for plate in self.plates:
                 mjds = []
                 try:
                     for x in iglob( join( topdir, run2d, str(plate), run1d, 'redmonster-%s-*-000.fits' % plate) ):
-                        if mjds is not basename(x)[16:21]: mjds = basename(x)[16:21]
+                        if mjds is not basename(x)[16:21]: mjds.append(basename(x)[16:21])
                         else: mjds.append( basename(x)[16:21] )
                 except: mjds = None
                 if mjds is not None:
