@@ -400,7 +400,7 @@ class Combine_Redmonster:
                 self.npixstep.append(hdu[1].data.NPIXSTEP[0])
                 self.models[i] = hdu[2].data[0]
 
-        output = Write_Redmonster(self)
+        output = Write_Redmonster(self, clobber=True)
         output.write_plate()
 
 
