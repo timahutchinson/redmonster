@@ -442,7 +442,7 @@ class Combine_Redmonster:
                         try: self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
                         except: self.hdr = None
                         npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].data.shape[1]
-                        if exists(filepath):
+#if exists(filepath):
 
 
 
