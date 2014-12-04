@@ -452,14 +452,14 @@ class Merge_Redmonster:
                             self.npoly.append(hdu[1].data.NPOLY)
                             self.fname.append(hdu[1].data.FNAME)
                             self.npixstep.append(hdu[1].data.NPIXSTEP)
-                            if self.z1: self.z1 = n.append(self.z1, hdu[1].data.Z1)
-                            else: self.z1 = hdu[1].data.Z1
-                            if self.z_err1: self.z_err1 = n.append(self.z_err1, hdu[1].data.Z_ERR1)
-                            else: self.z_err1 = hdu[1].data.Z_ERR1
-                            if self.z2: self.z2 = n.append(self.z2, hdu[1].data.Z2)
-                            else: self.z2 = hdu[1].data.Z2
-                            if self.z_err2: self.z_err2 = n.append(self.z_err2, hdu[1].data.Z_ERR2)
-                            else: self.z_err2 = hdu[1].data.Z_ERR2
+                            try: self.z1 = n.append(self.z1, hdu[1].data.Z1)
+                            except: self.z1 = hdu[1].data.Z1
+                            try: self.z_err1 = n.append(self.z_err1, hdu[1].data.Z_ERR1)
+                            except: self.z_err1 = hdu[1].data.Z_ERR1
+                            try: self.z2 = n.append(self.z2, hdu[1].data.Z2)
+                            except: self.z2 = hdu[1].data.Z2
+                            try: self.z_err2 = n.append(self.z_err2, hdu[1].data.Z_ERR2)
+                            except: self.z_err2 = hdu[1].data.Z_ERR2
         self.z = n.zeros( (self.z1.shape[0],2) )
         self.z_err = n.zeros( self.z.shape )
         self.z[0] = self.z1
