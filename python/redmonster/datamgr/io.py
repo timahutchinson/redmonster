@@ -382,7 +382,7 @@ class Merge_Redmonster:
             self.z = n.zeros( (len(self.fiberid),2) )
             self.z_err = n.zeros( self.z.shape )
             try: self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
-            except: self.hdr = None
+            except: self.hdr = fits.Header()
             npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].data.shape[1]
             self.models = n.zeros( (self.z.shape[0],npix) )
             for i, path in enumerate(self.filepaths):
@@ -417,7 +417,7 @@ class Merge_Redmonster:
         self.npixstep = []
         self.plates = []
         self.models = n.zeros((1,1))
-        self.hdr = None
+        self.hdr = fits.Header()
 
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
         except: topdir = None
