@@ -462,10 +462,10 @@ class Merge_Redmonster:
                             except: self.z_err2 = hdu[1].data.Z_ERR2
         self.z = n.zeros( (self.z1.shape[0],2) )
         self.z_err = n.zeros( self.z.shape )
-        self.z[0] = self.z1
-        self.z[1] = self.z2
-        self.z_err[0] = self.z_err1
-        self.z_err[1] = self.z_err2
+        self.z[:,0] = self.z1
+        self.z[:,1] = self.z2
+        self.z_err[:,0] = self.z_err1
+        self.z_err[:,1] = self.z_err2
 
         output = Write_Redmonster(self)
         output.create_hdulist()
