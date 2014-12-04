@@ -445,14 +445,14 @@ class Merge_Redmonster:
                         #npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd) ) )[0].data.shape[1]
                         if exists(filepath):
                             hdu = fits.open(filepath)
-                            self.type += hdu[1].data.CLASS
-                            self.subtype += hdu[1].data.SUBCLASS
-                            self.minvector += hdu[1].data.MINVECTOR
-                            self.zwarning += hdu[1].data.ZWARNING
-                            self.dof += hdu[1].data.DOF
-                            self.npoly += hdu[1].data.NPOLY
-                            self.fname += hdu[1].data.FNAME
-                            self.npixstep += hdu[1].data.NPIXSTEP
+                            self.type += hdu[1].data.CLASS.tolist()
+                            self.subtype += hdu[1].data.SUBCLASS.tolist()
+                            self.minvector += hdu[1].data.MINVECTOR.tolist()
+                            self.zwarning += hdu[1].data.ZWARNING.tolist()
+                            self.dof += hdu[1].data.DOF.tolist()
+                            self.npoly += hdu[1].data.NPOLY.tolist()
+                            self.fname += hdu[1].data.FNAME.tolist()
+                            self.npixstep += hdu[1].data.NPIXSTEP.tolist()
                             try: self.z1 = n.append(self.z1, hdu[1].data.Z1)
                             except: self.z1 = hdu[1].data.Z1
                             try: self.z_err1 = n.append(self.z_err1, hdu[1].data.Z_ERR1)
