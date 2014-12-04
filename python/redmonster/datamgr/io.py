@@ -468,7 +468,7 @@ class Merge_Redmonster:
 
         output = Write_Redmonster(self)
         output.create_hdulist()
-        output.thdulist.writeto( join( topdir, run2d, 'redmonster-all-%s.fits' % run2d) clobber=True)
+        output.thdulist.writeto( join( topdir, run2d, 'redmonster-all-%s.fits' % run2d), clobber=True)
 
 
 
