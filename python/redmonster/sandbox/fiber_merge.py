@@ -24,6 +24,7 @@ plates = []
 if platedir:
     for path in iglob(platedir):
         plates.append( basename(path) )
+        plates.sort()
     for plate in plates:
         mjds = []
         try:
@@ -34,6 +35,6 @@ if platedir:
                     mjds.append( basename(x)[16:21] )
         except: mjds = None
         for mjd in mjds:
-            x = io.Combine_Redmonster(plate, mjd)
-            x.combine_fibers()
+            x = io.Merge_Redmonster(plate, mjd)
+            x.merge_fibers()
 

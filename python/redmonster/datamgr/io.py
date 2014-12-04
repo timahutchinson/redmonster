@@ -339,20 +339,20 @@ class Write_Redmonster:
 
 
 # Combine individual fiber fits files into a single plate file, or combine all plate files into an spAll-like file
-# To combine fiber files, create object for a given plate, mjd and call method combine_fibers()
-# To create spAll-like file, instantiate with no plate, mjd and call methond combine_plates()
+# To combine fiber files, create object for a given plate, mjd and call method merge_fibers()
+# To create spAll-like file, instantiate with no plate, mjd and call methond merge_plates()
 #
 # Tim Hutchinson, University of Utah, November 2014
 # t.hutchinson@utah.edu
 
-class Combine_Redmonster:
+class Merge_Redmonster:
 
     def __init__(self, plate=None, mjd=None):
         self.plate = plate
         self.mjd = mjd
 
 
-    def combine_fibers(self):
+    def merge_fibers(self):
         self.filepaths = []
         self.type = []
         self.subtype = []
@@ -364,6 +364,7 @@ class Combine_Redmonster:
         self.fname = []
         self.npixstep = []
         self.models = None
+        self.hdr = None
 
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
         except: topdir = None
@@ -404,8 +405,7 @@ class Combine_Redmonster:
         output.write_plate()
 
 
-    def combine_plates(self):
-        self.filepaths = []
+    def merge_plates(self):
         self.type = []
         self.subtype = []
         self.fiberid = []
@@ -415,8 +415,8 @@ class Combine_Redmonster:
         self.npoly = []
         self.fname = []
         self.npixstep = []
-        self.models = None
         self.plates = []
+        self.models = n.zeros((1,1))
 
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
         except: topdir = None
@@ -439,12 +439,35 @@ class Combine_Redmonster:
                 if mjds is not None:
                     for mjd in mjds:
                         filepath = join( topdir, run2d, str(plate), run1d, 'redmonster-%s-%s.fits' % (plate, mjd))
-                        try: self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
-                        except: self.hdr = None
-                        npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].data.shape[1]
-#if exists(filepath):
+                        #npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd) ) )[0].data.shape[1]
+                        if exists(filepath):
+                            hdu = fits.open(filepath)
+                            self.type.append(hdu[1].data.CLASS)
+                            self.subtype.append(hdu[1].data.SUBCLASS)
+                            self.minvector.append(hdu[1].data.MINVECTOR)
+                            self.zwarning.append(hdu[1].data.ZWARNING)
+                            self.dof.append(hdu[1].data.DOF)
+                            self.npoly.append(hdu[1].data.NPOLY)
+                            self.fname.append(hdu[1].data.FNAME)
+                            self.npixstep.append(hdu[1].data.NPIXSTEP)
+                            if self.z1: self.z1 = n.append(self.z1, hdu[1].data.Z1)
+                            else: self.z1 = hdu[1].data.Z1
+                            if self.z_err1: self.z_err1 = n.append(self.z_err1, hdu[1].data.Z_ERR1)
+                            else: self.z_err1 = hdu[1].data.Z_ERR1
+                            if self.z2: self.z2 = n.append(self.z2, hdu[1].data.Z2)
+                            else: self.z2 = hdu[1].data.Z2
+                            if self.z_err2: self.z_err2 = n.append(self.z_err2, hdu[1].data.Z_ERR2)
+                            else: self.z_err2 = hdu[1].data.Z_ERR2
+        self.z = n.zeros( (self.z1.shape[0],2) )
+        self.z_err = n.zeros( self.z.shape )
+        self.z[0] = self.z1
+        self.z[1] = self.z2
+        self.z_err[0] = self.z_err1
+        self.z_err[1] = self.z_err2
 
-
+        output = Write_Redmonster(self)
+        output.create_hdulist()
+        output.thdulist.writeto( join( topdir, run2d, 'redmonster-all-%s.fits' % run2d) clobber=True)
 
 
 
