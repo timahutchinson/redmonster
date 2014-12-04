@@ -429,7 +429,7 @@ class Merge_Redmonster:
         if platedir:
             for path in iglob(platedir):
                 self.plates.append( basename(path) )
-                self.fiberid = self.plates.copy()
+                self.fiberid = self.plates
             for plate in self.plates:
                 mjds = []
                 try:
