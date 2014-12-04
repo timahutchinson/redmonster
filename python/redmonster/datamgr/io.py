@@ -385,6 +385,8 @@ class Merge_Redmonster:
             except: self.hdr = fits.Header()
             npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].data.shape[1]
             self.models = n.zeros( (self.z.shape[0],npix) )
+            self.filepaths.sort()
+            self.fiberid.sort()
             for i, path in enumerate(self.filepaths):
                 hdu = fits.open(path)
                 self.z[i,0] = hdu[1].data.Z1[0]
