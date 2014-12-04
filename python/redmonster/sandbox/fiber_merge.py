@@ -18,6 +18,8 @@ except: run2d = None
 try: run1d = environ['RUN1D']
 except: run1d = None
 platedir = join( topdir, run2d, '*') if topdir and run2d else None
+
+plates = []
     
 if platedir:
     for path in iglob(platedir):
