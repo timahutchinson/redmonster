@@ -417,6 +417,7 @@ class Merge_Redmonster:
         self.npixstep = []
         self.plates = []
         self.models = n.zeros((1,1))
+        self.hdr = None
 
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
         except: topdir = None
