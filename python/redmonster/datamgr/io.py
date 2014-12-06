@@ -432,8 +432,10 @@ class Merge_Redmonster:
         if platedir:
             for path in iglob(platedir):
                 self.plates.append( basename(path) )
-                self.fiberid = self.plates
             self.plates.sort()
+            for listitem in self.plates:
+                if listitem[-5:] == '.fits': self.plates.remove(listitem)
+            self.fiberid = self.plates
             for plate in self.plates:
                 mjds = []
                 try:
