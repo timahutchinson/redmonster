@@ -14,6 +14,7 @@ import numpy as n
 class Zpicker:
 
     def __init__(self, specobj, zfindobjs, zfitobjs, flags):
+        self.num_z = 5 # Number of redshifts to retain
         self.npixflux = specobj.npix
         if specobj.plate: self.plate = specobj.plate
         if specobj.mjd: self.mjd = specobj.mjd
@@ -23,15 +24,15 @@ class Zpicker:
         self.type = []
         self.subtype = []
         self.minvector = []
-        self.z = n.zeros( (zfindobjs[0].zchi2arr.shape[0],5) )
-        self.z_err = n.zeros( (zfindobjs[0].zchi2arr.shape[0],5) )
-        self.zwarning = n.zeros( (zfindobjs[0].zchi2arr.shape[0],5) )
+        self.z = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
+        self.z_err = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
+        self.zwarning = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
         self.npoly = []
         self.dof = specobj.dof.copy()
         self.npixstep = []
         self.models = n.zeros( (specobj.flux.shape) )
         self.nclass = len(zfindobjs)
-        self.minrchi2 = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.nclass*5) )
+        self.minrchi2 = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.nclass*self.num_z) )
         self.classify_obj(zfindobjs, zfitobjs, flags)
     
     def classify_obj(self, zfindobjs, zfitobjs, flags):
@@ -40,8 +41,7 @@ class Zpicker:
         for ifiber in xrange(zfindobjs[0].zchi2arr.shape[0]):
             for itemp in xrange(self.nclass):
                 for i in xrange(5):
-                    import pdb; pdb.set_trace()
-                    self.minrchi2[ifiber,(itemp*5)+i] = n.min(zfindobjs[itemp].zchi2arr[ifiber]) / (self.dof[ifiber] - zfindobjs[itemp].npoly)
+                    self.minrchi2[ifiber,(itemp*self.num_z)+i] = n.min(zfindobjs[itemp].zchi2arr[ifiber]) / (self.dof[ifiber] - zfindobjs[itemp].npoly)
                     loc = n.unravel_index(zfindobjs[itemp].zchi2arr[ifiber].argmin(), zfindobjs[itemp].zchi2arr[ifiber].shape)
                     zfindobjs[itemp].zchi2arr[ifiber][loc[:-1]][(loc[-1]-zfitobjs[itemp].width):(loc[-1]+zfitobjs[itemp].width)] = 10000000.
                 for i in xrange(5):
@@ -49,10 +49,10 @@ class Zpicker:
 
             
             minpos = []
-            for ipos in xrange(5):
+            for ipos in xrange(self.num_z):
                 minpos.append(self.minrchi2[ifiber].argmin())
                 self.minrchi2[ifiber,minpos[ipos]] = 10000000.
-                while (int(flags[minpos[ipos]/5][ifiber]) & 8) == 8:
+                while (int(flags[minpos[ipos]/self.num_z][ifiber]) & 8) == 8: # Discounts redshifts with negative models
                     minpos[ipos] = self.minrchi2[ifiber].argmin()
                     self.minrchi2[ifiber,minpos[ipos]] = 10000000.
                 self.type.append(objtypes[ipos])
