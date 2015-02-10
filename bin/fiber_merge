@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-cd $REDMONSTER_DIR/python/redmonster/tools
-python fiber_merge.py
+python $REDMONSTER_DIR/python/redmonster/tools/fiber_merge.py
