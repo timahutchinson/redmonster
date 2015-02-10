@@ -163,7 +163,7 @@ class Zfinder:
         prihdu = fits.PrimaryHDU(self.zchi2arr)
         thdulist = fits.HDUList([prihdu])
         try:
-            bsr = environ['BOSS_SPECTRO_REDUX']
+            bsr = environ['REDMONSTER_SPECTRO_REDUX']
             run2d = environ['RUN2D']
             run1d = environ['RUN1D']
             if (bsr is not None) & (run2d is not None) & (run2d is not None):
