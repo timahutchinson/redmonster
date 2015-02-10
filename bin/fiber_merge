@@ -1,2 +1,3 @@
+#!/usr/bin/env bash
 cd $REDMONSTER_DIR/python/redmonster/tools
-python plate_merge.py
+python fiber_merge.py
