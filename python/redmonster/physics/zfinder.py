@@ -58,7 +58,7 @@ class Zfinder:
         return zminpix, zmaxpix
     
     
-    def zchi2(self, specs, specloglam, ivar, npixstep=1, chi2file=False, plate=None, mjd=None):
+    def zchi2(self, specs, specloglam, ivar, npixstep=1, chi2file=False, plate=None, mjd=None, fiberid=None):
         self.npixstep = npixstep
         self.zwarning = n.zeros(specs.shape[0])
         flag_val_unplugged = int('0b10000000',2)
@@ -136,10 +136,10 @@ class Zfinder:
         self.zchi2arr = zchi2arr
         self.store_models(specs, ivar)
         if chi2file is True:
-            if (plate is not None) & (mjd is not None):
-                self.write_chi2arr(plate, mjd)
+            if (plate is not None) & (mjd is not None) & (fiberid is not None):
+                self.write_chi2arr(plate, mjd, fiberid)
             else:
-                print 'Plate number not given - unable to write chi2 file!'
+                print 'Plate/mjd/fiberid not given - unable to write chi2 file!'
 
 
     def store_models(self, specs, ivar):
@@ -159,7 +159,7 @@ class Zfinder:
                 self.models[i] = n.zeros(specs.shape[-1])
 
 
-    def write_chi2arr(self, plate, mjd):
+    def write_chi2arr(self, plate, mjd, fiberid):
         prihdu = fits.PrimaryHDU(self.zchi2arr)
         thdulist = fits.HDUList([prihdu])
         try:
@@ -174,8 +174,8 @@ class Zfinder:
             dest = None
         if dest is not None:
             try:
-                thdulist.writeto(join(dest, '%s' % 'chi2arr-%s-%s-%s.fits' % (self.type, plate, mjd)), clobber=True)
-                print 'Writing chi2 file to %s' % join(dest, '%s' % 'chi2arr-%s-%s-%s.fits' % (self.type, plate, mjd))
+                thdulist.writeto(join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits' % (self.type, plate, mjd, fiberid)), clobber=True)
+                print 'Writing chi2 file to %s' % join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits' % (self.type, plate, mjd, fiberid))
             except:
                 print 'Environment variables not set or path does not exist - not writing chi2 file!'
         else:
