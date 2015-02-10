@@ -59,6 +59,7 @@ class Zfinder:
     
     
     def zchi2(self, specs, specloglam, ivar, npixstep=1, chi2file=False, plate=None, mjd=None, fiberid=None):
+        self.chi2file = chi2file
         self.npixstep = npixstep
         self.zwarning = n.zeros(specs.shape[0])
         flag_val_unplugged = int('0b10000000',2)
@@ -135,11 +136,13 @@ class Zfinder:
         #return zchi2arr
         self.zchi2arr = zchi2arr
         self.store_models(specs, ivar)
-        if chi2file is True:
+        if self.chi2file is True:
             if (plate is not None) & (mjd is not None) & (fiberid is not None):
                 self.write_chi2arr(plate, mjd, fiberid)
             else:
                 print 'Plate/mjd/fiberid not given - unable to write chi2 file!'
+        else:
+            print 'Not writing chi2'
 
 
     def store_models(self, specs, ivar):
@@ -163,11 +166,11 @@ class Zfinder:
         prihdu = fits.PrimaryHDU(self.zchi2arr)
         thdulist = fits.HDUList([prihdu])
         try:
-            bsr = environ['REDMONSTER_SPECTRO_REDUX']
+            rsr = environ['REDMONSTER_SPECTRO_REDUX']
             run2d = environ['RUN2D']
             run1d = environ['RUN1D']
-            if (bsr is not None) & (run2d is not None) & (run2d is not None):
-                testpath = join(bsr, run2d, '%s' % plate, run1d)
+            if (rsr is not None) & (run2d is not None) & (run1d is not None):
+                testpath = join(rsr, run2d, '%s' % plate, run1d)
                 if exists(testpath): dest = testpath
                 else: dest = None
         except:
