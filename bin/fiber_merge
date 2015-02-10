@@ -1,0 +1,2 @@
+cd $REDMONSTER_DIR/python/redmonster/tools
+python plate_merge.py
