@@ -515,7 +515,7 @@ class Merge_Redmonster:
             cols = fits.ColDefs([col1])
             tbhdu = fits.BinTableHDU.from_columns(cols)
             thdulist = fits.HDUList([prihdu,tbhdu])
-            thdulist.writeto( join( topdir, run2d, '%s' % self.plate, run1d, 'chi2arr-%s-%s-%s.fits' % (self.temp, self.plate, self.mjd) ) clobber= True)
+            thdulist.writeto( join( topdir, run2d, '%s' % self.plate, run1d, 'chi2arr-%s-%s-%s.fits' % (self.temp, self.plate, self.mjd) ), clobber=True)
 
 
 
