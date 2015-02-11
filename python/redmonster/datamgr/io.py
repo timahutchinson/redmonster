@@ -493,7 +493,7 @@ class Merge_Redmonster:
         fiberid = []
         paths = []
 
-        if chi2path and exists(chi2path):
+        if chi2path:
             for file in iglob(chi2path):
                 paths.append( file )
                 m = re.search( 'chi2arr-%s-%s-%s-(\d+).fits' % (self.temp, self.plate, self.mjd), basename(file) )
