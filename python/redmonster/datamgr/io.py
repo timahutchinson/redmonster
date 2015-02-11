@@ -347,9 +347,10 @@ class Write_Redmonster:
 
 class Merge_Redmonster:
 
-    def __init__(self, plate=None, mjd=None):
+    def __init__(self, plate=None, mjd=None, temp=None):
         self.plate = plate
         self.mjd = mjd
+        self.temp = temp
 
 
     def merge_fibers(self):
@@ -475,6 +476,10 @@ class Merge_Redmonster:
         output = Write_Redmonster(self)
         output.create_hdulist()
         output.thdulist.writeto( join( topdir, run2d, 'redmonster-all-%s.fits' % run2d), clobber=True)
+
+
+    def merge_chi2(self):
+        pass
 
 
 

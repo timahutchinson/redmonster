@@ -37,4 +37,3 @@ if platedir:
         for mjd in mjds:
             x = io.Merge_Redmonster(plate, mjd)
             x.merge_fibers()
-
