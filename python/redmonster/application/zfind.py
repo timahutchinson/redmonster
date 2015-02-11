@@ -176,13 +176,13 @@ class Zfind:
         if (self.zmin is not None) & (self.zmax is not None):
             for i in xrange(len(self.templates)):
                 zfindobjs.append( zfinder.Zfinder(fname=self.templates[i], npoly=self.npoly[i], zmin=self.zmin[i], zmax=self.zmax[i]) )
-                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar, npixstep=self.npixstep[i], fiberid=fiberid[0], chi2file=self.chi2file )
+                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar, npixstep=self.npixstep[i], plate=plate, mjd=mjd, fiberid=fiberid[0], chi2file=self.chi2file )
                 zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr, zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine()
         else:
             for i in xrange(len(self.templates)):
                 zfindobjs.append( zfinder.Zfinder(fname=self.templates[i], npoly=self.npoly[i], npixstep=self.npixstep[i]) )
-                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar, npixstep=self.npixstep[i], fiberid=fiberid[0], chi2file=self.chi2file )
+                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar, npixstep=self.npixstep[i], plate=plate, mjd=mjd, fiberid=fiberid[0], chi2file=self.chi2file )
                 zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr, zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine()
 
