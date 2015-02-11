@@ -509,7 +509,7 @@ class Merge_Redmonster:
                     chi2arrs[i] = chi2arr
                 else:
                     chi2arrs[i] = chi2arr
-                os.remove(path)
+                remove(path)
 
             prihdu = fits.PrimaryHDU(chi2arrs)
             col1 = fits.Column(name='FIBERID', format='J', array=fiberid)
