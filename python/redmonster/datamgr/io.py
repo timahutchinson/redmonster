@@ -12,6 +12,7 @@ from os.path import exists, join, basename
 from astropy.io import fits
 from time import gmtime, strftime
 from glob import iglob
+import re
 
 def read_ndArch(fname):
     """
@@ -479,9 +480,42 @@ class Merge_Redmonster:
 
 
     def merge_chi2(self):
-        pass
+        
+        try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
+        except: topdir = None
+        try: run2d = environ['RUN2D']
+        except: run2d = None
+        try: run1d = environ['RUN1D']
+        except: run1d = None
+        chi2path = join( topdir, run2d, '%s' % self.plate, run1d, 'chi2arr-%s-%s-%s-*.fits' % (self.temp, self.plate, self.mjd) ) if topdir and run2d and run1d else None
+        
+        fiberid = []
+        paths = []
 
+        if chi2path and exists(chi2path):
+            for file in iglob(chi2path):
+                paths.append( file )
+                m = re.search( 'chi2arr-%s-%s-%s-(\d+).fits' % (self.temp, self.plate, self.mjd), basename(file) )
+                if m.group(1): fiberid.append( int(m.group(1)) )
+            fiberid.sort()
+            paths.sort()
 
+            for i,path in enumerate(paths):
+                chi2arr = fits.open(path)[0].data
+                try:
+                    chi2arrs
+                except NameError:
+                    chi2arrs = n.zeros( (len(fiberid),) + chi2arr.shape[1:] )
+                    chi2arrs[i] = chi2arr
+                else:
+                    chi2arrs[i] = chi2arr
+
+            prihdu = fits.PrimaryHDU(chi2arrs)
+            col1 = fits.Column(name='FIBERID', format='J', array=fiberid)
+            cols = fits.ColDefs([col1])
+            tbhdu = fits.BinTableHDU.from_columns(cols)
+            thdulist = fits.HDUList([prihdu,tbhdu])
+            thdulist.writeto( join( topdir, run2d, '%s' % self.plate, run1d, 'chi2arr-%s-%s-%s.fits' % (self.temp, self.plate, self.mjd) ) )
 
 
 
