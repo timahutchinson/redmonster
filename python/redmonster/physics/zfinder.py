@@ -6,7 +6,7 @@
 
 import numpy as n
 from os import environ
-from os.path import join, exists
+from os.path import join, exists, makedirs
 from redmonster.datamgr.ssp_prep import SSP_Prep
 from redmonster.physics.misc import poly_array, two_pad
 from time import gmtime, strftime
@@ -171,8 +171,14 @@ class Zfinder:
             run1d = environ['RUN1D']
             if (rsr is not None) & (run2d is not None) & (run1d is not None):
                 testpath = join(rsr, run2d, '%s' % plate, run1d)
-                if exists(testpath): dest = testpath
-                else: dest = None
+                if exists(testpath):
+                    dest = testpath
+                else:
+                    try:
+                        makedirs(testpath)
+                        dest = testpath
+                    except:
+                        dest = None
         except:
             dest = None
         if dest is not None:
