@@ -7,7 +7,7 @@
 
 import numpy as n
 from astropy.io import fits
-from os import environ, makedirs, getcwd
+from os import environ, makedirs, getcwd, remove
 from os.path import exists, join, basename
 from astropy.io import fits
 from time import gmtime, strftime
@@ -509,6 +509,7 @@ class Merge_Redmonster:
                     chi2arrs[i] = chi2arr
                 else:
                     chi2arrs[i] = chi2arr
+                os.remove(path)
 
             prihdu = fits.PrimaryHDU(chi2arrs)
             col1 = fits.Column(name='FIBERID', format='J', array=fiberid)
