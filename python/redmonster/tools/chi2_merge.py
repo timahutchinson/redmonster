@@ -42,5 +42,6 @@ if platedir:
                 m = re.search(r'chi2arr-(\D+)-%s-%s-000.fits' % (plate,mjd), basename(x))
                 if m.group(1) not in temps: temps.append(m.group(1))
             for temp in temps:
+                import pdb; pdb.set_trace()
                 x = io.Merge_Redmonster(plate, mjd, temp)
                 x.merge_chi2()
