@@ -404,6 +404,7 @@ class Merge_Redmonster:
                 self.fname.append(hdu[1].data.FNAME[0])
                 self.npixstep.append(hdu[1].data.NPIXSTEP[0])
                 self.models[i] = hdu[2].data[0]
+                remove(path)
 
         output = Write_Redmonster(self, clobber=True)
         output.write_plate()
