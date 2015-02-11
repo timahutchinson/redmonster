@@ -480,6 +480,7 @@ class Merge_Redmonster:
 
 
     def merge_chi2(self):
+        import pdb; pdb.set_trace()
         
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
         except: topdir = None
