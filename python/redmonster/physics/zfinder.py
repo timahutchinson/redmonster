@@ -5,8 +5,8 @@
 # t.hutchinson@utah.edu
 
 import numpy as n
-from os import environ
-from os.path import join, exists, makedirs
+from os import environ, makedirs
+from os.path import join, exists
 from redmonster.datamgr.ssp_prep import SSP_Prep
 from redmonster.physics.misc import poly_array, two_pad
 from time import gmtime, strftime
