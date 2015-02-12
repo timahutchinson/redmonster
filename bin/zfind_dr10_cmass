@@ -26,8 +26,10 @@ try: topdir = environ['BOSS_SPECTRO_REDUX']
 except: topdir = None
 try: run2d = environ['RUN2D']
 except: run2d = None
-platedir = join(topdir,run2d,'*','spPlate-*.fits') if topdir and run2d else None
+#platedir = join(topdir,run2d,'*','spPlate-*.fits') if topdir and run2d else None
+platedir = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
+'''
 if platedir:
     queue.create(label='zfind_dr10_cmass',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
     for path in iglob(platedir):
@@ -41,3 +43,28 @@ if platedir:
             if flag & 2: 
                 queue.append( "zfind -p %i -m %i -f %i" % (plate, mjd, ind) )
     queue.commit(hard=True,submit=True)
+'''
+
+if platedir:
+    queue.create(label='zfind_dr10_cmass',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+    hdu = fits.open(platedir)
+    for ind,bosstarg1 in enumerate(hdu[1].data.BOSS_TARGET1):
+        if (bosstarg1 & 2) and (hdu[1].data.SPECPRIMARY[ind] > 0):
+            plate = hdu[1].data.PLATE[ind]
+            mjd = hdu[1].data.MJD[ind]
+            fiberid = hdu[1].data.FIBERID[ind] - 1
+            queue.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
+    queue.commit(hard=True, submit=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
