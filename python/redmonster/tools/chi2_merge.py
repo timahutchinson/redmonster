@@ -1,4 +1,5 @@
-# Combine individual fiber chi2 files into plate chi2 files for all plates under a given tag
+# Combine individual fiber chi2 files into plate chi2 files for all plates under a given tag.
+# fiber_merge.py must be run for each plate BEFORE this can be run.
 #
 # Tim Hutchinson, University of Utah, February 2015
 # t.hutchinson@utah.edu
@@ -38,7 +39,7 @@ if platedir:
         except: mjds = None
         for mjd in mjds:
             temps = []
-            for x in iglob( join( topdir, run2d, str(plate), run1d, 'chi2arr-*-%s-%s-000.fits' % (plate,mjd)) ):
+            for x in iglob( join( topdir, run2d, str(plate), run1d, 'chi2arr-*-%s-%s.fits' % (plate,mjd)) ):
                 m = re.search(r'chi2arr-(\D+)-%s-%s-000.fits' % (plate,mjd), basename(x))
                 if m.group(1) not in temps: temps.append(m.group(1))
             for temp in temps:
