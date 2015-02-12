@@ -31,7 +31,7 @@ if platedir:
     for plate in plates:
         mjds = []
         try:
-            for x in iglob( join( topdir, run2d, str(plate), run1d, 'redmonster-%s-*-000.fits' % plate) ):
+            for x in iglob( join( topdir, run2d, str(plate), run1d, 'redmonster-%s-*.fits' % plate) ):
                 if mjds is not basename(x)[16:21]:
                     mjds.append( basename(x)[16:21] )
                 else:
