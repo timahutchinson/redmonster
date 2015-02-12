@@ -39,5 +39,5 @@ if platedir:
         hdu = fits.open(path)
         for ind,flag in enumerate(hdu[5].data.BOSS_TARGET1):
             if flag & 2: 
-                queue.append( "zfind -p %i -m %i -f %i" % (plate, mjds, ind) )
+                queue.append( "zfind -p %i -m %i -f %i" % (plate, mjd, ind) )
     queue.commit(hard=True,submit=True)
