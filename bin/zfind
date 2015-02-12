@@ -25,6 +25,11 @@ zf = zfind.Zfind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
 zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, chi2file=True) # add chi2file=True to write chi2 surfaces as well
 #zf.reduce_plate_mjd(arg.plate,arg.mjd)
 
+# Delete QSO and CAP chi2files
+from os import remove
+remove( join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % arg.plate, environ['RUN1D'], 'chi2arr-QSO-%s-%s-%s.fits' % (arg.plate, arg.mjd, arg.fiberid) ) )
+remove( join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % arg.plate, environ['RUN1D'], 'chi2arr-CAP-%s-%s-%s.fits' % (arg.plate, arg.mjd, arg.fiberid) ) )
+
 
 """ usage
 zfind -p 8123 -m 56931 --inifile mytemplates.ini --clobber
