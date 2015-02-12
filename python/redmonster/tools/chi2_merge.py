@@ -39,7 +39,7 @@ if platedir:
         except: mjds = None
         for mjd in mjds:
             temps = []
-            for x in iglob( join( topdir, run2d, str(plate), run1d, 'chi2arr-*-%s-%s.fits' % (plate,mjd)) ):
+            for x in iglob( join( topdir, run2d, str(plate), run1d, 'chi2arr-*-%s-%s-000.fits' % (plate,mjd)) ):
                 m = re.search(r'chi2arr-(\D+)-%s-%s-000.fits' % (plate,mjd), basename(x))
                 if m.group(1) not in temps: temps.append(m.group(1))
             for temp in temps:
