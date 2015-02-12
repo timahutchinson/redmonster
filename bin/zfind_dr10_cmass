@@ -34,6 +34,7 @@ if platedir:
         spfile = basename(path)
         m = re.search( 'spPlate-(\d{4})-(\d{5}).fits', spfile )
         plate = m.group(1)
+        print plate
         mjd = m.group(2)
         hdu = fits.open(path)
         for ind,flag in enumerate(hdu[5].data.BOSS_TARGET1):
