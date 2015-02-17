@@ -22,7 +22,7 @@ if not arg.mjd: parser.error("Please specify a valid --mjd")
 inifile = join(inidir,arg.inifile) if inidir else arg.inifile
 
 zf = zfind.Zfind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
-zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, chi2file=True) # add chi2file=True to write chi2 surfaces as well
+zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, chi2file=True) # chi2file=True will write chi2 surfaces, False (or omitting the argument entirely) will not
 #zf.reduce_plate_mjd(arg.plate,arg.mjd)
 
 # Delete QSO and CAP chi2files
