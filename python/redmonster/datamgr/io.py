@@ -440,6 +440,7 @@ class Merge_Redmonster:
                 if listitem[-5:] == '.fits': self.plates.remove(listitem)
             self.fiberid = self.plates
             for plate in self.plates:
+                print 'Merging plate %s' % plate
                 mjds = []
                 try:
                     for x in iglob( join( topdir, run2d, str(plate), run1d, 'redmonster-%s-*-000.fits' % plate) ):

@@ -35,5 +35,6 @@ if platedir:
                     mjds.append( basename(x)[16:21] )
         except: mjds = None
         for mjd in mjds:
+            print 'Merging fibers for plate %s, mjd %s' % (plate, mjd)
             x = io.Merge_Redmonster(plate, mjd)
             x.merge_fibers()

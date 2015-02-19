@@ -1,4 +1,4 @@
-import numpy as numpy
+import numpy as n
 from redmonster.sandbox import yanny as y
 
 # Read yanny file
