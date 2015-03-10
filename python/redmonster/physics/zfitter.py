@@ -21,7 +21,7 @@ class Zfitter:
         self.minvector = []
         self.zwarning = n.zeros(zchi2.shape[0])
 
-    def z_refine(self, threshold=46.6, width=15):
+    def z_refine(self, threshold=46.6, width=15): # Default threshold of 46.6 is delta (chi_r)**2 = .01, and width is 1000 km/s
         self.threshold = threshold
         self.width = width
         for ifiber in xrange(self.zchi2.shape[0]):

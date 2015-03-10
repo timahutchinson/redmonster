@@ -27,9 +27,9 @@ class Plot_Fit(Frame):
         self.mjd = None
         #
         plate = StringVar()
-        plate.set('3686')
+        plate.set('7848')
         mjd = StringVar()
-        mjd.set('55268')
+        mjd.set('56959')
         #
         L1 = Label(self.root, text='Plate')
         L1.grid(sticky=E)
