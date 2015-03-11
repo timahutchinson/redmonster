@@ -27,12 +27,19 @@ if platedir:
         plates.sort()
     for plate in plates:
         mjds = []
+        files = []
         try:
-            for x in iglob( join( topdir, run2d, str(plate), run1d, 'redmonster-%s-*-000.fits' % plate) ):
-                if mjds is not basename(x)[16:21]:
-                    mjds.append( basename(x)[16:21] )
+            for x in iglob( join( topdir, run2d, str(plate), run1d, 'redmonster-%s-*-*.fits' % plate) ):
+                files.append(x)
+            for file in files:
+                '''
+                if mjds is not basename(file)[16:21]:
+                    mjds.append( basename(file)[16:21] )
                 else:
-                    mjds.append( basename(x)[16:21] )
+                    mjds.append( basename(file)[16:21] )
+                    '''
+                if basename(file)[16:21] not in mjds:
+                    mjds.append( basename(file)[16:21] )
         except: mjds = None
         for mjd in mjds:
             print 'Merging fibers for plate %s, mjd %s' % (plate, mjd)
