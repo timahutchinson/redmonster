@@ -26,6 +26,7 @@ if platedir:
         plates.append( basename(path) )
         plates.sort()
     for plate in plates:
+        import pdb; pdb.set_trace()
         mjds = []
         files = []
         try:
