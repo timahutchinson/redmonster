@@ -442,11 +442,12 @@ class Merge_Redmonster:
                 print 'Merging plate %s' % plate
                 mjds = []
                 try:
-                    for x in iglob( join( topdir, run2d, str(plate), run1d, 'redmonster-%s-*-000.fits' % plate) ):
-                        if mjds is not basename(x)[16:21]: mjds.append(basename(x)[16:21])
-                        else: mjds.append( basename(x)[16:21] )
+                    for x in iglob( join( topdir, run2d, '%s' % plate, run1d, 'redmonster-%s-*.fits' % plate) ):
+                        if basename(x)[16:21] not in mjds: mjds.append(basename(x)[16:21])
+                        #if mjds is not basename(x)[16:21]: mjds.append(basename(x)[16:21])
+                        #else: mjds.append( basename(x)[16:21] )
                 except: mjds = None
-                if mjds is not None:
+                if mjds is not [] and mjds is not None:
                     for mjd in mjds:
                         filepath = join( topdir, run2d, str(plate), run1d, 'redmonster-%s-%s.fits' % (plate, mjd))
                         #npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd) ) )[0].data.shape[1]
