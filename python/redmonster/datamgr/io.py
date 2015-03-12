@@ -406,7 +406,7 @@ class Merge_Redmonster:
                 self.models[i] = hdu[2].data[0]
                 remove(path)
             output = Write_Redmonster(self, clobber=True)
-            1output.write_plate()
+            output.write_plate()
 
 
     def merge_plates(self):
