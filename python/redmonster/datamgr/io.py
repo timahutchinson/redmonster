@@ -270,7 +270,7 @@ class Write_Redmonster:
         minvec = n.array(map(repr,self.zpick.minvector)) # Change tuples of minvector to strings to be written into fits file.  eval('minvector') will turn them back into tuples later.
         maxlen = max(map(len,subclass))
         col8 = fits.Column(name='MINVECTOR', format='%iA'%maxlen, array=minvec)
-        col9 = fits.Column(name='ZWARNING', format='E', array=self.zpick.zwarning)
+        col9 = fits.Column(name='ZWARNING', format='E', array=map(int,self.zpick.zwarning))
         col10 = fits.Column(name='DOF', format='E', array=self.zpick.dof)
         col11 = fits.Column(name='NPOLY', format='E', array=self.zpick.npoly)
         fname = n.array(map(repr,self.zpick.fname))
