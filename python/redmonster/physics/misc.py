@@ -88,7 +88,8 @@ def comb_flags(specobj, zfindobj, zfitobj):
     '''
         Takes objects instead of just flags
     '''
-    nfib = len(specobj.fiberid)
+    #nfib = len(specobj.fiberid)
+    nfib = specobj.flux.shape[0]
     flags = n.zeros(nfib)
     for ifiber in xrange(nfib):
         if hasattr(specobj, 'zwarning'): flags[ifiber] = (int(specobj.zwarning[ifiber]) | int(zfindobj.zwarning[ifiber])) | int(zfitobj.zwarning[ifiber])
@@ -99,7 +100,8 @@ def comb_flags_2(specobj, zfitflags):
     '''
         Takes flags instead of objects
     '''
-    nfib = len(specobj.fiberid)
+    #nfib = len(specobj.fiberid)
+    nfib = specobj.flux.shape[0]
     flags = n.zeros(nfib)
     for ifiber in xrange(nfib):
         if hasattr(specobj, 'zwarning'): flags[ifiber] = (int(specobj.zwarning[ifiber]) | int(zfitflags[ifiber]))

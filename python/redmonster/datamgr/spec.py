@@ -45,7 +45,7 @@ class Spec:
                 self.set_data()
                 if data_range: self.chop_data(data_range)
                 if fiberid != None: self.set_fibers(fiberid)
-                else: self.fiberid = [fib for fib in xrange(1000)]
+                else: self.fiberid = [i for i in xrange(1000)]
                 self.flag_sky_fibers()
     
     def set_data(self):
