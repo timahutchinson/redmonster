@@ -26,7 +26,7 @@ plates = []
 if platedir:
     for path in iglob(platedir):
         plates.append( basename(path) )
-        plates.sort()
+    plates.sort()
     
     for plate in plates:
         mjds = []
