@@ -263,12 +263,18 @@ class Write_Redmonster:
         maxlen = max(map(len,classx))
         col5 = fits.Column(name='CLASS', format='%iA'%maxlen, array=self.zpick.type)
         # Change dictionary values of subclass to strings to be written into fits file.  eval('dictstring') will turn them back into dictionaries later.
-        subclass = n.array(map(repr,self.zpick.subtype))
+        if type(self.zpick.subtype[0]) is not dict: # Skip this and write directly if these are already dicts
+            subclass = n.array(map(repr,self.zpick.subtype))
+        else:
+            subclass = n.array(self.zpick.subtype)
         maxlen = max(map(len,subclass))
         col6 = fits.Column(name='SUBCLASS', format='%iA'%maxlen, array=subclass)
         col7 = fits.Column(name='FIBERID', format='J', array=self.zpick.fiberid)
-        minvec = n.array(map(repr,self.zpick.minvector)) # Change tuples of minvector to strings to be written into fits file.  eval('minvector') will turn them back into tuples later.
-        maxlen = max(map(len,subclass))
+        if type(self.zpick.minvector[0]) is not str:
+            minvec = n.array(map(repr,self.zpick.minvector)) # Change tuples of minvector to strings to be written into fits file. eval('minvector') will turn them back into tuples later.
+        else:
+            minvec = n.array(self.zpick.minvector)
+        maxlen = max(map(len,minvec))
         col8 = fits.Column(name='MINVECTOR', format='%iA'%maxlen, array=minvec)
         col9 = fits.Column(name='ZWARNING', format='E', array=map(int,self.zpick.zwarning))
         col10 = fits.Column(name='DOF', format='E', array=self.zpick.dof)
