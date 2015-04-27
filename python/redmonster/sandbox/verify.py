@@ -110,15 +110,3 @@ class verify_rm:
                 rm_ind = rm_ind[0]
                 self.rm_z.append(self.rm_z1[rm_ind])
                 self.vis_z.append(visual_z[i])
-#
-#    def compare_redshifts(self,plate,visual_fibers,visual_z):
-#        #import pdb; pdb.set_trace()
-#        self.read_redmonster(plate)
-#        for i,fiber in enumerate(visual_fibers):
-#            rm_ind = n.where(self.rm_fibers == fiber)[0]
-#            try:
-#                rm_ind = rm_ind[0]
-#                self.rm_z.append(self.rm_z1[rm_ind])
-#                self.vis_z.append(visual_z[i])
-#            else:
-#                pass
