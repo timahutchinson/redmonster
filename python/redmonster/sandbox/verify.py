@@ -13,7 +13,6 @@ class verify_rm:
         self.yanny_to_arrays()
         self.rm_z = []
         self.vis_z = []
-        import pdb; pdb.set_trace()
         for i,plate in enumerate(self.plates):
             if i == 0: self.compare_redshifts(plate,self.fibers3686,self.zperson3686)
             elif i == 1: self.compare_redshifts(plate,self.fibers3687,self.zperson3687)
@@ -104,6 +103,7 @@ class verify_rm:
         self.rm_type = hdu[1].data.CLASS
 
     def compare_redshifts(self,plate,visual_fibers,visual_z):
+        import pdb; pdb.set_trace()
         self.read_redmonster(plate)
         for i,fiber in enumerate(visual_fibers):
             rm_ind = n.where(self.rm_fibers == fiber)[0]
