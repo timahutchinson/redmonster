@@ -94,7 +94,7 @@ class verify_rm:
             self.zperson3860.append( x['BOSSOBJECT'][i][6])
 
     def read_redmonster(self,plate):
-        platepath = join( self.redmonster_dir, plate, 'v5_5_12', 'redmonster*' )
+        platepath = join( self.redmonster_dir, '%s' % plate, 'v5_5_12', 'redmonster*' )
         for path in iglob(platepath):
             hdu = fits.open(path)
         self.rm_z1 = hdu[1].data.Z1
