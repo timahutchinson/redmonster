@@ -26,6 +26,7 @@ for i in args:
 args = n.where(x['BOSSOBJECT']['plate'] == 3804)[0]
 fibers3804 = []
 zpipe3804 = []
+zperson3804 = []
 for i in args:
     fibers3804.append( x['BOSSOBJECT'][i][2])
     zpipe3804.append( x['BOSSOBJECT'][i][5])
