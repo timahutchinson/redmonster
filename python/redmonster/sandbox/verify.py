@@ -13,6 +13,7 @@ class verify_rm:
         self.yanny_to_arrays()
         self.rm_z = []
         self.vis_z = []
+        import pdb; pdb.set_trace()
         for i,plate in enumerate(self.plates):
             if i == 0: self.compare_redshifts(plate,self.fibers3686,self.zperson3686)
             elif i == 1: self.compare_redshifts(plate,self.fibers3687,self.zperson3687)
