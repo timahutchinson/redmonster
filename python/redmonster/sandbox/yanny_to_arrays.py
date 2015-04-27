@@ -2,7 +2,7 @@ import numpy as n
 from redmonster.sandbox import yanny as y
 
 # Read yanny file
-x = y.yanny(filename='spInspect_alltest_bolton.par.txt', np=True)
+x = y.yanny(filename='/uufs/astro.utah.edu/common/home/u0814744/boss/spInspect_alltest_bolton.par.txt', np=True)
 
 # Get fibers, zpipe, zperson for each plate
 args = n.where(x['BOSSOBJECT']['plate'] == 3686)[0]
