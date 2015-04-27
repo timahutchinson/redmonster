@@ -108,8 +108,8 @@ class verify_rm:
             rm_ind = n.where(self.rm_fibers == fiber)[0]
             if rm_ind != []:
                 rm_ind = rm_ind[0]
-                rm_z.append() = self.rm_z1[rm_ind]
-                vis_z.append() = visual_z[i]
+                self.rm_z.append() = self.rm_z1[rm_ind]
+                self.vis_z.append() = visual_z[i]
 
 
 
