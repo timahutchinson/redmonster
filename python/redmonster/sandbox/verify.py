@@ -111,3 +111,5 @@ class verify_rm:
                 rm_ind = rm_ind[0]
                 self.rm_z.append(self.rm_z1[rm_ind])
                 self.vis_z.append(visual_z[i])
+            else:
+                pass
