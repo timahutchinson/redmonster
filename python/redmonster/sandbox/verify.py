@@ -103,7 +103,7 @@ class verify_rm:
         self.rm_type = hdu[1].data.CLASS
 
     def compare_redshifts(self,plate,visual_fibers,visual_z):
-        vimport pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         self.read_redmonster(plate)
         for i,fiber in enumerate(visual_fibers):
             rm_ind = n.where(self.rm_fibers == fiber)[0]
