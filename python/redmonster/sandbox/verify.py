@@ -13,7 +13,7 @@ class verify_rm:
         self.yanny_to_arrays()
         self.rm_z = []
         self.vis_z = []
-        for i,plate in enumerate(plates):
+        for i,plate in enumerate(self.plates):
             if i == 0: self.compare_redshifts(plate,self.fibers3686,self.zperson3686)
             elif i == 1: self.compare_redshifts(plate,self.fibers3687,self.zperson3687)
             elif i == 2: self.compare_redshifts(plate,self.fibers3804,self.zperson3804)
