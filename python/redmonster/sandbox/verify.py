@@ -12,6 +12,7 @@ class verify_rm:
         self.redmonster_dir = '/uufs/chpc.utah.edu/common/home/bolton_data0/redmonster/v5_5_12/'
         self.yanny_to_arrays()
         self.rm_z = []
+        self.rm_class = []
         self.vis_z = []
         for i,plate in enumerate(self.plates):
             if i == 0: self.compare_redshifts(plate,self.fibers3686,self.zperson3686)
@@ -109,6 +110,7 @@ class verify_rm:
             try:
                 rm_ind = rm_ind[0]
                 self.rm_z.append(self.rm_z1[rm_ind])
+                self.rm_class.append(self.rm_type[rm_ind])
                 self.vis_z.append(visual_z[i])
             except:
                 pass
