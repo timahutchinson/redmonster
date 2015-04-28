@@ -117,5 +117,3 @@ class verify_rm:
                 self.rm_zwarning.append(self.rm_zwarning[rm_ind])
             except:
                 pass
-
-    def
