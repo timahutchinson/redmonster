@@ -13,6 +13,7 @@ class verify_rm:
         self.yanny_to_arrays()
         self.rm_z = []
         self.rm_class = []
+        self.rm_zwarning = []
         self.vis_z = []
         for i,plate in enumerate(self.plates):
             if i == 0: self.compare_redshifts(plate,self.fibers3686,self.zperson3686)
@@ -102,6 +103,7 @@ class verify_rm:
         self.rm_zerr1 = hdu[1].data.Z_ERR1
         self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
         self.rm_type = hdu[1].data.CLASS
+        self.rm_zwarning = hdu[1].data.ZWARNING
 
     def compare_redshifts(self,plate,visual_fibers,visual_z):
         self.read_redmonster(plate)
@@ -112,5 +114,8 @@ class verify_rm:
                 self.rm_z.append(self.rm_z1[rm_ind])
                 self.rm_class.append(self.rm_type[rm_ind])
                 self.vis_z.append(visual_z[i])
+                self.rm_zwarning.append(self.rm_zwarning[rm_ind])
             except:
                 pass
+
+    def
