@@ -35,5 +35,3 @@ zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, chi2file=False) # chi2file=
 zfind -p 8123 -m 56931 --inifile mytemplates.ini --clobber
 zfind -p 8123 -m 56931 --clobber
 zfind -p 8123 -m 56931 -f 0 --clobber"""
-
-
