@@ -121,7 +121,7 @@ class verify_rm:
         self.rm_type = hdu[1].data.CLASS
         self.rm_zwarning = hdu[1].data.ZWARNING
 
-    def compare_redshifts(self,plate,visual_fibers,visual_z):
+    def compare_redshifts(self,plate,visual_fibers,visual_z): #visual_fibers is list of fiber numbers visually inspected for a given plate, and visual_z is list of visually determined redshifts for those fibers
         self.read_redmonster(plate)
         for i,fiber in enumerate(visual_fibers):
             rm_ind = n.where(self.rm_fibers == fiber)[0]
@@ -133,3 +133,27 @@ class verify_rm:
                 self.rm_zwarning.append(self.rm_zwarning[rm_ind])
             except:
                 pass
+
+
+# S/N per fiber is located in spZbest files in hdu[1].data.SN_MEDIAN.  You can get just r,i,z bands with x = hdu[1].data.SN_MEDIAN[:,2:] .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
