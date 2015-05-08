@@ -242,7 +242,6 @@ class verify_rm:
         return n.where( self.boss_target1 & 1 == 1 )[0].tolist()
     
     
-    ########### THIS IS BROKEN #############
     def get_okay_cmass(self):
         # Return (0-based) indices of CMASS targets that have the yanny comment 'v5_4_9 ok'
         # self.get_fibers() and self.get_comments() need to have already been called on this plate for this method to work properly
@@ -335,12 +334,20 @@ class verify_rm:
         print float(count) / float(total)
 
     def count_galaxies_in_okay_cmass(self):
-        # Prints the number of targets classified by RM as 'ssp_em_galaxies' in the CMASS targets having yanny comment 'v5_4_9 ok'
+        # Prints the number of targets classified by RM as 'ssp_em_galaxies' in the subset of CMASS targets having yanny comment 'v5_4_9 ok'
         count = 0
+        total = 0
         for plate in self.plates:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
             self.get_all_yanny(plate)
+            fibers = self.get_okay_cmass()
+            total += len(fibers)
+            count += len( n.where( self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist() )
+        print '%s out of %s' % (count,total)
+        print float(count) / float(total)
+
+
 
 
 
