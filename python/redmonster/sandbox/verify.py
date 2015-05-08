@@ -11,7 +11,7 @@ class verify_rm:
         self.version = version
         self.plates = plates
         self.mjds = mjds
-        self.redmonster_dir = join( environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version)
+        self.redmonster_spectro_redux = join( environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version)
         self.yanny_to_arrays()
         #self.rm_z = []
         #self.rm_class = []
@@ -117,7 +117,7 @@ class verify_rm:
             self.type3860.append( x['BOSSOBJECT'][i][7])
 
     def read_redmonster(self,plate):
-        redmonsterpath = join( self.redmonster_dir, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,self.mjds[plate]) )
+        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,self.mjds[plate]) )
         #for path in iglob(platepath):
         #    hdu = fits.open(path)
         hdu = fits.open(redmonsterpath)
@@ -152,6 +152,17 @@ class verify_rm:
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
         return avg
+
+    def lowz_completeness(self):
+        vals = []
+        for plate in self.plates(plate)
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            fibers = self.get_lowz()
+            vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
+        avg = n.sum(vals) / float(len(vals))
+        return avg
+
 
 
 
