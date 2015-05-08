@@ -324,7 +324,6 @@ class verify_rm:
         # Prints fraction of CMASS targets having yanny comment 'v5_4_9 ok' that have rm_zwarning == 0
         count = 0
         total = 0
-        import pdb; pdb.set_trace()
         for plate in self.plates:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
@@ -332,6 +331,7 @@ class verify_rm:
             fibers = self.get_okay_cmass()
             total += len(fibers)
             count += len(n.where(self.rm_zwarning[fibers] == 0)[0].tolist())
+        print '%s out of %s' % (count,total)
         print float(count) / float(total)
 
     def count_galaxies_in_okay_cmass(self):
