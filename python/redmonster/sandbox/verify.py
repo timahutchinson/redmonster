@@ -197,6 +197,13 @@ class verify_rm:
         elif plate == 3855: self.comments = self.comments3855
         elif plate == 3856: self.comments = self.comments3856
         elif plate == 3860: self.comments = self.comments3860
+    
+    def get_all_yanny(self,plate):
+        self.get_vifibers(plate)
+        self.get_zperson(plate)
+        self.get_zpipe(plate)
+        self.get_vitype(plate)
+        self.get_comments(plate)
 
 
     def read_redmonster(self,plate):
@@ -242,7 +249,7 @@ class verify_rm:
                        
 
     def cmass_completeness(self):
-        # Return percent of all CMASS targets with rm_zwarning == 0
+        # Prints percent of all CMASS targets with rm_zwarning == 0
         vals = []
         for plate in self.plates:
             self.read_redmonster(plate)
@@ -250,11 +257,11 @@ class verify_rm:
             fibers = self.get_cmass()
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
-        return avg
+        print avg
                        
 
     def lowz_completeness(self):
-        # Return percent of all LOWZ targets with rm_zwarning == 0
+        # Prints percent of all LOWZ targets with rm_zwarning == 0
         vals = []
         for plate in self.plates:
             self.read_redmonster(plate)
@@ -262,11 +269,11 @@ class verify_rm:
             fibers = self.get_lowz()
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
-        return avg
+        print avg
 
 
     def cmass_galaxy_completeness(self):
-        # Return percent of all CMASS targets that have rm_warning == 0 and were classified as 'ssp_em_galaxy'
+        # Prints percent of all CMASS targets that have rm_warning == 0 and were classified as 'ssp_em_galaxy'
         vals = []
         for plate in self.plates:
             self.read_redmonster(plate)
@@ -276,11 +283,11 @@ class verify_rm:
             #vals.append( float(len(n.where( (self.rm_zwarning[fibers] == 0) )[0].tolist())) / float(len(fibers)) )
             vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
         avg = n.sum(vals) / float(len(vals))
-        return avg
+        print avg
 
 
     def lowz_galaxy_completeness(self):
-        # Return percent of all LOWZ targets that have rm_zwarning == 0 and were classified as 'ssp_em_galaxy'
+        # Prints percent of all LOWZ targets that have rm_zwarning == 0 and were classified as 'ssp_em_galaxy'
         vals = []
         for plate in self.plates:
             self.read_redmonster(plate)
@@ -290,9 +297,16 @@ class verify_rm:
             #vals.append( float(len(n.where( (self.rm_zwarning[fibers] == 0) )[0].tolist())) / float(len(fibers)) )
             vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
         avg = n.sum(vals) / float(len(vals))
-        return avg
+        print avg
 
-
+    def count_okay_fibers(self):
+        count = 0
+        for plate in self.plates:
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            self.get_all_yanny(plate)
+            count += len(self.get_okay_cmass())
+        print count
 
 
 
