@@ -155,7 +155,7 @@ class verify_rm:
 
     def lowz_completeness(self):
         vals = []
-        for plate in self.plates(plate)
+        for plate in self.plates(plate):
             self.read_redmonster(plate)
             self.read_spPlate(plate)
             fibers = self.get_lowz()
