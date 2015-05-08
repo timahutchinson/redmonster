@@ -300,7 +300,8 @@ class verify_rm:
         avg = n.sum(vals) / float(len(vals))
         print avg
 
-    def count_okay_fibers(self):
+    def count_okay_cmass_fibers(self):
+        # Prints number of CMASS targets with yanny comment 'v5_4_9 ok'
         count = 0
         for plate in self.plates:
             self.read_redmonster(plate)
@@ -308,6 +309,27 @@ class verify_rm:
             self.get_all_yanny(plate)
             count += len(self.get_okay_cmass())
         print count
+            
+    def cmass_okay_completeness(self):
+        # Prints fraction of CMASS targets having yanny comment 'v5_4_9 ok' that have rm_zwarning == 0
+        count = 0
+        total = 0
+        for plate in self.plates:
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            self.get_all_yanny(plate)
+            fibers = self.get_okay_cmass()
+            total += len(fibers)
+            count += len(n.where(self.rm_zwarning[fibers] == 0)[0].tolist())
+        print float(count) / float(total)
+
+    def count_galaxies_in_okay_cmass(self):
+        # Prints the number of targets classified by RM as 'ssp_em_galaxies' in the CMASS targets having yanny comment 'v5_4_9 ok'
+        count = 0
+        for plate in self.plates:
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            self.get_all_yanny(plate)
 
 
 
