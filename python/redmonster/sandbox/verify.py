@@ -177,7 +177,7 @@ class verify_rm:
 
     def get_vitype(self,plate):
         # Set self.vitype to yanny info for a given plate
-        if plate == 3686: self.vitype = self.vitype3686
+        if plate == 3686: self.vitype = self.type3686
         elif plate == 3687: self.vitype = self.type3687
         elif plate == 3804: self.vitype = self.type3804
         elif plate == 3805: self.vitype = self.type3805
