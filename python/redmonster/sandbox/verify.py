@@ -12,6 +12,11 @@ class verify_rm:
         self.plates = plates
         self.mjds = mjds
         self.redmonster_spectro_redux = join( environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version)
+        self.vifibers = None
+        self.zperson = None
+        self.zpipe = None
+        self.vitype = None
+        self.comments = None
         self.yanny_to_arrays()
         #self.rm_z = []
         #self.rm_class = []
@@ -132,6 +137,62 @@ class verify_rm:
             self.type3860.append( x['BOSSOBJECT'][i][7])
             self.comments3860.append( x['BOSSOBJECT'][i][8])
 
+
+    def get_vifibers(self,plate):
+        if plate == 3686: self.vifibers = self.vifibers3686
+        elif plate == 3687: self.vifibers = self.fibers3687
+        elif plate == 3804: self.vifibers = self.fibers3804
+        elif plate == 3805: self.vifibers = self.fibers3805
+        elif plate == 3853: self.vifibers = self.fibers3853
+        elif plate == 3855: self.vifibers = self.fibers3855
+        elif plate == 3856: self.vifibers = self.fibers3856
+        elif plate == 3860: self.vifibers = self.fibers3860
+
+
+    def get_zperson(self,plate):
+        if plate == 3686: self.zperson = self.zperson3686
+        elif plate == 3687: self.zperson = self.zperson3687
+        elif plate == 3804: self.zperson = self.zperson3804
+        elif plate == 3805: self.zperson = self.zperson3805
+        elif plate == 3853: self.zperson = self.zperson3853
+        elif plate == 3855: self.zperson = self.zperson3855
+        elif plate == 3856: self.zperson = self.zperson3856
+        elif plate == 3860: self.zperson = self.zperson3860
+    
+    
+    def get_zpipe(self,plate):
+        if plate == 3686: self.zpipe = self.zpipe3686
+        elif plate == 3687: self.zpipe = self.zpipe3687
+        elif plate == 3804: self.zpipe = self.zpipe3804
+        elif plate == 3805: self.zpipe = self.zpipe3805
+        elif plate == 3853: self.zpipe = self.zpipe3853
+        elif plate == 3855: self.zpipe = self.zpipe3855
+        elif plate == 3856: self.zpipe = self.zpipe3856
+        elif plate == 3860: self.zpipe = self.zpipe3860
+    
+
+    def get_vitype(self,plate):
+        if plate == 3686: self.vitype = self.vitype3686
+        elif plate == 3687: self.vitype = self.type3687
+        elif plate == 3804: self.vitype = self.type3804
+        elif plate == 3805: self.vitype = self.type3805
+        elif plate == 3853: self.vitype = self.type3853
+        elif plate == 3855: self.vitype = self.type3855
+        elif plate == 3856: self.vitype = self.type3856
+        elif plate == 3860: self.vitype = self.type3860
+
+
+    def get_zperson(self,plate):
+        if plate == 3686: self.comments = self.comments3686
+        elif plate == 3687: self.comments = self.comments3687
+        elif plate == 3804: self.comments = self.comments3804
+        elif plate == 3805: self.comments = self.comments3805
+        elif plate == 3853: self.comments = self.comments3853
+        elif plate == 3855: self.comments = self.comments3855
+        elif plate == 3856: self.comments = self.comments3856
+        elif plate == 3860: self.comments = self.comments3860
+
+
     def read_redmonster(self,plate):
         redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,self.mjds[plate]) )
         #for path in iglob(platepath):
@@ -143,21 +204,30 @@ class verify_rm:
         self.rm_type = hdu[1].data.CLASS
         self.rm_zwarning = hdu[1].data.ZWARNING
     
+    
     def read_spPlate(self,plate):
         spPlatepath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate, self.mjds[plate]) )
         hdu = fits.open(spPlatepath)
         self.boss_target1 = hdu[5].data.BOSS_TARGET1
     
+    
     def read_spZbest(self,plate):
         spZbestpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZall-%s-%s.fits' % (plate, self.mjds[plate]) )
         hdu = fits.open(spZbestpath)
         self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
+    
 
     def get_cmass(self):
         return n.where( self.boss_target1 & 2 == 2 )[0].tolist()
+    
 
     def get_lowz(self):
         return n.where( self.boss_target1 & 1 == 1 )[0].tolist()
+    
+    
+    def get_okay_cmass(self):
+        return n.where( (self.boss_target1 & 1))
+                       
 
     def cmass_completeness(self):
         vals = []
@@ -168,6 +238,7 @@ class verify_rm:
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
         return avg
+                       
 
     def lowz_completeness(self):
         vals = []
@@ -178,6 +249,7 @@ class verify_rm:
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
         return avg
+
 
     def cmass_galaxy_completeness(self):
         vals = []
@@ -190,6 +262,7 @@ class verify_rm:
             vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
         avg = n.sum(vals) / float(len(vals))
         return avg
+
 
     def lowz_galaxy_completeness(self):
         vals = []
