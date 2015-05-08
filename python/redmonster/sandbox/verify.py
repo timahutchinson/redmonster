@@ -175,6 +175,19 @@ class verify_rm:
         avg = n.sum(vals) / float(len(vals))
         return avg
 
+    def lowz_galaxy_completeness(self):
+        vals = []
+        for plate in self.plates:
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            fibers = self.get_lowz()
+            #fibers = n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist() # SHOULD THIS USE AS THE TOTAL NUMBER OF FIBERS THOSE CLASSIFIED AS GALAXIES BY RM OR BY VISUAL INSPECTION?
+            #vals.append( float(len(n.where( (self.rm_zwarning[fibers] == 0) )[0].tolist())) / float(len(fibers)) )
+            vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
+        avg = n.sum(vals) / float(len(vals))
+        return avg
+
+
 
 
 
