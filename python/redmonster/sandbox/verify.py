@@ -247,7 +247,16 @@ class verify_rm:
         # self.get_fibers() and self.get_comments() need to have already been called on this plate for this method to work properly
         okay_fibers = (n.asarray(self.vifibers)[n.where(n.asarray(self.comments) == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
         return n.where( self.boss_target1[okay_fibers] & 2 == 2 )[0].tolist()
-                       
+    
+    
+    def count_total_targets(self):
+        # Prints the total number of visually inspected targets
+        count = 0
+        for plate in self.plates:
+            self.get_all_yanny(plate)
+            count += len(self.vifibers)
+        print count
+    
 
     def cmass_completeness(self):
         # Prints percent of all CMASS targets with rm_zwarning == 0
