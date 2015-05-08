@@ -36,6 +36,7 @@ class verify_rm:
 
 
     def yanny_to_arrays(self):
+        # Convert yanny file to arrays
         # Read yanny file
         x = y.yanny(filename='/uufs/astro.utah.edu/common/home/u0814744/boss/spInspect_alltest_bolton.par.txt', np=True)
         #x = y.yanny(filename='/Users/boltonlab3/boss/spInspect_alltest_bolton.par.txt', np=True)
@@ -139,7 +140,8 @@ class verify_rm:
 
 
     def get_vifibers(self,plate):
-        if plate == 3686: self.vifibers = self.vifibers3686
+        # Set self.fibers to yanny info for a given plate
+        if plate == 3686: self.vifibers = self.fibers3686
         elif plate == 3687: self.vifibers = self.fibers3687
         elif plate == 3804: self.vifibers = self.fibers3804
         elif plate == 3805: self.vifibers = self.fibers3805
@@ -150,6 +152,7 @@ class verify_rm:
 
 
     def get_zperson(self,plate):
+        # Set self.zperson to yanny info for a given plate
         if plate == 3686: self.zperson = self.zperson3686
         elif plate == 3687: self.zperson = self.zperson3687
         elif plate == 3804: self.zperson = self.zperson3804
@@ -161,6 +164,7 @@ class verify_rm:
     
     
     def get_zpipe(self,plate):
+        # Set self.zpipe to yanny info for a given plate
         if plate == 3686: self.zpipe = self.zpipe3686
         elif plate == 3687: self.zpipe = self.zpipe3687
         elif plate == 3804: self.zpipe = self.zpipe3804
@@ -172,6 +176,7 @@ class verify_rm:
     
 
     def get_vitype(self,plate):
+        # Set self.vitype to yanny info for a given plate
         if plate == 3686: self.vitype = self.vitype3686
         elif plate == 3687: self.vitype = self.type3687
         elif plate == 3804: self.vitype = self.type3804
@@ -182,7 +187,8 @@ class verify_rm:
         elif plate == 3860: self.vitype = self.type3860
 
 
-    def get_zperson(self,plate):
+    def get_comments(self,plate):
+        # Set self.comments to yanny info for a given plate
         if plate == 3686: self.comments = self.comments3686
         elif plate == 3687: self.comments = self.comments3687
         elif plate == 3804: self.comments = self.comments3804
@@ -194,9 +200,8 @@ class verify_rm:
 
 
     def read_redmonster(self,plate):
+        # Read in the redmonster output file for a given plate
         redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,self.mjds[plate]) )
-        #for path in iglob(platepath):
-        #    hdu = fits.open(path)
         hdu = fits.open(redmonsterpath)
         self.rm_z1 = hdu[1].data.Z1
         self.rm_zerr1 = hdu[1].data.Z_ERR1
@@ -206,30 +211,38 @@ class verify_rm:
     
     
     def read_spPlate(self,plate):
+        # Read in the spPlate file for a given plate
         spPlatepath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate, self.mjds[plate]) )
         hdu = fits.open(spPlatepath)
         self.boss_target1 = hdu[5].data.BOSS_TARGET1
     
     
     def read_spZbest(self,plate):
+        # Read in the spZbest file for a given plate
         spZbestpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZall-%s-%s.fits' % (plate, self.mjds[plate]) )
         hdu = fits.open(spZbestpath)
         self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
     
 
     def get_cmass(self):
+        # Return (0-based) indices of CMASS targets
         return n.where( self.boss_target1 & 2 == 2 )[0].tolist()
     
 
     def get_lowz(self):
+        # Return (0-based indices) of LOWZ targets
         return n.where( self.boss_target1 & 1 == 1 )[0].tolist()
     
     
     def get_okay_cmass(self):
-        return n.where( (self.boss_target1 & 1))
+        # Return (0-based) indices of CMASS targets that have the yanny comment 'v5_4_9 ok'
+        # self.get_fibers() and self.get_comments() need to have already been called on this plate for this method to work properly
+        okay_fibers = (self.fibers[n.where(self.comments == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
+        return n.where( self.boss_target1[okay_fibers] & 2 == 2 )[0].tolist()
                        
 
     def cmass_completeness(self):
+        # Return percent of all CMASS targets with rm_zwarning == 0
         vals = []
         for plate in self.plates:
             self.read_redmonster(plate)
@@ -241,6 +254,7 @@ class verify_rm:
                        
 
     def lowz_completeness(self):
+        # Return percent of all LOWZ targets with rm_zwarning == 0
         vals = []
         for plate in self.plates:
             self.read_redmonster(plate)
@@ -252,6 +266,7 @@ class verify_rm:
 
 
     def cmass_galaxy_completeness(self):
+        # Return percent of all CMASS targets that have rm_warning == 0 and were classified as 'ssp_em_galaxy'
         vals = []
         for plate in self.plates:
             self.read_redmonster(plate)
@@ -265,6 +280,7 @@ class verify_rm:
 
 
     def lowz_galaxy_completeness(self):
+        # Return percent of all LOWZ targets that have rm_zwarning == 0 and were classified as 'ssp_em_galaxy'
         vals = []
         for plate in self.plates:
             self.read_redmonster(plate)
