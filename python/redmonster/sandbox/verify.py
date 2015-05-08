@@ -4,6 +4,7 @@ from os.path import join
 from os import environ
 from glob import iglob
 from redmonster.sandbox import yanny as y
+import matplotlib.pyplot as p
 
 class verify_rm:
     
@@ -289,9 +290,8 @@ class verify_rm:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
             fibers = self.get_cmass()
-            #fibers = n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist() # SHOULD THIS USE AS THE TOTAL NUMBER OF FIBERS THOSE CLASSIFIED AS GALAXIES BY RM OR BY VISUAL INSPECTION?
-            #vals.append( float(len(n.where( (self.rm_zwarning[fibers] == 0) )[0].tolist())) / float(len(fibers)) )
-            vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
+            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
+            vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
         print avg
 
@@ -303,9 +303,8 @@ class verify_rm:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
             fibers = self.get_lowz()
-            #fibers = n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist() # SHOULD THIS USE AS THE TOTAL NUMBER OF FIBERS THOSE CLASSIFIED AS GALAXIES BY RM OR BY VISUAL INSPECTION?
-            #vals.append( float(len(n.where( (self.rm_zwarning[fibers] == 0) )[0].tolist())) / float(len(fibers)) )
-            vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
+            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
+            vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
         print avg
 
@@ -333,8 +332,8 @@ class verify_rm:
         print '%s out of %s' % (count,total)
         print float(count) / float(total)
 
-    def count_galaxies_in_okay_cmass(self):
-        # Prints the number of targets classified by RM as 'ssp_em_galaxies' in the subset of CMASS targets having yanny comment 'v5_4_9 ok'
+    def cmass_okay_galaxy_completeness(self):
+        # Prints fraction of targets classified by RM as 'ssp_em_galaxies' in the subset of CMASS targets having yanny comment 'v5_4_9 ok'
         count = 0
         total = 0
         for plate in self.plates:
@@ -346,6 +345,8 @@ class verify_rm:
             count += len( n.where( self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist() )
         print '%s out of %s' % (count,total)
         print float(count) / float(total)
+
+
 
 
 
