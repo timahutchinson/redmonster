@@ -199,6 +199,7 @@ class verify_rm:
         elif plate == 3860: self.comments = self.comments3860
     
     def get_all_yanny(self,plate):
+        # Call all of the above self.get_XXX() methods in one fell swoop
         self.get_vifibers(plate)
         self.get_zperson(plate)
         self.get_zpipe(plate)
@@ -244,7 +245,7 @@ class verify_rm:
     def get_okay_cmass(self):
         # Return (0-based) indices of CMASS targets that have the yanny comment 'v5_4_9 ok'
         # self.get_fibers() and self.get_comments() need to have already been called on this plate for this method to work properly
-        okay_fibers = (self.fibers[n.where(self.comments == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
+        okay_fibers = (self.vifibers[n.where(self.comments == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
         return n.where( self.boss_target1[okay_fibers] & 2 == 2 )[0].tolist()
                        
 
