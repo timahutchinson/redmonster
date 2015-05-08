@@ -169,8 +169,9 @@ class verify_rm:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
             fibers = self.get_cmass()
-            fibers = n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist() # SHOULD THIS USE AS THE TOTAL NUMBER OF FIBERS THOSE CLASSIFIED AS GALAXIES BY RM OR BY VISUAL INSPECTION?
-            vals.append( float(len(n.where( (self.rm_zwarning[fibers] == 0) )[0].tolist())) / float(len(fibers)) )
+            #fibers = n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist() # SHOULD THIS USE AS THE TOTAL NUMBER OF FIBERS THOSE CLASSIFIED AS GALAXIES BY RM OR BY VISUAL INSPECTION?
+            #vals.append( float(len(n.where( (self.rm_zwarning[fibers] == 0) )[0].tolist())) / float(len(fibers)) )
+            vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) and (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
         avg = n.sum(vals) / float(len(vals))
         return avg
 
