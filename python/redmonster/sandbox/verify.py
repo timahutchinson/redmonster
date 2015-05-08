@@ -314,6 +314,7 @@ class verify_rm:
         # Prints fraction of CMASS targets having yanny comment 'v5_4_9 ok' that have rm_zwarning == 0
         count = 0
         total = 0
+        import pdb; pdb.set_trace()
         for plate in self.plates:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
