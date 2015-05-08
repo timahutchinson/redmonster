@@ -171,6 +171,8 @@ class verify_rm:
             fibers = self.get_cmass()
             fibers = n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist() # SHOULD THIS USE AS THE TOTAL NUMBER OF FIBERS THOSE CLASSIFIED AS GALAXIES BY RM OR BY VISUAL INSPECTION?
             vals.append( float(len(n.where( (self.rm_zwarning[fibers] == 0) )[0].tolist())) / float(len(fibers)) )
+        avg = n.sum(vals) / float(len(vals))
+        return avg
 
 
 
