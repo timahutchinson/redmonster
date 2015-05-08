@@ -40,81 +40,97 @@ class verify_rm:
         self.zpipe3686 = []
         self.zperson3686 = []
         self.type3686 = []
+        self.comments3686 = []
         for i in args:
             self.fibers3686.append( x['BOSSOBJECT'][i][2])
             self.zpipe3686.append( x['BOSSOBJECT'][i][5])
             self.zperson3686.append( x['BOSSOBJECT'][i][6])
             self.type3686.append( x['BOSSOBJECT'][i][7])
+            self.comments3686.append( x['BOSSOBJECT'][i][8])
         args = n.where(x['BOSSOBJECT']['plate'] == 3687)[0]
         self.fibers3687 = []
         self.zpipe3687 = []
         self.zperson3687 = []
         self.type3687 = []
+        self.comments3687 = []
         for i in args:
             self.fibers3687.append( x['BOSSOBJECT'][i][2])
             self.zpipe3687.append( x['BOSSOBJECT'][i][5])
             self.zperson3687.append( x['BOSSOBJECT'][i][6])
             self.type3687.append( x['BOSSOBJECT'][i][7])
+            self.comments3687.append( x['BOSSOBJECT'][i][8])
         args = n.where(x['BOSSOBJECT']['plate'] == 3804)[0]
         self.fibers3804 = []
         self.zpipe3804 = []
         self.zperson3804 = []
         self.type3804 = []
+        self.comments3804 = []
         for i in args:
             self.fibers3804.append( x['BOSSOBJECT'][i][2])
             self.zpipe3804.append( x['BOSSOBJECT'][i][5])
             self.zperson3804.append( x['BOSSOBJECT'][i][6])
             self.type3804.append( x['BOSSOBJECT'][i][7])
+            self.comments3804.append( x['BOSSOBJECT'][i][8])
         args = n.where(x['BOSSOBJECT']['plate'] == 3805)[0]
         self.fibers3805 = []
         self.zpipe3805 = []
         self.zperson3805 = []
         self.type3805 = []
+        self.comments3805 = []
         for i in args:
             self.fibers3805.append( x['BOSSOBJECT'][i][2])
             self.zpipe3805.append( x['BOSSOBJECT'][i][5])
             self.zperson3805.append( x['BOSSOBJECT'][i][6])
             self.type3805.append( x['BOSSOBJECT'][i][7])
+            self.comments3805.append( x['BOSSOBJECT'][i][8])
         args = n.where(x['BOSSOBJECT']['plate'] == 3853)[0]
         self.fibers3853 = []
         self.zpipe3853 = []
         self.zperson3853 = []
         self.type3853 = []
+        self.comments3853 = []
         for i in args:
             self.fibers3853.append( x['BOSSOBJECT'][i][2])
             self.zpipe3853.append( x['BOSSOBJECT'][i][5])
             self.zperson3853.append( x['BOSSOBJECT'][i][6])
             self.type3853.append( x['BOSSOBJECT'][i][7])
+            self.comments3853.append( x['BOSSOBJECT'][i][8])
         args = n.where(x['BOSSOBJECT']['plate'] == 3855)[0]
         self.fibers3855 = []
         self.zpipe3855 = []
         self.zperson3855 = []
         self.type3855 = []
+        self.comments3855 = []
         for i in args:
             self.fibers3855.append( x['BOSSOBJECT'][i][2])
             self.zpipe3855.append( x['BOSSOBJECT'][i][5])
             self.zperson3855.append( x['BOSSOBJECT'][i][6])
             self.type3855.append( x['BOSSOBJECT'][i][7])
+            self.comments3855.append( x['BOSSOBJECT'][i][8])
         args = n.where(x['BOSSOBJECT']['plate'] == 3856)[0]
         self.fibers3856 = []
         self.zpipe3856 = []
         self.zperson3856 = []
         self.type3856 = []
+        self.comments3856 = []
         for i in args:
             self.fibers3856.append( x['BOSSOBJECT'][i][2])
             self.zpipe3856.append( x['BOSSOBJECT'][i][5])
             self.zperson3856.append( x['BOSSOBJECT'][i][6])
             self.type3856.append( x['BOSSOBJECT'][i][7])
+            self.comments3856.append( x['BOSSOBJECT'][i][8])
         args = n.where(x['BOSSOBJECT']['plate'] == 3860)[0]
         self.fibers3860 = []
         self.zpipe3860 = []
         self.zperson3860 = []
         self.type3860 = []
+        self.comments3860 = []
         for i in args:
             self.fibers3860.append( x['BOSSOBJECT'][i][2])
             self.zpipe3860.append( x['BOSSOBJECT'][i][5])
             self.zperson3860.append( x['BOSSOBJECT'][i][6])
             self.type3860.append( x['BOSSOBJECT'][i][7])
+            self.comments3860.append( x['BOSSOBJECT'][i][8])
 
     def read_redmonster(self,plate):
         redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,self.mjds[plate]) )
@@ -208,6 +224,8 @@ class verify_rm:
 '''
 
 # S/N per fiber is located in spZbest files in hdu[1].data.SN_MEDIAN.  You can get just r,i,z bands with x = hdu[1].data.SN_MEDIAN[:,2:] .
+
+# To see fibers with zwarning != 0, ztype = 'galaxy', and boss_target1 = 'cmass', use >>> print n.where( (x.rm_zwarning != 0) & (x.rm_type == 'ssp_em_galaxy') & (x.boss_target1 & 2 == 2) )[0]+1
 
 
 
