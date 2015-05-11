@@ -387,13 +387,13 @@ class verify_rm:
                 count += len(fibers)
                 errors = n.append(errors,self.rm_zerr1[fibers])
                 #errors.append(self.rm_zerr1[fibers].tolist())
-            import pdb; pdb.set_trace()
             errors = self.dz_to_dv(errors)
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
             bins = n.zeros(nbins)
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
+            import pdb; pdb.set_trace()
             hist /= float(count)
             p.plot(bins,hist,drawstyle='steps-mid', color=colors[j])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
