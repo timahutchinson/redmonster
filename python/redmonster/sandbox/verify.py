@@ -377,12 +377,14 @@ class verify_rm:
             #import pdb; pdb.set_trace()
             zmax = zmin + .1
             errors = n.array([])
+            count = 0
             for plate in self.plates:
                 self.read_redmonster(plate)
                 self.read_spPlate(plate)
                 self.get_all_yanny(plate)
                 fibers = self.get_okay_cmass()
                 fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
+                count += len(fibers)
                 errors = n.append(errors,self.rm_zerr1[fibers])
                 #errors.append(self.rm_zerr1[fibers].tolist())
             errors = self.dz_to_dv(errors)
@@ -391,7 +393,7 @@ class verify_rm:
             bins = n.zeros(nbins)
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
-            hist =/ float(bins.shape[0])
+            hist =/ float(count)
             p.plot(bins,hist,drawstyle='steps-mid', color=colors[j])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
