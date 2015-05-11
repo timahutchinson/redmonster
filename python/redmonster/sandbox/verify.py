@@ -374,7 +374,7 @@ class verify_rm:
         colors = ['purple', 'blue', 'cyan', 'red', 'gold', 'lime']
         f = p.figure()
         ax1 = f.add_subplot(1,2,1)
-        for j,zmin in enumerate(n.linspace(.05,.35,4)):
+        for j,zmin in enumerate(n.linspace(.1,.4,4)):
             zmax = zmin + .1
             errors = n.array([])
             count = 0
@@ -425,6 +425,7 @@ class verify_rm:
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('CMASS Sample', size=18)
         p.axis([.9,2.4,0,.25])
+        p.subplots_adjust(wspace = .3)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo_cmass.pdf')
 
 
