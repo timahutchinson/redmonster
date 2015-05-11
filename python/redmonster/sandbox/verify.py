@@ -369,13 +369,13 @@ class verify_rm:
         return bin_fibers
 
 
-    def logdv_histos(self, nbins=25):
+    def logdv_histos(self, nbins=55):
         # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
         colors = ['purple', 'blue', 'cyan', 'red', 'gold', 'lime']
         f = p.figure()
         ax1 = f.add_subplot(1,2,1)
-        for j,zmin in enumerate(n.linspace(.1,.42,4)):
-            zmax = zmin + .08
+        for j,zmin in enumerate(n.linspace(.1,.4,6)):
+            zmax = zmin + .05
             errors = n.array([])
             count = 0
             for plate in self.plates:
