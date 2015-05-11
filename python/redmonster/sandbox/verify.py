@@ -374,8 +374,8 @@ class verify_rm:
         colors = ['purple', 'blue', 'cyan', 'red', 'gold', 'lime']
         f = p.figure()
         ax1 = f.add_subplot(1,2,1)
-        for j,zmin in enumerate(n.linspace(.02,.42,6)):
-            zmax = zmin + .08
+        for j,zmin in enumerate(n.linspace(.05,.35,4)):
+            zmax = zmin + .1
             errors = n.array([])
             count = 0
             for plate in self.plates:
