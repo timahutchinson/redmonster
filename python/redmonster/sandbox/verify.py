@@ -376,14 +376,15 @@ class verify_rm:
         for j,zmin in enumerate(n.linspace(.2,.2,1)):
             import pdb; pdb.set_trace()
             zmax = zmin + .1
-            errors = []
+            errors = n.array([])
             for plate in self.plates:
                 self.read_redmonster(plate)
                 self.read_spPlate(plate)
                 self.get_all_yanny(plate)
                 fibers = self.get_okay_cmass()
                 fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
-                errors.append(self.rm_zerr1[fibers].tolist())
+                errors = n.append(errors,self.rm_zerr1[fibers])
+                #errors.append(self.rm_zerr1[fibers].tolist())
             errors = self.dz_to_dv(errors)
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
