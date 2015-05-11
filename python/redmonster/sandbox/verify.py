@@ -373,7 +373,7 @@ class verify_rm:
         # Make histogram of log10(dv) in redshift bins for CMASS galaxies
         p.figure()
         colors = ['black', 'blue', 'green', 'yellow', 'orange', 'cyan']
-        for j,zmin in enumerate(n.linspace(.5,.5,1)):
+        for j,zmin in enumerate(n.linspace(.3,.8,6)):
             #import pdb; pdb.set_trace()
             zmax = zmin + .1
             errors = n.array([])
