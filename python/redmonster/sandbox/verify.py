@@ -373,7 +373,7 @@ class verify_rm:
         # Make histogram of log10(dv) in redshift bins for CMASS galaxies
         p.figure()
         colors = ['black', 'blue', 'green', 'yellow', 'orange', 'cyan']
-        for j,zmin in enumerate(n.linspace(.3,.3,1)):
+        for j,zmin in enumerate(n.linspace(.2,.7,6)):
             #import pdb; pdb.set_trace()
             zmax = zmin + .1
             errors = n.array([])
@@ -391,6 +391,7 @@ class verify_rm:
             bins = n.zeros(nbins)
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
+            hist =/ float(bins.shape[0])
             p.plot(bins,hist,drawstyle='steps-mid', color=colors[j])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
