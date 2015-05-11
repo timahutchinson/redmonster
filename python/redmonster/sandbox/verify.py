@@ -399,7 +399,7 @@ class verify_rm:
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('LOWZ Sample', size=18)
         p.legend()
-        p.axis([.5,2,0,.35])
+        p.axis([.55,2,0,.4])
         ax2 = f.add_subplot(1,2,2)
         labels = ['0.4<z<0.5','0.5<z<0.6','0.6<z<0.7','0.7<z<0.8']
         nbins = 25
