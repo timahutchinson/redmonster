@@ -369,7 +369,7 @@ class verify_rm:
         return bin_fibers
 
 
-    def logdv_histos(self, nbins=25):
+    def logdv_histos(self, nbins=20):
         # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
         colors = ['purple', 'blue', 'cyan', 'red', 'gold', 'lime']
         f = p.figure()
@@ -398,6 +398,7 @@ class verify_rm:
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('LOWZ Sample', size=18)
         ax2 = f.add_subplot(1,2,2)
+        nbins = 25
         for j,zmin in enumerate(n.linspace(.4,.7,4)):
             #import pdb; pdb.set_trace()
             zmax = zmin + .1
