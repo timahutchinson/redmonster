@@ -250,6 +250,13 @@ class verify_rm:
         return n.asarray(okay_fibers)[n.where( self.boss_target1[okay_fibers] & 2 == 2 )[0].tolist()].tolist()
     
     
+    def get_okay_lowz(self):
+        # Return (0-based) indices of LOWZ targets that have the yanny comment 'v5_4_9 ok'
+        # self.get_fibers() and self.get_comments() (or, equivalently, self.get_all_yanny() ) need to have already been called on this plate
+        okay_fibers = (n.asarray(self.vifibers)[n.where(n.asarray(self.comments) == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
+        return n.asarray(okay_fibers)[n.where( self.boss_target1[okay_fibers] & 1 == 1 )[0].tolist()].tolist()
+    
+    
     def count_total_targets(self):
         # Prints the total number of visually inspected targets
         count = 0
@@ -346,6 +353,46 @@ class verify_rm:
         print '%s out of %s' % (count,total)
         print float(count) / float(total)
 
+
+    def dz_to_dv(self, dz):
+        # Convert redshift error dz to velocity error dv
+        c_kms = 299792.458 # speed of light in km s^-1
+        return dz * c_kms
+
+
+    def redshift_bin_fibers(self, fibers, zmin, zmax):
+        # Return subset of fibers in redshift range [zmin,zmax]
+        bin_fibers = []
+        for fiber in fibers:
+            if (self.rm_z1[fiber] >= zmin) & (self.rm_z1[fiber] <= zmax):
+                bin_fibers.append(fiber)
+        return fibers
+
+
+    def cmass_logdv_histo(self, nbins=25):
+        # Make histogram of log10(dv) in redshift bins for CMASS galaxies
+        p.figure()
+        colors = ['black', 'blue', 'green', 'yellow', 'orange', 'cyan']
+        for j,zmin in enumerate(n.arange(.2,.2,1)):
+            zmax = zmin + .1
+            errors = []
+            for plate in self.plates:
+                self.read_redmonster(plate)
+                self.read_spPlate(plate)
+                self.get_all_yanny(plate)
+                fibers = self.get_okay_cmass()
+                fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
+                errors.append(self.rm_zerr1[fibers])
+            errors = self.dz_to_dv(errors)
+            errors = n.log10(errors)
+            hist,binedges = n.histogram(errors, bins=nbins)
+            bins = n.zeros(nbins)
+            for i in xrange(nbins):
+                bins[i] = (binedges[i+1]+binedges[i])/2.
+            p.plot(hist,bins,drawstyle='steps-mid', color=colors[i])
+        p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
+        p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
+        p.title('CMASS Sample', size=18)
 
 
 
