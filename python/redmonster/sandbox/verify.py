@@ -372,6 +372,7 @@ class verify_rm:
     def logdv_histos(self, nbins=12):
         # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
         colors = ['purple', 'cyan', 'blue', 'red', 'gold', 'lime']
+        labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
         f = p.figure()
         ax1 = f.add_subplot(1,2,1)
         for j,zmin in enumerate(n.linspace(.1,.4,4)):
@@ -393,11 +394,13 @@ class verify_rm:
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
-            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j])
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('LOWZ Sample', size=18)
+        p.legend()
         ax2 = f.add_subplot(1,2,2)
+        labels = ['0.4<z<0.5','0.5<z<0.6','0.6<z<0.7','0.7<z<0.8']
         nbins = 25
         for j,zmin in enumerate(n.linspace(.4,.7,4)):
             #import pdb; pdb.set_trace()
@@ -420,12 +423,13 @@ class verify_rm:
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
-            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j])
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('CMASS Sample', size=18)
         p.axis([.9,2.4,0,.25])
-        p.subplots_adjust(wspace = .3)
+        p.legend()
+        p.subplots_adjust(wspace = .35)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo_cmass.pdf')
 
 
