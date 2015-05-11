@@ -374,6 +374,7 @@ class verify_rm:
         p.figure()
         colors = ['black', 'blue', 'green', 'yellow', 'orange', 'cyan']
         for j,zmin in enumerate(n.arange(.2,.2,1)):
+            import pdb; pdb.set_trace()
             zmax = zmin + .1
             errors = []
             for plate in self.plates:
