@@ -454,7 +454,10 @@ class verify_rm:
                 pass
 '''
 
-# S/N per fiber is located in spZbest files in hdu[1].data.SN_MEDIAN.  You can get just r,i,z bands with x = hdu[1].data.SN_MEDIAN[:,2:] .
+# S/N per fiber is located in spZbest files in hdu[1].data.SN_MEDIAN .  You can get just r,i,z bands with x = hdu[1].data.SN_MEDIAN[:,2:] .
+
+# Fiber magnitudes are in spZbest files in hdu[1].data.SPECTROFLUX . Units are nanomaggies, convert to magnitudes
+# with 22.5 - 2.5 * LOG_10(SPECTROFLUX)
 
 # To see fibers with zwarning != 0, ztype = 'galaxy', and boss_target1 = 'cmass', use >>> print n.where( (x.rm_zwarning != 0) & (x.rm_type == 'ssp_em_galaxy') & (x.boss_target1 & 2 == 2) )[0]+1
 
