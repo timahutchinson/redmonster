@@ -369,8 +369,8 @@ class verify_rm:
         return bin_fibers
 
 
-    def cmass_logdv_histo(self, nbins=25):
-        # Make histogram of log10(dv) in redshift bins for LOWZ and CMASS galaxies
+    def logdv_histos(self, nbins=25):
+        # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
         colors = ['purple', 'blue', 'cyan', 'red', 'gold', 'lime']
         f = p.figure()
         ax1 = f.add_subplot(1,2,1)
