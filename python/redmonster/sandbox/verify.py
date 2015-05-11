@@ -370,13 +370,33 @@ class verify_rm:
 
 
     def cmass_logdv_histo(self, nbins=25):
-        # Make histogram of log10(dv) in redshift bins for CMASS galaxies
+        # Make histogram of log10(dv) in redshift bins for LOWZ and CMASS galaxies
+        colors = ['purple', 'blue', 'cyan', 'red', 'gold', 'lime']
         f = p.figure()
         ax1 = f.add_subplot(1,2,1)
-        p.plot(n.arange(10),n.arange(10))
-        p.xlabel('garbage')
-        p.title('more garbage')
-        colors = ['purple', 'blue', 'cyan', 'red', 'gold', 'red']
+        for j,zmin in enumerate(n.linspace(.02,.42,6)):
+            zmax = zmin + .08
+            errors = n.array([])
+            count = 0
+            for plate in self.plates:
+                self.read_redmonster(plate)
+                self.read_spPlate(plate)
+                self.get_all_yanny(plate)
+                fibers = self.get_okay_lowz()
+                fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
+                count += len(fibers)
+                errors = n.append(errors, self.rm_zerr1[fibers])
+            errors = self.dz_to_dv(errors)
+            errors = n.log10(errors)
+            hist,binedges = n.histogram(errors, bins=nbins)
+            bins = n.zeros(nbins)
+            for i in xrange(nbins):
+                bins[i] = (binedges[i+1]+binedges[i])/2.
+            normhist = hist / float(count)
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j])
+        p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
+        p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
+        p.title('LOWZ Sample', size=18)
         ax2 = f.add_subplot(1,2,2)
         for j,zmin in enumerate(n.linspace(.4,.7,4)):
             #import pdb; pdb.set_trace()
@@ -403,7 +423,7 @@ class verify_rm:
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('CMASS Sample', size=18)
-        p.axis([.9,2.4,0,.3])
+        p.axis([.9,2.4,0,.25])
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo_cmass.pdf')
 
 
