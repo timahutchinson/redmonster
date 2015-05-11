@@ -366,7 +366,7 @@ class verify_rm:
         for fiber in fibers:
             if (self.rm_z1[fiber] >= zmin) & (self.rm_z1[fiber] <= zmax):
                 bin_fibers.append(fiber)
-        return fibers
+        return bin_fibers
 
 
     def cmass_logdv_histo(self, nbins=25):
