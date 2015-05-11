@@ -387,6 +387,7 @@ class verify_rm:
                 count += len(fibers)
                 errors = n.append(errors,self.rm_zerr1[fibers])
                 #errors.append(self.rm_zerr1[fibers].tolist())
+            import pdb; pdb.set_trace()
             errors = self.dz_to_dv(errors)
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
