@@ -399,6 +399,7 @@ class verify_rm:
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('LOWZ Sample', size=18)
         p.legend()
+        p.axis([.5,2,0,.35])
         ax2 = f.add_subplot(1,2,2)
         labels = ['0.4<z<0.5','0.5<z<0.6','0.6<z<0.7','0.7<z<0.8']
         nbins = 25
@@ -427,7 +428,7 @@ class verify_rm:
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('CMASS Sample', size=18)
-        p.axis([.9,2.4,0,.25])
+        p.axis([.9,2.4,0,.3])
         p.legend()
         p.subplots_adjust(wspace = .35)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo_cmass.pdf')
