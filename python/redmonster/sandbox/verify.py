@@ -372,7 +372,7 @@ class verify_rm:
     def cmass_logdv_histo(self, nbins=25):
         # Make histogram of log10(dv) in redshift bins for CMASS galaxies
         p.figure()
-        colors = ['purple', 'blue', 'cyan', 'lime', 'gold', 'red']
+        colors = ['purple', 'blue', 'cyan', 'red', 'gold', 'red']
         for j,zmin in enumerate(n.linspace(.4,.7,4)):
             #import pdb; pdb.set_trace()
             zmax = zmin + .1
