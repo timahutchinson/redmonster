@@ -383,7 +383,7 @@ class verify_rm:
                 self.get_all_yanny(plate)
                 fibers = self.get_okay_cmass()
                 fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
-                errors.append(self.rm_zerr1[fibers])
+                errors.append(self.rm_zerr1[fibers].tolist())
             errors = self.dz_to_dv(errors)
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
