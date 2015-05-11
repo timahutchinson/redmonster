@@ -394,8 +394,8 @@ class verify_rm:
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             import pdb; pdb.set_trace()
-            hist /= float(count)
-            p.plot(bins,hist,drawstyle='steps-mid', color=colors[j])
+            normhist = hist / float(count)
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('CMASS Sample', size=18)
