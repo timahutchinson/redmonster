@@ -466,7 +466,7 @@ class verify_rm:
                             self.bad_fibers.append(fiber)
                             count_bad += 1
         print '%s catastrophic failures out of %s fibers, or %s of the total' % (count_bad,total,count_bad/float(total))
-        for i,fiber in self.bad_fibers:
+        for i,fiber in enumerate(self.bad_fibers):
             print 'Plate %s, fiber %s' % (fiber,self.bad_plates[i])
 
 
