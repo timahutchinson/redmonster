@@ -509,6 +509,8 @@ class verify_rm:
         print '%s recoverable failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_recoverable,total,(count_recoverable/float(total))*100)
         for i,fiber in enumerate(self.recoverable_fibers):
             print 'Plate %s, fiber %s, redmonster z = %s, redmonster class = %s, zperson = %s' % (self.recoverable_plates[i],fiber,self.recoverable_rm_z[i], self.recoverable_rm_type[i], self.recoverable_zperson[i])
+        f = p.figure()
+        ax1 = f.add_subplot(1,1,1)
         p.plot(self.recoverable_rm_z,self.recoverable_zperson, 'k.')
         p.savefig('recov.pdf')
 
