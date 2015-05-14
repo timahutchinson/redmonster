@@ -22,13 +22,13 @@ if not arg.mjd: parser.error("Please specify a valid --mjd")
 inifile = join(inidir,arg.inifile) if inidir else arg.inifile
 
 zf = zfind.Zfind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
-zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, chi2file=False) # chi2file=True will write chi2 surfaces, False (or omitting the argument entirely) will not
+zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, chi2file=True) # chi2file=True will write chi2 surfaces, False (or omitting the argument entirely) will not
 #zf.reduce_plate_mjd(arg.plate,arg.mjd)
 
 # Delete QSO and CAP chi2files
-#from os import remove
-#remove( join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % arg.plate, environ['RUN1D'], 'chi2arr-QSO-%s-%s-%03d.fits' % (arg.plate, arg.mjd, arg.fiberid) ) )
-#remove( join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % arg.plate, environ['RUN1D'], 'chi2arr-CAP-%s-%s-%03d.fits' % (arg.plate, arg.mjd, arg.fiberid) ) )
+from os import remove
+remove( join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % arg.plate, environ['RUN1D'], 'chi2arr-QSO-%s-%s-%03d.fits' % (arg.plate, arg.mjd, arg.fiberid) ) )
+remove( join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % arg.plate, environ['RUN1D'], 'chi2arr-CAP-%s-%s-%03d.fits' % (arg.plate, arg.mjd, arg.fiberid) ) )
 
 
 """ usage
