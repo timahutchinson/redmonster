@@ -273,6 +273,7 @@ class verify_rm:
         for plate in self.plates:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
+            self.read_spZbest(plate)
             fibers = self.get_cmass()
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
@@ -285,6 +286,7 @@ class verify_rm:
         for plate in self.plates:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
+            self.read_spZbest(plate)
             fibers = self.get_lowz()
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
@@ -297,6 +299,7 @@ class verify_rm:
         for plate in self.plates:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
+            self.read_spZbest(plate)
             fibers = self.get_cmass()
             #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
             vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(fibers)) )
@@ -310,6 +313,7 @@ class verify_rm:
         for plate in self.plates:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
+            self.read_spZbest(plate)
             fibers = self.get_lowz()
             #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
             vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(fibers)) )
@@ -322,6 +326,7 @@ class verify_rm:
         for plate in self.plates:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
+            self.read_spZbest(plate)
             self.get_all_yanny(plate)
             count += len(self.get_okay_cmass())
         print count
@@ -333,6 +338,7 @@ class verify_rm:
         for plate in self.plates:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
+            self.read_spZbest(plate)
             self.get_all_yanny(plate)
             fibers = self.get_okay_cmass()
             total += len(fibers)
@@ -348,6 +354,7 @@ class verify_rm:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
             self.get_all_yanny(plate)
+            self.read_spZbest(plate)
             fibers = self.get_okay_cmass()
             total += len(fibers)
             count += len( n.where( self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist() )
@@ -383,6 +390,7 @@ class verify_rm:
             for plate in self.plates:
                 self.read_redmonster(plate)
                 self.read_spPlate(plate)
+                self.read_spZbest(plate)
                 self.get_all_yanny(plate)
                 fibers = self.get_okay_lowz()
                 fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
@@ -412,6 +420,7 @@ class verify_rm:
             for plate in self.plates:
                 self.read_redmonster(plate)
                 self.read_spPlate(plate)
+                self.read_spZbest(plate)
                 self.get_all_yanny(plate)
                 fibers = self.get_okay_cmass()
                 fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
