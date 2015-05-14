@@ -459,7 +459,7 @@ class verify_rm:
             for fiber in fibers:
                 if (fiber+1) in self.vifibers: # +1 to go from python indexing to boss fiber conventions
                     total += 1
-                    vi_index = n.where( self.vifibers == (fiber+1) )[0][0]
+                    vi_index = n.where( n.asarray(self.vifibers) == (fiber+1) )[0][0]
                     if self.rm_zwarning[fiber] == 0:
                         if n.abs(self.rm_z[fiber] - self.zperson[vi_index]) >= 0.005:
                             self.bad_plates.append(plate)
