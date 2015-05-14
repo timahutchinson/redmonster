@@ -498,7 +498,7 @@ class verify_rm:
                 if (fiber+1) in self.vifibers: # +1 to go from python indexing to boss fiber conventions
                     total += 1
                     vi_index = n.where( n.asarray(self.vifibers) == (fiber+1) )[0][0]
-                    if (self.rm_zwarning[ifiber] != 0) | (self.rm_type[ifiber] != 'ssp_em_galaxy'):
+                    if (self.rm_zwarning[fiber] != 0) | (self.rm_type[fiber] != 'ssp_em_galaxy'):
                         if (self.zperson[vi_index] != -9) & (self.vitype[vi_index] == 4):
                             self.recoverable_fibers.append(fiber)
                             self.recoverable_plates.append(plate)
