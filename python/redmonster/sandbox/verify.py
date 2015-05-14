@@ -444,6 +444,30 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo_cmass.pdf')
 
 
+    def identify_catastrophic_failures(self):
+        # Identify fibers in 'okay CMASS' sample with zwarning == 0 and abs(z_rm - z_person) > .005
+        self.bad_fibers = []
+        self.bad_plates = []
+        count_bad = 0
+        total = 0
+        for plate in self.plates:
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            self.read_spZbest(plate)
+            self.get_all_yanny(plate)
+            fibers = self.get_okay_cmass()
+            for fiber in fibers:
+                if (fiber+1) in self.vifibers: # +1 to go from python indexing to boss fiber conventions
+                    total += 1
+                    vi_index = n.where( self.vifibers == (fiber+1) )[0][0]
+                    if self.rm_zwarning[fiber] == 0:
+                        if n.abs(self.rm_z[fiber] - self.zperson[vi_index]) >= 0.005:
+                            self.bad_plates.append(plate)
+                            self.bad_fibers.append(fiber)
+                            count_bad += 1
+        print '%s catastrophic failures out of %s fibers' % (count_bad,total)
+
+
 
 
 
