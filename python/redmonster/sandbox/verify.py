@@ -474,6 +474,44 @@ class verify_rm:
             print 'Plate %s, fiber %s, redmonster z = %s, zperson = %s' % (self.bad_plates[i],fiber,self.bad_rm_z[i], self.bad_zperson[i])
 
 
+    def identify_unclear_impurities(self):
+        # Identify fibers that have zwarning == 0 but no confident visual redshift
+        pass
+
+
+    def identify_recoverable_incompleteness(self):
+        # Identify fibers with confident visual redshift and 'galaxy' classification but have zwarning != 0 or rm_type == 'star'
+        self.recoverable_fibers = []
+        self.recoverable_plates = []
+        self.recoverable_rm_z = []
+        self.recoverable_rm_type = []
+        self.recoverable_zperson = []
+        count_recoverable = 0
+        total = 0
+        for plate in self.plates:
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            self.read_spZbest(plate)
+            self.get_all_yanny(plate)
+            fibers = self.get_okay_cmass()
+            for fiber in fibers:
+                if (fiber+1) in self.vifibers: # +1 to go from python indexing to boss fiber conventions
+                    total += 1
+                    vi_index = n.where( n.asarray(self.vifibers) == (fiber+1) )[0][0]
+                    if (self.rm_zwarning[ifiber] != 0) | (self.rm_type[ifiber] != 'ssp_em_galaxy'):
+                        if (self.zperson[vi_index] != -9) & (self.vitype[vi_index] == 4):
+                            self.recoverable_fibers.append(fiber)
+                            self.recoverable_plates.append(plate)
+                            self.recoverable_rm_z.append(self.rm_z1[fiber])
+                            self.recoverable_rm_type.append(self.rm_type[fiber])
+                            self.recoverable_zperson.append(self.zperson[vi_index])
+                            count_recoverable += 1
+        print '%s recoverable failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_recoverable,total,(count_recoverable/float(total))*100)
+        for i,fiber in enumerate(self.recoverable_fibers):
+            print 'Plate %s, fiber %s, redmonster z = %s, redmonster class = %s, zperson = %s' % (self.recoverable_plates[i],fiber,self.recoverable_rm_z[i], self.recoverable_rm_type[i], self.recoverable_zperson[i])
+
+
+
 
 
 
