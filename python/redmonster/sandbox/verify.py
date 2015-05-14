@@ -231,7 +231,7 @@ class verify_rm:
         spZbestpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate, self.mjds[plate]) )
         hdu = fits.open(spZbestpath)
         self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
-        self.spectroflux = hdu[1].data.SPECTROFLUX
+        self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # Conversion from nanomaggies to magnitudes
     
 
     def get_cmass(self):
@@ -245,14 +245,14 @@ class verify_rm:
     
     
     def get_okay_cmass(self):
-        # Return (0-based) indices of CMASS targets that have the yanny comment 'v5_4_9 ok'
+        # Return (0-based) indices of CMASS targets that have the yanny comment 'v5_4_9 ok' and imag <= 21.5
         # self.get_fibers() and self.get_comments() need to have already been called on this plate for this method to work properly
         okay_fibers = (n.asarray(self.vifibers)[n.where(n.asarray(self.comments) == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
         return n.asarray(okay_fibers)[n.where( (self.boss_target1[okay_fibers] & 2 == 2) & (self.spectroflux[okay_fibers][:,3] <= 21.5) )[0].tolist()].tolist()
     
     
     def get_okay_lowz(self):
-        # Return (0-based) indices of LOWZ targets that have the yanny comment 'v5_4_9 ok'
+        # Return (0-based) indices of LOWZ targets that have the yanny comment 'v5_4_9 ok' and imag <= 21.5
         # self.get_fibers() and self.get_comments() (or, equivalently, self.get_all_yanny() ) need to have already been called on this plate
         okay_fibers = (n.asarray(self.vifibers)[n.where(n.asarray(self.comments) == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
         return n.asarray(okay_fibers)[n.where( (self.boss_target1[okay_fibers] & 1 == 1) & (self.spectroflux[okay_fibers][:,3] <= 21.5) )[0].tolist()].tolist()
@@ -321,7 +321,7 @@ class verify_rm:
         print avg
 
     def count_okay_cmass_fibers(self):
-        # Prints number of CMASS targets with yanny comment 'v5_4_9 ok'
+        # Prints number of CMASS targets with yanny comment 'v5_4_9 ok' and imag <= 21.5
         count = 0
         for plate in self.plates:
             self.read_redmonster(plate)
