@@ -512,6 +512,7 @@ class verify_rm:
         f = p.figure()
         ax1 = f.add_subplot(1,1,1)
         p.plot(self.recoverable_rm_z,self.recoverable_zperson, 'k.')
+        p.plot(n.linspace(0,1,1000),n.linspace(0,1,1000),'red')
         p.savefig('recov.pdf')
 
 
