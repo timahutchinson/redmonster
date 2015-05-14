@@ -228,7 +228,7 @@ class verify_rm:
     
     def read_spZbest(self,plate):
         # Read in the spZbest file for a given plate
-        spZbestpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZall-%s-%s.fits' % (plate, self.mjds[plate]) )
+        spZbestpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate, self.mjds[plate]) )
         hdu = fits.open(spZbestpath)
         self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
         self.spectroflux = hdu[1].data.SPECTROFLUX
@@ -248,7 +248,7 @@ class verify_rm:
         # Return (0-based) indices of CMASS targets that have the yanny comment 'v5_4_9 ok'
         # self.get_fibers() and self.get_comments() need to have already been called on this plate for this method to work properly
         okay_fibers = (n.asarray(self.vifibers)[n.where(n.asarray(self.comments) == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
-        return n.asarray(okay_fibers)[n.where( (self.boss_target1[okay_fibers] & 2 == 2) & (self.spectroflux[3] <= 21.5) )[0].tolist()].tolist()
+        return n.asarray(okay_fibers)[n.where( (self.boss_target1[okay_fibers] & 2 == 2) & (self.spectroflux[:,3] <= 21.5) )[0].tolist()].tolist()
     
     
     def get_okay_lowz(self):
