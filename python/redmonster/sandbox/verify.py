@@ -448,6 +448,8 @@ class verify_rm:
         # Identify fibers in 'okay CMASS' sample with zwarning == 0 and abs(z_rm - z_person) > .005
         self.bad_fibers = []
         self.bad_plates = []
+        self.bad_rm_z = []
+        self.bad_zperson = []
         count_bad = 0
         total = 0
         for plate in self.plates:
@@ -464,6 +466,8 @@ class verify_rm:
                         if n.abs(self.rm_z1[fiber] - self.zperson[vi_index]) >= 0.005:
                             self.bad_plates.append(plate)
                             self.bad_fibers.append(fiber)
+                            self.bad_rm_z.append(self.rm_z1[fiber])
+                            self.bad_zperson.append(self.zperson[vi_index])
                             count_bad += 1
         print '%s catastrophic failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_bad,total,(count_bad/float(total))*100)
         for i,fiber in enumerate(self.bad_fibers):
