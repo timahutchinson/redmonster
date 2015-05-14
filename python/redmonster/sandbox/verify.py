@@ -471,7 +471,7 @@ class verify_rm:
                             count_bad += 1
         print '%s catastrophic failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_bad,total,(count_bad/float(total))*100)
         for i,fiber in enumerate(self.bad_fibers):
-            print 'Plate %s, fiber %s' % (self.bad_plates[i],fiber)
+            print 'Plate %s, fiber %s, redmonster z = %s, zperson = %s' % (self.bad_plates[i],fiber,self.bad_rm_z[i], self.bad_zperson[i])
 
 
 
