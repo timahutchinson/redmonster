@@ -516,6 +516,7 @@ class verify_rm:
         p.xlabel(r'$z_{redmonster}$',size=16)
         p.ylabel(r'$z_{visual}$',size=16)
         p.title('Objects with "recoverable" redshifts', size=18)
+        p.text(1.5, .4, '80 out of 3881 fibers with confident visual redshift and classification "galaxy" but zwarning != 0 or class != "galaxy"', fontsize=12)
         p.savefig('recov.pdf')
 
 
