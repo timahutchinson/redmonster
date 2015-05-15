@@ -579,6 +579,7 @@ class verify_rm:
         #p.plot(zbins,ztotal,label='z')
         print zbins
         print zhist
+        print ztotal
         #print rbins
         #print ibins
         p.legend()
