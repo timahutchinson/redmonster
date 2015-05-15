@@ -518,8 +518,8 @@ class verify_rm:
         p.title('Objects with "recoverable" redshifts', size=18)
         p.text(1.25, .4, '80 out of 3881 fibers with confident visual', fontsize=10)
         p.text(1.25,.35, 'redshift and "galaxy" classification but', size=10)
-        p.text(1.25, .3, 'zwarning != 0 or class != "galaxy".', size=10)
-        p.text(1.25,.25, 'Of these, 6 have $\delta z > .005$.', size=10)
+        p.text(1.25, .3, 'zwarning != 0 or class != "galaxy". Of', size=10)
+        p.text(1.25,.25, 'these, 6 have $\delta z > .005$.', size=10)
         p.savefig('recov.pdf')
 
 
