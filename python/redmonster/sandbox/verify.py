@@ -568,12 +568,12 @@ class verify_rm:
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
             zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        #rhist = rhist / map(float,rtotal)
-        #ihist = ihist / map(float,itotal)
-        #zhist = zhist / map(float,ztotal)
+        rhist = rhist / map(float,rtotal)
+        ihist = ihist / map(float,itotal)
+        zhist = zhist / map(float,ztotal)
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
-        p.plot(zbins,zhist,'.',color='cyan',label='z-band')
+        p.plot(zbins,zhist,color='cyan',label='z-band')
         #p.plot(rbins,rtotal,label='r')
         #p.plot(ibins,itotal,label='i')
         #p.plot(zbins,ztotal,label='z')
