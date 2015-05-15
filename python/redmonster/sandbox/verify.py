@@ -521,7 +521,7 @@ class verify_rm:
         p.text(1.25, .2, '%s out of %s fibers with confident visual' % (count_recoverable,total), fontsize=10)
         p.text(1.25,.15, 'redshift and "galaxy" classification but', size=10)
         p.text(1.25, .1, 'zwarning != 0 or class != "galaxy". Of', size=10)
-        p.text(1.25,.05, 'these, %s have $\delta z > .005$.' % (big_diff_num), size=10)
+        p.text(1.25,.05, 'these, %s have $\delta z > 0.005$.' % (big_diff_num), size=10)
         p.savefig('recov.pdf')
 
 
