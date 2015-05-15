@@ -509,6 +509,7 @@ class verify_rm:
         print '%s recoverable failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_recoverable,total,(count_recoverable/float(total))*100)
         for i,fiber in enumerate(self.recoverable_fibers):
             print 'Plate %s, fiber %s, redmonster z = %s, redmonster class = %s, zperson = %s' % (self.recoverable_plates[i],fiber,self.recoverable_rm_z[i], self.recoverable_rm_type[i], self.recoverable_zperson[i])
+        big_diff_num = len( n.where( n.abs(n.asarray(self.recoverable_rm_z)-n.asarray(self.recoverable_zperson)) >= .005 )[0] )
         f = p.figure()
         ax1 = f.add_subplot(1,1,1)
         p.plot(self.recoverable_rm_z,self.recoverable_zperson, 'k.')
@@ -516,10 +517,10 @@ class verify_rm:
         p.xlabel(r'$z_{redmonster}$',size=16)
         p.ylabel(r'$z_{visual}$',size=16)
         p.title('Objects with "recoverable" redshifts', size=18)
-        p.text(1.25, .2, '80 out of 3881 fibers with confident visual', fontsize=10)
+        p.text(1.25, .2, '%s out of %s fibers with confident visual' % (count_recoverable,total), fontsize=10)
         p.text(1.25,.15, 'redshift and "galaxy" classification but', size=10)
         p.text(1.25, .1, 'zwarning != 0 or class != "galaxy". Of', size=10)
-        p.text(1.25,.05, 'these, 6 have $\delta z > .005$.', size=10)
+        p.text(1.25,.05, 'these, %s have $\delta z > .005$.' % (big_diff_num), size=10)
         p.savefig('recov.pdf')
 
 
