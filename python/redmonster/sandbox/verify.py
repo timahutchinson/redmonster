@@ -231,7 +231,7 @@ class verify_rm:
         spZbestpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate, self.mjds[plate]) )
         hdu = fits.open(spZbestpath)
         self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
-        self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # Conversion from nanomaggies to magnitudes
+        self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
     
 
     def get_cmass(self):
@@ -481,6 +481,7 @@ class verify_rm:
 
     def identify_recoverable_incompleteness(self):
         # Identify fibers with confident visual redshift and 'galaxy' classification but have zwarning != 0 or rm_type == 'star'
+        # Also makes plot of z_visual vs z_rm for all identified fibers
         self.recoverable_fibers = []
         self.recoverable_plates = []
         self.recoverable_rm_z = []
@@ -523,6 +524,45 @@ class verify_rm:
         p.text(1.25, .1, 'zwarning > 0 or class != "galaxy". Of', size=10)
         p.text(1.25,.05, 'these, %s have $\delta z > 0.005$.' % (big_diff_num), size=10)
         p.savefig('recov.pdf')
+
+
+    def cmass_failure_vs_sn(self,nbins=25):
+        # Makes plot of CMASS failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
+        f = p.figure()
+        total = 0
+        bad_fibers = []
+        r_sn = []
+        i_sn = []
+        z_sn = []
+        for plate in self.plates:
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            self.read_spZbest(plate)
+            self.get_all_yanny(plate)
+            fibers = self.get_okay_cmass()
+            for fiber in fibers:
+                if (self.rm_zwarning[fiber] > 0):
+                    bad_fibers.append(fiber)
+                    r_sn.append(self.sn_median[fiber,0])
+                    i_sn.append(self.sn_median[fiber,1])
+                    z_sn.append(self.sn_median[fiber,2])
+        rhist,rbinedges = n.histogram(r_sn,bins=nbins)
+        ihist,ibinedges = n.histogram(i_sn,bins=nbins)
+        zhist,zbinedges = n.histogram(z_sn,bins=nbins)
+        rbins = n.zeros(nbins)
+        ibins = n.zeros(nbins)
+        zbins = n.zeros(nbins)
+        for i in xrange(nbins):
+            rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
+            ibins[i] = (rbinedges[i+1]+rbinedges[i])/2.
+            zbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
+        p.plot(rbins,rhist)
+        p.savefig('failure_vs_sn.pdf')
+
+
+
+
+
 
 
 
