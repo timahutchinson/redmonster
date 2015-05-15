@@ -573,10 +573,22 @@ class verify_rm:
         ihist = ihist / map(float,itotal)
         zhist = zhist / map(float,ztotal)
         for i in xrange(nbins):
-            if i != 0:
-                if isnan(rhist[i]): rhist[i] = (rhist[i-1] + rhist[i+1]) / 2.
-                if isnan(ihist[i]): ihist[i] = (ihist[i-1] + ihist[i+1]) / 2.
-                if isnan(zhist[i]): zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
+            if i != 0 and i != (nbins-1):
+                if isnan(rhist[i]):
+                    try:
+                        rhist[i] = (rhist[i-1] + rhist[i+1]) / 2.
+                    except:
+                        rhist[i] = 0
+                if isnan(ihist[i]):
+                    try:
+                        ihist[i] = (ihist[i-1] + ihist[i+1]) / 2.
+                    except:
+                        ihist[i] = 0
+                if isnan(zhist[i]):
+                    try:
+                        zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
+                    except:
+                        zhist[i] = 0
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
