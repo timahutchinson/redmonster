@@ -567,9 +567,9 @@ class verify_rm:
             ibins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             zbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
                 #import pdb; pdb.set_trace()
-        rhist = rhist / float(rtotal)
-        ihist = ihist / float(itotal)
-        zhist = zhist / float(ztotal)
+        rhist = rhist / map(float,rtotal)
+        ihist = ihist / map(float,itotal)
+        zhist = zhist / map(float,ztotal)
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
