@@ -561,7 +561,7 @@ class verify_rm:
         rhist = rhist / total
         ihist = ihist / total
         zbins = zhist / total
-        print total
+        print zhist
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
