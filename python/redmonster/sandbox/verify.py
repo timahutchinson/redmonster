@@ -513,6 +513,9 @@ class verify_rm:
         ax1 = f.add_subplot(1,1,1)
         p.plot(self.recoverable_rm_z,self.recoverable_zperson, 'k.')
         p.plot(n.linspace(0,1,1000),n.linspace(0,1,1000),'red')
+        p.xlabel(r'$z_{redmonster}$',size=16)
+        p.ylabel(r'$z_{visual}$',size=16)
+        p.title('Objects with "recoverable" redshifts', size=18)
         p.savefig('recov.pdf')
 
 
