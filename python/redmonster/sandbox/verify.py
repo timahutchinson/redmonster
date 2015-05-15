@@ -566,8 +566,8 @@ class verify_rm:
         #import pdb; pdb.set_trace()
         for i in xrange(nbins):
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
-            ibins[i] = (rbinedges[i+1]+rbinedges[i])/2.
-            zbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
+            ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
+            zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
         #rhist = rhist / map(float,rtotal)
         #ihist = ihist / map(float,itotal)
         #zhist = zhist / map(float,ztotal)
