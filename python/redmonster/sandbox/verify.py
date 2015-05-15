@@ -562,12 +562,11 @@ class verify_rm:
         rbins = n.zeros(nbins)
         ibins = n.zeros(nbins)
         zbins = n.zeros(nbins)
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         for i in xrange(nbins):
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             zbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
-                #import pdb; pdb.set_trace()
         rhist = rhist / map(float,rtotal)
         ihist = ihist / map(float,itotal)
         zhist = zhist / map(float,ztotal)
@@ -577,6 +576,7 @@ class verify_rm:
         p.plot(rbins,rtotal,label='r')
         p.plot(ibins,itotal,label='i')
         p.plot(zbins,ztotal,label='z')
+        print zbins
         print ztotal
         p.legend()
         p.savefig('failure_vs_sn.pdf')
