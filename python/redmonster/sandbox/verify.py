@@ -579,6 +579,7 @@ class verify_rm:
         p.plot(zbins,ztotal,label='z')
         print zbins
         print ztotal
+        print n.sort(z_sn)
         p.legend()
         p.savefig('failure_vs_sn.pdf')
 
