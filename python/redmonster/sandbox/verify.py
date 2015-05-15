@@ -526,7 +526,7 @@ class verify_rm:
         p.savefig('recov.pdf')
 
 
-    def cmass_failure_vs_sn(self,nbins=25):
+    def cmass_failure_vs_sn(self,nbins=30):
         # Makes plot of CMASS failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
         f = p.figure()
         total = 0
@@ -554,16 +554,16 @@ class verify_rm:
                         bad_r_sn.append(self.sn_median[fiber,0])
                         bad_i_sn.append(self.sn_median[fiber,1])
                         bad_z_sn.append(self.sn_median[fiber,2])
-        rtotal,rbinedges = n.histogram(r_sn,bins=nbins)
-        itotal,ibinedges = n.histogram(i_sn,bins=nbins)
-        ztotal,zbinedges = n.histogram(z_sn,bins=nbins)
-        rhist,rbinedges = n.histogram(bad_r_sn,bins=nbins)
-        ihist,ibinedges = n.histogram(bad_i_sn,bins=nbins)
-        zhist,zbinedges = n.histogram(bad_z_sn,bins=nbins)
+        nbinsarr = n.linspace(0,10,nbins)
+        rtotal,rbinedges = n.histogram(r_sn,bins=nbinsarr)
+        itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
+        ztotal,zbinedges = n.histogram(z_sn,bins=nbinsarr)
+        rhist,rbinedges = n.histogram(bad_r_sn,bins=nbinsarr)
+        ihist,ibinedges = n.histogram(bad_i_sn,bins=nbinsarr)
+        zhist,zbinedges = n.histogram(bad_z_sn,bins=nbinsarr)
         rbins = n.zeros(nbins)
         ibins = n.zeros(nbins)
         zbins = n.zeros(nbins)
-        #import pdb; pdb.set_trace()
         for i in xrange(nbins):
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
