@@ -544,7 +544,7 @@ class verify_rm:
             self.get_all_yanny(plate)
             fibers = self.get_cmass()
             for fiber in fibers:
-                if self.sn_median[ifiber,2] >= 4:
+                if self.sn_median[fiber,2] >= 4:
                     total += 1.
                     r_sn.append(self.sn_median[fiber,0])
                     i_sn.append(self.sn_median[fiber,1])
