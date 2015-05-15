@@ -6,6 +6,7 @@ from glob import iglob
 from redmonster.sandbox import yanny as y
 import matplotlib.pyplot as p
 from math import isnan
+from scipy.convolution import convolve, Box1DKernel
 
 class verify_rm:
     
@@ -590,6 +591,9 @@ class verify_rm:
                         zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
                     except:
                         zhist[i] = 0
+        rhist = convolve(rhist,Box1DKernel(3))
+        ihist = convolve(ihist,Box1DKernel(3))
+        zhist = convolve(zhist,Box1DKernel(3))
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
