@@ -554,7 +554,7 @@ class verify_rm:
                         bad_r_sn.append(self.sn_median[fiber,0])
                         bad_i_sn.append(self.sn_median[fiber,1])
                         bad_z_sn.append(self.sn_median[fiber,2])
-        nbinsarr = n.linspace(0,10,nbins)
+        nbinsarr = n.linspace(0,10,nbins+1)
         rtotal,rbinedges = n.histogram(r_sn,bins=nbinsarr)
         itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
         ztotal,zbinedges = n.histogram(z_sn,bins=nbinsarr)
