@@ -557,6 +557,7 @@ class verify_rm:
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             zbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
+        import pdb; pdb.set_trace()
         rhist = rhist / float(total)
         ihist = ihist / float(total)
         zbins = zhist / float(total)
