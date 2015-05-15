@@ -544,15 +544,16 @@ class verify_rm:
             self.get_all_yanny(plate)
             fibers = self.get_cmass()
             for fiber in fibers:
-                total += 1.
-                r_sn.append(self.sn_median[fiber,0])
-                i_sn.append(self.sn_median[fiber,1])
-                z_sn.append(self.sn_median[fiber,2])
-                if (self.rm_zwarning[fiber] > 0):
-                    bad_fibers.append(fiber)
-                    bad_r_sn.append(self.sn_median[fiber,0])
-                    bad_i_sn.append(self.sn_median[fiber,1])
-                    bad_z_sn.append(self.sn_median[fiber,2])
+                if self.sn_median[ifiber,2] >= 4):
+                    total += 1.
+                    r_sn.append(self.sn_median[fiber,0])
+                    i_sn.append(self.sn_median[fiber,1])
+                    z_sn.append(self.sn_median[fiber,2])
+                    if (self.rm_zwarning[fiber] > 0):
+                        bad_fibers.append(fiber)
+                        bad_r_sn.append(self.sn_median[fiber,0])
+                        bad_i_sn.append(self.sn_median[fiber,1])
+                        bad_z_sn.append(self.sn_median[fiber,2])
         rtotal,junk = n.histogram(r_sn,bins=nbins)
         itotal,junk = n.histogram(i_sn,bins=nbins)
         ztotal,junk = n.histogram(z_sn,bins=nbins)
