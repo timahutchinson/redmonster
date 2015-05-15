@@ -589,14 +589,15 @@ class verify_rm:
                         zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
                     except:
                         zhist[i] = 0
+        rhist = n.log10(rhist)
+        ihist = n.log10(ihist)
+        zhist = n.log10(zhist)
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
         print zbins
         print zhist
         print ztotal
-        #print rbins
-        #print ibins
         p.legend()
         p.savefig('failure_vs_sn.pdf')
 
