@@ -598,9 +598,11 @@ class verify_rm:
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
         ax.set_yscale('log')
-        print rbins
-        print rhist
-        print rtotal
+        p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=16)
+        p.ylabel(r'CMASS failure rate', size=16)
+        #print rbins
+        #print rhist
+        #print rtotal
         p.legend()
         p.savefig('failure_vs_sn.pdf')
 
