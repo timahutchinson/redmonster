@@ -528,7 +528,7 @@ class verify_rm:
         p.savefig('recov.pdf')
 
 
-    def cmass_failure_vs_sn(self,nbins=29):
+    def cmass_failure_vs_sn(self,sn_max=7,nbins=29):
         # Makes plot of CMASS failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
         f = p.figure()
         ax = f.add_subplot(1,1,1)
@@ -547,7 +547,7 @@ class verify_rm:
             self.get_all_yanny(plate)
             fibers = self.get_cmass()
             for fiber in fibers:
-                if (self.sn_median[fiber,0] <= 8):
+                if (self.sn_median[fiber,0] <= sn_max):
                     total += 1.
                     r_sn.append(self.sn_median[fiber,0])
                     i_sn.append(self.sn_median[fiber,1])
@@ -557,7 +557,7 @@ class verify_rm:
                         bad_r_sn.append(self.sn_median[fiber,0])
                         bad_i_sn.append(self.sn_median[fiber,1])
                         bad_z_sn.append(self.sn_median[fiber,2])
-        nbinsarr = n.linspace(0,8,nbins+1)
+        nbinsarr = n.linspace(0,sn_max,nbins+1)
         rtotal,rbinedges = n.histogram(r_sn,bins=nbinsarr)
         itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
         ztotal,zbinedges = n.histogram(z_sn,bins=nbinsarr)
