@@ -542,6 +542,7 @@ class verify_rm:
             fibers = self.get_cmass()
             for fiber in fibers:
                 if (self.rm_zwarning[fiber] > 0):
+                    total += 1.
                     bad_fibers.append(fiber)
                     r_sn.append(self.sn_median[fiber,0])
                     i_sn.append(self.sn_median[fiber,1])
