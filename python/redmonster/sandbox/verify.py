@@ -539,7 +539,7 @@ class verify_rm:
             self.read_spPlate(plate)
             self.read_spZbest(plate)
             self.get_all_yanny(plate)
-            fibers = self.get_okay_cmass()
+            fibers = self.get_cmass()
             for fiber in fibers:
                 if (self.rm_zwarning[fiber] > 0):
                     bad_fibers.append(fiber)
@@ -558,7 +558,7 @@ class verify_rm:
             zbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
-        p.plot(zbins,zhist,color='red',label='z-band')
+        p.plot(zbins,zhist,color='cyan',label='z-band')
         p.legend()
         p.savefig('failure_vs_sn.pdf')
 
