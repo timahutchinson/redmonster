@@ -557,6 +557,8 @@ class verify_rm:
             ibins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             zbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
         p.plot(rbins,rhist)
+        p.plot(ibins,ihist)
+        p.plot(zbins,zhist)
         p.savefig('failure_vs_sn.pdf')
 
 
