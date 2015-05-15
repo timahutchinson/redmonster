@@ -556,9 +556,10 @@ class verify_rm:
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             zbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
-        p.plot(rbins,rhist)
-        p.plot(ibins,ihist)
-        p.plot(zbins,zhist)
+        p.plot(rbins,rhist,color='purple',label='r-band')
+        p.plot(ibins,ihist,color='blue',label='i-band')
+        p.plot(zbins,zhist,color='red',label='z-band')
+        p.legend()
         p.savefig('failure_vs_sn.pdf')
 
 
