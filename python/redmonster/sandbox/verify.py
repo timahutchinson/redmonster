@@ -562,6 +562,7 @@ class verify_rm:
         rbins = n.zeros(nbins)
         ibins = n.zeros(nbins)
         zbins = n.zeros(nbins)
+        import pdb; pdb.set_trace()
         for i in xrange(nbins):
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (rbinedges[i+1]+rbinedges[i])/2.
