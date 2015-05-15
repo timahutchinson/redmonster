@@ -598,9 +598,9 @@ class verify_rm:
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
         ax.set_yscale('log')
-        print zbins
-        print zhist
-        print ztotal
+        print rbins
+        print rhist
+        print rtotal
         p.legend()
         p.savefig('failure_vs_sn.pdf')
 
