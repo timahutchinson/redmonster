@@ -530,6 +530,7 @@ class verify_rm:
     def cmass_failure_vs_sn(self,nbins=29):
         # Makes plot of CMASS failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
         f = p.figure()
+        ax = f.add_subplot(1,1,1)
         total = 0
         bad_fibers = []
         bad_r_sn = []
@@ -589,12 +590,10 @@ class verify_rm:
                         zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
                     except:
                         zhist[i] = 0
-        rhist = n.log10(rhist)
-        ihist = n.log10(ihist)
-        zhist = n.log10(zhist)
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
+        ax.set_yscale('log')
         print zbins
         print zhist
         print ztotal
