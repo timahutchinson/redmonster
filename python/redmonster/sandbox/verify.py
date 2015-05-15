@@ -531,6 +531,9 @@ class verify_rm:
         f = p.figure()
         total = 0
         bad_fibers = []
+        bad_r_sn = []
+        bad_i_sn = []
+        bad_z_sn = []
         r_sn = []
         i_sn = []
         z_sn = []
@@ -542,14 +545,20 @@ class verify_rm:
             fibers = self.get_cmass()
             for fiber in fibers:
                 total += 1.
+                r_sn.append(self.sn_median[fiber,0])
+                i_sn.append(self.sn_median[fiber,1])
+                z_sn.append(self.sn_median[fiber,2])
                 if (self.rm_zwarning[fiber] > 0):
                     bad_fibers.append(fiber)
-                    r_sn.append(self.sn_median[fiber,0])
-                    i_sn.append(self.sn_median[fiber,1])
-                    z_sn.append(self.sn_median[fiber,2])
-        rhist,rbinedges = n.histogram(r_sn,bins=nbins)
-        ihist,ibinedges = n.histogram(i_sn,bins=nbins)
-        zhist,zbinedges = n.histogram(z_sn,bins=nbins)
+                    bad_r_sn.append(self.sn_median[fiber,0])
+                    bad_i_sn.append(self.sn_median[fiber,1])
+                    bad_z_sn.append(self.sn_median[fiber,2])
+        rtotal,junk = n.histogram(r_sn,bins=nbins)
+        itotal,junk = n.histogram(i_sn,bins=nbins)
+        ztotal,junk = n.histogram(z_sn,bins=nbins)
+        rhist,rbinedges = n.histogram(bad_r_sn,bins=nbins)
+        ihist,ibinedges = n.histogram(bad_i_sn,bins=nbins)
+        zhist,zbinedges = n.histogram(bad_z_sn,bins=nbins)
         rbins = n.zeros(nbins)
         ibins = n.zeros(nbins)
         zbins = n.zeros(nbins)
@@ -558,9 +567,9 @@ class verify_rm:
             ibins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             zbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
                 #import pdb; pdb.set_trace()
-        rhist = rhist / total
-        ihist = ihist / total
-        zhist = zhist / total
+        rhist = rhist / float(rtotal)
+        ihist = ihist / float(itotal)
+        zhist = zhist / float(ztotal)
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
