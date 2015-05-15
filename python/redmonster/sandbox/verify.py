@@ -591,9 +591,9 @@ class verify_rm:
                         zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
                     except:
                         zhist[i] = 0
-        rhist = convolve(rhist,Box1DKernel(3))
-        ihist = convolve(ihist,Box1DKernel(3))
-        zhist = convolve(zhist,Box1DKernel(3))
+        rhist = convolve(rhist,Box1DKernel(.5))
+        ihist = convolve(ihist,Box1DKernel(.5))
+        zhist = convolve(zhist,Box1DKernel(.5))
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
