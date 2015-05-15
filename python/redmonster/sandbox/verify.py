@@ -6,7 +6,7 @@ from glob import iglob
 from redmonster.sandbox import yanny as y
 import matplotlib.pyplot as p
 from math import isnan
-from scipy.convolution import convolve, Box1DKernel
+from astropy.convolution import convolve, Box1DKernel
 
 class verify_rm:
     
