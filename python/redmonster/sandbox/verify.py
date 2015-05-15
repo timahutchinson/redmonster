@@ -573,7 +573,7 @@ class verify_rm:
         #zhist = zhist / map(float,ztotal)
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
-        p.plot(zbins,zhist,color='cyan', '.',label='z-band')
+        p.plot(zbins,zhist,'.',color='cyan',label='z-band')
         #p.plot(rbins,rtotal,label='r')
         #p.plot(ibins,itotal,label='i')
         #p.plot(zbins,ztotal,label='z')
