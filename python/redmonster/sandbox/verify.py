@@ -560,6 +560,7 @@ class verify_rm:
         rhist = rhist / float(total)
         ihist = ihist / float(total)
         zbins = zhist / float(total)
+        print total
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
