@@ -577,6 +577,7 @@ class verify_rm:
         p.plot(rbins,rtotal,label='r')
         p.plot(ibins,itotal,label='i')
         p.plot(zbins,ztotal,label='z')
+        print ztotal
         p.legend()
         p.savefig('failure_vs_sn.pdf')
 
