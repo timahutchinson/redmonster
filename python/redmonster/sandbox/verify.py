@@ -5,6 +5,7 @@ from os import environ
 from glob import iglob
 from redmonster.sandbox import yanny as y
 import matplotlib.pyplot as p
+from math import isnan
 
 class verify_rm:
     
@@ -571,12 +572,14 @@ class verify_rm:
         rhist = rhist / map(float,rtotal)
         ihist = ihist / map(float,itotal)
         zhist = zhist / map(float,ztotal)
+        for i in xrange(nbins):
+            if i != 0:
+                if isnan(rhist[i]): rhist[i] = (rhist[i-1] + rhist[i+1]) / 2.
+                if isnan(ihist[i]): ihist[i] = (ihist[i-1] + ihist[i+1]) / 2.
+                if isnan(zhist[i]): zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
-        #p.plot(rbins,rtotal,label='r')
-        #p.plot(ibins,itotal,label='i')
-        #p.plot(zbins,ztotal,label='z')
         print zbins
         print zhist
         print ztotal
