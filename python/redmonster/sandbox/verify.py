@@ -574,9 +574,9 @@ class verify_rm:
         #p.plot(rbins,rhist,color='purple',label='r-band')
         #p.plot(ibins,ihist,color='blue',label='i-band')
         #p.plot(zbins,zhist,color='cyan',label='z-band')
-        p.plot(rbins,rtotal)
-        p.plot(ibins,itotal)
-        p.plot(zbins,ztotal)
+        p.plot(rbins,rtotal,label='r')
+        p.plot(ibins,itotal,label='i')
+        p.plot(zbins,ztotal,label='z')
         p.legend()
         p.savefig('failure_vs_sn.pdf')
 
