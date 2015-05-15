@@ -527,7 +527,7 @@ class verify_rm:
         p.savefig('recov.pdf')
 
 
-    def cmass_failure_vs_sn(self,nbins=39):
+    def cmass_failure_vs_sn(self,nbins=29):
         # Makes plot of CMASS failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
         f = p.figure()
         total = 0
