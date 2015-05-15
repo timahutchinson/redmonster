@@ -544,7 +544,7 @@ class verify_rm:
             self.get_all_yanny(plate)
             fibers = self.get_cmass()
             for fiber in fibers:
-                if (self.sn_median[fiber,0] <= 10) & (self.sn_median[fiber,1] <= 10) & (self.sn_median[fiber,2] <= 10):
+                if (self.sn_median[fiber,0] <= 8):
                     total += 1.
                     r_sn.append(self.sn_median[fiber,0])
                     i_sn.append(self.sn_median[fiber,1])
@@ -571,9 +571,9 @@ class verify_rm:
         #rhist = rhist / map(float,rtotal)
         #ihist = ihist / map(float,itotal)
         #zhist = zhist / map(float,ztotal)
-        p.plot(rbins,rhist,color='purple',label='r-band')
-        p.plot(ibins,ihist,color='blue',label='i-band')
-        p.plot(zbins,zhist,color='cyan',label='z-band')
+        p.plot(rbins,rhist,color='purple',label='r-band',drawstyle='steps-mid')
+        p.plot(ibins,ihist,color='blue',label='i-band',drawstyle='steps-mid')
+        p.plot(zbins,zhist,color='cyan',label='z-band',drawstyle='steps-mid')
         #p.plot(rbins,rtotal,label='r')
         #p.plot(ibins,itotal,label='i')
         #p.plot(zbins,ztotal,label='z')
