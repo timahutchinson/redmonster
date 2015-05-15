@@ -578,8 +578,8 @@ class verify_rm:
         #p.plot(ibins,itotal,label='i')
         #p.plot(zbins,ztotal,label='z')
         print zbins
-        print ztotal
-        print n.sort(z_sn)
+        print rbins
+        print ibins
         p.legend()
         p.savefig('failure_vs_sn.pdf')
 
