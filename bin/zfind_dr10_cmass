@@ -31,7 +31,7 @@ platedir = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
 '''
 if platedir:
-    queue.create(label='zfind_dr10_cmass',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+    queue.create(label='zfind_v5_7_0_cmass',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
     for path in iglob(platedir):
         spfile = basename(path)
         m = re.search( 'spPlate-(\d{4})-(\d{5}).fits', spfile )
