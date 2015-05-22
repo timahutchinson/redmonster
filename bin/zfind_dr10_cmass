@@ -6,7 +6,7 @@ from pbs import queue
 import re
 from astropy.io import fits
 queue = queue()
-queue.verbose = True
+q.verbose = True
 nodes = 12
 walltime = '336:00:00'
 
@@ -31,7 +31,7 @@ platedir = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
 '''
 if platedir:
-    queue.create(label='zfind_v5_7_0_cmass',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+    q.create(label='zfind_v5_7_0_cmass',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
     for path in iglob(platedir):
         spfile = basename(path)
         m = re.search( 'spPlate-(\d{4})-(\d{5}).fits', spfile )
@@ -41,20 +41,20 @@ if platedir:
         hdu = fits.open(path)
         for ind,flag in enumerate(hdu[5].data.BOSS_TARGET1):
             if flag & 2: 
-                queue.append( "zfind -p %i -m %i -f %i" % (plate, mjd, ind) )
-    queue.commit(hard=True,submit=True)
+                q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, ind) )
+    q.commit(hard=True,submit=True)
 '''
 
 if platedir:
-    queue.create(label='zfind_dr10_cmass',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+    q.create(label='zfind_dr10_cmass',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
     hdu = fits.open(platedir)
     for ind,bosstarg1 in enumerate(hdu[1].data.BOSS_TARGET1):
         if (bosstarg1 & 2) and (hdu[1].data.SPECPRIMARY[ind] > 0):
             plate = hdu[1].data.PLATE[ind]
             mjd = hdu[1].data.MJD[ind]
             fiberid = hdu[1].data.FIBERID[ind] - 1
-            queue.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
-    queue.commit(hard=True, submit=True)
+            q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
+    q.commit(hard=True, submit=True)
 
 
 

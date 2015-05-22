@@ -5,8 +5,8 @@ from glob import iglob
 from pbs import queue
 import re
 from astropy.io import fits
-queue = queue()
-#queue.verbose = True
+q = queue()
+q.verbose = True
 nodes = 12
 walltime = '336:00:00'
 ncycles = 100
@@ -32,7 +32,7 @@ platedir = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
 if platedir:
     cjob = 0
-    queue.create(label='zfind_dr10_cmass_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+    q.create(label='zfind_dr10_cmass_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
     hdu = fits.open(platedir)
     blocksize = nodes*ppn*ncycles
     for ind,bosstarg1 in enumerate(hdu[1].data.BOSS_TARGET1):
@@ -40,11 +40,11 @@ if platedir:
             plate = hdu[1].data.PLATE[ind]
             mjd = hdu[1].data.MJD[ind]
             fiberid = hdu[1].data.FIBERID[ind] - 1
-            queue.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
-        if queue.task_number >= blocksize:
+            q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
+        if q.task_number >= blocksize:
             cjob += 1
-            queue.commit(hard=True, submit=True)
+            q.commit(hard=True, submit=True)
             queue = queue()
-#           queue.verbose = True
-            queue.create(label='zfind_dr10_cmass_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
-    if not queue.client.committed: queue.commit(hard=True, submit=True)
+           q.verbose = True
+            q.create(label='zfind_dr10_cmass_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+    if not q.client.committed: q.commit(hard=True, submit=True)

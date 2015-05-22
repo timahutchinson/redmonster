@@ -4,7 +4,7 @@ from os.path import join, basename
 from glob import iglob
 from pbs import queue
 queue = queue()
-queue.verbose = True
+q.verbose = True
 nodes = 12
 walltime = '336:00:00'
 
@@ -44,10 +44,10 @@ mjds=[55268,55269,55267,55269,55268,55268,55269,55269]
 
 
 
-queue.create(label='zfind',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+q.create(label='zfind',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
 for i,plate in enumerate(plates):
-    for fiberid in xrange(1000): queue.append("zfind -p %i -m %i -f %i" % (plate,mjds[i],fiberid))
-queue.commit(hard=True,submit=True)
+    for fiberid in xrange(1000): q.append("zfind -p %i -m %i -f %i" % (plate,mjds[i],fiberid))
+q.commit(hard=True,submit=True)
 
 
 
