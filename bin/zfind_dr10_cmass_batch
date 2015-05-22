@@ -6,7 +6,7 @@ from pbs import queue
 import re
 from astropy.io import fits
 queue = queue()
-queue.verbose = True
+#queue.verbose = True
 nodes = 12
 walltime = '336:00:00'
 ncycles = 500
@@ -45,6 +45,6 @@ if platedir:
             cjob += 1
             queue.commit(hard=True, submit=True)
             queue = queue()
-            queue.verbose = True
+#           queue.verbose = True
             queue.create(label='zfind_dr10_cmass_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
     if not queue.client.committed: queue.commit(hard=True, submit=True)
