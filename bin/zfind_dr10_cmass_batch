@@ -44,7 +44,7 @@ if platedir:
         if q.task_number >= blocksize:
             cjob += 1
             q.commit(hard=True, submit=True)
-            queue = queue()
+            q = queue()
             q.verbose = True
             q.create(label='zfind_dr10_cmass_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
     if not q.client.committed: q.commit(hard=True, submit=True)
