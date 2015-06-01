@@ -633,7 +633,7 @@ class verify_rm:
             self.read_spZbest(plate)
             fibers = self.get_cmass()
             for fiber in fibers:
-                count += 1
+                total += 1
                 self.read_redmonster_all(plate,fiber)
                 if self.rm_zwarning[0] != 0:
                     count += 1
