@@ -631,7 +631,6 @@ class verify_rm:
             self.boss_target1 = hdu[5].data.BOSS_TARGET1
 
 
-
     def cmass_completeness_all(self):
         # Prints percent of all DR10 CMASS targets with rm_zwarning == 0
         count = 0
@@ -644,10 +643,53 @@ class verify_rm:
             for fiber in fibers:
                 total += 1
                 self.read_redmonster_all(plate,fiber)
-                if self.rm_zwarning[0] != 0:
+                if self.rm_zwarning[0] == 0:
                     count += 1
         avg = float(count) / float(total)
+        print count
+        print total
         print avg
+
+
+    def lowz_completeness(self):
+        # Prints percent of all DR10 LOWZ targets with rm_zwarning == 0
+        count = 0
+        total = 0
+        globpath = join( self.redmonster_spectro_redux, '*')
+        for path in iglob(globpath):
+            plate = basename(path)
+            self.read_spPlate_all(plate)
+            fibers = self.get_lowz()
+            for fiber in fibers:
+                total += 1
+                self.read_redmonster_all(plate,fiber)
+                if self.rm_zwarning[0] == 0:
+                    count += 1
+        avg = float(count) / float(total)
+        print count
+        print total
+        print avg
+
+
+    def cmass_galaxy_completeness(self):
+        # Prints percent of all DR10 CMASS targets that have rm_warning == 0 and were classified as 'ssp_em_galaxy'
+        count = 0
+        total = 0
+        globpath = join( self.redmonster_spectro_redux, '*')
+        for path in iglob(globpath):
+            plate = basename(path)
+            self.read_spPlate_all(plate)
+            fibers = self.get_cmass()
+            for fiber in fibers:
+                total += 1
+                self.read_redmonster_all(plate,fiber)
+                if (self.rm_zwarning[0] == 0) & (self.rm_type[0] == 'ssp_em_galaxy'):
+                    count += 1
+        avg = float(count) / float(total)
+        print count
+        print total
+        print avg
+
 
 
 
