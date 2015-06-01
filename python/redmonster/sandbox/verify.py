@@ -297,15 +297,25 @@ class verify_rm:
 
     def cmass_galaxy_completeness(self):
         # Prints percent of all CMASS targets that have rm_warning == 0 and were classified as 'ssp_em_galaxy'
-        vals = []
+        #vals = []
+        count = 0
+        total = 0
         for plate in self.plates:
             self.read_redmonster(plate)
             self.read_spPlate(plate)
             self.read_spZbest(plate)
             fibers = self.get_cmass()
+            for fiber in fibers:
+                if self.rm_type[fiber] == 'ssp_em_galaxy':
+                    total += 1
+                    if self.rm_zwarning[fiber] == 0:
+                        count += 1
             #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
-            vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(fibers)) )
-        avg = n.sum(vals) / float(len(vals))
+            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(fibers)) )
+        #avg = n.sum(vals) / float(len(vals))
+        avg = float(count) / float(total)
+        print count
+        print total
         print avg
 
 
