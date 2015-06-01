@@ -612,6 +612,7 @@ class verify_rm:
 
 
     def read_redmonster_all(self,plate,fiber):
+        import pdb; pdb.set_trace()
         redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*-%s.fits' % (plate,fiber) )
         for path in iglob(redmonsterpath):
             hdu = fits.open(redmonsterpath)
@@ -635,7 +636,6 @@ class verify_rm:
         # Prints percent of all DR10 CMASS targets with rm_zwarning == 0
         count = 0
         total = 0
-        import pdb; pdb.set_trace()
         globpath = join( self.redmonster_spectro_redux, '*')
         for path in iglob(globpath):
             plate = basename(path)
