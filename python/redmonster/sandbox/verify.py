@@ -651,7 +651,7 @@ class verify_rm:
         print avg
 
 
-    def lowz_completeness(self):
+    def lowz_completeness_all(self):
         # Prints percent of all DR10 LOWZ targets with rm_zwarning == 0
         count = 0
         total = 0
@@ -671,7 +671,7 @@ class verify_rm:
         print avg
 
 
-    def cmass_galaxy_completeness(self):
+    def cmass_galaxy_completeness_all(self):
         # Prints percent of all DR10 CMASS targets that have rm_warning == 0 and were classified as 'ssp_em_galaxy'
         count = 0
         total = 0
