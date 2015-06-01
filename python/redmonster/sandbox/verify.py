@@ -470,6 +470,7 @@ class verify_rm:
         self.bad_plates = []
         self.bad_rm_z = []
         self.bad_zperson = []
+        self.bad_type = []
         count_bad = 0
         total = 0
         for plate in self.plates:
@@ -489,6 +490,7 @@ class verify_rm:
                                 self.bad_fibers.append(fiber)
                                 self.bad_rm_z.append(self.rm_z1[fiber])
                                 self.bad_zperson.append(self.zperson[vi_index])
+                                self.bad_type.append(self.rm_type[fiber])
                                 count_bad += 1
         print '%s catastrophic failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_bad,total,(count_bad/float(total))*100)
         for i,fiber in enumerate(self.bad_fibers):
