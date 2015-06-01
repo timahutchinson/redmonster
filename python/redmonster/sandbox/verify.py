@@ -612,7 +612,7 @@ class verify_rm:
 
 
     def read_redmonster_all(self,plate,fiber):
-        import pdb; pdb.set_trace()
+        # Read a redmonster file in the context of looking at entire DR10 dataset
         redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*-%03d.fits' % (plate,fiber) )
         for path in iglob(redmonsterpath):
             hdu = fits.open(path)
@@ -624,7 +624,7 @@ class verify_rm:
 
 
     def read_spPlate_all(self,plate):
-        # Read in the spPlate file for a given plate
+        # Read in the spPlate file for a given plate in the context of the entire DR10 dataset
         globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-*.fits' % plate )
         for spPlatepath in iglob(globpath):
             hdu = fits.open(spPlatepath)
