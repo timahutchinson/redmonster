@@ -622,7 +622,7 @@ class verify_rm:
             self.rm_zwarning = hdu[1].data.ZWARNING
 
 
-    def read_spPlate(self,plate):
+    def read_spPlate_all(self,plate):
         # Read in the spPlate file for a given plate
         globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-*.fits' % plate )
         for spPlatepath in iglob(globpath):
@@ -639,8 +639,7 @@ class verify_rm:
         globpath = join( self.redmonster_spectro_redux, '*')
         for path in iglob(globpath):
             plate = basename(path)
-            self.read_spPlate(plate)
-            self.read_spZbest(plate)
+            self.read_spPlate_all(plate)
             fibers = self.get_cmass()
             for fiber in fibers:
                 total += 1
