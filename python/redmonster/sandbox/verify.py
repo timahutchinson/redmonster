@@ -613,7 +613,7 @@ class verify_rm:
 
     def read_redmonster_all(self,plate,fiber):
         import pdb; pdb.set_trace()
-        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*-%s.fits' % (plate,fiber) )
+        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*-%03d.fits' % (plate,fiber) )
         for path in iglob(redmonsterpath):
             hdu = fits.open(redmonsterpath)
             self.rm_z1 = hdu[1].data.Z1
