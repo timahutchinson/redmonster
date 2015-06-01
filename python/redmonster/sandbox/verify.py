@@ -659,6 +659,7 @@ class verify_rm:
         globpath = join( self.redmonster_spectro_redux, '*')
         for path in iglob(globpath):
             plate = basename(path)
+            print plate
             self.read_spPlate_all(plate)
             fibers = self.get_cmass()
             for fiber in fibers:
