@@ -483,12 +483,13 @@ class verify_rm:
                     total += 1
                     vi_index = n.where( n.asarray(self.vifibers) == (fiber+1) )[0][0]
                     if self.rm_zwarning[fiber] == 0:
-                        if n.abs(self.rm_z1[fiber] - self.zperson[vi_index]) >= 0.005:
-                            self.bad_plates.append(plate)
-                            self.bad_fibers.append(fiber)
-                            self.bad_rm_z.append(self.rm_z1[fiber])
-                            self.bad_zperson.append(self.zperson[vi_index])
-                            count_bad += 1
+                        if self.rm_type[fiber] == 'ssp_em_galaxy':
+                            if n.abs(self.rm_z1[fiber] - self.zperson[vi_index]) >= 0.005:
+                                self.bad_plates.append(plate)
+                                self.bad_fibers.append(fiber)
+                                self.bad_rm_z.append(self.rm_z1[fiber])
+                                self.bad_zperson.append(self.zperson[vi_index])
+                                count_bad += 1
         print '%s catastrophic failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_bad,total,(count_bad/float(total))*100)
         for i,fiber in enumerate(self.bad_fibers):
             print 'Plate %s, fiber %s, redmonster z = %s, zperson = %s' % (self.bad_plates[i],fiber,self.bad_rm_z[i], self.bad_zperson[i])
