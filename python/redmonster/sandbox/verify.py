@@ -627,7 +627,7 @@ class verify_rm:
         count = 0
         total = 0
         import pdb; pdb.set_trace()
-        globpath = join( self.redmonster_spectro_redux, environ['RUN2D'], '*')
+        globpath = join( self.redmonster_spectro_redux, '*')
         for path in iglob(globpath):
             plate = basename(path)
             self.read_spPlate(plate)
