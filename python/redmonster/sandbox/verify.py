@@ -622,6 +622,15 @@ class verify_rm:
             self.rm_zwarning = hdu[1].data.ZWARNING
 
 
+    def read_spPlate(self,plate):
+        # Read in the spPlate file for a given plate
+        globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-*.fits' % plate )
+        for spPlatepath in iglob(globpath):
+            hdu = fits.open(spPlatepath)
+            self.boss_target1 = hdu[5].data.BOSS_TARGET1
+
+
+
     def cmass_completeness_all(self):
         # Prints percent of all DR10 CMASS targets with rm_zwarning == 0
         count = 0
