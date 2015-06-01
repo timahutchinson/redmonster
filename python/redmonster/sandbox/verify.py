@@ -626,6 +626,7 @@ class verify_rm:
         # Prints percent of all DR10 CMASS targets with rm_zwarning == 0
         count = 0
         total = 0
+        import pdb; pdb.set_trace()
         globpath = join( self.redmonster_spectro_redux, environ['RUN2D'], '*')
         for path in iglob(globpath):
             plate = basename(path)
