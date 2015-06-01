@@ -1,6 +1,6 @@
 import numpy as n
 from astropy.io import fits
-from os.path import join
+from os.path import join, basename
 from os import environ
 from glob import iglob
 from redmonster.sandbox import yanny as y
@@ -607,8 +607,23 @@ class verify_rm:
         p.savefig('failure_vs_sn.pdf')
 
 
+# ---------------------------------- FULL DR10 METHODS ONLY BELOW THIS LINE ------------------------------------------------------------
 
 
+
+    def cmass_completeness_all(self):
+        # Prints percent of all DR10 CMASS targets with rm_zwarning == 0
+        vals = []
+        globpath = join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '*')
+        for path in iglob(globpath):
+            plate = basename(path)
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            self.read_spZbest(plate)
+            fibers = self.get_cmass()
+            vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
+        avg = n.sum(vals) / float(len(vals))
+        print avg
 
 
 
