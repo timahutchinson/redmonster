@@ -615,7 +615,7 @@ class verify_rm:
         import pdb; pdb.set_trace()
         redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*-%03d.fits' % (plate,fiber) )
         for path in iglob(redmonsterpath):
-            hdu = fits.open(redmonsterpath)
+            hdu = fits.open(path)
             self.rm_z1 = hdu[1].data.Z1
             self.rm_zerr1 = hdu[1].data.Z_ERR1
             self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
