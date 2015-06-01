@@ -611,18 +611,33 @@ class verify_rm:
 
 
 
+    def read_redmonster_all(self,plate,fiber):
+        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*-%s.fits' % (plate,fiber) )
+        for path in iglob(redmonsterpath):
+            hdu = fits.open(redmonsterpath)
+            self.rm_z1 = hdu[1].data.Z1
+            self.rm_zerr1 = hdu[1].data.Z_ERR1
+            self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
+            self.rm_type = hdu[1].data.CLASS
+            self.rm_zwarning = hdu[1].data.ZWARNING
+
+
     def cmass_completeness_all(self):
         # Prints percent of all DR10 CMASS targets with rm_zwarning == 0
-        vals = []
-        globpath = join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '*')
+        count = 0
+        total = 0
+        globpath = join( self.redmonster_spectro_redux, environ['RUN2D'], '*')
         for path in iglob(globpath):
             plate = basename(path)
-            self.read_redmonster(plate)
             self.read_spPlate(plate)
             self.read_spZbest(plate)
             fibers = self.get_cmass()
-            vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
-        avg = n.sum(vals) / float(len(vals))
+            for fiber in fibers:
+                count += 1
+                self.read_redmonster_all(plate,fiber)
+                if self.rm_zwarning[0] != 0:
+                    count += 1
+        avg = float(count) / float(total)
         print avg
 
 
