@@ -3,10 +3,11 @@ from os import environ
 from os.path import join, basename
 from glob import iglob
 from pbs import queue
-queue = queue()
+q = queue()
 q.verbose = True
 nodes = 12
 walltime = '336:00:00'
+ncycles = 500
 
 try: uufscell = environ['UUFSCELL']
 except: uufscell = None
@@ -41,14 +42,19 @@ if platedir:
             plates.append(plate)
             mjds.append(mjd)
 
-
-
-
-q.create(label='zfind',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+cjob = 0
+q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+blocksize = nodes*ppn*ncycles
 for i,plate in enumerate(plates):
-    for fiberid in xrange(1000): q.append("zfind -p %i -m %i -f %i" % (plate,mjds[i],fiberid))
-q.commit(hard=True,submit=True)
-
+    for fiberid in xrange(1000):
+        q.append("zfind -p %i -m %i -f %i" % (plate,mjds[i],fiberid))
+        if q.task_number >= blocksize:
+            cjob += 1
+            q.commit(hard=True, submit=True)
+            q.verbose = True
+            q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+if not q.client.committed:
+    q.commit(hard=True, submit=True)
 
 
 

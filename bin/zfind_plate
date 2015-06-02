@@ -3,7 +3,7 @@ from os import environ
 from os.path import join, basename
 from glob import iglob
 from pbs import queue
-queue = queue()
+q = queue()
 q.verbose = True
 nodes = 12
 walltime = '336:00:00'
