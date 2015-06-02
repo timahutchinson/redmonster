@@ -632,24 +632,30 @@ class verify_rm:
 
 
 
-    def read_redmonster_all(self,plate,fiber):
+    def read_redmonster_all(self,plate):
         # Read a redmonster file in the context of looking at entire DR10 dataset
-        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*-%03d.fits' % (plate,fiber) )
+        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*.fits' % plate )
+        paths = []
         for path in iglob(redmonsterpath):
-            hdu = fits.open(path)
-            self.rm_z1 = hdu[1].data.Z1
-            self.rm_zerr1 = hdu[1].data.Z_ERR1
-            self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
-            self.rm_type = hdu[1].data.CLASS
-            self.rm_zwarning = hdu[1].data.ZWARNING
+            paths.append(path)
+        paths.sort()
+        hdu = fits.open(path[0])
+        self.rm_z1 = hdu[1].data.Z1
+        self.rm_zerr1 = hdu[1].data.Z_ERR1
+        self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
+        self.rm_type = hdu[1].data.CLASS
+        self.rm_zwarning = hdu[1].data.ZWARNING
 
 
     def read_spPlate_all(self,plate):
         # Read in the spPlate file for a given plate in the context of the entire DR10 dataset
         globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-*.fits' % plate )
+        spPlatepaths = []
         for spPlatepath in iglob(globpath):
-            hdu = fits.open(spPlatepath)
-            self.boss_target1 = hdu[5].data.BOSS_TARGET1
+            spPlatepaths.append(spPlatepath)
+        spPlatepaths.sort()
+        hdu = fits.open(spPlatepath)
+        self.boss_target1 = hdu[5].data.BOSS_TARGET1
 
 
     def cmass_completeness_all(self):
@@ -662,10 +668,10 @@ class verify_rm:
             print plate
             self.read_spPlate_all(plate)
             fibers = self.get_cmass()
+            self.read_redmonster_all(plate)
             for fiber in fibers:
                 total += 1
-                self.read_redmonster_all(plate,fiber)
-                if self.rm_zwarning[0] == 0:
+                if self.rm_zwarning[fiber] == 0:
                     count += 1
         avg = float(count) / float(total)
         print count
@@ -680,12 +686,13 @@ class verify_rm:
         globpath = join( self.redmonster_spectro_redux, '*')
         for path in iglob(globpath):
             plate = basename(path)
+            print plate
             self.read_spPlate_all(plate)
+            self.read_redmonster_all(plate)
             fibers = self.get_lowz()
             for fiber in fibers:
                 total += 1
-                self.read_redmonster_all(plate,fiber)
-                if self.rm_zwarning[0] == 0:
+                if self.rm_zwarning[fiber] == 0:
                     count += 1
         avg = float(count) / float(total)
         print count
