@@ -41,6 +41,7 @@ if platedir:
         if plate and mjd:
             plates.append(plate)
             mjds.append(mjd)
+            print plate
 
 cjob = 0
 q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
