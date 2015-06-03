@@ -822,7 +822,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo_cmass.pdf')
 
 
-    def cmass_failure_vs_sn(self,sn_max=7,nbins=29):
+    def cmass_failure_vs_sn(self,sn_max=10,nbins=29):
         # Makes plot of CMASS failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
         f = p.figure()
         ax = f.add_subplot(1,1,1)
