@@ -52,6 +52,7 @@ for i,plate in enumerate(plates):
         if q.task_number >= blocksize:
             cjob += 1
             q.commit(hard=True, submit=True)
+            q = queue()
             q.verbose = True
             q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
 if not q.client.committed:
