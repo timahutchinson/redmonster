@@ -4,6 +4,8 @@ from os.path import join, basename
 from os import environ
 from glob import iglob
 from redmonster.sandbox import yanny as y
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as p
 from math import isnan
 from astropy.convolution import convolve, Box1DKernel
