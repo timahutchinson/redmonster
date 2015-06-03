@@ -834,7 +834,7 @@ class verify_rm:
         z_sn = []
         globpath = join( self.redmonster_spectro_redux,'*')
         for path in iglob(globpath):
-            plate = basename(plate)
+            plate = basename(path)
             self.read_redmonster(plate)
             self.read_spPlate(plate)
             self.read_spZbest(plate)
