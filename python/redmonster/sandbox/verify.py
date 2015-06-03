@@ -642,7 +642,7 @@ class verify_rm:
         hdu = fits.open(paths[0])
         self.rm_z1 = hdu[1].data.Z1
         self.rm_zerr1 = hdu[1].data.Z_ERR1
-        self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
+        self.rm_fibers = hdu[1].data.FIBERID
         self.rm_type = hdu[1].data.CLASS
         self.rm_zwarning = hdu[1].data.ZWARNING
         
@@ -832,19 +832,21 @@ class verify_rm:
         r_sn = []
         i_sn = []
         z_sn = []
-        for plate in self.plates:
+        globpath = join( self.redmonster_spectro_redux,'*')
+        for path in iglob(globpath):
+            plate = basename(plate)
             self.read_redmonster(plate)
             self.read_spPlate(plate)
             self.read_spZbest(plate)
-            self.get_all_yanny(plate)
-            fibers = self.get_cmass()
-            for fiber in fibers:
+            #self.get_all_yanny(plate)
+            #fibers = self.get_cmass()
+            for i,fiber in enumerate(self.rm_fibers):
                 if (self.sn_median[fiber,0] <= sn_max):
                     total += 1.
                     r_sn.append(self.sn_median[fiber,0])
                     i_sn.append(self.sn_median[fiber,1])
                     z_sn.append(self.sn_median[fiber,2])
-                    if (self.rm_zwarning[fiber] > 0):
+                    if (self.rm_zwarning[i] > 0):
                         bad_fibers.append(fiber)
                         bad_r_sn.append(self.sn_median[fiber,0])
                         bad_i_sn.append(self.sn_median[fiber,1])
@@ -883,9 +885,9 @@ class verify_rm:
                         zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
                     except:
                         zhist[i] = 0
-        rhist = convolve(rhist,Box1DKernel(2))
-        ihist = convolve(ihist,Box1DKernel(2))
-        zhist = convolve(zhist,Box1DKernel(2))
+        #rhist = convolve(rhist,Box1DKernel(2))
+        #ihist = convolve(ihist,Box1DKernel(2))
+        #zhist = convolve(zhist,Box1DKernel(2))
         p.plot(rbins,rhist,color='purple',label='r-band')
         p.plot(ibins,ihist,color='blue',label='i-band')
         p.plot(zbins,zhist,color='cyan',label='z-band')
