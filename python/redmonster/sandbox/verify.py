@@ -681,7 +681,6 @@ class verify_rm:
         self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
 
 
-
     def cmass_completeness_all(self):
         # Prints percent of all DR10 CMASS targets with rm_zwarning == 0
         count = 0
@@ -800,7 +799,7 @@ class verify_rm:
             self.read_redmonster_summary_file()
             for i,z in enumerate(self.rm_z1):
                 if (z >= zmin) & (z <= zmax):
-                    if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0):
+                    if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
                         count += 1
                         errors = n.append(errors,self.rm_zerr1[i])
             #errors.append(self.rm_zerr1[fibers].tolist())
@@ -815,10 +814,89 @@ class verify_rm:
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('CMASS Sample', size=18)
-        #p.axis([.9,2.4,0,.3])
+        p.axis([.5,2.5,0,.3])
         p.legend()
         p.subplots_adjust(wspace = .35)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo_cmass.pdf')
+
+
+    def cmass_failure_vs_sn(self,sn_max=7,nbins=29):
+        # Makes plot of CMASS failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
+        f = p.figure()
+        ax = f.add_subplot(1,1,1)
+        total = 0
+        bad_fibers = []
+        bad_r_sn = []
+        bad_i_sn = []
+        bad_z_sn = []
+        r_sn = []
+        i_sn = []
+        z_sn = []
+        for plate in self.plates:
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            self.read_spZbest(plate)
+            self.get_all_yanny(plate)
+            fibers = self.get_cmass()
+            for fiber in fibers:
+                if (self.sn_median[fiber,0] <= sn_max):
+                    total += 1.
+                    r_sn.append(self.sn_median[fiber,0])
+                    i_sn.append(self.sn_median[fiber,1])
+                    z_sn.append(self.sn_median[fiber,2])
+                    if (self.rm_zwarning[fiber] > 0):
+                        bad_fibers.append(fiber)
+                        bad_r_sn.append(self.sn_median[fiber,0])
+                        bad_i_sn.append(self.sn_median[fiber,1])
+                        bad_z_sn.append(self.sn_median[fiber,2])
+        nbinsarr = n.linspace(0,sn_max,nbins+1)
+        rtotal,rbinedges = n.histogram(r_sn,bins=nbinsarr)
+        itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
+        ztotal,zbinedges = n.histogram(z_sn,bins=nbinsarr)
+        rhist,rbinedges = n.histogram(bad_r_sn,bins=nbinsarr)
+        ihist,ibinedges = n.histogram(bad_i_sn,bins=nbinsarr)
+        zhist,zbinedges = n.histogram(bad_z_sn,bins=nbinsarr)
+        rbins = n.zeros(nbins)
+        ibins = n.zeros(nbins)
+        zbins = n.zeros(nbins)
+        for i in xrange(nbins):
+            rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
+            ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
+            zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
+        rhist = rhist / map(float,rtotal)
+        ihist = ihist / map(float,itotal)
+        zhist = zhist / map(float,ztotal)
+        for i in xrange(nbins):
+            if i != 0 and i != (nbins-1):
+                if isnan(rhist[i]):
+                    try:
+                        rhist[i] = (rhist[i-1] + rhist[i+1]) / 2.
+                    except:
+                        rhist[i] = 0
+                if isnan(ihist[i]):
+                    try:
+                        ihist[i] = (ihist[i-1] + ihist[i+1]) / 2.
+                    except:
+                        ihist[i] = 0
+                if isnan(zhist[i]):
+                    try:
+                        zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
+                    except:
+                        zhist[i] = 0
+        rhist = convolve(rhist,Box1DKernel(2))
+        ihist = convolve(ihist,Box1DKernel(2))
+        zhist = convolve(zhist,Box1DKernel(2))
+        p.plot(rbins,rhist,color='purple',label='r-band')
+        p.plot(ibins,ihist,color='blue',label='i-band')
+        p.plot(zbins,zhist,color='cyan',label='z-band')
+        ax.set_yscale('log')
+        p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=14)
+        p.ylabel(r'CMASS failure rate', size=14)
+        #print rbins
+        #print rhist
+        #print rtotal
+        p.legend()
+        p.savefig('failure_vs_sn.pdf')
 
 
 
