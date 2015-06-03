@@ -898,7 +898,7 @@ class verify_rm:
         #print rhist
         #print rtotal
         p.legend()
-        p.savefig('failure_vs_sn.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
 
 
 
