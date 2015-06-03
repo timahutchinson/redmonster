@@ -639,10 +639,21 @@ class verify_rm:
         for path in iglob(redmonsterpath):
             paths.append(path)
         paths.sort()
-        hdu = fits.open(path[0])
+        hdu = fits.open(paths[0])
         self.rm_z1 = hdu[1].data.Z1
         self.rm_zerr1 = hdu[1].data.Z_ERR1
         self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
+        self.rm_type = hdu[1].data.CLASS
+        self.rm_zwarning = hdu[1].data.ZWARNING
+        
+        
+    def read_redmonster_summary_file(self):
+        # Read the redmonster summary file
+        summary_path = join( self.redmonster_spectro_redux, 'redmonster-all-%s.fits' % self.version )
+        hdu = fits.open(summary_path)
+        self.rm_z1 = hdu[1].data.Z1
+        self.rm_zerr1 = hdu[1].data.Z_ERR1
+        #self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
         self.rm_type = hdu[1].data.CLASS
         self.rm_zwarning = hdu[1].data.ZWARNING
 
@@ -654,8 +665,21 @@ class verify_rm:
         for spPlatepath in iglob(globpath):
             spPlatepaths.append(spPlatepath)
         spPlatepaths.sort()
-        hdu = fits.open(spPlatepath)
+        hdu = fits.open(spPlatepaths[0])
         self.boss_target1 = hdu[5].data.BOSS_TARGET1
+
+
+    def read_spZbest(self,plate):
+        # Read in the spZbest file for a given plate
+        globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-*.fits' % plate )
+        spZbestpaths = []
+        for spZbestpath in iglob(globpath):
+            spZbestpaths.append(spZbestpath)
+        spZbestpaths.sort()
+        hdu = fits.open(spZbestpaths[0])
+        self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
+        self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
+
 
 
     def cmass_completeness_all(self):
@@ -725,6 +749,7 @@ class verify_rm:
         colors = ['purple', 'cyan', 'blue', 'red', 'gold', 'lime']
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
         f = p.figure()
+        '''
         ax1 = f.add_subplot(1,2,1)
         for j,zmin in enumerate(n.linspace(.1,.4,4)):
             zmax = zmin + .1
@@ -752,23 +777,32 @@ class verify_rm:
         p.title('LOWZ Sample', size=18)
         p.legend()
         p.axis([.55,2,0,.4])
-        ax2 = f.add_subplot(1,2,2)
+        '''
+        ax2 = f.add_subplot(1,1,1)
         labels = ['0.4<z<0.5','0.5<z<0.6','0.6<z<0.7','0.7<z<0.8']
         nbins = 25
-        for j,zmin in enumerate(n.linspace(.4,.7,4)):
+        for j,zmin in enumerate(n.linspace(.4,..5,1)): #from (.4,.7,4)
             #import pdb; pdb.set_trace()
             zmax = zmin + .1
             errors = n.array([])
             count = 0
+            '''
             for plate in self.plates:
                 self.read_redmonster(plate)
-                self.read_spPlate(plate)
-                self.read_spZbest(plate)
-                self.get_all_yanny(plate)
+                #self.read_spPlate(plate)
+                #self.read_spZbest(plate)
+                #self.get_all_yanny(plate)
                 fibers = self.get_okay_cmass()
                 fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
                 count += len(fibers)
                 errors = n.append(errors,self.rm_zerr1[fibers])
+            '''
+            self.read_redmonster_summary_file()
+            for i,z in enumerate(self.rm_z1):
+                if (z >= zmin) & (z <= zmax):
+                    if (self.rm_type[i] == 'ssp_em_galaxy') & (self.zwarning[i] == 0):
+                        count += 1
+                        errors = n.append(errors,self.rm_zerr1[i])
             #errors.append(self.rm_zerr1[fibers].tolist())
             errors = self.dz_to_dv(errors)
             errors = n.log10(errors)
@@ -795,21 +829,7 @@ class verify_rm:
 
 
 
-'''
-    def compare_redshifts(self,plate,visual_fibers,visual_z): #visual_fibers is list of fiber numbers visually inspected for a given plate, and visual_z is list of visually determined redshifts for those fibers
-        self.read_redmonster(plate)
-        self.read_spPlate(plate)
-        for i,fiber in enumerate(visual_fibers):
-            rm_ind = n.where(self.rm_fibers == fiber)[0]
-            try:
-                rm_ind = rm_ind[0]
-                self.rm_z.append(self.rm_z1[rm_ind])
-                self.rm_class.append(self.rm_type[rm_ind])
-                self.vis_z.append(visual_z[i])
-                self.rm_zwarning.append(self.rm_zwarning[rm_ind])
-            except:
-                pass
-'''
+
 
 # S/N per fiber is located in spZbest files in hdu[1].data.SN_MEDIAN .  You can get just r,i,z bands with x = hdu[1].data.SN_MEDIAN[:,2:] .
 
