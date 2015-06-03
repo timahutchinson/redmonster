@@ -747,7 +747,7 @@ class verify_rm:
 
     def logdv_histos_all(self, nbins=12):
         # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
-        colors = ['purple', 'cyan', 'blue', 'red', 'gold', 'lime']
+        colors = ['purple', 'cyan', 'blue', 'red', 'lime', 'black']
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
         f = p.figure()
         '''
