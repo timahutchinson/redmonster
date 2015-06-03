@@ -800,7 +800,7 @@ class verify_rm:
             self.read_redmonster_summary_file()
             for i,z in enumerate(self.rm_z1):
                 if (z >= zmin) & (z <= zmax):
-                    if (self.rm_type[i] == 'ssp_em_galaxy') & (self.zwarning[i] == 0):
+                    if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0):
                         count += 1
                         errors = n.append(errors,self.rm_zerr1[i])
             #errors.append(self.rm_zerr1[fibers].tolist())
