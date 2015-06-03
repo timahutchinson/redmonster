@@ -669,7 +669,7 @@ class verify_rm:
         self.boss_target1 = hdu[5].data.BOSS_TARGET1
 
 
-    def read_spZbest(self,plate):
+    def read_spZbest_all(self,plate):
         # Read in the spZbest file for a given plate
         globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-*.fits' % plate )
         spZbestpaths = []
