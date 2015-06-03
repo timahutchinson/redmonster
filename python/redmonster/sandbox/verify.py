@@ -814,7 +814,7 @@ class verify_rm:
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('CMASS Sample', size=18)
-        p.axis([.5,2.5,0,.3])
+        p.axis([.5,3.0,0,.3])
         p.legend()
         p.subplots_adjust(wspace = .35)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo_cmass.pdf')
