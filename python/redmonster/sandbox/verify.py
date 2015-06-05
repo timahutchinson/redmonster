@@ -967,7 +967,7 @@ class verify_rm:
         for i in xrange(nbins):
             bins3[i] = (binedges3[i+1]+binedges3[i])/2.
         normhist3 = hist3 / float(count)
-        p.plot(bins4,normhist14,drawstyle='steps-mid', color=colors[2], label=labels[2])
+        p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2], label=labels[2])
         errors4 = self.dz_to_dv(errors4)
         errors4 = n.log10(errors4)
         hist4,binedges4 = n.histogram(errors4, bins=nbins)
