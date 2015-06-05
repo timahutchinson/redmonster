@@ -747,7 +747,7 @@ class verify_rm:
 
     def logdv_histos_all(self, nbins=12):
         # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
-        colors = ['purple', 'cyan', 'blue', 'lime', 'red', 'black']
+        colors = ['purple', 'gold', 'blue', 'lime', 'red', 'orange'] #changed 'cyan' to 'gold' and 'black' to 'orange'
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
         f = p.figure()
         '''
@@ -822,7 +822,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo_cmass.pdf')
 
 
-    def cmass_failure_vs_sn(self,sn_max=10,nbins=29):
+    def cmass_failure_vs_sn_all(self,sn_max=10,nbins=29):
         # Makes plot of CMASS failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
         f = p.figure()
         ax = f.add_subplot(1,1,1)
@@ -902,6 +902,88 @@ class verify_rm:
         #print rtotal
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
+
+
+    def logdv_histos_all(self, nbins=12):
+        # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
+        colors = ['purple', 'cyan', 'blue', 'lime', 'red', 'black']
+        labels = []
+        f = p.figure()
+        '''
+            ax1 = f.add_subplot(1,2,1)
+            for j,zmin in enumerate(n.linspace(.1,.4,4)):
+            zmax = zmin + .1
+            errors = n.array([])
+            count = 0
+            for plate in self.plates:
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            self.read_spZbest(plate)
+            self.get_all_yanny(plate)
+            fibers = self.get_okay_lowz()
+            fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
+            count += len(fibers)
+            errors = n.append(errors, self.rm_zerr1[fibers])
+            errors = self.dz_to_dv(errors)
+            errors = n.log10(errors)
+            hist,binedges = n.histogram(errors, bins=nbins)
+            bins = n.zeros(nbins)
+            for i in xrange(nbins):
+            bins[i] = (binedges[i+1]+binedges[i])/2.
+            normhist = hist / float(count)
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
+            p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
+            p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
+            p.title('LOWZ Sample', size=18)
+            p.legend()
+            p.axis([.55,2,0,.4])
+            '''
+        ax2 = f.add_subplot(1,1,1)
+        labels = ['0.4<z<0.5','0.5<z<0.6','0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0']
+        nbins = 25
+        for j,zmin in enumerate(n.linspace(.4,.9,6)): #from (.4,.7,4)
+            #import pdb; pdb.set_trace()
+            zmax = zmin + .1
+            errors = n.array([])
+            count = 0
+            '''
+                for plate in self.plates:
+                self.read_redmonster(plate)
+                #self.read_spPlate(plate)
+                #self.read_spZbest(plate)
+                #self.get_all_yanny(plate)
+                fibers = self.get_okay_cmass()
+                fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
+                count += len(fibers)
+                errors = n.append(errors,self.rm_zerr1[fibers])
+                '''
+            self.read_redmonster_summary_file()
+            for i,z in enumerate(self.rm_z1):
+                if (z >= zmin) & (z <= zmax):
+                    if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
+                        count += 1
+                        errors = n.append(errors,self.rm_zerr1[i])
+            #errors.append(self.rm_zerr1[fibers].tolist())
+            errors = self.dz_to_dv(errors)
+            errors = n.log10(errors)
+            hist,binedges = n.histogram(errors, bins=nbins)
+            bins = n.zeros(nbins)
+            for i in xrange(nbins):
+                bins[i] = (binedges[i+1]+binedges[i])/2.
+            normhist = hist / float(count)
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
+        p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
+        p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
+        p.title('CMASS Sample', size=18)
+        p.axis([.5,3.0,0,.3])
+        p.legend()
+        p.subplots_adjust(wspace = .35)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo_cmass.pdf')
+
+
+
+
+
 
 
 
