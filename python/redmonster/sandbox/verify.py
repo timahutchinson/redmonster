@@ -747,7 +747,7 @@ class verify_rm:
 
     def logdv_vs_z_histos_all(self, nbins=12):
         # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
-        colors = ['DarkOrchid1', 'gold', 'blue', 'lime', 'red', 'black']
+        colors = ['blueviolet', 'gold', 'blue', 'lime', 'red', 'black']
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
         f = p.figure()
         '''
@@ -904,37 +904,28 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
 
 
-    def logdv_vs_sn_histos_all(self, nbins=12):
-        # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
+    def logdv_vs_sn_histos_all(self, nbins=25):
+        # Make histograms of log10(dv) in S/N bins in bands r,i,z for CMASS galaxies
         colors = ['purple', 'cyan', 'blue', 'lime', 'red', 'black']
         labels = []
         f = p.figure()
         ax2 = f.add_subplot(1,1,1)
-        labels = ['0.4<z<0.5','0.5<z<0.6','0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0']
-        nbins = 25
-        for j,zmin in enumerate(n.linspace(.4,.9,6)): #from (.4,.7,4)
-            #import pdb; pdb.set_trace()
-            zmax = zmin + .1
+        labels = ['1<S/N<2','2<S/N<3','3<S/N<4','4<S/N<5','5<S/N<6','6<S/N<7',]
+        for j,sn_min in enumerate(n.linspace(1,6,6)):
+            sn_max = sn_min + 1
             errors = n.array([])
             count = 0
-            '''
-                for plate in self.plates:
-                self.read_redmonster(plate)
-                #self.read_spPlate(plate)
-                #self.read_spZbest(plate)
-                #self.get_all_yanny(plate)
-                fibers = self.get_okay_cmass()
-                fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
-                count += len(fibers)
-                errors = n.append(errors,self.rm_zerr1[fibers])
-                '''
-            self.read_redmonster_summary_file()
-            for i,z in enumerate(self.rm_z1):
-                if (z >= zmin) & (z <= zmax):
+            globpath = join( self.redmonster_spectro_redux,'*')
+            for path in iglob(globpath):
+                plate = basename(path)
+                self.read_spPlate_all(plate)
+                self.read_spZbest_all(plate)
+                self.read_redmonster_all(plate)
+                for i,fiber in enumerate(self.rm_fibers):
                     if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
-                        count += 1
-                        errors = n.append(errors,self.rm_zerr1[i])
-            #errors.append(self.rm_zerr1[fibers].tolist())
+                        if (self.sn_median[fiber][0] >= sn_min) & (self.sn_median[fiber][0] <= sn_max):
+                            count += 1
+                            errors = n.append(errors,self.rm_zerr1[i])
             errors = self.dz_to_dv(errors)
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
@@ -949,7 +940,7 @@ class verify_rm:
         p.axis([.5,3.0,0,.3])
         p.legend()
         p.subplots_adjust(wspace = .35)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
 
 
 
