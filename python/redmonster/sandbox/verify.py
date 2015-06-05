@@ -745,7 +745,7 @@ class verify_rm:
         print avg
 
 
-    def logdv_histos_all(self, nbins=12):
+    def logdv_vs_z_histos_all(self, nbins=12):
         # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
         colors = ['purple', 'gold', 'blue', 'lime', 'red', 'orange'] #changed 'cyan' to 'gold' and 'black' to 'orange'
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
@@ -904,7 +904,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
 
 
-    def logdv_histos_all(self, nbins=12):
+    def logdv_vs_sn_histos_all(self, nbins=12):
         # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
         colors = ['purple', 'cyan', 'blue', 'lime', 'red', 'black']
         labels = []
