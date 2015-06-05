@@ -907,10 +907,9 @@ class verify_rm:
     def logdv_vs_sn_histos_all(self, nbins=25):
         # Make histograms of log10(dv) in S/N bins in bands r,i,z for CMASS galaxies
         colors = ['purple', 'cyan', 'blue', 'lime', 'red', 'black']
-        labels = []
-        f = p.figure()
-        ax2 = f.add_subplot(1,1,1)
         labels = ['1<S/N<2','2<S/N<3','3<S/N<4','4<S/N<5','5<S/N<6','6<S/N<7',]
+        f = p.figure()
+        ax1 = f.add_subplot(1,1,1)
         #for j,sn_min in enumerate(n.linspace(1,6,6)):
         errors1 = n.array([])
         errors2 = n.array([])
@@ -922,28 +921,29 @@ class verify_rm:
         globpath = join( self.redmonster_spectro_redux,'*')
         for path in iglob(globpath):
             plate = basename(path)
-            print plate
-            self.read_spPlate_all(plate)
-            self.read_spZbest_all(plate)
-            self.read_redmonster_all(plate)
-            for i,sn_min in enumerate(n.linspace(1,6,6)):
-                sn_max = sn_min + 1
-                for i,fiber in enumerate(self.rm_fibers):
-                    if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
-                        if (self.sn_median[fiber][0] >= sn_min) & (self.sn_median[fiber][0] <= sn_max):
-                            count += 1
-                            if i == 1:
-                                errors1 = n.append(errors1,self.rm_zerr1[i])
-                            elif i == 2:
-                                errors2 = n.append(errors2,self.rm_zerr1[i])
-                            elif i == 3:
-                                errors3 = n.append(errors3,self.rm_zerr1[i])
-                            elif i == 4:
-                                errors4 = n.append(errors4,self.rm_zerr1[i])
-                            elif i == 5:
-                                errors5 = n.append(errors5,self.rm_zerr1[i])
-                            elif i == 6:
-                                errors6 = n.append(errors6,self.rm_zerr1[i])
+            if plate is not 'redmonster-all-%s.fits' % self.version:
+                print plate
+                self.read_spPlate_all(plate)
+                self.read_spZbest_all(plate)
+                self.read_redmonster_all(plate)
+                for i,sn_min in enumerate(n.linspace(1,6,6)):
+                    sn_max = sn_min + 1
+                    for i,fiber in enumerate(self.rm_fibers):
+                        if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
+                            if (self.sn_median[fiber][0] >= sn_min) & (self.sn_median[fiber][0] <= sn_max):
+                                count += 1
+                                if i == 1:
+                                    errors1 = n.append(errors1,self.rm_zerr1[i])
+                                elif i == 2:
+                                    errors2 = n.append(errors2,self.rm_zerr1[i])
+                                elif i == 3:
+                                    errors3 = n.append(errors3,self.rm_zerr1[i])
+                                elif i == 4:
+                                    errors4 = n.append(errors4,self.rm_zerr1[i])
+                                elif i == 5:
+                                    errors5 = n.append(errors5,self.rm_zerr1[i])
+                                elif i == 6:
+                                    errors6 = n.append(errors6,self.rm_zerr1[i])
         errors1 = self.dz_to_dv(errors1)
         errors1 = n.log10(errors1)
         hist1,binedges1 = n.histogram(errors1, bins=nbins)
@@ -992,10 +992,9 @@ class verify_rm:
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
-        
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
-        p.title('CMASS Sample', size=18)
+        p.title('r-band', size=18)
         #p.axis([.5,3.0,0,.3])
         p.legend()
         p.subplots_adjust(wspace = .35)
