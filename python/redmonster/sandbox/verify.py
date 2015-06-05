@@ -921,7 +921,7 @@ class verify_rm:
         globpath = join( self.redmonster_spectro_redux,'*')
         for path in iglob(globpath):
             plate = basename(path)
-            if plate is not 'redmonster-all-%s.fits' % self.version:
+            if plate != 'redmonster-all-%s.fits' % self.version:
                 print plate
                 self.read_spPlate_all(plate)
                 self.read_spZbest_all(plate)
