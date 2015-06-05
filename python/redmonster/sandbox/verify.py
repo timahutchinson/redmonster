@@ -911,34 +911,92 @@ class verify_rm:
         f = p.figure()
         ax2 = f.add_subplot(1,1,1)
         labels = ['1<S/N<2','2<S/N<3','3<S/N<4','4<S/N<5','5<S/N<6','6<S/N<7',]
-        for j,sn_min in enumerate(n.linspace(1,6,6)):
-            sn_max = sn_min + 1
-            errors = n.array([])
-            count = 0
-            globpath = join( self.redmonster_spectro_redux,'*')
-            for path in iglob(globpath):
-                plate = basename(path)
-                print plate
-                self.read_spPlate_all(plate)
-                self.read_spZbest_all(plate)
-                self.read_redmonster_all(plate)
+        #for j,sn_min in enumerate(n.linspace(1,6,6)):
+        errors1 = n.array([])
+        errors2 = n.array([])
+        errors3 = n.array([])
+        errors4 = n.array([])
+        errors5 = n.array([])
+        errors6 = n.array([])
+        count = 0
+        globpath = join( self.redmonster_spectro_redux,'*')
+        for path in iglob(globpath):
+            plate = basename(path)
+            print plate
+            self.read_spPlate_all(plate)
+            self.read_spZbest_all(plate)
+            self.read_redmonster_all(plate)
+            for i,sn_min in enumerate(n.linspace(1,6,6)):
+                sn_max = sn_min + 1
                 for i,fiber in enumerate(self.rm_fibers):
                     if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
                         if (self.sn_median[fiber][0] >= sn_min) & (self.sn_median[fiber][0] <= sn_max):
                             count += 1
-                            errors = n.append(errors,self.rm_zerr1[i])
-            errors = self.dz_to_dv(errors)
-            errors = n.log10(errors)
-            hist,binedges = n.histogram(errors, bins=nbins)
-            bins = n.zeros(nbins)
-            for i in xrange(nbins):
-                bins[i] = (binedges[i+1]+binedges[i])/2.
-            normhist = hist / float(count)
-            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
+                            if i == 1:
+                                errors1 = n.append(errors1,self.rm_zerr1[i])
+                            elif i == 2:
+                                errors2 = n.append(errors2,self.rm_zerr1[i])
+                            elif i == 3:
+                                errors3 = n.append(errors3,self.rm_zerr1[i])
+                            elif i == 4:
+                                errors4 = n.append(errors4,self.rm_zerr1[i])
+                            elif i == 5:
+                                errors5 = n.append(errors5,self.rm_zerr1[i])
+                            elif i == 6:
+                                errors6 = n.append(errors6,self.rm_zerr1[i])
+        errors1 = self.dz_to_dv(errors1)
+        errors1 = n.log10(errors1)
+        hist1,binedges1 = n.histogram(errors1, bins=nbins)
+        bins1 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins1[i] = (binedges1[i+1]+binedges1[i])/2.
+        normhist1 = hist1 / float(count)
+        p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0], label=labels[0])
+        errors2 = self.dz_to_dv(errors2)
+        errors2 = n.log10(errors2)
+        hist2,binedges2 = n.histogram(errors2, bins=nbins)
+        bins2 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins2[i] = (binedges2[i+1]+binedges2[i])/2.
+        normhist2 = hist2 / float(count)
+        p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1], label=labels[1])
+        errors3 = self.dz_to_dv(errors3)
+        errors3 = n.log10(errors3)
+        hist3,binedges3 = n.histogram(errors3, bins=nbins)
+        bins3 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins3[i] = (binedges3[i+1]+binedges3[i])/2.
+        normhist3 = hist3 / float(count)
+        p.plot(bins4,normhist14,drawstyle='steps-mid', color=colors[2], label=labels[2])
+        errors4 = self.dz_to_dv(errors4)
+        errors4 = n.log10(errors4)
+        hist4,binedges4 = n.histogram(errors4, bins=nbins)
+        bins4 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins4[i] = (binedges4[i+1]+binedges4[i])/2.
+        normhist4 = hist4 / float(count)
+        p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3], label=labels[3])
+        errors5 = self.dz_to_dv(errors5)
+        errors5 = n.log10(errors5)
+        hist5,binedges5 = n.histogram(errors5, bins=nbins)
+        bins5 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins5[i] = (binedges5[i+1]+binedges5[i])/2.
+        normhist5 = hist5 / float(count)
+        p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4], label=labels[4])
+        errors6 = self.dz_to_dv(errors6)
+        errors6 = n.log10(errors6)
+        hist6,binedges6 = n.histogram(errors6, bins=nbins)
+        bins6 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins6[i] = (binedges6[i+1]+binedges6[i])/2.
+        normhist6 = hist6 / float(count)
+        p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
+        
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('CMASS Sample', size=18)
-        p.axis([.5,3.0,0,.3])
+        #p.axis([.5,3.0,0,.3])
         p.legend()
         p.subplots_adjust(wspace = .35)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
