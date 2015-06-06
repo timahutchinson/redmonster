@@ -1003,11 +1003,12 @@ class verify_rm:
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
+        p.text(0.8, 0.2, '(r-band', fontsize=12)
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
-        p.title('r-band', size=18)
+        #p.title('r-band', size=18)
         p.axis([.7,2.5,0,.25])
-        p.legend()
+        p.legend(prop={'size':6})
         
         ax2 = f.add_subplot(3,1,2)
         errors1 = n.array([])
@@ -1100,11 +1101,12 @@ class verify_rm:
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
+        p.text(0.8, 0.2, '(i-band', fontsize=12)
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
-        p.title('i-band', size=18)
+        #p.title('i-band', size=18)
         p.axis([.7,2.5,0,.25])
-        p.legend()
+        #p.legend()
 
         ax3 = f.add_subplot(3,1,3)
         errors1 = n.array([])
@@ -1198,10 +1200,11 @@ class verify_rm:
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
+        p.text(0.8, 0.2, '(z-band', fontsize=12)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
-        p.title('z-band', size=18)
+        #p.title('z-band', size=18)
         p.axis([.7,2.5,0,.25])
-        p.legend()
+        #p.legend()
 
         p.subplots_adjust(hspace = .35)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
