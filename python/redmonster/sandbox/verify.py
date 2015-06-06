@@ -910,7 +910,7 @@ class verify_rm:
         labels = ['1<S/N<2','2<S/N<3','3<S/N<4','4<S/N<5','5<S/N<6','6<S/N<7',]
         f = p.figure()
         
-        ax1 = f.add_subplot(1,3,1)
+        ax1 = f.add_subplot(3,1,1)
         globpath = join( self.redmonster_spectro_redux,'*')
         errors1 = n.array([])
         errors2 = n.array([])
@@ -1009,7 +1009,7 @@ class verify_rm:
         p.axis([.7,2.5,0,.25])
         p.legend()
         
-        ax2 = f.add_subplot(1,3,2)
+        ax2 = f.add_subplot(3,1,2)
         errors1 = n.array([])
         errors2 = n.array([])
         errors3 = n.array([])
@@ -1103,10 +1103,10 @@ class verify_rm:
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('i-band', size=18)
-        #p.axis([.7,2.5,0,.25])
+        p.axis([.7,2.5,0,.25])
         p.legend()
 
-        ax3 = f.add_subplot(1,3,3)
+        ax3 = f.add_subplot(3,1,3)
         errors1 = n.array([])
         errors2 = n.array([])
         errors3 = n.array([])
@@ -1200,7 +1200,7 @@ class verify_rm:
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('z-band', size=18)
-        #p.axis([.7,2.5,0,.25])
+        p.axis([.7,2.5,0,.25])
         p.legend()
 
         p.subplots_adjust(wspace = .35)
