@@ -955,6 +955,7 @@ class verify_rm:
                                 elif i == 6:
                                     errors6 = n.append(errors6,self.rm_zerr1[i])
                                     count6 += 1
+        import pdb; pdb.set_trace()
         errors1 = self.dz_to_dv(errors1)
         errors1 = n.log10(errors1)
         hist1,binedges1 = n.histogram(errors1, bins=nbins)
