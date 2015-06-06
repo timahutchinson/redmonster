@@ -1003,7 +1003,7 @@ class verify_rm:
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
-        p.text(0.8, 0.2, '(r-band', fontsize=12)
+        p.text(0.8, 0.2, 'r-band', fontsize=12)
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         #p.title('r-band', size=18)
@@ -1101,7 +1101,7 @@ class verify_rm:
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
-        p.text(0.8, 0.2, '(i-band', fontsize=12)
+        p.text(0.8, 0.2, 'i-band', fontsize=12)
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         #p.title('i-band', size=18)
@@ -1200,7 +1200,7 @@ class verify_rm:
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
-        p.text(0.8, 0.2, '(z-band', fontsize=12)
+        p.text(0.8, 0.2, 'z-band', fontsize=12)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         #p.title('z-band', size=18)
         p.axis([.7,2.5,0,.25])
