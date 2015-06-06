@@ -1009,7 +1009,7 @@ class verify_rm:
         p.axis([.5,2.5,0,.3])
         p.legend()
         p.subplots_adjust(wspace = .35)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos2.pdf')
 
 
 
