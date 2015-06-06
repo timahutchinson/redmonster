@@ -906,7 +906,7 @@ class verify_rm:
 
     def logdv_vs_sn_histos_all(self, nbins=25):
         # Make histograms of log10(dv) in S/N bins in bands r,i,z for CMASS galaxies
-        colors = ['purple', 'cyan', 'blue', 'lime', 'red', 'black']
+        colors = ['tomato','sage','cornflowerblue','sandybrown','mediumpurple','grey'] #['purple', 'cyan', 'blue', 'lime', 'red', 'black']
         labels = ['1<S/N<2','2<S/N<3','3<S/N<4','4<S/N<5','5<S/N<6','6<S/N<7',]
         f = p.figure()
         ax1 = f.add_subplot(1,1,1)
