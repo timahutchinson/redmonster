@@ -836,24 +836,25 @@ class verify_rm:
         z_sn = []
         globpath = join( self.redmonster_spectro_redux,'*')
         for path in iglob(globpath):
-            plate = basename(path)
-            print plate
-            self.read_redmonster_all(plate)
-            self.read_spPlate_all(plate)
-            self.read_spZbest_all(plate)
-            #self.get_all_yanny(plate)
-            #fibers = self.get_cmass()
-            for i,fiber in enumerate(self.rm_fibers):
-                if (self.sn_median[fiber,0] <= sn_max):
-                    total += 1.
-                    r_sn.append(self.sn_median[fiber,0])
-                    i_sn.append(self.sn_median[fiber,1])
-                    z_sn.append(self.sn_median[fiber,2])
-                    if (self.rm_zwarning[i] > 0):
-                        bad_fibers.append(fiber)
-                        bad_r_sn.append(self.sn_median[fiber,0])
-                        bad_i_sn.append(self.sn_median[fiber,1])
-                        bad_z_sn.append(self.sn_median[fiber,2])
+            if plate != 'redmonster-all-%s.fits' % self.version:
+                plate = basename(path)
+                print plate
+                self.read_redmonster_all(plate)
+                self.read_spPlate_all(plate)
+                self.read_spZbest_all(plate)
+                #self.get_all_yanny(plate)
+                #fibers = self.get_cmass()
+                for i,fiber in enumerate(self.rm_fibers):
+                    if (self.sn_median[fiber,0] <= sn_max):
+                        total += 1.
+                        r_sn.append(self.sn_median[fiber,0])
+                        i_sn.append(self.sn_median[fiber,1])
+                        z_sn.append(self.sn_median[fiber,2])
+                        if (self.rm_zwarning[i] > 0):
+                            bad_fibers.append(fiber)
+                            bad_r_sn.append(self.sn_median[fiber,0])
+                            bad_i_sn.append(self.sn_median[fiber,1])
+                            bad_z_sn.append(self.sn_median[fiber,2])
         nbinsarr = n.linspace(0,sn_max,nbins+1)
         rtotal,rbinedges = n.histogram(r_sn,bins=nbinsarr)
         itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
@@ -1219,19 +1220,20 @@ class verify_rm:
         i_sn = []
         globpath = join( self.redmonster_spectro_redux,'*')
         for path in iglob(globpath):
-            plate = basename(path)
-            print plate
-            self.read_redmonster_all(plate)
-            self.read_spPlate_all(plate)
-            self.read_spZbest_all(plate)
-            #self.get_all_yanny(plate)
-            #fibers = self.get_cmass()
-            for i,fiber in enumerate(self.rm_fibers):
-                if (self.spectroflux[fiber,3] <= imax):
-                    total += 1.
-                    i_sn.append(self.spectroflux[fiber,3])
-                    if (self.rm_zwarning[i] > 0):
-                        bad_i_sn.append(self.spectroflux[fiber,3])
+            if plate != 'redmonster-all-%s.fits' % self.version:
+                plate = basename(path)
+                print plate
+                self.read_redmonster_all(plate)
+                self.read_spPlate_all(plate)
+                self.read_spZbest_all(plate)
+                #self.get_all_yanny(plate)
+                #fibers = self.get_cmass()
+                for i,fiber in enumerate(self.rm_fibers):
+                    if (self.spectroflux[fiber,3] <= imax):
+                        total += 1.
+                        i_sn.append(self.spectroflux[fiber,3])
+                        if (self.rm_zwarning[i] > 0):
+                            bad_i_sn.append(self.spectroflux[fiber,3])
         nbinsarr = n.linspace(0,imaxmax,nbins+1)
         itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
         ihist,ibinedges = n.histogram(bad_i_sn,bins=nbinsarr)
