@@ -1227,11 +1227,11 @@ class verify_rm:
             #self.get_all_yanny(plate)
             #fibers = self.get_cmass()
             for i,fiber in enumerate(self.rm_fibers):
-                if (self.spectroflux[fiber] <= imax):
+                if (self.spectroflux[fiber,3] <= imax):
                     total += 1.
-                    i_sn.append(self.spectroflux[fiber])
+                    i_sn.append(self.spectroflux[fiber,3])
                     if (self.rm_zwarning[i] > 0):
-                        bad_i_sn.append(self.spectroflux[fiber])
+                        bad_i_sn.append(self.spectroflux[fiber,3])
         nbinsarr = n.linspace(0,imaxmax,nbins+1)
         itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
         ihist,ibinedges = n.histogram(bad_i_sn,bins=nbinsarr)
