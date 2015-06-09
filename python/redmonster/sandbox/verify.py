@@ -1210,6 +1210,57 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
 
 
+    def cmass_failure_vs_imag_all(self,imax=24,nbins=29):
+        # Makes plot of CMASS failure rate (zwarning > 0) vs i-band magnitude
+        f = p.figure()
+        ax = f.add_subplot(1,1,1)
+        total = 0
+        bad_i_sn = []
+        i_sn = []
+        globpath = join( self.redmonster_spectro_redux,'*')
+        for path in iglob(globpath):
+            plate = basename(path)
+            print plate
+            self.read_redmonster_all(plate)
+            self.read_spPlate_all(plate)
+            self.read_spZbest_all(plate)
+            #self.get_all_yanny(plate)
+            #fibers = self.get_cmass()
+            for i,fiber in enumerate(self.rm_fibers):
+                if (self.spectroflux[fiber] <= imax):
+                    total += 1.
+                    i_sn.append(self.spectroflux[fiber])
+                    if (self.rm_zwarning[i] > 0):
+                        bad_i_sn.append(self.spectroflux[fiber])
+        nbinsarr = n.linspace(0,imaxmax,nbins+1)
+        itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
+        ihist,ibinedges = n.histogram(bad_i_sn,bins=nbinsarr)
+        ibins = n.zeros(nbins)
+        for i in xrange(nbins):
+            ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
+        ihist = ihist / map(float,itotal)
+        for i in xrange(nbins):
+            if i != 0 and i != (nbins-1):
+                if isnan(ihist[i]):
+                    try:
+                        ihist[i] = (ihist[i-1] + ihist[i+1]) / 2.
+                    except:
+                        ihist[i] = 0
+        #rhist = convolve(rhist,Box1DKernel(2))
+        #ihist = convolve(ihist,Box1DKernel(2))
+        #zhist = convolve(zhist,Box1DKernel(2))
+        p.plot(ibins,ihist,color='blue',label='i-band')
+        ax.set_yscale('log')
+        p.xlabel(r'i-band magnitude',size=14)
+        p.ylabel(r'CMASS failure rate', size=14)
+        #print rbins
+        #print rhist
+        #print rtotal
+        #p.legend()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_imag.pdf')
+
+
+
 
 
 
