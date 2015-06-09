@@ -1216,8 +1216,8 @@ class verify_rm:
         f = p.figure()
         ax = f.add_subplot(1,1,1)
         total = 0
-        bad_i_sn = []
-        i_sn = []
+        bad_i_mag = []
+        i_mag = []
         globpath = join( self.redmonster_spectro_redux,'*')
         for path in iglob(globpath):
             plate = basename(path)
@@ -1231,12 +1231,12 @@ class verify_rm:
                 for i,fiber in enumerate(self.rm_fibers):
                     if (self.spectroflux[fiber,3] <= imax):
                         total += 1.
-                        i_sn.append(self.spectroflux[fiber,3])
+                        i_mag.append(self.spectroflux[fiber,3])
                         if (self.rm_zwarning[i] > 0):
-                            bad_i_sn.append(self.spectroflux[fiber,3])
-        nbinsarr = n.linspace(0,imaxmax,nbins+1)
-        itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
-        ihist,ibinedges = n.histogram(bad_i_sn,bins=nbinsarr)
+                            bad_i_mag.append(self.spectroflux[fiber,3])
+        nbinsarr = n.linspace(0,imax,nbins+1)
+        itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
+        ihist,ibinedges = n.histogram(bad_i_mag,bins=nbinsarr)
         ibins = n.zeros(nbins)
         for i in xrange(nbins):
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
