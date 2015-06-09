@@ -1234,7 +1234,7 @@ class verify_rm:
                         i_mag.append(self.spectroflux[fiber,3])
                         if (self.rm_zwarning[i] > 0):
                             bad_i_mag.append(self.spectroflux[fiber,3])
-        nbinsarr = n.linspace(0,imax,nbins+1)
+        nbinsarr = n.linspace(16,imax,nbins+1)
         itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
         ihist,ibinedges = n.histogram(bad_i_mag,bins=nbinsarr)
         ibins = n.zeros(nbins)
