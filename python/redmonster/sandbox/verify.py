@@ -1253,6 +1253,7 @@ class verify_rm:
         #zhist = convolve(zhist,Box1DKernel(2))
         p.plot(ibins,ihist,color='blue',drawstyle='steps-mid',label='i-band')
         ax.set_yscale('log')
+        p.axvline(21.5,linestyle='--',color='k')
         p.xlabel(r'i-band magnitude',size=14)
         p.ylabel(r'CMASS failure rate', size=14)
         #print rbins
