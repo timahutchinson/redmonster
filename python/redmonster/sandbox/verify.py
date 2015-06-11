@@ -1270,9 +1270,9 @@ class verify_rm:
         zs = []
         for i in xrange(nobjs):
             if self.rm_zwarning[i] == 0:
-                errors.append(self.rm_z1[i])
-                zs.append(self.rm_zerr1[i])
-        errors = self.dz_to_dv(errors)
+                errors.append(self.rm_zerr1[i])
+                zs.append(self.rm_z1[i])
+        errors = self.dz_to_dv(n.asarray(errors))
         logerrs = n.log10(errors)
         p.scatter(zs,logerrs)
         p.xlabel('Redshift',size=16)
