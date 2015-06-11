@@ -1275,6 +1275,7 @@ class verify_rm:
         errors = self.dz_to_dv(n.asarray(errors))
         logerrs = n.log10(errors)
         p.scatter(zs,logerrs, marker='.')
+        p.axhline(2.48,linestyle='--',color='k')
         p.xlabel('Redshift',size=16)
         p.ylabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_scatter.pdf')
