@@ -1263,6 +1263,23 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_imag.pdf')
 
 
+    def logdv_vs_z_scatter_all(self,nobjs=100000):
+    # Makes a scatterplot nobjs CMASS targets of redshift vs log(dv)
+        self.read_redmonster_summary_file()
+        errors = []
+        zs = []
+        for i in xrange(nobjs):
+            if self.rm_zwarning[i] == 0:
+                errors.append(self.rm_z1[i])
+                zs.append(self.rm_zerr1[i])
+        errors = self.dz_to_dv(errors)
+        logerrs = n.log10(errors)
+        p.scatter(zs,logerrs)
+        p.xlabel('Redshift',size=16)
+        p.ylabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_scatter.pdf')
+
+
 
 
 
