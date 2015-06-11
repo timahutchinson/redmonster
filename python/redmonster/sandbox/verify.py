@@ -1269,7 +1269,7 @@ class verify_rm:
         errors = []
         zs = []
         for i in xrange(nobjs):
-            if (self.rm_zwarning[i] == 0) & (self.rm_type == 'ssp_em_galaxy'):
+            if (self.rm_zwarning[i] == 0) & (self.rm_type[i] == 'ssp_em_galaxy'):
                 errors.append(self.rm_zerr1[i])
                 zs.append(self.rm_z1[i])
         errors = self.dz_to_dv(n.asarray(errors))
