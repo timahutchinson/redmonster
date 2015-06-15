@@ -1301,7 +1301,7 @@ class verify_rm:
                     print 'Plate %s has multiple MJDs' % plate
                     hdu1 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[0]) ) )
                     hdu2 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[1]) ) )
-                    for i,z in enumerate(hdu[1].data.Z1):
+                    for i,z in enumerate(hdu1[1].data.Z1):
                         if (hdu1[1].data.ZWARNING[i] == 0) & (hdu1[1].data.CLASS[i] == 'ssp_em_galaxy') & (hdu2[1].data.ZWARNING[i] == 0) & (hdu2[1].data.CLASS[i] == 'ssp_em_galaxy'):
                             z1.append(z)
                             z2.append(hdu2[1].data.Z1[i])
