@@ -1294,7 +1294,7 @@ class verify_rm:
                 print plate
                 mjds = []
                 mjdglobpath = join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-*.fits' % plate)
-                for mjdpath in iglob(mjdpath):
+                for mjdpath in iglob(mjdglobpath):
                     mjd = basename(mjdpath)[16:21]
                     mjds.append(mjd)
                 if len(mjds) > 1:
