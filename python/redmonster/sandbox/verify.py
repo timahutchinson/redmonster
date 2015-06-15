@@ -1281,7 +1281,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_scatter.pdf')
 
 
-    def cmass_reobs_errors(self):
+    def cmass_reobs_errors(self, nbins=25):
         # Makes a histogram of (z2-z1)/sqrt(dz1**2 + dz2**2) with best fit Gaussian overplotted for all CMASS targets with repeat observations
         globpath = join( self.redmonster_spectro_redux,'*')
         z1 = []
@@ -1307,9 +1307,19 @@ class verify_rm:
                             z2.append(hdu2[1].data.Z1[i])
                             zerr1.append(hdu1[1].data.Z_ERR1[i])
                             zerr2.append(hdu2[1].data.Z_ERR1[i])
-        zdiff = z2-z1
-
-
+        z1 = n.array(z1)
+        z2 = n.array(z2)
+        zerr1 = n.array(zerr1)
+        zerr2 = n.array(zerr2)
+        z_diff = z2-z1
+        zerr_rms = n.sqrt( (zerr1**2 + zerr2**2)/2. ) # In original paper, this was n.sqrt( (zerr1**2 + zerr2**2) )
+        scaled_diff = z_diff / zerr_rms
+        hist,binedges = n.histogram(scaled_diff,bins=nbins)
+        bins = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins[i] = (binedges[i+1]+binedges[i])/2.
+        p.plot(bins, hist, drawstyle='steps-mid')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
 
 
 
