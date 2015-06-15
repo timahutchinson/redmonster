@@ -9,6 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as p
 from math import isnan
 from astropy.convolution import convolve, Box1DKernel
+from scipy.optimize import curve_fit
 
 class verify_rm:
     
@@ -1315,10 +1316,21 @@ class verify_rm:
         zerr_rms = n.sqrt( (zerr1**2 + zerr2**2)/2. ) # In original paper, this was n.sqrt( (zerr1**2 + zerr2**2) )
         scaled_diff = z_diff / zerr_rms
         hist,binedges = n.histogram(scaled_diff,bins=nbins)
+        normhist = hist / float(z1.shape[0])
         bins = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
-        p.plot(bins, hist, drawstyle='steps-mid')
+        p.plot(bins, hist, drawstyle='steps-mid', color='black')
+        
+        def fit_func(x,a,sigma,mu): # Gaussian function to fit to histogram
+            return a * n.exp( -((x-mu)**2)/(2*sigma**2) )
+        
+        popt,pcov = curve_fit(normhist,bins)
+        xfit = n.linspace(-6,6,1000)
+        yfit = fit_func(xfit, popt[0], popt[1], popt[2])
+        p.plot(xfit,yfit,color='cyan')
+        p.xlabel(r'$(z_2-z_1)/ z_{rms}', size=16)
+        p.ylabel('Fraction per bin',size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
 
 
