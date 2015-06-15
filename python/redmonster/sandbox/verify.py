@@ -745,7 +745,7 @@ class verify_rm:
         print avg
 
 
-    def logdv_vs_z_histos_all(self, nbins=12):
+    def cmass_logdv_vs_z_histos_all(self, nbins=12):
         # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
         colors = ['tomato','sage','cornflowerblue','sandybrown','mediumpurple','grey']
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
@@ -905,7 +905,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
 
 
-    def logdv_vs_sn_histos_all(self, nbins=25):
+    def cmass_logdv_vs_sn_histos_all(self, nbins=25):
         # Make histograms of log10(dv) in S/N bins in bands r,i,z for CMASS galaxies
         colors = ['tomato','sage','cornflowerblue','sandybrown','mediumpurple','grey'] #['purple', 'cyan', 'blue', 'lime', 'red', 'black']
         labels = ['1<S/N<2','2<S/N<3','3<S/N<4','4<S/N<5','5<S/N<6','6<S/N<7',]
@@ -1263,7 +1263,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_imag.pdf')
 
 
-    def logdv_vs_z_scatter_all(self,nobjs=100000):
+    def cmass_logdv_vs_z_scatter_all(self,nobjs=100000):
     # Makes a scatterplot nobjs CMASS targets of redshift vs log(dv)
         self.read_redmonster_summary_file()
         errors = []
