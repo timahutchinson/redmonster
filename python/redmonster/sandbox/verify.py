@@ -1281,6 +1281,35 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_scatter.pdf')
 
 
+    def cmass_reobs_errors(self):
+        # Makes a histogram of (z2-z1)/sqrt(dz1**2 + dz2**2) with best fit Gaussian overplotted for all CMASS targets with repeat observations
+        globpath = join( self.redmonster_spectro_redux,'*')
+        z1 = []
+        z2 = []
+        zerr1 = []
+        zerr2 = []
+        for path in iglob(globpath):
+            plate = basename(path)
+            if plate != 'redmonster-all-%s.fits' % self.version:
+                print plate
+                mjds = []
+                mjdglobpath = join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-*.fits' % plate)
+                for mjdpath in iglob(mjdpath):
+                    mjd = basename(mjdpath)[16:21]
+                    mjds.append(mjd)
+                if len(mjds) > 1:
+                    print 'Plate %s has multiple MJDs' % plate
+                    hdu1 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[0]) ) )
+                    hdu2 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[1]) ) )
+                    for i,z in enumerate(hdu[1].data.Z1):
+                        if (hdu1[1].data.ZWARNING[i] == 0) & (hdu1[1].data.CLASS[i] == 'ssp_em_galaxy') & (hdu2[1].data.ZWARNING[i] == 0) & (hdu2[1].data.CLASS[i] == 'ssp_em_galaxy'):
+                            z1.append(z)
+                            z2.append(hdu2[1].data.Z1[i])
+                            zerr1.append(hdu1[1].data.Z_ERR1[i])
+                            zerr2.append(hdu2[1].data.Z_ERR1[i])
+        zdiff = z2-z1
+
+
 
 
 
