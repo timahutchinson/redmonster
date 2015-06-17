@@ -751,9 +751,10 @@ class verify_rm:
         #            count += 1
         self.read_redmonster_summary_file()
         for i,zwarn in enumerate(self.rm_zwarning):
-            total += 1
-            if (zwarn == 0) & (self.rm_type[i] == 'ssp_em_galaxy'):
-                count += 1
+            if zwarn == 0:
+                total += 1
+                if self.rm_type[i] == 'ssp_em_galaxy':
+                    count += 1
         avg = float(count) / float(total)
         print count
         print total
