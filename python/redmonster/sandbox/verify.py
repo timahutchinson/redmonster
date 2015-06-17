@@ -691,18 +691,23 @@ class verify_rm:
         # Prints percent of all DR10 CMASS targets with rm_zwarning == 0
         count = 0
         total = 0
-        globpath = join( self.redmonster_spectro_redux, '*')
-        for path in iglob(globpath):
-            plate = basename(path)
-            print plate
-            #self.read_spPlate_all(plate)
-            #fibers = self.get_cmass()
-            self.read_redmonster_all(plate)
-            #for fiber in fibers:
-            for fiber in xrange(self.rm_zwarning.shape[0]):
+        #globpath = join( self.redmonster_spectro_redux, '*')
+        #for path in iglob(globpath):
+        #    plate = basename(path)
+        #    print plate
+        #    #self.read_spPlate_all(plate)
+        #    #fibers = self.get_cmass()
+        #    self.read_redmonster_all(plate)
+        #    #for fiber in fibers:
+        #    for fiber in xrange(self.rm_zwarning.shape[0]):
+        #        total += 1
+        #        if self.rm_zwarning[fiber] == 0:
+        #            count += 1
+        self.read_redmonster_summary_file()
+        for zwarn in self.rm_zwarning:
+            total += 1
+            if zwarn == 0:
                 total += 1
-                if self.rm_zwarning[fiber] == 0:
-                    count += 1
         avg = float(count) / float(total)
         print count
         print total
