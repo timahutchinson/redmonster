@@ -707,7 +707,7 @@ class verify_rm:
         for zwarn in self.rm_zwarning:
             total += 1
             if zwarn == 0:
-                total += 1
+                count += 1
         avg = float(count) / float(total)
         print count
         print total
