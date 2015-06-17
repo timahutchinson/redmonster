@@ -695,10 +695,11 @@ class verify_rm:
         for path in iglob(globpath):
             plate = basename(path)
             print plate
-            self.read_spPlate_all(plate)
-            fibers = self.get_cmass()
+            #self.read_spPlate_all(plate)
+            #fibers = self.get_cmass()
             self.read_redmonster_all(plate)
-            for fiber in fibers:
+            #for fiber in fibers:
+            for fiber in xrange(self.rm_zwarning.shape[0]):
                 total += 1
                 if self.rm_zwarning[fiber] == 0:
                     count += 1
