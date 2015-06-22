@@ -19,6 +19,7 @@ class Zpicker:
         if specobj.fiberid: self.fiberid = specobj.fiberid
         if specobj.hdr: self.hdr = specobj.hdr
         if specobj.plugmap: self.plugmap = specobj.plugmap
+        if specobj.boss_target1: self.boss_target1 = specobj.boss_target1
         self.fname = []
         self.type = []
         self.subtype = []

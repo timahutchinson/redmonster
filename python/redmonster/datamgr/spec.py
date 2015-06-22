@@ -59,6 +59,7 @@ class Spec:
             self.andmask = hdu[2].data
             self.ormask = hdu[3].data
             self.plugmap = hdu[5].data
+            self.boss_target1 = hdu[5].data.BOSS_TARGET1
             self.skyflux = hdu[6].data
             # For plate files before Spectro-2D v5, there are no sky vectors and hdu[6] is something else
             if self.skyflux.shape != self.flux.shape: self.skyflux = 0
