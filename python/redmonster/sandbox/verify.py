@@ -355,7 +355,7 @@ class verify_rm:
         print count
             
     def cmass_okay_completeness(self):
-        # Prints fraction of CMASS targets having yanny comment 'v5_4_9 ok' that have rm_zwarning == 0
+        # Prints fraction of CMASS targets having yanny comment 'v5_4_9 ok' and imag <= 21.5 that have rm_zwarning == 0
         count = 0
         total = 0
         for plate in self.plates:
@@ -371,6 +371,7 @@ class verify_rm:
 
     def cmass_okay_galaxy_completeness(self):
         # Prints fraction of targets classified by RM as 'ssp_em_galaxies' in the subset of CMASS targets having yanny comment 'v5_4_9 ok'
+        # and imag <= 21.5
         count = 0
         total = 0
         for plate in self.plates:
@@ -549,7 +550,7 @@ class verify_rm:
         p.text(1.25,.15, 'redshift and called "galaxy" but have', size=10)
         p.text(1.25, .1, 'zwarning > 0 or class != "galaxy". Of', size=10)
         p.text(1.25,.05, 'these, %s have $\delta z > 0.005$.' % (big_diff_num), size=10)
-        p.savefig('recov.pdf')
+        #p.savefig('recov.pdf')
 
 
     def cmass_failure_vs_sn(self,sn_max=7,nbins=29):
