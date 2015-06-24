@@ -446,6 +446,9 @@ class Merge_Redmonster:
         self.npoly = []
         self.fname = []
         self.npixstep = []
+        self.chi2diff = []
+        self.boss_target1 = []
+        self.eboss_target1 = []
         self.plates = []
         self.models = n.zeros((1,1))
         self.hdr = fits.Header()
