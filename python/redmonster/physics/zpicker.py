@@ -22,7 +22,10 @@ class Zpicker:
         try:
             self.boss_target1 = specobj.boss_target1
         except:
-            pass
+            try:
+                self.eboss_target1 = specobj.eboss_target1
+            except:
+                pass
         self.fname = []
         self.type = []
         self.subtype = []

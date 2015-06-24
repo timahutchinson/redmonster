@@ -284,8 +284,17 @@ class Write_Redmonster:
         col12 = fits.Column(name='FNAME', format='%iA'%maxlen, array=fname)
         col13 = fits.Column(name='NPIXSTEP', format='E', array=self.zpick.npixstep)
         col14 = fits.Column(name='CHI2DIFF', format='E', array=self.zpick.chi2diff)
-        col15 = fits.Column(name='BOSS_TARGET1', format='E', array=self.zpick.boss_target1)
-        cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15])
+        try:
+            col15 = fits.Column(name='BOSS_TARGET1', format='E', array=self.zpick.boss_target1)
+        except:
+            try:
+                col15 = fits.Column(name='EBOSS_TARGET1', format='E', array=self.zpick.eboss_target1)
+            except:
+                pass
+        if col15:
+            cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15])
+        else:
+            cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14])
         tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
         # ImageHDU of models
         sechdu = fits.ImageHDU(data=self.zpick.models)
@@ -373,6 +382,8 @@ class Merge_Redmonster:
         self.npoly = []
         self.fname = []
         self.npixstep = []
+        self.boss_target1 = []
+        self.chi2diff = []
         self.models = None
         self.hdr = None
 
@@ -411,6 +422,14 @@ class Merge_Redmonster:
                 self.npoly.append(hdu[1].data.NPOLY[0])
                 self.fname.append(hdu[1].data.FNAME[0])
                 self.npixstep.append(hdu[1].data.NPIXSTEP[0])
+                self.chi2diff.append(hdu[1].data.CHI2DIFF[0])
+                try:
+                    self.boss_target1.append(hdu[1].data.BOSS_TARGET1[0])
+                except:
+                    try:
+                        self.eboss_target1.append(hdu[1].data.EBOSS_TARGET1[0])
+                    except:
+                        pass
                 self.models[i] = hdu[2].data[0]
                 remove(path)
             output = Write_Redmonster(self, clobber=True)
