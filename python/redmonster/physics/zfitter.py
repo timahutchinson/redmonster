@@ -16,8 +16,8 @@ class Zfitter:
     def __init__(self, zchi2, zbase):
         self.zchi2 = zchi2
         self.zbase = zbase
-        self.z = n.zeros((zchi2.shape[0],2))
-        self.z_err = n.zeros((zchi2.shape[0],2))
+        self.z = n.zeros((zchi2.shape[0],5))
+        self.z_err = n.zeros((zchi2.shape[0],5))
         self.minvector = []
         self.zwarning = n.zeros(zchi2.shape[0])
 
@@ -43,27 +43,48 @@ class Zfitter:
                 #p.plot(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2], 'ko', hold=True)
                 self.z[ifiber,0] = xp[n.where(fit == n.min(fit))[0][0]]
                 self.z_err[ifiber,0] = self.estimate_z_err(xp, fit)
-                # Find second-best redshift, just to have it
+                # Find second- and third-, and fourth-best redshifts, just to have them
                 zspline = gs.GridSpline(bestzvec)
                 zminlocs = n.round(zspline.get_min())
                 zminvals = zspline.get_val(zminlocs)
                 if len(zminvals) == 1:
                     self.z[ifiber,1] = -1.
                     self.z_err[ifiber,1] = -1.
-                else:
-                    imin = 0
-                    while (self.z[ifiber,1] == 0):
-                        imin += 1
-                        secpos = zminlocs[n.where(zminvals == n.sort(zminvals)[imin])[0][0]]
-                        if (abs(posinvec - secpos) > width) & (secpos != 0) & (secpos != bestzvec.shape[0]-1) :
-                            xp = n.linspace(self.zbase[secpos-1], self.zbase[secpos+1], 1000)
-                            f = quadfit(self.zbase[secpos-1:secpos+2], bestzvec[secpos-1:secpos+2])
-                            fit = quad_for_fit(xp, f[0], f[1], f[2])
-                            self.z[ifiber,1] = xp[n.where(fit == n.min(fit))[0][0]]
-                            self.z_err[ifiber,1] = self.estimate_z_err(xp, fit)
-                        else:
-                            self.z[ifiber,1] = -1.
-                            self.z_err[ifiber,1] = -1.
+                    self.z[ifiber,2] = -1
+                    self.z_err[ifiber,2] = -1
+                    self.z[ifiber,3] = -1
+                    self.z_err[ifiber,3] = -1
+                    self.z[ifiber,4] = -1
+                    self.z_err[ifiber,4] = -1
+                elif len(zminvals) == 2:
+                    self.z[ifiber,2] = -1
+                    self.z_err[ifiber,2] = -1
+                    self.z[ifiber,3] = -1
+                    self.z_err[ifiber,3] = -1
+                    self.z[ifiber,4] = -1
+                    self.z_err[ifiber,4] = -1
+                elif len(zminvals) == 3:
+                    self.z[ifiber,3] = -1
+                    self.z_err[ifiber,3] = -1
+                    self.z[ifiber,4] = -1
+                    self.z_err[ifiber,4] = -1
+                elif len(zminvals) == 4:
+                    self.z[ifiber,4] = -1
+                    self.z_err[ifiber,4] = -1
+                imin = 0
+                while (self.z[ifiber,1] == 0) | (self.z[ifiber,2] == 0) | (self.z[ifiber,3] == 0) | (self.z[ifiber,4] == 0):
+                    imin += 1
+                    nextpos = zminlocs[n.where(zminvals == n.sort(zminvals)[imin])[0][0]]
+                    if (abs(posinvec - nextpos) > width) & (nextpos != 0) & (nextpos != bestzvec.shape[0]-1) :
+                        xp = n.linspace(self.zbase[nextpos-1], self.zbase[nextpos+1], 1000)
+                        f = quadfit(self.zbase[nextpos-1:nextpos+2], bestzvec[nextpos-1:nextpos+2])
+                        fit = quad_for_fit(xp, f[0], f[1], f[2])
+                        self.z[ifiber,imin] = xp[n.where(fit == n.min(fit))[0][0]]
+                        self.z_err[ifiber,imin] = self.estimate_z_err(xp, fit)
+                    else:
+                        self.z[ifiber,imin] = -1.
+                        self.z_err[ifiber,imin] = -1.
+                
                 self.flag_small_dchi2(ifiber, bestzvec, threshold=threshold, width=width) # Flag fibers with small delta chi2 in redshift
 
     def estimate_z_err(self, xp, fit):

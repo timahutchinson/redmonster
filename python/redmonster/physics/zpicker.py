@@ -18,20 +18,15 @@ class Zpicker:
         if specobj.mjd: self.mjd = specobj.mjd
         if specobj.fiberid: self.fiberid = specobj.fiberid
         if specobj.hdr: self.hdr = specobj.hdr
-        if specobj.plugmap: self.plugmap = specobj.plugmap
-        try:
-            self.boss_target1 = specobj.boss_target1
-        except:
-            try:
-                self.eboss_target1 = specobj.eboss_target1
-            except:
-                pass
+        if hasattr(specobj,'plugmap'): self.plugmap = specobj.plugmap
+        if hasattr(specobj,'boss_target1'): self.boss_target1 = specobj.boss_target1
+        elif hasattr(specojb, 'eboss_target1'): self.eboss_target1 = specobj.eboss_target1
         self.fname = []
         self.type = []
         self.subtype = []
         self.minvector = []
-        self.z = n.zeros( (zfind1.zchi2arr.shape[0],2) )
-        self.z_err = n.zeros( (zfind1.zchi2arr.shape[0],2) )
+        self.z = n.zeros( (zfind1.zchi2arr.shape[0],5) )
+        self.z_err = n.zeros( (zfind1.zchi2arr.shape[0],5) )
         self.zwarning = []
         self.npoly = []
         self.dof = specobj.dof.copy()

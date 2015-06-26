@@ -80,7 +80,7 @@ output = io.Write_Redmonster(zpick)
 # 2. Incorporate Adam's spCFrame fittings somewhere
 # 3. Function to turn variable resolution data into coadded log(lambda) data?
 # DONE 4. Quasar templates?
-# 5. BOSS CMASS data testing
+# DONE 5. BOSS CMASS data testing
 # DONE      Look into delta chi2 thresholds to trigger failure
 # DONE      Look at completeness vs. purity
 # 6. WISE selected LRG targets (SEQUELS/SDSS-IV)
