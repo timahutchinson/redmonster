@@ -9,7 +9,7 @@ q = queue()
 q.verbose = True
 nodes = 12
 walltime = '336:00:00'
-ncycles = 100
+ncycles = 250
 
 try: uufscell = environ['UUFSCELL']
 except: uufscell = None
