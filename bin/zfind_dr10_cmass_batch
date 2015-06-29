@@ -30,6 +30,9 @@ except: run2d = None
 #platedir = join(topdir,run2d,'*','spPlate-*.fits') if topdir and run2d else None
 platedir = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
+#### ADDED 28 JUNE 2015 ####
+theseplates = [3523,3536,3537,3538,3540,3548,3549,3550,3551,3552,3558,3564,3578,3579,3580,3599,3604,3605,3607,3611,3621,3622,3641,3640,3642,3643,3648,3685]
+
 if platedir:
     cjob = 0
     q.create(label='zfind_dr10_cmass_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
@@ -38,9 +41,11 @@ if platedir:
     for ind,bosstarg1 in enumerate(hdu[1].data.BOSS_TARGET1):
         if (bosstarg1 & 2) and (hdu[1].data.SPECPRIMARY[ind] > 0):
             plate = hdu[1].data.PLATE[ind]
-            mjd = hdu[1].data.MJD[ind]
-            fiberid = hdu[1].data.FIBERID[ind] - 1
-            q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
+#### ADDED 28 JUNE 2015 ####
+            if plate in theseplates:
+                mjd = hdu[1].data.MJD[ind]
+                fiberid = hdu[1].data.FIBERID[ind] - 1
+                q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
         if q.task_number >= blocksize:
             cjob += 1
             q.commit(hard=True, submit=True)
