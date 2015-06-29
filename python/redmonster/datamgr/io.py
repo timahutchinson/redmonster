@@ -257,14 +257,18 @@ class Write_Redmonster:
         # Columns for 1st BIN table
         col1 = fits.Column(name='Z1', format='E', array=self.zpick.z[:,0])
         col2 = fits.Column(name='Z2', format='E', array=self.zpick.z[:,1])
+        '''
         col2_2 = fits.Column(name='Z3', format='E', array=self.zpick.z[:,2])
         col2_3 = fits.Column(name='Z4', format='E', array=self.zpick.z[:,3])
         col2_4 = fits.Column(name='Z5', format='E', array=self.zpick.z[:,4])
+        '''
         col3 = fits.Column(name='Z_ERR1', format='E', array=self.zpick.z_err[:,0])
         col4 = fits.Column(name='Z_ERR2', format='E', array=self.zpick.z_err[:,1])
+        '''
         col4_2 = fits.Column(name='Z_ERR3', format='E', array=self.zpick.z_err[:,2])
         col4_3 = fits.Column(name='Z_ERR4', format='E', array=self.zpick.z_err[:,3])
         col4_4 = fits.Column(name='Z_ERR5', format='E', array=self.zpick.z_err[:,4])
+        '''
         classx = n.array(map(repr,self.zpick.type))
         maxlen = max(map(len,classx))
         col5 = fits.Column(name='CLASS', format='%iA'%maxlen, array=self.zpick.type)
@@ -298,7 +302,8 @@ class Write_Redmonster:
             except:
                 pass
         if col15:
-            cols = fits.ColDefs([col1, col2, col2_2, col2_3, col2_4, col3, col4, col4_2, col4_3, col4_4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15])
+            #cols = fits.ColDefs([col1, col2, col2_2, col2_3, col2_4, col3, col4, col4_2, col4_3, col4_4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15])
+            cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15]) # TEMPORARY!!!
         else:
             cols = fits.ColDefs([col1, col2, col2_2, col2_3, col2_4, col3, col4, col4_2, col4_3, col4_4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14])
         tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
