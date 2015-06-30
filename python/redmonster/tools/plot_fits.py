@@ -98,6 +98,7 @@ class Plot_Fit(Frame):
             loc = n.where(self.fiberid == self.fiber)[0]
             if len(loc) is not 0:
                 a.plot(self.wave, self.models[loc[0]], color='black')
+                a.axis([self.wave[0],self.wave[-1],1.2*n.max(self.models[loc[0]]),-1.2*n.min(self.models[loc[0]])])
                 a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, self.z[loc][0], self.type[loc][0], self.zwarning[loc][0]))
             else:
                 print 'Fiber %s is not in redmonster-%s-%s.fits' % (self.fiber, self.plate, self.mjd)
