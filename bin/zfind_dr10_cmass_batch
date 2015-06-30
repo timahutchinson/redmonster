@@ -44,6 +44,7 @@ if platedir:
 #### ADDED 28 JUNE 2015 ####
             print plate, type(plate)
             if plate in theseplates:
+                import pdb; pdb.set_trace()
                 mjd = hdu[1].data.MJD[ind]
                 fiberid = hdu[1].data.FIBERID[ind] - 1
                 q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
@@ -54,3 +55,8 @@ if platedir:
             q.verbose = True
             q.create(label='zfind_dr10_cmass_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
     if not q.client.committed: q.commit(hard=True, submit=True)
+
+
+
+
+
