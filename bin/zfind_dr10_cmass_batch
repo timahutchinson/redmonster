@@ -41,10 +41,10 @@ if platedir:
     for ind,bosstarg1 in enumerate(hdu[1].data.BOSS_TARGET1):
         if (bosstarg1 & 2) and (hdu[1].data.SPECPRIMARY[ind] > 0):
             plate = hdu[1].data.PLATE[ind]
+            import pdb; pdb.set_trace()
 #### ADDED 28 JUNE 2015 ####
             print plate, type(plate)
             if plate in theseplates:
-                import pdb; pdb.set_trace()
                 mjd = hdu[1].data.MJD[ind]
                 fiberid = hdu[1].data.FIBERID[ind] - 1
                 q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
