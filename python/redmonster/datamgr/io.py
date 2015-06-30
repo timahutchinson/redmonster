@@ -502,6 +502,7 @@ class Merge_Redmonster:
                             self.npoly += hdu[1].data.NPOLY.tolist()
                             self.fname += hdu[1].data.FNAME.tolist()
                             self.npixstep += hdu[1].data.NPIXSTEP.tolist()
+                            self.chi2diff += hdu[1].data.CHI2DIFF.tolist()
                             try: self.z1 = n.append(self.z1, hdu[1].data.Z1)
                             except: self.z1 = hdu[1].data.Z1
                             try: self.z_err1 = n.append(self.z_err1, hdu[1].data.Z_ERR1)
