@@ -43,7 +43,7 @@ if platedir:
             plate = hdu[1].data.PLATE[ind]
 #### ADDED 28 JUNE 2015 ####
             print plate, type(plate)
-            if plate in theseplates:
+            if plate == 3536:
                 import pdb; pdb.set_trace()
                 mjd = hdu[1].data.MJD[ind]
                 fiberid = hdu[1].data.FIBERID[ind] - 1
