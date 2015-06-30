@@ -81,6 +81,7 @@ class Plot_Fit(Frame):
             self.fiberid = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.FIBERID
             self.type = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS
             self.z = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z1
+            self.zwarning = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.ZWARNING
         else:
             self.fiber = int(self.e3.get())
         f = Figure(figsize=(10,6), dpi=100)
@@ -97,7 +98,7 @@ class Plot_Fit(Frame):
             loc = n.where(self.fiberid == self.fiber)[0]
             if len(loc) is not 0:
                 a.plot(self.wave, self.models[loc[0]], color='black')
-                a.set_title('Plate %s Fiber %s: z=%s class=%s' % (self.plate, self.fiber, self.z[loc][0], self.type[loc][0]))
+                a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, self.z[loc][0], self.type[loc][0], self.zwarning[loc][0]))
             else:
                 print 'Fiber %s is not in redmonster-%s-%s.fits' % (self.fiber, self.plate, self.mjd)
                 a.set_title('Plate %s Fiber %s' % (self.plate, self.fiber))
