@@ -42,6 +42,7 @@ if platedir:
         if (bosstarg1 & 2) and (hdu[1].data.SPECPRIMARY[ind] > 0):
             plate = hdu[1].data.PLATE[ind]
 #### ADDED 28 JUNE 2015 ####
+            print plate, type(plate)
             if plate in theseplates:
                 mjd = hdu[1].data.MJD[ind]
                 fiberid = hdu[1].data.FIBERID[ind] - 1
