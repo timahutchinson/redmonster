@@ -54,6 +54,7 @@ blocksize = nodes*ppn*ncycles
 for i,plate in enumerate(plates):
     for fiberid in xrange(1000):
         if not isfile(join( writepath, '%s' % plate, 'v5_7_0', 'redmonster-%s-%s-%03d.fits' % (plate,mjds[i],fiberid) )):
+            print 'Appending plate %s mjd %s fiber %03d' % (plate,mjds[i],fiberid)
             q.append("zfind -p %i -m %i -f %i" % (plate,mjds[i],fiberid))
             if q.task_number >= blocksize:
                 cjob += 1
