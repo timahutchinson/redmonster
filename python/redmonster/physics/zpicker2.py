@@ -24,11 +24,11 @@ class Zpicker:
         self.type = []
         self.subtype = []
         self.minvector = []
-        #self.z = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
-        #self.z_err = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
+        self.z = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
+        self.z_err = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
         #self.zwarning = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
-        self.z = []
-        self.z_err = []
+        #self.z = []
+        #self.z_err = []
         self.zwarning = []
         self.npoly = []
         self.dof = specobj.dof.copy()
@@ -49,10 +49,32 @@ class Zpicker:
 
 
     def classify_obj(zfindobjs, zfitobjs, flags):
-        pass
+        for ifiber in xrange(zfindobjbs[0].zchi2arr.shape[0]):
+            # Convert to rchi2 for comparing templates of differing lengths
+            for itemp in xrange(len(zfindobjs)): # Loop over template classes
+                for iz in xrange(self.num_z): # Build out num_z options for each template class, in case the overall best num_z are from the same
+                    minloc = n.unravel_index(zfindobjs[itemp].zchi2arr[ifiber].argmin(),zfindobjs[itemp].zchi2arr[ifiber].shape)
+                    self.minrchi2[ifiber, iz+(itemp*self.num_z)] = n.min(zfindobjs[itemp].zchi2arr[ifiber]) / (self.dof[ifiber]-zfindobjs[itemp].npoly)
+    
 
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 
 

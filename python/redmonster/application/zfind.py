@@ -216,7 +216,7 @@ class Zfind:
                     output = io.Write_Redmonster(zpick, dest=self.dest, clobber=self.clobber)
                 except:
                     print 'Could not convert dest to string - writing to default directory and NOT clobbering old files!'
-                    output = io.Write_Redmonster(zpick, clobber=False)
+                    output = io.Write_Redmonster(zpick, clobber=True)
 
         if output:
             if len(zpick.fiberid) == 1: output.write_fiberid()
