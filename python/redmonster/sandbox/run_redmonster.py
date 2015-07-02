@@ -18,7 +18,7 @@ p.interactive(True)
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
 plate = 3686
 mjd = 55268
-fiberid = [100] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
+fiberid = [100,101] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
@@ -31,17 +31,19 @@ zssp = zfinder.Zfinder(fname='ndArch-ssp_em_galaxy-v000.fits', npoly=4, zmin=-0.
 zssp.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
 
 ''' New objects and fitting for different templates. '''
+'''
 #zstar = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
 zstar = zfinder.Zfinder(fname='ndArch-all-CAP-grids.fits', npoly=4, zmin=-.005, zmax=.005)
 zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
 zqso = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.4, zmax=3.5)
 zqso.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=4)
+'''
 
 ''' Instantiate Zfitter to do subgrid fitting.  zchi2_ssp is chi^2 array from zfinder object above, and zssp.zbase is redshift-pixel baseline over the range explored by zfinder. '''
 zfit_ssp = zfitter.Zfitter(zssp.zchi2arr, zssp.zbase)
 
 ''' Do actual subgrid refinement and fitting.  Best-fit and second-best-fit redshifts will be in [nfibers,2] shaped array in zfit_*****.z , and associated errors are in zfit_*****.z_err .  This routine also flags for small delta chi^2 and if the global minimum chi^2 is on an edge of the input chi^2 array. z_refine() includes an optional parameter, 'width', which specifies half the width of a window around the global chi2 minimum in which local minima are ignored during calculation of second-best redshift and flagging small delta-chi2.  If not specified, 'width' defaults to 15.'''
-zfit_ssp.z_refine()
+zfit_ssp.z_refine2()
 
 ''' Same as above for second template. '''
 zfit_star = zfitter.Zfitter(zstar.zchi2arr, zstar.zbase)

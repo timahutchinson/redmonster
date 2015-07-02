@@ -2,6 +2,7 @@
 # Interpolates both between redshift pixel lags and between model parameters.
 #
 # Tim Hutchinson, University of Utah @ IAC, May 2014
+# Significant updates to z_refine() by TH, June 2015
 # t.hutchinson@utah.edu
 
 import numpy as n
@@ -122,13 +123,17 @@ class Zfitter:
 
 
     def z_refine2(self, threshold=46.6, width=15, num_z=5): # Default threshold of 46.6 is delta (chi_r)**2 = .01, and width is 1000 km/s
+        self.num_z = num_z
         self.threshold = threshold
         self.width = width
         self.z = n.zeros((self.zchi2.shape[0],num_z))
         self.z_err = n.zeros((self.zchi2.shape[0],num_z))
         self.minvectors = []
+        self.chi2vals = []
         for ifiber in xrange(self.zchi2.shape[0]):
             allminvectors = []
+            bestminvectors = []
+            bestchi2vals = []
             bestzvec = n.zeros( self.zchi2.shape[-1] )
             for iz in xrange(self.zchi2.shape[-1]): # Make vector of minimum chi2 at each trial redshift
                 bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
@@ -146,48 +151,75 @@ class Zfitter:
                         self.flag_z_fitlimit(ifiber)
                         self.z[ifiber] = -1.
                         self.z_err[ifiber] = -1.
+                        self.minvectors.append( [(-1,)]*num_z )
+                        self.chi2vals.append( [1e9]*num_z )
                         stop = True
                     elif posinvec == 0: # If it's not the first, and if it's on the left edge, set the 15 pixels to the right = 1e9 and move on
                         k = 0
                         while True:
                             k += 1
-                            if n.abs(zminlocs[thisminloc+k]-zminlocs[thisminloc]) < self.width:
-                                zminvals[thisminloc+k] = 1e9
-                            else:
+                            try:
+                                if n.abs(zminlocs[thisminloc+k]-zminlocs[thisminloc]) < self.width:
+                                    zminvals[thisminloc+k] = 1e9
+                                else:
+                                    break
+                            except:
                                 break
                         z_ind += 1
-                    elif posinvec == bestzvec.shape[0]-1: # If it's not the first, and if it's on the right edge, set the 15 pixels to the lef = 1e9 and move on
+                    elif posinvec == bestzvec.shape[0]-1: # If it's not the first, and if it's on the right edge, set the 15 pixels to the left = 1e9 and move on
                         k = 0
                         while True:
                             k += 1
-                            if n.abs(zminlocs[thisminloc-k]-zminlocs[thisminloc]) < self.width:
-                                zminvals[thisminloc-k] = 1e9
-                            else:
+                            try:
+                                if n.abs(zminlocs[thisminloc-k]-zminlocs[thisminloc]) < self.width:
+                                    zminvals[thisminloc-k] = 1e9
+                                else:
+                                    break
+                            except:
                                 break
                         z_ind += 1
                 else: # Fit with quadratic and find minimum and error based on that
+                    bestchi2vals.append( bestzvec[posinvec] )
                     xp = n.linspace(self.zbase[posinvec-1], self.zbase[posinvec+1], 1000)
                     f = quadfit(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2])
                     fit = quad_for_fit(xp, f[0], f[1], f[2])
                     self.z[ifiber,z_ind] = xp[n.where(fit == n.min(fit))[0][0]]
                     self.z_err[ifiber,z_ind] = self.estimate_z_err(xp, fit)
                     zminvals[thisminloc] = 1e9
-                    self.minvectors.append( n.unravel_index(self.zchi2[ifiber,...,posinvec].argmin(), self.zchi2[ifiber,...,posinvec].shape) + (posinvec,) )
+                    bestminvectors.append( allminvectors[posinvec] + (posinvec,) )
+                    #self.minvectors.append( n.unravel_index(self.zchi2[ifiber,...,posinvec].argmin(), self.zchi2[ifiber,...,posinvec].shape) + (posinvec,) )
                     k = 0
                     while True: # Set width points to the right and left of minimum to 1e9
                         k += 1
-                        if n.abs(zminlocs[thisminloc+k]-zminlocs[thisminloc]) < self.width:
-                            zminvals[thisminloc+k] = 1e9
-                        else:
+                        try:
+                            if n.abs(zminlocs[thisminloc+k]-zminlocs[thisminloc]) < self.width:
+                                zminvals[thisminloc+k] = 1e9
+                            else:
+                                break
+                        except:
                             break
                     k = 0
                     while True:
                         k += 1
-                        if n.abs(zminlocs[thisminloc-k]-zminlocs[thisminloc]) < self.width:
-                            zminvals[thisminloc-k] = 1e9
-                        else:
+                        try:
+                            if n.abs(zminlocs[thisminloc-k]-zminlocs[thisminloc]) < self.width:
+                                zminvals[thisminloc-k] = 1e9
+                            else:
+                                break
+                        except:
                             break
                     z_ind += 1
+            self.minvectors.append( bestminvectors )
+            self.chi2vals.append( bestchi2vals )
+        self.flag_small_dchi2_2()
+
+
+    def flag_small_dchi2_2(self):
+        flag_val = int('0b100',2) # From BOSS zwarning flag definitions
+        if self.num_z > 1:
+            for ifiber in xrange(self.zchi2.shape[0]):
+                if n.abs(self.z[ifiber,0] - self.z[ifiber,1]) < self.threshold:
+                    self.zwarning[ifiber] = int(self.zwarning[ifiber]) ^ flag_val
 
             
 
