@@ -6,7 +6,7 @@
 # each entry is a string of objclassN.type for the best reduced chi2 amongst all input classes.
 #
 # Tim Hutchinson, University of Utah, July 2014
-# Significantly rewritten by TH, November 2014
+# Significantly rewritten by TH, July 2015
 # t.hutchinson@utah.edu
 
 import numpy as n
@@ -49,12 +49,15 @@ class Zpicker:
 
 
     def classify_obj(zfindobjs, zfitobjs, flags):
+        # Build dictionary of template position in object lists vs position in ordered lists (i.e. if the chi2.argmin() = 14, and tempdict[14] = 3, then the min chi2 is from the template corresponding to zfindobjs[3])
+        tempdict = {}
+        for itemp in xrange(len(zfindobjs)):
+            for i in xrange(self.num_z):
+                tempdict[ i+(itemp*self.num_z) ] = itemp
         for ifiber in xrange(zfindobjbs[0].zchi2arr.shape[0]):
             # Convert to rchi2 for comparing templates of differing lengths
-            for itemp in xrange(len(zfindobjs)): # Loop over template classes
-                for iz in xrange(self.num_z): # Build out num_z options for each template class, in case the overall best num_z are from the same
-                    minloc = n.unravel_index(zfindobjs[itemp].zchi2arr[ifiber].argmin(),zfindobjs[itemp].zchi2arr[ifiber].shape)
-                    self.minrchi2[ifiber, iz+(itemp*self.num_z)] = n.min(zfindobjs[itemp].zchi2arr[ifiber]) / (self.dof[ifiber]-zfindobjs[itemp].npoly)
+
+
     
 
 
