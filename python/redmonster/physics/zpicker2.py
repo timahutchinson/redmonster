@@ -50,12 +50,14 @@ class Zpicker:
 
     def classify_obj(zfindobjs, zfitobjs, flags):
         # Build dictionary of template position in object lists vs position in ordered lists (i.e. if the chi2.argmin() = 14, and tempdict[14] = 3, then the min chi2 is from the template corresponding to zfindobjs[3])
+        # While looping over templates, also build out an array of rchi2 values for each
         tempdict = {}
         for itemp in xrange(len(zfindobjs)):
             for i in xrange(self.num_z):
                 tempdict[ i+(itemp*self.num_z) ] = itemp
         for ifiber in xrange(zfindobjbs[0].zchi2arr.shape[0]):
             # Convert to rchi2 for comparing templates of differing lengths
+
 
 
     
