@@ -87,7 +87,7 @@ class Zpicker:
                 for imin in xrange(self.num_z):
                     fibermins.append( zfitobjs[itemp].chi2vals[ifiber][imin] / (specobj.dof[ifiber] - zfindobjs[itemp].npoly) ) # Add num_z best chi2s found in zfitter divided by (number of pixels - number of poly terms) to convert to rchi2
                     fiberminvecs.append( zfitobjs[itemp].minvectors[ifiber][imin]) # Add num_z vectors for location of each chi2 in the above step
-            for iz in xrange(self.num_z): # Find the num_z best redshifts
+            for iz in xrange(self.num_z): # Build tuples of num_z best redshifts and classifications for this fiber
                 zpos = fibermins.argmin() # Location of this best redshfit in fibermins array - to be fed into tempdict to find template
                 tempnum = tempdict[zpos] # Location in lists of template objects of this redshift classification
                 znum = poslist[zpos] # Location in zfitobj[tempnum] of this z
@@ -99,8 +99,24 @@ class Zpicker:
                 zerrtuple += (zfitobjs[tempnum].z_err[ifiber][znum],)
                 fnametuple += (zfindojbs[tempnum].fname,)
                 typetuple += (zfindobjs[tempnum].type,)
+                #subtype
                 minchi2tuple += (fibermins[zpos],)
                 vectortuple += (fiberminvecs[zpos],)
+                npolytuple += (zfindobjs[tempnum].npoly,)
+                npixsteptuple += (zfindobjs[tempnum].npixstep,)
+                if iz == 0:
+                    self.models[ifiber] = zfindobjs[tempnum].models[ifiber]
+            self.z.append(ztuple)
+            self.z_err.append(zerrtuple)
+            self.fname.append(fnametuple)
+            self.type.append(typetuple)
+            #subtype
+            self.minchi2.append(minchi2tuple)
+            self.minvector.append(vectortuple)
+            self.npoly.append(npolytuple)
+            self.npixstep.append(npixsteptuple)
+
+
                 
 
 
