@@ -47,9 +47,9 @@ zfit_ssp.z_refine2()
 
 ''' Same as above for second template. '''
 zfit_star = zfitter.Zfitter(zstar.zchi2arr, zstar.zbase)
-zfit_star.z_refine()
+zfit_star.z_refine2()
 zfit_qso = zfitter.Zfitter(zqso.zchi2arr, zqso.zbase)
-zfit_qso.z_refine()
+zfit_qso.z_refine2()
 
 ''' Flagging throughout redmonster is done individually by the classes responsible for handling the relevant computations.  To have an 'overall' flag for each fiber, the individual flags need to be combined. '''
 ssp_flags = misc.comb_flags(specs, zssp, zfit_ssp)
