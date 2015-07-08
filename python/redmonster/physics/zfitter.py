@@ -115,7 +115,7 @@ class Zfitter:
 
     def flag_z_fitlimit(self, ifiber):
         flag_val = int('0b100000',2) # From BOSS zwarning flag definitions
-        self.zwarning[ifiber] = int(self.zwarning[ifiber]) ^ flag_val
+        self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
 
 
 
