@@ -38,8 +38,9 @@ class Zpicker:
         self.models = n.zeros( (specobj.flux.shape) )
         self.nclass = len(zfindobjs)
         #self.minrchi2 = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
-        self.minchi2 = []
-        self.chi2diff = []
+        self.minrchi2 = []
+        self.rchi2diff = []
+        self.zwarning = []
         try:
             self.boss_target1 = specobj.boss_target1
         except:
@@ -51,11 +52,11 @@ class Zpicker:
         self.classify_obj(zfindobjs, zfitobjs, flags)
 
 
-    def classify_obj(zfindobjs, zfitobjs, flags):
+    def classify_obj(self, zfindobjs, zfitobjs, flags, rchi2threshold=0.01):
         # Build dictionary of template position in object lists vs position in ordered lists (i.e. if the chi2.argmin() = 14, and tempdict[14] = 3, then the min chi2 is from the template corresponding to zfindobjs[3])
         # While looping over templates, also build out an array of rchi2 values for each
         tempdict = {}
-        poslist = range(num_z)*len(zfindobjs) # Builds list of 0:num_z repeated ntemps times (i.e., [0,1,2,3,0,1,2,3,0,1,2,3] for num_z=4 and 3 templates)
+        poslist = range(self.num_z)*len(zfindobjs) # Builds list of 0:num_z repeated ntemps times (i.e., [0,1,2,3,0,1,2,3,0,1,2,3] for num_z=4 and 3 templates)
         rchi2s = []
         for itemp in xrange(len(zfindobjs)):
             for i in xrange(self.num_z):
@@ -65,9 +66,10 @@ class Zpicker:
             for ifiber in xrange(zfindobjs[0].zchi2arr.shape[0]):
                 rchi2s[itemp][ifiber] /= ( specobj.dof[ifiber] - zfindobjs[itemp].npoly ) # Convert from chi2 to rchi2 by dividing by (number of pixels - number of poly terms)
             '''
-        for ifiber in xrange(zfindobjbs[0].zchi2arr.shape[0]):
+        for ifiber in xrange(zfindobjs[0].zchi2arr.shape[0]):
             fibermins = []
             fiberminvecs = []
+            # Create tuples for all the values we're going to carry forward.  One tuple per fiber, each with num_z redshifts, classifications, etc.
             ztuple = ()
             zerrtuple = ()
             fnametuple = ()
@@ -76,19 +78,12 @@ class Zpicker:
             vectortuple = ()
             npolytuple = ()
             npixsteptuple = ()
-            for itemp in xrange(len(rchi2s)): # Build temporary array of num_z lowest minima for each template
-                '''
+            for itemp in xrange(self.nclass): # Build temporary array of num_z lowest minima for each template
                 for imin in xrange(self.num_z):
-                    minpos = n.unravel_index(rchi2s[itemp][ifiber].argmin(), rchi2s[itemp][ifiber].shape) # Location of minimum in zfindobjs[itemp][ifiber]
-                    fiberminvecs.append( minpos )
-                    fibermins.append( rchi2s[itemp][ifiber][minpos] ) # Add this particular minimum to the temp array of minima
-                    rchi2s[itemp][ifiber][...,minpos[-1]-zfitobjs[itemp].width:minpos[-1]+zfitobjs[itemp].width+1] = 1e9 # Block out a window of 'width' pixels (set in zfitter) in redshift around this minimum
-                '''
-                for imin in xrange(self.num_z):
-                    fibermins.append( zfitobjs[itemp].chi2vals[ifiber][imin] / (specobj.dof[ifiber] - zfindobjs[itemp].npoly) ) # Add num_z best chi2s found in zfitter divided by (number of pixels - number of poly terms) to convert to rchi2
+                    fibermins.append( zfitobjs[itemp].chi2vals[ifiber][imin] / (self.dof[ifiber] - zfindobjs[itemp].npoly) ) # Add num_z best chi2s found in zfitter divided by (number of pixels - number of poly terms) to convert to rchi2
                     fiberminvecs.append( zfitobjs[itemp].minvectors[ifiber][imin]) # Add num_z vectors for location of each chi2 in the above step
             for iz in xrange(self.num_z): # Build tuples of num_z best redshifts and classifications for this fiber
-                zpos = fibermins.argmin() # Location of this best redshfit in fibermins array - to be fed into tempdict to find template
+                zpos = n.asarray(fibermins).argmin() # Location of this best redshfit in fibermins array - to be fed into tempdict to find template
                 tempnum = tempdict[zpos] # Location in lists of template objects of this redshift classification
                 znum = poslist[zpos] # Location in zfitobj[tempnum] of this z
                 '''
@@ -97,38 +92,47 @@ class Zpicker:
                 '''
                 ztuple += (zfitobjs[tempnum].z[ifiber][znum],)
                 zerrtuple += (zfitobjs[tempnum].z_err[ifiber][znum],)
-                fnametuple += (zfindojbs[tempnum].fname,)
+                fnametuple += (zfindobjs[tempnum].fname,)
                 typetuple += (zfindobjs[tempnum].type,)
                 #subtype
                 minchi2tuple += (fibermins[zpos],)
                 vectortuple += (fiberminvecs[zpos],)
                 npolytuple += (zfindobjs[tempnum].npoly,)
                 npixsteptuple += (zfindobjs[tempnum].npixstep,)
-                if iz == 0:
+                if iz == 0: # Only the first flag and model are kept
                     self.models[ifiber] = zfindobjs[tempnum].models[ifiber]
+                    self.zwarning.append( flags[tempnum][ifiber] )
+                fibermins[zpos] = 1e9
             self.z.append(ztuple)
             self.z_err.append(zerrtuple)
             self.fname.append(fnametuple)
             self.type.append(typetuple)
             #subtype
-            self.minchi2.append(minchi2tuple)
+            self.minrchi2.append(minchi2tuple)
             self.minvector.append(vectortuple)
             self.npoly.append(npolytuple)
             self.npixstep.append(npixsteptuple)
+            self.rchi2diff.append( self.minrchi2[ifiber][1] - self.minrchi2[ifiber][0])
+            if self.rchi2diff < rchi2threshold:
+                self.flag_small_dchi2(ifiber)
+        self.zwarning = map(int, self.zwarning)
+
+
+        def flag_small_dchi2(self, ifiber):
+            flag_val = int('0b100',2) # From BOSS zwarning flag definitions
+            self.zwarning[ifiber] = int(self.zwarning[ifiber]) ^ flag_val
+
 
 
                 
 
-
-
-    
-
-
-
-
-
-
-
+'''
+    for imin in xrange(self.num_z):
+    minpos = n.unravel_index(rchi2s[itemp][ifiber].argmin(), rchi2s[itemp][ifiber].shape) # Location of minimum in zfindobjs[itemp][ifiber]
+    fiberminvecs.append( minpos )
+    fibermins.append( rchi2s[itemp][ifiber][minpos] ) # Add this particular minimum to the temp array of minima
+    rchi2s[itemp][ifiber][...,minpos[-1]-zfitobjs[itemp].width:minpos[-1]+zfitobjs[itemp].width+1] = 1e9 # Block out a window of 'width' pixels (set in zfitter) in redshift around this minimum
+    '''
 
 
 
@@ -141,7 +145,16 @@ class Zpicker:
 
 
 
-    
+
+
+
+
+
+
+
+
+
+
 
 
 
