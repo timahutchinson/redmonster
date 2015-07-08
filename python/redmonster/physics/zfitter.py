@@ -179,14 +179,20 @@ class Zfitter:
                                 break
                         z_ind += 1
                 else: # Fit with quadratic and find minimum and error based on that
-                    bestchi2vals.append( bestzvec[posinvec] )
                     xp = n.linspace(self.zbase[posinvec-1], self.zbase[posinvec+1], 1000)
                     f = quadfit(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2])
                     fit = quad_for_fit(xp, f[0], f[1], f[2])
-                    self.z[ifiber,z_ind] = xp[n.where(fit == n.min(fit))[0][0]]
-                    self.z_err[ifiber,z_ind] = self.estimate_z_err(xp, fit)
+                    if not xp[n.where(fit == n.min(fit))[0][0]] in self.z[ifiber]:
+                        self.z[ifiber,z_ind] = xp[n.where(fit == n.min(fit))[0][0]]
+                        self.z_err[ifiber,z_ind] = self.estimate_z_err(xp, fit)
+                        bestchi2vals.append( bestzvec[posinvec] )
+                        bestminvectors.append( allminvectors[posinvec] + (posinvec,) )
+                    else:
+                        self.z[ifiber,z_ind] = -1.
+                        self.z_err[ifiber,z_ind] = -1.
+                        bestchi2vals.append(1e9)
+                        bestminvectors.append((-1,))
                     zminvals[thisminloc] = 1e9
-                    bestminvectors.append( allminvectors[posinvec] + (posinvec,) )
                     #self.minvectors.append( n.unravel_index(self.zchi2[ifiber,...,posinvec].argmin(), self.zchi2[ifiber,...,posinvec].shape) + (posinvec,) )
                     k = 0
                     while True: # Set width points to the right and left of minimum to 1e9

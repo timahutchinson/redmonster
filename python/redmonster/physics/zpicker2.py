@@ -68,14 +68,14 @@ class Zpicker:
         for ifiber in xrange(zfindobjbs[0].zchi2arr.shape[0]):
             fibermins = []
             fiberminvecs = []
-            ztuple = (,)
-            zerrtuple = (,)
-            fnametuple = (,)
-            typetuple = (,)
-            minchi2tuple = (,)
-            vectortuple = (,)
-            npolytuple = (,)
-            npixsteptuple = (,)
+            ztuple = ()
+            zerrtuple = ()
+            fnametuple = ()
+            typetuple = ()
+            minchi2tuple = ()
+            vectortuple = ()
+            npolytuple = ()
+            npixsteptuple = ()
             for itemp in xrange(len(rchi2s)): # Build temporary array of num_z lowest minima for each template
                 '''
                 for imin in xrange(self.num_z):
