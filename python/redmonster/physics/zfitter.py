@@ -224,8 +224,8 @@ class Zfitter:
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
         if self.num_z > 1:
             for ifiber in xrange(self.zchi2.shape[0]):
-                if n.abs(self.chi2vals[ifiber][1] - self.chi2vals[ifiber][1]) < self.threshold:
-                    self.zwarning[ifiber] = int(self.zwarning[ifiber]) ^ flag_val
+                if n.abs(self.chi2vals[ifiber][1] - self.chi2vals[ifiber][0]) < self.threshold:
+                    self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
 
             
 
