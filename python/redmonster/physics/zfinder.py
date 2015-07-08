@@ -104,7 +104,7 @@ class Zfinder:
         for i in xrange(specs.shape[0]): # Loop over fibers
             print 'Fitting fiber %s of %s for template %s' % (i+1, specs.shape[0], self.fname) #print i, self.fname
             if len(n.where(specs[i] != 0.)[0]) == 0: # If flux is all zeros, flag as unplugged according to BOSS zwarning flags and don't bother with doing fit
-                self.zwarning[i] = int(self.zwarning[i]) ^ flag_val_unplugged
+                self.zwarning[i] = int(self.zwarning[i]) | flag_val_unplugged
             else: # Otherwise, go ahead and do fit
                 for ipos in xrange(self.npoly): bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] * ivar_pad[i])
                 sn2_data = n.sum( (specs[i]**2)*ivar[i] )

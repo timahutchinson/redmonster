@@ -120,7 +120,7 @@ class Zpicker:
 
         def flag_small_dchi2(self, ifiber):
             flag_val = int('0b100',2) # From BOSS zwarning flag definitions
-            self.zwarning[ifiber] = int(self.zwarning[ifiber]) ^ flag_val
+            self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
 
 
 

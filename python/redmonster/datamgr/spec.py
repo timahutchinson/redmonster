@@ -107,7 +107,7 @@ class Spec:
         self.zwarning = n.zeros( len(self.fiberid) )
         flag_val = int('0b1',2) # From BOSS zwarning flag definitions
         for i in xrange(self.plugmap.shape[0]):
-            if ( self.plugmap[i]['OBJTYPE'].lower() == 'sky'): self.zwarning[i] = int(self.zwarning[i]) ^ flag_val
+            if ( self.plugmap[i]['OBJTYPE'].lower() == 'sky'): self.zwarning[i] = int(self.zwarning[i]) | flag_val
 
 
 
