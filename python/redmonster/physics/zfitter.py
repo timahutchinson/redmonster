@@ -2,7 +2,7 @@
 # Interpolates both between redshift pixel lags and between model parameters.
 #
 # Tim Hutchinson, University of Utah @ IAC, May 2014
-# Significant updates to z_refine() by TH, June 2015
+# Significant updates to z_refine() by TH, July 2015
 # t.hutchinson@utah.edu
 
 import numpy as n

@@ -74,6 +74,7 @@ class Zpicker:
             zerrtuple = ()
             fnametuple = ()
             typetuple = ()
+            subtypetuple = ()
             minchi2tuple = ()
             vectortuple = ()
             npolytuple = ()
@@ -94,20 +95,24 @@ class Zpicker:
                 zerrtuple += (zfitobjs[tempnum].z_err[ifiber][znum],)
                 fnametuple += (zfindobjs[tempnum].fname,)
                 typetuple += (zfindobjs[tempnum].type,)
-                #subtype
-                minchi2tuple += (fibermins[zpos],)
                 vectortuple += (fiberminvecs[zpos],)
+                d = {} # Dictionary for subtype
+                for j in xrange( len(vectortuple[-1][:-1]) ):
+                    d[zfindobjs[tempnum].infodict['par_names'][j]] = zfindobjs[tempnum].baselines[j][vectortuple[-1][j]]
+                subtypetuple += (d,)
+                minchi2tuple += (fibermins[zpos],)
                 npolytuple += (zfindobjs[tempnum].npoly,)
                 npixsteptuple += (zfindobjs[tempnum].npixstep,)
                 if iz == 0: # Only the first flag and model are kept
                     self.models[ifiber] = zfindobjs[tempnum].models[ifiber]
                     self.zwarning.append( flags[tempnum][ifiber] )
                 fibermins[zpos] = 1e9
+            
             self.z.append(ztuple)
             self.z_err.append(zerrtuple)
             self.fname.append(fnametuple)
             self.type.append(typetuple)
-            #subtype
+            self.subtype.append(subtypetuple)
             self.minrchi2.append(minchi2tuple)
             self.minvector.append(vectortuple)
             self.npoly.append(npolytuple)
