@@ -193,17 +193,6 @@ class Zfind:
             flags.append( misc.comb_flags(specs, zfindobjs[i], zfitobjs[i]) )
 
         # Zpicker
-'''
-        if len(self.templates) == 1: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0])
-        elif len(self.templates) == 2: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1])
-        elif len(self.templates) == 3: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
-                                                          zfindobjs[2], zfitobjs[2], flags[2])
-        elif len(self.templates) == 4: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
-                                                          zfindobjs[2], zfitobjs[2], flags[2], zfindobjs[3], zfitobjs[3], flags[3])
-        elif len(self.templates) == 5: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
-                                                          zfindobjs[2], zfitobjs[2], flags[2], zfindobjs[3], zfitobjs[3], flags[3],
-                                                          zfindobjs[4], zfitobjs[4], flags[4])
-'''
         zpick = zpicker2.Zpicker(specs, zfindobjs, zfitobjs, flags)
 
 
