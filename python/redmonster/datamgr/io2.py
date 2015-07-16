@@ -181,10 +181,23 @@ class Merge_Redmonster:
     
     def merge_fibers(self):
         self.filepaths = []
-        self.type = []
-        self.subtype = []
+        self.type1 = []
+        self.type2 = []
+        self.type3 = []
+        self.type4 = []
+        self.type5 = []
+        self.subtype1 = []
+        self.subtype2 = []
+        self.subtype3 = []
+        self.subtype4 = []
+        self.subtype5 = []
         self.fiberid = []
-        self.minvector = []
+        self.minvector1 = []
+        self.minvector2 = []
+        self.minvector3 = []
+        self.minvector4 = []
+        self.minvector5 = []
+        self.minrchi21 = []
         self.zwarning = []
         self.dof = []
         self.npoly = []
@@ -208,7 +221,7 @@ class Merge_Redmonster:
                 self.filepaths.append(path)
                 fiberfile = basename(path)
                 self.fiberid.append( int(fiberfile[22:25]) )
-            self.z = n.zeros( (len(self.fiberid),2) )
+            self.z = n.zeros( (len(self.fiberid),5) )
             self.z_err = n.zeros( self.z.shape )
             try: self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
             except: self.hdr = fits.Header()
