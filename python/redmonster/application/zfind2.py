@@ -214,7 +214,7 @@ class Zfind:
                     output = io2.Write_Redmonster(zpick, clobber=True)
 
         if output:
-            if len(zpick.fiberid) == 1: output.write_fiberid()
+            if len(zpick.fiberid) == 1: output.write_fiber()
             else: output.write_plate()
 
 
