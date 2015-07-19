@@ -223,15 +223,15 @@ class Merge_Redmonster:
                 self.z[i,1] = hdu[1].data.Z2[0]
                 self.z_err[i,0] = hdu[1].data.Z_ERR1[0]
                 self.z_err[i,1] = hdu[1].data.Z_ERR2[0]
-                self.type.append(hdu[1].data.CLASS[0])
-                self.subtype.append(hdu[1].data.SUBCLASS[0])
-                self.minvector.append(hdu[1].data.MINVECTOR[0])
+                self.type.append(hdu[1].data.CLASS1[0])
+                self.subtype.append(hdu[1].data.SUBCLASS1[0])
+                self.minvector.append(hdu[1].data.MINVECTOR1[0])
                 self.zwarning.append(hdu[1].data.ZWARNING[0])
                 self.dof.append(hdu[1].data.DOF[0])
-                self.npoly.append(hdu[1].data.NPOLY[0])
-                self.fname.append(hdu[1].data.FNAME[0])
-                self.npixstep.append(hdu[1].data.NPIXSTEP[0])
-                self.chi2diff.append(hdu[1].data.CHI2DIFF[0])
+                self.npoly.append(hdu[1].data.NPOLY1[0])
+                self.fname.append(hdu[1].data.FNAME1[0])
+                self.npixstep.append(hdu[1].data.NPIXSTEP1[0])
+                self.chi2diff.append(hdu[1].data.RCHI2DIFF[0])
                 try:
                     self.boss_target1.append(hdu[1].data.BOSS_TARGET1[0])
                 except:
