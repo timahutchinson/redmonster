@@ -293,7 +293,7 @@ class Write_Redmonster:
         maxlen = max(map(len,fname))
         col12 = fits.Column(name='FNAME', format='%iA'%maxlen, array=fname)
         col13 = fits.Column(name='NPIXSTEP', format='E', array=self.zpick.npixstep)
-        col14 = fits.Column(name='CHI2DIFF', format='E', array=self.zpick.chi2diff)
+        col14 = fits.Column(name='RCHI2DIFF', format='E', array=self.zpick.chi2diff)
         try:
             col15 = fits.Column(name='BOSS_TARGET1', format='E', array=self.zpick.boss_target1)
         except:
