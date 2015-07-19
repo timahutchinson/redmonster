@@ -442,7 +442,7 @@ class Merge_Redmonster:
                     except:
                         pass
                 self.models[i] = hdu[2].data[0]
-                remove(path)
+                #remove(path)
             output = Write_Redmonster(self, clobber=True)
             output.write_plate()
 
