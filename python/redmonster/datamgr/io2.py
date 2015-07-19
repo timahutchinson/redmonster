@@ -59,7 +59,7 @@ class Write_Redmonster:
                         self.dest = None
             else: self.dest = None
 
-'''
+    '''
     def create_hdulist(self):
         # Get old header, append new stuff
         hdr = self.zpick.hdr
