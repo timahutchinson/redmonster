@@ -48,19 +48,23 @@ class Plot_Fit(Frame):
         self.e3.grid(row=2, column=1)
         self.var = BooleanVar()
         self.var.set(1)
+        self.restframe = BooleanVar()
+        self.restframe.set(0)
         c = Checkbutton(self.root, text='Overplot best-fit model', variable=self.var)
         c.grid(row=3, column=1)
+        restframe = Checkbutton(self.root, text='Rest-frame wavelength', variable=self.restframe)
+        restframe.grid(row=4,column=1)
         #
         smooth = StringVar()
         smooth.set('5')
         L4 = Label(self.root, text='Smooth')
         L4.grid(sticky=E)
         self.e4 = Entry(self.root, textvariable=smooth)
-        self.e4.grid(row=4, column=1)
+        self.e4.grid(row=5, column=1)
         plot = Button(self.root, text='Plot', command=self.do_plot)
-        plot.grid(row=5, column=1)
+        plot.grid(row=6, column=1)
         qbutton = Button(self.root, text='QUIT', fg='red', command=self.root.destroy)
-        qbutton.grid(row=6, column=1)
+        qbutton.grid(row=7, column=1)
         nextfiber = Button(self.root, text='>', command=self.next_fiber)
         nextfiber.grid(row=2, column=4)
         prevfiber = Button(self.root, text='<', command=self.prev_fiber)
@@ -86,18 +90,30 @@ class Plot_Fit(Frame):
             self.fiber = int(self.e3.get())
         f = Figure(figsize=(10,6), dpi=100)
         a = f.add_subplot(111)
+        loc = n.where(self.fiberid == self.fiber)[0]
         if self.var.get() == 0:
-            a.plot(self.wave, self.specs[self.fiber], color='red')
+            if self.restframe.get() == 0:
+                a.plot(self.wave, self.specs[self.fiber], color='red')
+            elif self.restframe.get() == 1:
+                a.plot(self.wave/(1+self.z[loc][0]), self.specs[self.fiber], color='red')
         elif self.var.get() == 1:
             smooth = self.e4.get()
             if smooth is '':
-                a.plot(self.wave, self.specs[self.fiber], color='red')
+                if self.restframe.get() == 0:
+                    a.plot(self.wave, self.specs[self.fiber], color='red')
+                elif self.restframe.get() == 1:
+                    a.plot(self.wave/(1+self.z[loc][0]), self.specs[self.fiber], color='red')
             else:
-                a.plot(self.wave, convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='red')
+                if self.restframe.get() == 0:
+                    a.plot(self.wave, convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='red')
+                elif self.restframe.get() == 1:
+                    a.plot(self.wave/(1+self.z[loc][0]), convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='red')
             # Overplot model
-            loc = n.where(self.fiberid == self.fiber)[0]
             if len(loc) is not 0:
-                a.plot(self.wave, self.models[loc[0]], color='black')
+                if self.restframe.get() == 0:
+                    a.plot(self.wave, self.models[loc[0]], color='black')
+                elif self.restframe.get() == 1:
+                    a.plot(self.wave/(1+self.z[loc][0]), self.models[loc[0]], color='black')
                 #a.axis([self.wave[0],self.wave[-1],1.2*n.min(self.models[loc[0]]),-1.2*n.max(self.models[loc[0]])])
                 a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, self.z[loc][0], self.type[loc][0], self.zwarning[loc][0]))
             else:
