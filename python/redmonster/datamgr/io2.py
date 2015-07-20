@@ -156,6 +156,7 @@ class Write_Redmonster:
         col12 = fits.Column(name='FNAME', format='%iA'%maxlen, array=fname)
         col13 = fits.Column(name='NPIXSTEP', format='E', array=self.zpick.npixstep)
         col14 = fits.Column(name='RCHI2DIFF', format='E', array=self.zpick.chi2diff)
+        col14_2 = fits.Column(name='NUMZ', formate='J', array=self.zpick.num_z)
         try:
             col15 = fits.Column(name='BOSS_TARGET1', format='E', array=self.zpick.boss_target1)
         except:
@@ -164,8 +165,8 @@ class Write_Redmonster:
             except:
                 pass
         if col15:
-            #cols = fits.ColDefs([col1, col2, col2_2, col2_3, col2_4, col3, col4, col4_2, col4_3, col4_4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15])
-            cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15]) # TEMPORARY!!!
+            #cols = fits.ColDefs([col1, col2, col2_2, col2_3, col2_4, col3, col4, col4_2, col4_3, col4_4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col14_2, col15])
+            cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col14_2, col15]) # TEMPORARY!!!
         else:
             cols = fits.ColDefs([col1, col2, col2_2, col2_3, col2_4, col3, col4, col4_2, col4_3, col4_4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14])
         tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
