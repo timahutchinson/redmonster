@@ -300,10 +300,11 @@ class Merge_Redmonster:
                 try:
                     self.boss_target1.append(hdu[1].data.BOSS_TARGET1[0])
                 except:
-                    try:
-                        self.eboss_target1.append(hdu[1].data.EBOSS_TARGET1[0])
-                    except:
-                        pass
+                    pass
+                try:
+                    self.eboss_target1.append(hdu[1].data.EBOSS_TARGET1[0])
+                except:
+                    pass
                 self.models[i] = hdu[2].data[0]
                 #remove(path)
             output = Write_Redmonster(self, clobber=True)

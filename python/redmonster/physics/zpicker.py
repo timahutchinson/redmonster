@@ -20,7 +20,7 @@ class Zpicker:
         if specobj.hdr: self.hdr = specobj.hdr
         if hasattr(specobj,'plugmap'): self.plugmap = specobj.plugmap
         if hasattr(specobj,'boss_target1'): self.boss_target1 = specobj.boss_target1
-        elif hasattr(specojb, 'eboss_target1'): self.eboss_target1 = specobj.eboss_target1
+        if hasattr(specojb, 'eboss_target1'): self.eboss_target1 = specobj.eboss_target1
         self.fname = []
         self.type = []
         self.subtype = []

@@ -62,10 +62,11 @@ class Spec:
             try:
                 self.boss_target1 = hdu[5].data.BOSS_TARGET1
             except:
-                try:
-                    self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
-                except:
-                    pass
+                pass
+            try:
+                self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
+            except:
+                pass
             self.skyflux = hdu[6].data
             # For plate files before Spectro-2D v5, there are no sky vectors and hdu[6] is something else
             if self.skyflux.shape != self.flux.shape: self.skyflux = 0
@@ -96,10 +97,11 @@ class Spec:
             try:
                 self.boss_target1 = self.boss_target1[fiberid]
             except:
-                try:
-                    self.eboss_target1 = self.eboss_target1[fiberid]
-                except:
-                    pass
+                pass
+            try:
+                self.eboss_target1 = self.eboss_target1[fiberid]
+            except:
+                pass
             self.nobj = len(fiberid)
             if self.skyflux.shape[0] != 1: self.skyflux = self.skyflux[fiberid]
 
