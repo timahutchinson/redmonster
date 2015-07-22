@@ -565,18 +565,16 @@ class Merge_Redmonster:
 
 
 # ---------------------------------------------------------------------------------------------------------------
-'''
+
 def remove_log(plate, mjd):
-    path = join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], plate, environ['RUN1D'], 'redmonster-%s-%s.log' % (plate,mjd) )
+    #path = join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], plate, environ['RUN1D'], 'redmonster-%s-%s.log' % (plate,mjd) )
     remove(path)
 
 def write_to_log(plate, mjd, msg):
-    path = join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], plate, environ['RUN1D'], 'redmonster-%s-%s.log' % (plate,mjd) )
+    #path = join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], plate, environ['RUN1D'], 'redmonster-%s-%s.log' % (plate,mjd) )
     with f as open(path, 'a'):
         f.write(msg)
 
-
-'''
 
 
 
