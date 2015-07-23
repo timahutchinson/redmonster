@@ -160,14 +160,21 @@ class Write_Redmonster:
         try:
             col15 = fits.Column(name='BOSS_TARGET1', format='E', array=self.zpick.boss_target1)
         except:
-            try:
-                col15 = fits.Column(name='EBOSS_TARGET1', format='E', array=self.zpick.eboss_target1)
-            except:
-                pass
+            pass
+        try:
+            col16 = fits.Column(name='EBOSS_TARGET1', format='E', array=self.zpick.eboss_target1)
+        except:
+            pass
         if col15:
-            cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15]) # TEMPORARY!!!
+            if col16:
+                cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15, col16]) # TEMPORARY!!!
+            else:
+                cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15])
         else:
-            cols = fits.ColDefs([col1, col2, col2_2, col2_3, col2_4, col3, col4, col4_2, col4_3, col4_4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14])
+            if col16:
+                cols = fits.ColDefs([col1, col2, col2_2, col2_3, col2_4, col3, col4, col4_2, col4_3, col4_4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col16])
+            else:
+                cols = fits.ColDefs([col1, col2, col2_2, col2_3, col2_4, col3, col4, col4_2, col4_3, col4_4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14])
         tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
         # ImageHDU of models
         sechdu = fits.ImageHDU(data=self.zpick.models)
