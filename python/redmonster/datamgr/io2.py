@@ -59,7 +59,6 @@ class Write_Redmonster:
                         self.dest = None
             else: self.dest = None
 
-    '''
     def create_hdulist(self):
         # Get old header, append new stuff
         hdr = self.zpick.hdr
@@ -109,8 +108,8 @@ class Write_Redmonster:
         # ImageHDU of models
         sechdu = fits.ImageHDU(data=self.zpick.models)
         self.thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #self.thdulist = fits.HDUList([prihdu, tbhdu])
+
 '''
-    
     def create_hdulist(self):
         # Get old header, append new stuff
         hdr = self.zpick.hdr
@@ -119,18 +118,14 @@ class Write_Redmonster:
         # Columns for 1st BIN table
         col1 = fits.Column(name='Z1', format='E', array=self.zpick.z[:,0])
         col2 = fits.Column(name='Z2', format='E', array=self.zpick.z[:,1])
-        '''
-            col2_2 = fits.Column(name='Z3', format='E', array=self.zpick.z[:,2])
-            col2_3 = fits.Column(name='Z4', format='E', array=self.zpick.z[:,3])
-            col2_4 = fits.Column(name='Z5', format='E', array=self.zpick.z[:,4])
-            '''
+#            col2_2 = fits.Column(name='Z3', format='E', array=self.zpick.z[:,2])
+#            col2_3 = fits.Column(name='Z4', format='E', array=self.zpick.z[:,3])
+#            col2_4 = fits.Column(name='Z5', format='E', array=self.zpick.z[:,4])
         col3 = fits.Column(name='Z_ERR1', format='E', array=self.zpick.z_err[:,0])
         col4 = fits.Column(name='Z_ERR2', format='E', array=self.zpick.z_err[:,1])
-        '''
-            col4_2 = fits.Column(name='Z_ERR3', format='E', array=self.zpick.z_err[:,2])
-            col4_3 = fits.Column(name='Z_ERR4', format='E', array=self.zpick.z_err[:,3])
-            col4_4 = fits.Column(name='Z_ERR5', format='E', array=self.zpick.z_err[:,4])
-            '''
+#            col4_2 = fits.Column(name='Z_ERR3', format='E', array=self.zpick.z_err[:,2])
+#            col4_3 = fits.Column(name='Z_ERR4', format='E', array=self.zpick.z_err[:,3])
+#            col4_4 = fits.Column(name='Z_ERR5', format='E', array=self.zpick.z_err[:,4])
         classx = n.array(map(repr,self.zpick.type))
         maxlen = max(map(len,classx))
         col5 = fits.Column(name='CLASS', format='%iA'%maxlen, array=self.zpick.type)
@@ -179,6 +174,7 @@ class Write_Redmonster:
         # ImageHDU of models
         sechdu = fits.ImageHDU(data=self.zpick.models)
         self.thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #self.thdulist = fits.HDUList([prihdu, tbhdu])
+'''
 
     
     
