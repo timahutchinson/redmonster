@@ -7,7 +7,7 @@
 
 import numpy as n
 from astropy.io import fits
-from redmonster.datamgr import spec, io
+from redmonster.datamgr import spec, io, io2
 from redmonster.physics import zfinder, zfitter, zpicker, zpicker2
 from redmonster.sandbox import yanny as y
 from redmonster.physics import misc
@@ -82,7 +82,8 @@ zpick = zpicker2.Zpicker(specs, zfindobjs, zfitobjs, flags)
 
 ''' Write output file.  Arguments are zpick object from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
 
-output = io.Write_Redmonster(zpick)
+output = io2.Write_Redmonster(zpick)
+output.write_fiber()
 
 # Things left to do
 #

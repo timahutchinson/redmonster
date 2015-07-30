@@ -109,75 +109,7 @@ class Write_Redmonster:
         sechdu = fits.ImageHDU(data=self.zpick.models)
         self.thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #self.thdulist = fits.HDUList([prihdu, tbhdu])
 
-'''
-    def create_hdulist(self):
-        # Get old header, append new stuff
-        hdr = self.zpick.hdr
-        hdr.extend([('VERS_RM','v0.-1','Version of redmonster used'),('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster completion'), ('NFIBERS', len(self.zpick.z), 'Number of fibers')])
-        prihdu = fits.PrimaryHDU(header=self.zpick.hdr)
-        # Columns for 1st BIN table
-        col1 = fits.Column(name='Z1', format='E', array=self.zpick.z[:,0])
-        col2 = fits.Column(name='Z2', format='E', array=self.zpick.z[:,1])
-#            col2_2 = fits.Column(name='Z3', format='E', array=self.zpick.z[:,2])
-#            col2_3 = fits.Column(name='Z4', format='E', array=self.zpick.z[:,3])
-#            col2_4 = fits.Column(name='Z5', format='E', array=self.zpick.z[:,4])
-        col3 = fits.Column(name='Z_ERR1', format='E', array=self.zpick.z_err[:,0])
-        col4 = fits.Column(name='Z_ERR2', format='E', array=self.zpick.z_err[:,1])
-#            col4_2 = fits.Column(name='Z_ERR3', format='E', array=self.zpick.z_err[:,2])
-#            col4_3 = fits.Column(name='Z_ERR4', format='E', array=self.zpick.z_err[:,3])
-#            col4_4 = fits.Column(name='Z_ERR5', format='E', array=self.zpick.z_err[:,4])
-        classx = n.array(map(repr,self.zpick.type))
-        maxlen = max(map(len,classx))
-        col5 = fits.Column(name='CLASS', format='%iA'%maxlen, array=self.zpick.type)
-        # Change dictionary values of subclass to strings to be written into fits file.  eval('dictstring') will turn them back into dictionaries later.
-        if type(self.zpick.subtype[0]) is not dict: # Skip this and write directly if these are already dicts
-            subclass = n.array(map(repr,self.zpick.subtype))
-        else:
-            subclass = n.array(self.zpick.subtype)
-        maxlen = max(map(len,subclass))
-        col6 = fits.Column(name='SUBCLASS', format='%iA'%maxlen, array=subclass)
-        col7 = fits.Column(name='FIBERID', format='J', array=self.zpick.fiberid)
-        if type(self.zpick.minvector[0]) is not str:
-            minvec = n.array(map(repr,self.zpick.minvector)) # Change tuples of minvector to strings to be written into fits file. eval('minvector') will turn them back into tuples later.
-        else:
-            minvec = n.array(self.zpick.minvector)
-        maxlen = max(map(len,minvec))
-        col8 = fits.Column(name='MINVECTOR', format='%iA'%maxlen, array=minvec)
-        col9 = fits.Column(name='ZWARNING', format='E', array=map(int,self.zpick.zwarning))
-        col10 = fits.Column(name='DOF', format='E', array=self.zpick.dof)
-        col11 = fits.Column(name='NPOLY', format='E', array=self.zpick.npoly)
-        fname = n.array(map(repr,self.zpick.fname))
-        maxlen = max(map(len,fname))
-        col12 = fits.Column(name='FNAME', format='%iA'%maxlen, array=fname)
-        col13 = fits.Column(name='NPIXSTEP', format='E', array=self.zpick.npixstep)
-        col14 = fits.Column(name='RCHI2DIFF', format='E', array=self.zpick.chi2diff)
-        #col14_2 = fits.Column(name='NUMZ', formate='J', array=self.zpick.num_z)
-        try:
-            col15 = fits.Column(name='BOSS_TARGET1', format='E', array=self.zpick.boss_target1)
-        except:
-            pass
-        try:
-            col16 = fits.Column(name='EBOSS_TARGET1', format='E', array=self.zpick.eboss_target1)
-        except:
-            pass
-        if col15:
-            if col16:
-                cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15, col16]) # TEMPORARY!!!
-            else:
-                cols = fits.ColDefs([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15])
-        else:
-            if col16:
-                cols = fits.ColDefs([col1, col2, col2_2, col2_3, col2_4, col3, col4, col4_2, col4_3, col4_4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col16])
-            else:
-                cols = fits.ColDefs([col1, col2, col2_2, col2_3, col2_4, col3, col4, col4_2, col4_3, col4_4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14])
-        tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
-        # ImageHDU of models
-        sechdu = fits.ImageHDU(data=self.zpick.models)
-        self.thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #self.thdulist = fits.HDUList([prihdu, tbhdu])
-'''
 
-    
-    
     def write_fiber(self):
         self.create_hdulist()
         if self.clobber:
