@@ -111,6 +111,7 @@ class Write_Redmonster:
 
 
     def write_fiber(self):
+        self.clobber = True # Temporary fix!!
         self.create_hdulist()
         if self.clobber:
             if self.dest is not None:
