@@ -70,7 +70,7 @@ class Write_Redmonster:
         colslist.append( fits.Column(name='DOF', format='J', array=self.zpick.dof) )
         if hasattr(self.zpick, 'boss_target1'):
             colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.zpick.boss_target1) )
-        elif hasattr(self.zpick, 'eboss_target1'):
+        if hasattr(self.zpick, 'eboss_target1'):
             colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.zpick.eboss_target1) )
         for i in xrange(len(self.zpick.z[0])):
             zlist = []
