@@ -62,7 +62,7 @@ class Write_Redmonster:
     def create_hdulist(self):
         # Get old header, append new stuff
         hdr = self.zpick.hdr
-        hdr.extend([('VERS_RM','v0.-1','Version of redmonster used'),('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster completion'), ('NFIBERS', len(self.zpick.z), 'Number of fibers'), ('NZ', len(self.zpick.z[0]), 'Number of redshifts retained')])
+        hdr.extend([('VERS_RM','v0.-1','Version of redmonster used'),('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster completion'), ('NFIBERS', len(self.zpick.z), 'Number of fibers'), ('NZ', len(self.zpick.z[0]), 'Number of redshifts retained'),('RCHI2_THRESH',self.zpick.threshold,'Reduced chi**2 threshold used')])
         prihdu = fits.PrimaryHDU(header=self.zpick.hdr)
         # Columns for 1st BIN table
         colslist = []

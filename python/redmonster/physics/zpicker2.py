@@ -30,6 +30,7 @@ class Zpicker:
         if specobj.mjd: self.mjd = specobj.mjd
         if specobj.fiberid: self.fiberid = specobj.fiberid
         if specobj.hdr: self.hdr = specobj.hdr
+        self.threshold = zfitobjs[0].threshold
         self.fname = []
         self.type = []
         self.subtype = []
