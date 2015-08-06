@@ -91,8 +91,12 @@ class Zpicker:
             npixsteptuple = ()
             for itemp in xrange(self.nclass): # Build temporary array of num_z lowest minima for each template
                 for imin in xrange(self.num_z):
-                    fibermins.append( zfitobjs[itemp].chi2vals[ifiber][imin] / (self.dof[ifiber] - zfindobjs[itemp].npoly) ) # Add num_z best chi2s found in zfitter divided by (number of pixels - number of poly terms) to convert to rchi2
-                    fiberminvecs.append( zfitobjs[itemp].minvectors[ifiber][imin]) # Add num_z vectors for location of each chi2 in the above step
+                    try:
+                        fibermins.append( zfitobjs[itemp].chi2vals[ifiber][imin] / (self.dof[ifiber] - zfindobjs[itemp].npoly) ) # Add num_z best chi2s found in zfitter divided by (number of pixels - number of poly terms) to convert to rchi2
+                        fiberminvecs.append( zfitobjs[itemp].minvectors[ifiber][imin]) # Add num_z vectors for location of each chi2 in the above step
+                    except:
+                        fibermins.append( 1e9 )
+                        fiberminvecs.append( (-1,) )
             for iz in xrange(self.num_z): # Build tuples of num_z best redshifts and classifications for this fiber
                 zpos = n.asarray(fibermins).argmin() # Location of this best redshfit in fibermins array - to be fed into tempdict to find template
                 tempnum = tempdict[zpos] # Location in lists of template objects of this redshift classification
