@@ -204,11 +204,3 @@ class Plot_Fit(Frame):
 app = Plot_Fit()
 
 
-'''
-    from __future__ import print_function
-    import glob
-    import os
-    os.chdir("/mydir")
-    for file in glob.glob("*.txt"):
-    print(file)
-    '''
