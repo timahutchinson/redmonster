@@ -52,9 +52,9 @@ class Plot_Fit(Frame):
         self.e5.grid(row=3, column=1)
         znum = StringVar()
         znum.set('1')
-        nextz = Button(self.root, text='+', command=pass)
+        nextz = Button(self.root, text='+', command=self.next_z)
         nextz.grid(row=3, column=4)
-        prevz = Button(self.root, text='-', command=pass)
+        prevz = Button(self.root, text='-', command=selt.prev_z)
         prevz.grid(row=3, column=3)
         self.var = BooleanVar()
         self.var.set(1)
@@ -150,6 +150,12 @@ class Plot_Fit(Frame):
         self.e3.delete(0, END)
         self.e3.insert(0, str(self.fiber))
         self.do_plot()
+
+    def next_z(self):
+        pass
+
+    def prev_z(self):
+        pass
 
 app = Plot_Fit()
 
