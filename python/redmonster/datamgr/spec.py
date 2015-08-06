@@ -74,7 +74,7 @@ class Spec:
             try:
                 self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
             except Exception as e:
-                print "Exception: %r" % e
+                pass
             self.skyflux = hdu[6].data
             # For plate files before Spectro-2D v5, there are no sky vectors and hdu[6] is something else
             if self.skyflux.shape != self.flux.shape: self.skyflux = 0

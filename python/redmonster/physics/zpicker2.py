@@ -12,12 +12,20 @@
 # t.hutchinson@utah.edu
 
 import numpy as n
+from scipy.optimize import nnls
+from astropy.io import fits
+from os import environ
+from os.path import join
+from redmonster.physics.misc import poly_array
+from redmonster.datamgr.io import read_ndArch
 
 class Zpicker:
 
     def __init__(self, specobj, zfindobjs, zfitobjs, flags, num_z=5):
         self.num_z = num_z # Number of redshifts to retain
         self.npixflux = specobj.npix
+        self.flux = specobj.flux
+        self.ivar = specobj.ivar
         if specobj.plate: self.plate = specobj.plate
         if specobj.mjd: self.mjd = specobj.mjd
         if specobj.fiberid: self.fiberid = specobj.fiberid
@@ -35,7 +43,7 @@ class Zpicker:
         self.npoly = []
         self.dof = specobj.dof.copy()
         self.npixstep = []
-        self.models = n.zeros( (specobj.flux.shape) )
+        self.models = n.zeros( (specobj.flux.shape[0],num_z,self.npixflux) )
         self.nclass = len(zfindobjs)
         #self.minrchi2 = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
         self.minrchi2 = []
@@ -104,10 +112,13 @@ class Zpicker:
                 minchi2tuple += (fibermins[zpos],)
                 npolytuple += (zfindobjs[tempnum].npoly,)
                 npixsteptuple += (zfindobjs[tempnum].npixstep,)
+                '''
                 if iz == 0: # Only the first flag and model are kept
                     self.models[ifiber] = zfindobjs[tempnum].models[ifiber]
                     self.zwarning.append( flags[tempnum][ifiber] )
+                '''
                 fibermins[zpos] = 1e9
+                self.models[ifiber,iz] = self.create_model(fnametuple[iz], npolytuple[iz], npixsteptuple[iz], vectortuple[iz], zfindobjs[tempnum], self.flux[ifiber], self.ivar[ifiber])
             
             self.z.append(ztuple)
             self.z_err.append(zerrtuple)
@@ -124,9 +135,27 @@ class Zpicker:
         self.zwarning = map(int, self.zwarning)
 
 
-        def flag_small_dchi2(self, ifiber):
-            flag_val = int('0b100',2) # From BOSS zwarning flag definitions
-            self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
+    def flag_small_dchi2(self, ifiber):
+        flag_val = int('0b100',2) # From BOSS zwarning flag definitions
+        self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
+
+
+    def create_model(self, fname, npoly, npixstep, minvector, zfindobj, flux, ivar):
+        pixoffset = zfindobj.pixoffset
+        temps = read_ndArch( join( environ['REDMONSTER_TEMPLATES_DIR'], fname ) )[0]
+        pmat = n.zeros( (self.npixflux, npoly+1) )
+        this_temp = temps[minvector[:-1]]
+        pmat[:,0] = this_temp[(minvector[-1]*npixstep)+pixoffset:(minvector[-1]*npixstep)+pixoffset+self.npixflux]
+        polyarr = poly_array(npoly, self.npixflux)
+        pmat[:,1:] = n.transpose(polyarr)
+        ninv = n.diag(ivar)
+        try: # Some eBOSS spectra have ivar[i] = 0 for all i
+            f = nnls( n.dot(n.dot(n.transpose(pmat),ninv),pmat), n.dot( n.dot(n.transpose(pmat),ninv),flux) ); f = n.array(f)[0]
+            return n.dot(pmat, f)
+        except:
+            return n.zeros(self.npixflux)
+
+
 
 
 

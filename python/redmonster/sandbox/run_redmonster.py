@@ -18,7 +18,7 @@ p.interactive(True)
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
 plate = 3686
 mjd = 55268
-fiberid = [100] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
+fiberid = [99,100,101] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
@@ -38,8 +38,8 @@ zssp.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
 ##zstar = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
 zstar = zfinder.Zfinder(fname='ndArch-all-CAP-grids.fits', npoly=4, zmin=-.005, zmax=.005)
 zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
-#zqso = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.4, zmax=3.5)
-#zqso.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=4)
+zqso = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.4, zmax=3.5)
+zqso.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=4)
 
 ''' Instantiate Zfitter to do subgrid fitting.  zchi2_ssp is chi^2 array from zfinder object above, and zssp.zbase is redshift-pixel baseline over the range explored by zfinder. '''
 
@@ -53,14 +53,14 @@ zfit_ssp.z_refine2()
 
 zfit_star = zfitter.Zfitter(zstar.zchi2arr, zstar.zbase)
 zfit_star.z_refine2()
-#zfit_qso = zfitter.Zfitter(zqso.zchi2arr, zqso.zbase)
-#zfit_qso.z_refine2()
+zfit_qso = zfitter.Zfitter(zqso.zchi2arr, zqso.zbase)
+zfit_qso.z_refine2()
 
 ''' Flagging throughout redmonster is done individually by the classes responsible for handling the relevant computations.  To have an 'overall' flag for each fiber, the individual flags need to be combined. '''
 
 ssp_flags = misc.comb_flags(specs, zssp, zfit_ssp)
 star_flags = misc.comb_flags(specs, zstar, zfit_star)
-#qso_flags = misc.comb_flags(specs, zqso, zfit_qso)
+qso_flags = misc.comb_flags(specs, zqso, zfit_qso)
 
 ''' Compare chi2 surfaces from each template and classify each object accordingly. Arguments are data object (in a format identical to that created by Spec), followed by each object created by Zfinder, Zfitter, and flags, in that order.  This function can currently handle up to five objects from five separate templates. If specs is a user created data object rather than one created by redmonster.datamgr.spec, it must contain specs.npix, the number of pixels in a single spectrum.'''
 
@@ -68,15 +68,15 @@ star_flags = misc.comb_flags(specs, zstar, zfit_star)
 zfindobjs=[]
 zfindobjs.append(zssp)
 zfindobjs.append(zstar)
-#zfindobjs.append(zqso)
+zfindobjs.append(zqso)
 zfitobjs=[]
 zfitobjs.append(zfit_ssp)
 zfitobjs.append(zfit_star)
-#zfitobjs.append(zfit_qso)
+zfitobjs.append(zfit_qso)
 flags = []
 flags.append(ssp_flags)
 flags.append(star_flags)
-#flags.append(qso_flags)
+flags.append(qso_flags)
 
 zpick = zpicker2.Zpicker(specs, zfindobjs, zfitobjs, flags)
 
