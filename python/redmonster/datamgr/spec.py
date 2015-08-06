@@ -18,6 +18,7 @@ class Spec:
         try: remove_log(plate,mjd) # Added by TH, 21 July 2015
         except: pass
         '''
+        print 'plate %s mjd %s fiberid %s' % (plate, mjd, fiberid)
         self.hdr = None
         self.flux = None
         self.ivar = None
