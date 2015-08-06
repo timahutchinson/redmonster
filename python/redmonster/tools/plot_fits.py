@@ -37,7 +37,7 @@ class Plot_Fit(Frame):
         L2.grid(sticky=E)
         L3 = Label(self.root, text='Fiber')
         L3.grid(stick=E)
-        L5 = Label(self.root, text='Z Num')
+        L5 = Label(self.root, text='z num')
         L5.grid(stick=E)
         self.e1 = Entry(self.root, textvariable=plate)
         self.e1.bind()
@@ -87,6 +87,7 @@ class Plot_Fit(Frame):
             self.plate = int(self.e1.get())
             self.mjd = int(self.e2.get())
             self.fiber = int(self.e3.get())
+            self.znum = int(self.e5.get())
             self.platepath = join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate, self.mjd))
             hdu = fits.open(self.platepath)
             self.specs = hdu[0].data
@@ -122,9 +123,10 @@ class Plot_Fit(Frame):
             if len(loc) is not 0:
                 if self.restframe.get() == 0:
                     a.plot(self.wave, self.models[loc[0]], color='black')
+                    #a.plot(self.wave, self.models[loc[0]][znum], color='black') # This for when multiple models are in redmonster file
                 elif self.restframe.get() == 1:
                     a.plot(self.wave/(1+self.z[loc][0]), self.models[loc[0]], color='black')
-                #a.axis([self.wave[0],self.wave[-1],1.2*n.min(self.models[loc[0]]),-1.2*n.max(self.models[loc[0]])])
+                    #a.plot(self.wave/(1+self.z[loc][0]), self.models[loc[0]][znum], color='black') # See comment above
                 a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, self.z[loc][0], self.type[loc][0], self.zwarning[loc][0]))
             else:
                 print 'Fiber %s is not in redmonster-%s-%s.fits' % (self.fiber, self.plate, self.mjd)
@@ -152,10 +154,52 @@ class Plot_Fit(Frame):
         self.do_plot()
 
     def next_z(self):
-        pass
+        if (self.znum >= 1) & (self.znum < 5):
+            self.znum += 1
+            self.e5.delete(0, END)
+            self.e5.insert(0, str(self.znum))
+            self.do_plot()
+        else:
+            if self.znum < 1:
+                self.znum = 1
+                self.e5.delete(0, END)
+                self.e5.insert(0, str(self.znum))
+                self.do_plot()
+            elif self.znum >= 5:
+                self.znum = 5
+                self.e5.delete(0, END)
+                self.e5.insert(0, str(self.znum))
+                self.do_plot()
+            else:
+                self.znum = 1
+                self.e5.delete(0, END)
+                self.e5.insert(0, str(self.znum))
+                self.do_plot()
 
     def prev_z(self):
-        pass
+        if (self.znum > 1) & (self.znum <= 5):
+            self.znum -= 1
+            self.e5.delete(0, END)
+            self.e5.insert(0, str(self.znum))
+            self.do_plot()
+        else:
+            if self.znum <= 1:
+                self.znum = 1
+                self.e5.delete(0, END)
+                self.e5.insert(0, str(self.znum))
+                self.do_plot()
+            elif self.znum > 5:
+                self.znum = 5
+                self.e5.delete(0, END)
+                self.e5.insert(0, str(self.znum))
+                self.do_plot()
+            else:
+                self.znum = 1
+                self.e5.delete(0, END)
+                self.e5.insert(0, str(self.znum))
+                self.do_plot()
+
+
 
 app = Plot_Fit()
 
