@@ -54,7 +54,7 @@ class Plot_Fit(Frame):
         self.e5.grid(row=3, column=1)
         nextz = Button(self.root, text='+', command=self.next_z)
         nextz.grid(row=3, column=4)
-        prevz = Button(self.root, text='-', command=selt.prev_z)
+        prevz = Button(self.root, text='-', command=self.prev_z)
         prevz.grid(row=3, column=3)
         self.var = BooleanVar()
         self.var.set(1)
