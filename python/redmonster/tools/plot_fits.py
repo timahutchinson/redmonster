@@ -37,7 +37,7 @@ class Plot_Fit(Frame):
         L2.grid(sticky=E)
         L3 = Label(self.root, text='Fiber')
         L3.grid(stick=E)
-        L5.Label(self.root, text='Z Num')
+        L5 = Label(self.root, text='Z Num')
         L5.grid(stick=E)
         self.e1 = Entry(self.root, textvariable=plate)
         self.e1.bind()
