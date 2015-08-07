@@ -23,7 +23,7 @@ class Zfitter:
         self.zwarning = n.zeros(zchi2.shape[0])
     
 
-    def z_refine(self, threshold=23.3, width=15): # Default threshold of 46.6 is delta (chi_r)**2 = .005, and width is 1000 km/s
+    def z_refine(self, threshold=23.3, width=15): # Default threshold of 23.3 is delta (chi_r)**2 = .005, and width is 1000 km/s
         self.threshold = threshold
         self.width = width
         for ifiber in xrange(self.zchi2.shape[0]):
@@ -122,7 +122,7 @@ class Zfitter:
 #-------------------------------------------------------------------------------------------------------------------
 
 
-    def z_refine2(self, threshold=46.6, width=15, num_z=5): # Default threshold of 46.6 is delta (chi_r)**2 = .01, and width is 1000 km/s
+    def z_refine2(self, threshold=23.3, width=15, num_z=5): # Default threshold of 23.3 is delta (chi_r)**2 = .005, and width is 1000 km/s
         self.num_z = num_z
         self.threshold = threshold
         self.width = width
