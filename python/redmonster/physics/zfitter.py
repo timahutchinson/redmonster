@@ -143,20 +143,62 @@ class Zfitter:
             zminvals = zspline.get_val(zminlocs) # Minimum values
             z_ind = 0
             stop = False
-            while (z_ind < num_z) & (stop == False):
-                thisminloc = zminvals.argmin() # Location in zminvals vector of minimum
-                posinvec = zminlocs[thisminloc] # Location in bestzvec of minimum
-                if (posinvec == 0) or (posinvec == bestzvec.shape[0]-1): # Flag and skip interpretation if best fit chi2 is at edge of z-range
-                    if z_ind == 0: # If it's the first redshift, set all num_z redshifts and errors to -1
-                        self.flag_z_fitlimit(ifiber)
-                        self.z[ifiber] = -1.
-                        self.z_err[ifiber] = -1.
-                        self.minvectors.append( [(-1,)]*num_z )
-                        self.chi2vals.append( [1e9]*num_z )
-                        stop = True
-                    elif posinvec == 0: # If it's not the first, and if it's on the left edge, set the 15 pixels to the right = 1e9 and move on
+            if len(zminvals) == 0:
+                self.flag_null_fit(ifiber)
+            else:
+                while (z_ind < num_z) & (stop == False):
+                    thisminloc = zminvals.argmin() # Location in zminvals vector of minimum
+                    posinvec = zminlocs[thisminloc] # Location in bestzvec of minimum
+                    if (posinvec == 0) or (posinvec == bestzvec.shape[0]-1): # Flag and skip interpretation if best fit chi2 is at edge of z-range
+                        if z_ind == 0: # If it's the first redshift, set all num_z redshifts and errors to -1
+                            self.flag_z_fitlimit(ifiber)
+                            self.z[ifiber] = -1.
+                            self.z_err[ifiber] = -1.
+                            self.minvectors.append( [(-1,)]*num_z )
+                            self.chi2vals.append( [1e9]*num_z )
+                            stop = True
+                        elif posinvec == 0: # If it's not the first, and if it's on the left edge, set the 15 pixels to the right = 1e9 and move on
+                            k = 0
+                            while True:
+                                k += 1
+                                try:
+                                    if n.abs(zminlocs[thisminloc+k]-zminlocs[thisminloc]) < self.width:
+                                        zminvals[thisminloc+k] = 1e9
+                                    else:
+                                        break
+                                except:
+                                    break
+                            z_ind += 1
+                        elif posinvec == bestzvec.shape[0]-1: # If it's not the first, and if it's on the right edge, set the 15 pixels to the left = 1e9 and move on
+                            k = 0
+                            while True:
+                                k += 1
+                                try:
+                                    if n.abs(zminlocs[thisminloc-k]-zminlocs[thisminloc]) < self.width:
+                                        zminvals[thisminloc-k] = 1e9
+                                    else:
+                                        break
+                                except:
+                                    break
+                            z_ind += 1
+                    else: # Fit with quadratic and find minimum and error based on that
+                        xp = n.linspace(self.zbase[posinvec-1], self.zbase[posinvec+1], 1000)
+                        f = quadfit(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2])
+                        fit = quad_for_fit(xp, f[0], f[1], f[2])
+                        if not xp[n.where(fit == n.min(fit))[0][0]] in self.z[ifiber]:
+                            self.z[ifiber,z_ind] = xp[n.where(fit == n.min(fit))[0][0]]
+                            self.z_err[ifiber,z_ind] = self.estimate_z_err(xp, fit)
+                            bestchi2vals.append( bestzvec[posinvec] )
+                            bestminvectors.append( allminvectors[posinvec] + (posinvec,) )
+                        else:
+                            self.z[ifiber,z_ind] = -1.
+                            self.z_err[ifiber,z_ind] = -1.
+                            bestchi2vals.append(1e9)
+                            bestminvectors.append((-1,))
+                        zminvals[thisminloc] = 1e9
+                        #self.minvectors.append( n.unravel_index(self.zchi2[ifiber,...,posinvec].argmin(), self.zchi2[ifiber,...,posinvec].shape) + (posinvec,) )
                         k = 0
-                        while True:
+                        while True: # Set width points to the right and left of minimum to 1e9
                             k += 1
                             try:
                                 if n.abs(zminlocs[thisminloc+k]-zminlocs[thisminloc]) < self.width:
@@ -165,8 +207,6 @@ class Zfitter:
                                     break
                             except:
                                 break
-                        z_ind += 1
-                    elif posinvec == bestzvec.shape[0]-1: # If it's not the first, and if it's on the right edge, set the 15 pixels to the left = 1e9 and move on
                         k = 0
                         while True:
                             k += 1
@@ -178,43 +218,6 @@ class Zfitter:
                             except:
                                 break
                         z_ind += 1
-                else: # Fit with quadratic and find minimum and error based on that
-                    xp = n.linspace(self.zbase[posinvec-1], self.zbase[posinvec+1], 1000)
-                    f = quadfit(self.zbase[posinvec-1:posinvec+2], bestzvec[posinvec-1:posinvec+2])
-                    fit = quad_for_fit(xp, f[0], f[1], f[2])
-                    if not xp[n.where(fit == n.min(fit))[0][0]] in self.z[ifiber]:
-                        self.z[ifiber,z_ind] = xp[n.where(fit == n.min(fit))[0][0]]
-                        self.z_err[ifiber,z_ind] = self.estimate_z_err(xp, fit)
-                        bestchi2vals.append( bestzvec[posinvec] )
-                        bestminvectors.append( allminvectors[posinvec] + (posinvec,) )
-                    else:
-                        self.z[ifiber,z_ind] = -1.
-                        self.z_err[ifiber,z_ind] = -1.
-                        bestchi2vals.append(1e9)
-                        bestminvectors.append((-1,))
-                    zminvals[thisminloc] = 1e9
-                    #self.minvectors.append( n.unravel_index(self.zchi2[ifiber,...,posinvec].argmin(), self.zchi2[ifiber,...,posinvec].shape) + (posinvec,) )
-                    k = 0
-                    while True: # Set width points to the right and left of minimum to 1e9
-                        k += 1
-                        try:
-                            if n.abs(zminlocs[thisminloc+k]-zminlocs[thisminloc]) < self.width:
-                                zminvals[thisminloc+k] = 1e9
-                            else:
-                                break
-                        except:
-                            break
-                    k = 0
-                    while True:
-                        k += 1
-                        try:
-                            if n.abs(zminlocs[thisminloc-k]-zminlocs[thisminloc]) < self.width:
-                                zminvals[thisminloc-k] = 1e9
-                            else:
-                                break
-                        except:
-                            break
-                    z_ind += 1
             self.minvectors.append( bestminvectors )
             self.chi2vals.append( bestchi2vals )
         self.flag_small_dchi2_2()
@@ -227,6 +230,11 @@ class Zfitter:
                 if len(self.chi2vals[ifiber]) > 1:
                     if n.abs(self.chi2vals[ifiber][1] - self.chi2vals[ifiber][0]) < self.threshold:
                         self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
+
+
+    def flag_null_fit(self, ifiber):
+        null_fit_flag = int('0b100000000',2)
+        self.zwarning[ifiber] = int(self.zwarning[ifiber]) | null_fit_flag
 
             
 

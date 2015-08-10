@@ -82,6 +82,7 @@ class Write_Redmonster:
             fnamelist = []
             npixsteplist = []
             minrchi2list = []
+            fslist = []
             for j in xrange(len(self.zpick.z)):
                 zlist.append( self.zpick.z[j][i] )
                 zerrlist.append( self.zpick.z_err[j][i] )
@@ -92,6 +93,7 @@ class Write_Redmonster:
                 npolylist.append( self.zpick.npoly[j][i] )
                 npixsteplist.append( self.zpick.npoly[j][i] )
                 minrchi2list.append( self.zpick.minrchi2[j][i] )
+                fslist.append( repr(self.zpick.fs[j][i]) )
             colslist.append( fits.Column(name='Z%s' % (i+1), format='E', array=zlist) )
             colslist.append( fits.Column(name='Z_ERR%s' % (i+1), format='E', array=zerrlist) )
             colslist.append( fits.Column(name='CLASS%s' % (i+1), format='%iA' % max(map(len,classlist)), array=classlist) )
@@ -101,6 +103,7 @@ class Write_Redmonster:
             colslist.append( fits.Column(name='MINRCHI2%s' % (i+1), format='E', array=minrchi2list) )
             colslist.append( fits.Column(name='NPOLY%s' % (i+1), format='J', array=npolylist) )
             colslist.append( fits.Column(name='NPIXSTEP%s' % (i+1), format='J', array=npixsteplist) )
+            colslist.append( fits.Column(name='THETA%s' % (i+1), format='%iA' % max(map(len,fslist)), array=fslist) )
         colslist.append( fits.Column(name='ZWARNING', format='J', array=self.zpick.zwarning) )
         colslist.append( fits.Column(name='RCHI2DIFF', format='E', array=self.zpick.rchi2diff) )
         cols = fits.ColDefs(colslist)

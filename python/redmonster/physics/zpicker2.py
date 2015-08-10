@@ -45,11 +45,11 @@ class Zpicker:
         self.dof = specobj.dof.copy()
         self.npixstep = []
         self.models = n.zeros( (specobj.flux.shape[0],num_z,self.npixflux) )
+        self.fs = []
         self.nclass = len(zfindobjs)
         #self.minrchi2 = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
         self.minrchi2 = []
         self.rchi2diff = []
-        self.zwarning = []
         try:
             self.boss_target1 = specobj.boss_target1
         except:
@@ -89,6 +89,7 @@ class Zpicker:
             vectortuple = ()
             npolytuple = ()
             npixsteptuple = ()
+            fstuple = ()
             for itemp in xrange(self.nclass): # Build temporary array of num_z lowest minima for each template
                 for imin in xrange(self.num_z):
                     try:
@@ -117,13 +118,12 @@ class Zpicker:
                 minchi2tuple += (fibermins[zpos],)
                 npolytuple += (zfindobjs[tempnum].npoly,)
                 npixsteptuple += (zfindobjs[tempnum].npixstep,)
-                '''
-                if iz == 0: # Only the first flag and model are kept
-                    self.models[ifiber] = zfindobjs[tempnum].models[ifiber]
+                if iz == 0: # Only the first flag is kept
+                    #self.models[ifiber] = zfindobjs[tempnum].models[ifiber]
                     self.zwarning.append( flags[tempnum][ifiber] )
-                '''
                 fibermins[zpos] = 1e9
-                self.models[ifiber,iz] = self.create_model(fnametuple[iz], npolytuple[iz], npixsteptuple[iz], vectortuple[iz], zfindobjs[tempnum], self.flux[ifiber], self.ivar[ifiber])
+                self.models[ifiber,iz], f = self.create_model(fnametuple[iz], npolytuple[iz], npixsteptuple[iz], vectortuple[iz], zfindobjs[tempnum], self.flux[ifiber], self.ivar[ifiber])
+                fstuple += (f,)
             
             self.z.append(ztuple)
             self.z_err.append(zerrtuple)
@@ -135,14 +135,24 @@ class Zpicker:
             self.npoly.append(npolytuple)
             self.npixstep.append(npixsteptuple)
             self.rchi2diff.append( self.minrchi2[ifiber][1] - self.minrchi2[ifiber][0])
+            self.fs.append( fstuple )
             if self.rchi2diff < rchi2threshold:
                 self.flag_small_dchi2(ifiber)
+            self.flag_null_fit(ifiber, flags)
         self.zwarning = map(int, self.zwarning)
 
 
     def flag_small_dchi2(self, ifiber):
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
         self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
+    
+    
+    def flag_null_fit(self, ifiber, flags): # Flag if *any* of the template classes had a null fit
+        null_fit_flag = int('0b100000000',2)
+        for template in flags:
+            if int(template[ifiber]) & null_fit_flag > 0:
+                self.zwarning[ifiber] = int(self.zwarning[ifiber]) | null_fit_flag
+    
 
 
     def create_model(self, fname, npoly, npixstep, minvector, zfindobj, flux, ivar):
@@ -156,9 +166,13 @@ class Zpicker:
         ninv = n.diag(ivar)
         try: # Some eBOSS spectra have ivar[i] = 0 for all i
             f = nnls( n.dot(n.dot(n.transpose(pmat),ninv),pmat), n.dot( n.dot(n.transpose(pmat),ninv),flux) ); f = n.array(f)[0]
-            return n.dot(pmat, f)
+            return n.dot(pmat, f), tuple(f)
         except:
-            return n.zeros(self.npixflux)
+            try:
+                f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
+                return n.dot(pmat, f), tuple(f)
+            except:
+                return n.zeros(self.npixflux), tuple(f)
 
 
 

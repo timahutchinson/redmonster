@@ -16,9 +16,9 @@ import matplotlib.pyplot as p
 p.interactive(True)
 
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
-plate = 3686
-mjd = 55268
-fiberid = [99,100,101] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
+plate = 8054
+mjd = 57194
+fiberid = [564] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
@@ -35,7 +35,6 @@ zssp.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
 
 ''' New objects and fitting for different templates. '''
 
-##zstar = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
 zstar = zfinder.Zfinder(fname='ndArch-all-CAP-grids.fits', npoly=4, zmin=-.005, zmax=.005)
 zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
 zqso = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.4, zmax=3.5)

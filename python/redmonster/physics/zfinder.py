@@ -118,18 +118,22 @@ class Zfinder:
                     for ipos in xrange(self.npoly): pmat[ipos+1,0] = pmat[0,ipos+1] = n.fft.ifft(self.t_fft[j] * poly_fft[i,ipos].conj()).real
                     if bounds_set:
                         for l in n.arange(num_z)*self.npixstep: #for l in range(num_z):
-                            '''
-                            f = n.linalg.solve(pmat[:,:,l+zminpix],bvec[:,l+zminpix])
-                            '''
-                            f = nnls(pmat[:,:,l+zminpix],bvec[:,l+zminpix]); f = n.array(f)[0] # Added in place of above line
-                            zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f) #zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
+                            try:
+                                f = nnls(pmat[:,:,l+zminpix],bvec[:,l+zminpix]); f = n.array(f)[0] # Added in place of above line
+                                zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f) #zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
+                            except:
+                                f = n.linalg.solve(pmat[:,:,l+zminpix],bvec[:,l+zminpix])
+                                zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
                             if (f[0] < 0): temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model #if (f[0] < 0): temp_zwarning[i,j,l] = int(temp_zwarning[i,j,l]) | flag_val_neg_model
                     else:
                         for l in n.arange(num_z)*self.npixstep: #for l in range(num_z):
                             '''
                             f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
                             '''
-                            f = nnls(pmat[:,:,l],bvec[:,l]); f = n.array(f)[0] # Addedin place of above line
+                            try:
+                                f = nnls(pmat[:,:,l],bvec[:,l]); f = n.array(f)[0] # Addedin place of above line
+                            except:
+                                f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
                             if (f[0] < 0.): temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model #if (f[0] < 0.): temp_zwarning[i,j,l] = int(temp_zwarning[i,j,l]) | flag_val_neg_model
                             zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f) #zchi2arr[i,j,l] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
         for i in xrange(self.zwarning.shape[0]): # Use only neg_model flag from best fit model/redshift and add it to self.zwarning
