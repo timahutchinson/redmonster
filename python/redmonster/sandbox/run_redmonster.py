@@ -18,7 +18,7 @@ p.interactive(True)
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
 plate = 8054
 mjd = 57194
-fiberid = [564] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
+fiberid = [570] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
