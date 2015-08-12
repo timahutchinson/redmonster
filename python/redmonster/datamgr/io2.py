@@ -730,6 +730,83 @@ class Merge_Redmonster:
             thdulist.writeto( dest, clobber=True )
 
 
+    def merge_plates2(self):
+        self.type = []
+        self.subtype = []
+        self.fiberid = []
+        self.minvector = []
+        self.zwarning = []
+        self.dof = []
+        self.npoly = []
+        self.fname = []
+        self.npixstep = []
+        self.chi2diff = []
+        self.boss_target1 = []
+        self.eboss_target1 = []
+        self.plates = []
+        self.models = n.zeros((1,1))
+        self.hdr = fits.Header()
+        
+        try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
+        except: topdir = None
+        try: run2d = environ['RUN2D']
+        except: run2d = None
+        try: run1d = environ['RUN1D']
+        except: run1d = None
+        platedir = join( topdir, run2d, '*') if topdir and run2d else None
+        
+        if platedir:
+            for path in iglob(platedir):
+                self.plates.append( basename(path) )
+            self.plates.sort()
+            for listitem in self.plates:
+                if listitem[-5:] == '.fits': self.plates.remove(listitem)
+            self.fiberid = self.plates
+            for plate in self.plates:
+                print 'Merging plate %s' % plate
+                mjds = []
+                try:
+                    for x in iglob( join( topdir, run2d, '%s' % plate, run1d, 'redmonster-%s-*.fits' % plate) ):
+                        if basename(x)[16:21] not in mjds: mjds.append(basename(x)[16:21])
+                #if mjds is not basename(x)[16:21]: mjds.append(basename(x)[16:21])
+                #else: mjds.append( basename(x)[16:21] )
+                except: mjds = None
+                if mjds is not [] and mjds is not None:
+                    for mjd in mjds:
+                        filepath = join( topdir, run2d, str(plate), run1d, 'redmonster-%s-%s.fits' % (plate, mjd))
+                        #npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd) ) )[0].data.shape[1]
+                        if exists(filepath):
+                            hdu = fits.open(filepath)
+                            self.type += hdu[1].data.CLASS.tolist()
+                            self.subtype += hdu[1].data.SUBCLASS.tolist()
+                            self.minvector += hdu[1].data.MINVECTOR.tolist()
+                            self.zwarning += hdu[1].data.ZWARNING.tolist()
+                            self.dof += hdu[1].data.DOF.tolist()
+                            self.npoly += hdu[1].data.NPOLY.tolist()
+                            self.fname += hdu[1].data.FNAME.tolist()
+                            self.npixstep += hdu[1].data.NPIXSTEP.tolist()
+                            self.chi2diff += hdu[1].data.CHI2DIFF.tolist()
+                            try: self.z1 = n.append(self.z1, hdu[1].data.Z1)
+                            except: self.z1 = hdu[1].data.Z1
+                            try: self.z_err1 = n.append(self.z_err1, hdu[1].data.Z_ERR1)
+                            except: self.z_err1 = hdu[1].data.Z_ERR1
+                            try: self.z2 = n.append(self.z2, hdu[1].data.Z2)
+                            except: self.z2 = hdu[1].data.Z2
+                            try: self.z_err2 = n.append(self.z_err2, hdu[1].data.Z_ERR2)
+                            except: self.z_err2 = hdu[1].data.Z_ERR2
+        self.z = n.zeros( (self.z1.shape[0],2) )
+        self.z_err = n.zeros( self.z.shape )
+        self.z[:,0] = self.z1
+        self.z[:,1] = self.z2
+        self.z_err[:,0] = self.z_err1
+        self.z_err[:,1] = self.z_err2
+        
+        output = Write_Redmonster(self)
+        output.create_hdulist()
+        output.thdulist.writeto( join( topdir, run2d, 'redmonster-all-%s.fits' % run2d), clobber=True)
+
+
+
     def merge_chi2(self):
         
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
