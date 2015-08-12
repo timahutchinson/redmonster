@@ -11,7 +11,7 @@ from redmonster.datamgr.ssp_prep import SSP_Prep
 from redmonster.physics.misc import poly_array, two_pad
 from time import gmtime, strftime
 from astropy.io import fits
-from redmonster.datamgr.io import read_ndArch
+from redmonster.datamgr.io2 import read_ndArch, write_chi2arr
 from scipy.optimize import nnls
 
 import matplotlib as m
@@ -153,10 +153,10 @@ class Zfinder:
             thisz = ((10**(specloglam[0]))/self.tempwave[bestl])-1
         #return zchi2arr
         self.zchi2arr = zchi2arr
-        self.store_models(specs, ivar)
+        #self.store_models(specs, ivar)
         if self.chi2file is True:
             if (plate is not None) & (mjd is not None) & (fiberid is not None):
-                self.write_chi2arr(plate, mjd, fiberid)
+                write_chi2arr(plate, mjd, fiberid, self.zchi2arr)
             else:
                 print 'Plate/mjd/fiberid not given - unable to write chi2 file!'
         else:
