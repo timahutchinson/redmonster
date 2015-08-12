@@ -157,15 +157,15 @@ class Zpicker:
 
     def create_model(self, fname, npoly, npixstep, minvector, zfindobj, flux, ivar):
         #import pdb; pdb.set_trace()
-        pixoffset = zfindobj.pixoffset
-        temps = read_ndArch( join( environ['REDMONSTER_TEMPLATES_DIR'], fname ) )[0]
-        pmat = n.zeros( (self.npixflux, npoly+1) )
-        this_temp = temps[minvector[:-1]]
-        pmat[:,0] = this_temp[(minvector[-1]*npixstep)+pixoffset:(minvector[-1]*npixstep)+pixoffset+self.npixflux]
-        polyarr = poly_array(npoly, self.npixflux)
-        pmat[:,1:] = n.transpose(polyarr)
-        ninv = n.diag(ivar)
-        try: # Some eBOSS spectra have ivar[i] = 0 for all i
+        try:
+            pixoffset = zfindobj.pixoffset
+            temps = read_ndArch( join( environ['REDMONSTER_TEMPLATES_DIR'], fname ) )[0]
+            pmat = n.zeros( (self.npixflux, npoly+1) )
+            this_temp = temps[minvector[:-1]]
+            pmat[:,0] = this_temp[(minvector[-1]*npixstep)+pixoffset:(minvector[-1]*npixstep)+pixoffset+self.npixflux]
+            polyarr = poly_array(npoly, self.npixflux)
+            pmat[:,1:] = n.transpose(polyarr)
+            ninv = n.diag(ivar)
             f = n.linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat), n.dot( n.dot(n.transpose(pmat),ninv),flux) ); f = n.array(f)
             return n.dot(pmat,f), tuple(f)
         except:
