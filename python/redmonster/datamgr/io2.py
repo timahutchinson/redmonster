@@ -660,7 +660,7 @@ class Merge_Redmonster:
                 except:
                     pass
                 self.models[i] = hdu[2].data[0]
-            #remove(path)
+                #remove(path)
             self.hdr['NFIBERS'] = len(self.fiberid)
             prihdu = fits.PrimaryHDU(header=self.hdr)
             colslist = []
