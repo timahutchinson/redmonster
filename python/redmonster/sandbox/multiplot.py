@@ -92,4 +92,14 @@ p.subplots_adjust(wspace = .3, hspace = .3)
 #p.savefig('/Users/timhutchinson/Desktop/6plot.pdf')
 
 
+# Addtional code for manually scrolling through to find good example plots
+'''
+from os import environ; from os.path import join; from astropy.io import fits; import numpy as n;import matplotlib;from matplotlib import pyplot as p;p.interactive(True); from astropy.convolution import convolve, Box1DKernel
+plate = 7851
+mjd = 56932
+fiber = 487
+p.plot(convolve(fits.open(join(environ['BOSS_SPECTRO_REDUX'],environ['RUN2D'],'%s'%plate,'spPlate-%s-%s.fits'%(plate,mjd)))[0].data[fiber],Box1DKernel(5)), 'k'); p.plot(fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],environ['RUN2D'],'%s'%plate,environ['RUN1D'],'redmonster-%s-%s-%03d.fits'%(plate,mjd,fiber)))[2].data[0,0],color='cyan')
+'''
+
+
 
