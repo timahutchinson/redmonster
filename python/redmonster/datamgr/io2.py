@@ -326,6 +326,223 @@ class Merge_Redmonster:
         output.thdulist.writeto( join( topdir, run2d, 'redmonster-all-%s.fits' % run2d), clobber=True)
 
 
+    def merge_fibers2(self):
+        self.filepaths = []
+        self.fiberid = []
+        self.dof = []
+        self.boss_target1 = []
+        self.eboss_target1 = []
+        self.z1 = []
+        self.z_err1 = []
+        self.class1 = []
+        self.subclass1 = []
+        self.fname1 = []
+        self.minvector1 = []
+        self.minrchi21 = []
+        self.npoly1 = []
+        self.npixstep1 = []
+        self.theta1 = []
+        self.z2 = []
+        self.z_err2 = []
+        self.class2 = []
+        self.subclass2 = []
+        self.fname2 = []
+        self.minvector2 = []
+        self.minrchi22 = []
+        self.npoly2 = []
+        self.npixstep2 = []
+        self.theta2 = []
+        self.z3 = []
+        self.z_err3 = []
+        self.class3 = []
+        self.subclass3 = []
+        self.fname3 = []
+        self.minvector3 = []
+        self.minrchi23 = []
+        self.npoly3 = []
+        self.npixstep3 = []
+        self.theta3 = []
+        self.z4 = []
+        self.z_err4 = []
+        self.class4 = []
+        self.subclass4 = []
+        self.fname4 = []
+        self.minvector4 = []
+        self.minrchi24 = []
+        self.npoly4 = []
+        self.npixstep4 = []
+        self.theta4 = []
+        self.z5 = []
+        self.z_err5 = []
+        self.class5 = []
+        self.subclass5 = []
+        self.fname5 = []
+        self.minvector5 = []
+        self.minrchi25 = []
+        self.npoly5 = []
+        self.npixstep5 = []
+        self.theta5 = []
+        self.zwarning = []
+        self.rchi2diff = []
+    
+        try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
+        except: topdir = None
+        try: run2d = environ['RUN2D']
+        except: run2d = None
+        try: run1d = environ['RUN1D']
+        except: run1d = None
+        fiberdir = join(topdir, run2d, '%s' % self.plate, run1d, 'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if topdir and run2d and run1d else None
+        
+        if fiberdir:
+            for path in iglob(fiberdir):
+                self.filepaths.append( path )
+                fiberfile = basename( path )
+                self.fiberid.append( int(fiberfile[22:25]) )
+            try:
+                self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
+            except:
+                self.hdr = fits.Header()
+            npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].data.shape[1]
+            self.models = n.zeros( (len(self.fiberid),5,npix) )
+            self.filepaths.sort()
+            self.fiberid.sort()
+            haveHeader = False
+            for i, path in enumerate(self.filepaths):
+                hdu = fits.open(path)
+                if not haveHeader:
+                    self.hdr = self.zpick.hdr
+                    haveHeader = True
+                self.dof.append(hdu[1].data.DOF[0])
+                self.z1.append(hdu[1].data.Z1[0])
+                self.z_err1.append(hdu[1].data.Z_ERR1[0])
+                self.class1.append(hdu[1].data.CLASS1[0])
+                self.subclass1.append(SUBCLASS1[0])
+                self.fname1.append(hdu[1].data.FNAME1[0])
+                self.minvector1.append(hdu[1].data.MINVECTOR1[0])
+                self.minrchi21.append(hdu[1].data.MINRCHI21[0])
+                self.npoly1.append(hdu[1].data.NPOLY1[0])
+                self.npixstep1.append(hdu[1].data.NPIXSTEP1[0])
+                self.theta1.append(hdu[1].data.THETA1[0])
+                self.z2.append(hdu[1].data.Z2[0])
+                self.z_err2.append(hdu[1].data.Z_ERR2[0])
+                self.class2.append(hdu[1].data.CLASS2[0])
+                self.subclass2.append(hdu[1].data.SUBCLASS2[0])
+                self.fname2.append(hdu[1].data.FNAME2[0])
+                self.minvector2.append(hdu[1].data.MINVECTOR2[0])
+                self.minrchi22.append(hdu[1].data.MINRCHI22[0])
+                self.npoly2.append(hdu[1].data.NPOLY2[0])
+                self.npixstep2.append(hdu[1].data.NPIXSTEP2[0])
+                self.theta2.append(hdu[1].data.THETA2[0])
+                self.z3.append(hdu[1].data.Z3[0])
+                self.z_err3.append(hdu[1].data.Z_ERR3[0])
+                self.class3.append(hdu[1].data.CLASS3[0])
+                self.subclass3.append(hdu[1].data.SUBCLASS3[0])
+                self.fname3.append(hdu[1].data.FNAME3[0])
+                self.minvector3.append(hdu[1].data.MINVECTOR3[0])
+                self.minrchi23.append(hdu[1].data.MINRCHI23[0])
+                self.npoly3.append(hdu[1].data.NPOLY3[0])
+                self.npixstep3.append(hdu[1].data.NPIXSTEP3[0])
+                self.theta3.append(hdu[1].data.THETA3[0])
+                self.z4.append(hdu[1].data.Z4[0])
+                self.z_err4.append(hdu[1].data.Z_ERR4[0])
+                self.class4.append(hdu[1].data.CLASS4[0])
+                self.subclass4.append(hdu[1].data.SUBCLASS4[0])
+                self.fname4.append(hdu[1].data.FNAME4[0])
+                self.minvector4.append(hdu[1].data.MINVECTOR4[0])
+                self.minrchi24.append(hdu[1].data.MINRCHI24[0])
+                self.npoly4.append(hdu[1].data.NPOLY4[0])
+                self.npixstep4.append(hdu[1].data.NPIXSTEP4[0])
+                self.theta4.append(hdu[1].data.THETA4[0])
+                self.z5.append(hdu[1].data.Z5[0])
+                self.z_err5.append(hdu[1].data.Z_ERR5[0])
+                self.class5.append(hdu[1].data.CLASS5[0])
+                self.subclass5.append(hdu[1].data.SUBCLASS5[0])
+                self.fname5.append(hdu[1].data.FNAME5[0])
+                self.minvector5.append(hdu[1].data.MINVECTOR5[0])
+                self.minrchi25.append(hdu[1].data.MINRCHI25[0])
+                self.npoly5.append(hdu[1].data.NPOLY5[0])
+                self.npixstep5.append(hdu[1].data.NPIXSTEP5[0])
+                self.theta5.append(hdu[1].data.THETA5[0])
+                self.zwarning.append(hdu[1].data.ZWARNING[0])
+                self.rchi2diff.append(hdu[1].data.RCHI2DIFF[0])
+                try:
+                    self.boss_target1.append(hdu[1].data.BOSS_TARGET1[0])
+                except:
+                    pass
+                try:
+                    self.eboss_target1.append(hdu[1].data.EBOSS_TARGET1[0])
+                except:
+                    pass
+                self.models[i] = hdu[2].data[0]
+            #remove(path)
+            prihdu = fits.PrimaryHDU(header=self.hdr)
+            colslist = []
+            colslist.append( fits.Column(name='FIBERID', format='J', array=self.fiberid) )
+            colslist.append( fits.Column(name='DOF', format='J', array=self.dof) )
+            colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.boss_target1) )
+            colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.eboss_target1) )
+            colslist.append( fits.Column(name='Z1', format='E', array=self.z1) )
+            colslist.append( fits.Column(name='Z_ERR1', format='E', array=self.z_err1) )
+            colslist.append( fits.Column(name='CLASS1', format='%iA' % max(map(len,self.class1)), array=self.class1) )
+            colslist.append( fits.Column(name='SUBCLASS1', format='%iA' % max(map(len,self.subclass1)), array=self.subclass1) )
+            colslist.append( fits.Column(name='FNAME1', format='%iA' % max(map(len,self.fname1)), array=self.fname1) )
+            colslist.append( fits.Column(name='MINVECTOR1', format='%iA' % max(map(len,self.minvector1)), array=self.minvector1) )
+            colslist.append( fits.Column(name='MINRCHI21', format='E', array=self.minrchi21) )
+            colslist.append( fits.Column(name='NPOLY1', format='J', array=self.npoly1) )
+            colslist.append( fits.Column(name='NPIXSTEP1', format='J', array=self.npixstep1) )
+            colslist.append( fits.Column(name='THETA1', format='%iA' % max(map(len,self.theta1)), array=self.theta1) )
+            colslist.append( fits.Column(name='Z2', format='E', array=self.z2) )
+            colslist.append( fits.Column(name='Z_ERR2', format='E', array=self.z_err2) )
+            colslist.append( fits.Column(name='CLASS2', format='%iA' % max(map(len,self.class2)), array=self.class1) )
+            colslist.append( fits.Column(name='SUBCLASS2', format='%iA' % max(map(len,self.subclass2)), array=self.subclass1) )
+            colslist.append( fits.Column(name='FNAME2', format='%iA' % max(map(len,self.fname2)), array=self.fname1) )
+            colslist.append( fits.Column(name='MINVECTOR2', format='%iA' % max(map(len,self.minvector2)), array=self.minvector1) )
+            colslist.append( fits.Column(name='MINRCHI22', format='E', array=self.minrchi22) )
+            colslist.append( fits.Column(name='NPOLY2', format='J', array=self.npoly2) )
+            colslist.append( fits.Column(name='NPIXSTEP2', format='J', array=self.npixstep2) )
+            colslist.append( fits.Column(name='THETA2', format='%iA' % max(map(len,self.theta2)), array=self.theta1) )
+            colslist.append( fits.Column(name='Z3', format='E', array=self.z3) )
+            colslist.append( fits.Column(name='Z_ERR3', format='E', array=self.z_err3) )
+            colslist.append( fits.Column(name='CLASS3', format='%iA' % max(map(len,self.class3)), array=self.class1) )
+            colslist.append( fits.Column(name='SUBCLASS3', format='%iA' % max(map(len,self.subclass3)), array=self.subclass1) )
+            colslist.append( fits.Column(name='FNAME3', format='%iA' % max(map(len,self.fname3)), array=self.fname1) )
+            colslist.append( fits.Column(name='MINVECTOR3', format='%iA' % max(map(len,self.minvector3)), array=self.minvector1) )
+            colslist.append( fits.Column(name='MINRCHI23', format='E', array=self.minrchi23) )
+            colslist.append( fits.Column(name='NPOLY3', format='J', array=self.npoly3) )
+            colslist.append( fits.Column(name='NPIXSTEP3', format='J', array=self.npixstep3) )
+            colslist.append( fits.Column(name='THETA3', format='%iA' % max(map(len,self.theta3)), array=self.theta1) )
+            colslist.append( fits.Column(name='Z4', format='E', array=self.z4) )
+            colslist.append( fits.Column(name='Z_ERR4', format='E', array=self.z_err4) )
+            colslist.append( fits.Column(name='CLASS4', format='%iA' % max(map(len,self.class4)), array=self.class1) )
+            colslist.append( fits.Column(name='SUBCLASS4', format='%iA' % max(map(len,self.subclass4)), array=self.subclass1) )
+            colslist.append( fits.Column(name='FNAME4', format='%iA' % max(map(len,self.fname4)), array=self.fname1) )
+            colslist.append( fits.Column(name='MINVECTOR4', format='%iA' % max(map(len,self.minvector4)), array=self.minvector1) )
+            colslist.append( fits.Column(name='MINRCHI24', format='E', array=self.minrchi24) )
+            colslist.append( fits.Column(name='NPOLY4', format='J', array=self.npoly4) )
+            colslist.append( fits.Column(name='NPIXSTEP4', format='J', array=self.npixstep4) )
+            colslist.append( fits.Column(name='THETA4', format='%iA' % max(map(len,self.theta4)), array=self.theta1) )
+            colslist.append( fits.Column(name='Z5', format='E', array=self.z5) )
+            colslist.append( fits.Column(name='Z_ERR5', format='E', array=self.z_err5) )
+            colslist.append( fits.Column(name='CLASS5', format='%iA' % max(map(len,self.class5)), array=self.class1) )
+            colslist.append( fits.Column(name='SUBCLASS5', format='%iA' % max(map(len,self.subclass5)), array=self.subclass1) )
+            colslist.append( fits.Column(name='FNAME5', format='%iA' % max(map(len,self.fname5)), array=self.fname1) )
+            colslist.append( fits.Column(name='MINVECTOR5', format='%iA' % max(map(len,self.minvector5)), array=self.minvector1) )
+            colslist.append( fits.Column(name='MINRCHI25', format='E', array=self.minrchi25) )
+            colslist.append( fits.Column(name='NPOLY5', format='J', array=self.npoly5) )
+            colslist.append( fits.Column(name='NPIXSTEP5', format='J', array=self.npixstep5) )
+            colslist.append( fits.Column(name='THETA5', format='%iA' % max(map(len,self.theta5)), array=self.theta1) )
+            colslist.append( fits.Column(name='', format='', array=) )
+            colslist.append( fits.Column(name='', format='', array=) )
+            colslist.append( fits.Column(name='', format='', array=) )
+            colslist.append( fits.Column(name='', format='', array=) )
+            colslist.append( fits.Column(name='', format='', array=) )
+            colslist.append( fits.Column(name='', format='', array=) )
+            colslist.append( fits.Column(name='', format='', array=) )
+            
+
+
+
+
     def merge_chi2(self):
         
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
