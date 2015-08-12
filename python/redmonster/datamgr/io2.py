@@ -596,7 +596,7 @@ class Merge_Redmonster:
             for i, path in enumerate(self.filepaths):
                 hdu = fits.open(path)
                 if not haveHeader:
-                    self.hdr = self.zpick.hdr
+                    self.hdr = hdu[0].header
                     haveHeader = True
                 self.dof.append(hdu[1].data.DOF[0])
                 self.z1.append(hdu[1].data.Z1[0])
@@ -661,6 +661,7 @@ class Merge_Redmonster:
                     pass
                 self.models[i] = hdu[2].data[0]
             #remove(path)
+            self.hdr['NFIBERS'] = len(self.fiberid)
             prihdu = fits.PrimaryHDU(header=self.hdr)
             colslist = []
             colslist.append( fits.Column(name='FIBERID', format='J', array=self.fiberid) )
@@ -717,16 +718,16 @@ class Merge_Redmonster:
             colslist.append( fits.Column(name='NPOLY5', format='J', array=self.npoly5) )
             colslist.append( fits.Column(name='NPIXSTEP5', format='J', array=self.npixstep5) )
             colslist.append( fits.Column(name='THETA5', format='%iA' % max(map(len,self.theta5)), array=self.theta5) )
-            colslist.append( fits.Column(name='', format='', array=) )
-            colslist.append( fits.Column(name='', format='', array=) )
-            colslist.append( fits.Column(name='', format='', array=) )
-            colslist.append( fits.Column(name='', format='', array=) )
-            colslist.append( fits.Column(name='', format='', array=) )
-            colslist.append( fits.Column(name='', format='', array=) )
-            colslist.append( fits.Column(name='', format='', array=) )
+            colslist.append( fits.Column(name='ZWARNING', format='J', array=self.zwarning) )
+            colslist.append( fits.Column(name='RCHI2IDFF', format='E', array=self.rchi2diff) )
+            cols = fits.ColDefs(colslist)
+            tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
+            # ImageHDU of models
+            sechdu = fits.ImageHDU(data=self.models)
+            thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #self.thdulist = fits.HDUList([prihdu, tbhdu])
             
-
-
+            dest = join(topdir, run2d, '%s' % self.plate, run1d, 'redmonster-%s-%s.fits' % (self.plate, self.mjd))
+            thdulist.writeto( dest, clobber=True )
 
 
     def merge_chi2(self):
