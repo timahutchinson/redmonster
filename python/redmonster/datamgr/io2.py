@@ -666,8 +666,10 @@ class Merge_Redmonster:
             colslist = []
             colslist.append( fits.Column(name='FIBERID', format='J', array=self.fiberid) )
             colslist.append( fits.Column(name='DOF', format='J', array=self.dof) )
-            colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.boss_target1) )
-            colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.eboss_target1) )
+            try: colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.boss_target1) )
+            except: pass
+            try:colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.eboss_target1) )
+            except: pass
             colslist.append( fits.Column(name='Z1', format='E', array=self.z1) )
             colslist.append( fits.Column(name='Z_ERR1', format='E', array=self.z_err1) )
             colslist.append( fits.Column(name='CLASS1', format='%iA' % max(map(len,self.class1)), array=self.class1) )
@@ -719,7 +721,7 @@ class Merge_Redmonster:
             colslist.append( fits.Column(name='NPIXSTEP5', format='J', array=self.npixstep5) )
             colslist.append( fits.Column(name='THETA5', format='%iA' % max(map(len,self.theta5)), array=self.theta5) )
             colslist.append( fits.Column(name='ZWARNING', format='J', array=self.zwarning) )
-            colslist.append( fits.Column(name='RCHI2IDFF', format='E', array=self.rchi2diff) )
+            colslist.append( fits.Column(name='RCHI2DIFF', format='E', array=self.rchi2diff) )
             cols = fits.ColDefs(colslist)
             tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
             # ImageHDU of models
@@ -731,20 +733,26 @@ class Merge_Redmonster:
 
 
     def merge_plates2(self):
-        self.type = []
-        self.subtype = []
+        self.platelist = []
+        self.mjdlist = []
         self.fiberid = []
-        self.minvector = []
-        self.zwarning = []
         self.dof = []
-        self.npoly = []
-        self.fname = []
-        self.npixstep = []
-        self.chi2diff = []
         self.boss_target1 = []
         self.eboss_target1 = []
+        self.z = []
+        self.z_err = []
+        self.type = []
+        self.subtype = []
+        self.fname = []
+        self.minvector = []
+        self.minrchi2 = []
+        self.npoly = []
+        self.npixstep = []
+        self.theta = []
+        self.zwarning = []
+        self.rchi2diff = []
+        
         self.plates = []
-        self.models = n.zeros((1,1))
         self.hdr = fits.Header()
         
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
@@ -760,51 +768,68 @@ class Merge_Redmonster:
                 self.plates.append( basename(path) )
             self.plates.sort()
             for listitem in self.plates:
-                if listitem[-5:] == '.fits': self.plates.remove(listitem)
-            self.fiberid = self.plates
+                if listitem[-5:] == '.fits': self.plates.remove(listitem) # Ignore any existing redmonster-all files
             for plate in self.plates:
                 print 'Merging plate %s' % plate
                 mjds = []
                 try:
                     for x in iglob( join( topdir, run2d, '%s' % plate, run1d, 'redmonster-%s-*.fits' % plate) ):
                         if basename(x)[16:21] not in mjds: mjds.append(basename(x)[16:21])
-                #if mjds is not basename(x)[16:21]: mjds.append(basename(x)[16:21])
-                #else: mjds.append( basename(x)[16:21] )
                 except: mjds = None
                 if mjds is not [] and mjds is not None:
                     for mjd in mjds:
-                        filepath = join( topdir, run2d, str(plate), run1d, 'redmonster-%s-%s.fits' % (plate, mjd))
-                        #npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd) ) )[0].data.shape[1]
+                        filepath = join( topdir, run2d, '%s' % plate, run1d, 'redmonster-%s-%s.fits' % (plate, mjd))
                         if exists(filepath):
                             hdu = fits.open(filepath)
+                            self.fiberid += hdu[1].data.FIBERID.tolist()
+                            self.platelist += [plate]*len(hdu[1].data.FIBERID.tolist())
+                            self.mjdlist += [mjd]*len(hdu[1].data.FIBERID.tolist())
+                            self.dof += hdu[1].data.DOF.tolist()
+                            try: self.boss_target1 += hdu[1].data.BOSS_TARGET1.tolist()
+                            except: pass
+                            try: self.eboss_target1 += hdu[1].data.EBOSS_TARGET1.tolist()
+                            except: pass
+                            self.z += hdu[1].data.Z1.tolist()
+                            self.z_err += hdu[1].data.Z_ERR1.tolist()
                             self.type += hdu[1].data.CLASS.tolist()
                             self.subtype += hdu[1].data.SUBCLASS.tolist()
-                            self.minvector += hdu[1].data.MINVECTOR.tolist()
-                            self.zwarning += hdu[1].data.ZWARNING.tolist()
-                            self.dof += hdu[1].data.DOF.tolist()
-                            self.npoly += hdu[1].data.NPOLY.tolist()
                             self.fname += hdu[1].data.FNAME.tolist()
+                            self.minvector += hdu[1].data.MINVECTOR.tolist()
+                            self.minrchi2 += hdu[1].data.MINRCHI2.tolist()
+                            self.npoly += hdu[1].data.NPOLY.tolist()
                             self.npixstep += hdu[1].data.NPIXSTEP.tolist()
-                            self.chi2diff += hdu[1].data.CHI2DIFF.tolist()
-                            try: self.z1 = n.append(self.z1, hdu[1].data.Z1)
-                            except: self.z1 = hdu[1].data.Z1
-                            try: self.z_err1 = n.append(self.z_err1, hdu[1].data.Z_ERR1)
-                            except: self.z_err1 = hdu[1].data.Z_ERR1
-                            try: self.z2 = n.append(self.z2, hdu[1].data.Z2)
-                            except: self.z2 = hdu[1].data.Z2
-                            try: self.z_err2 = n.append(self.z_err2, hdu[1].data.Z_ERR2)
-                            except: self.z_err2 = hdu[1].data.Z_ERR2
-        self.z = n.zeros( (self.z1.shape[0],2) )
-        self.z_err = n.zeros( self.z.shape )
-        self.z[:,0] = self.z1
-        self.z[:,1] = self.z2
-        self.z_err[:,0] = self.z_err1
-        self.z_err[:,1] = self.z_err2
+                            self.theta += hdu[1].data.THETA.tolist()
+                            self.zwarning += hdu[1].data.ZWARNING.tolist()
+                            self.rchi2diff += hdu[1].data.CHI2DIFF.tolist()
         
-        output = Write_Redmonster(self)
-        output.create_hdulist()
-        output.thdulist.writeto( join( topdir, run2d, 'redmonster-all-%s.fits' % run2d), clobber=True)
-
+            self.hdr['NFIBERS'] = len(self.fiberid)
+            prihdu = fits.PrimaryHDU(header=self.hdr)
+            colslist = []
+            colslist.append( fits.Column(name='FIBERID', format='J', array=self.fiberid) )
+            colslist.append( fits.Column(name='DOF', format='J', array=self.dof) )
+            try: colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.boss_target1) )
+            except: pass
+            try:colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.eboss_target1) )
+            except: pass
+            colslist.append( fits.Column(name='Z', format='E', array=self.z) )
+            colslist.append( fits.Column(name='Z_ERR', format='E', array=self.z_err) )
+            colslist.append( fits.Column(name='CLASS', format='%iA' % max(map(len,self.type)), array=self.type) )
+            colslist.append( fits.Column(name='SUBCLASS', format='%iA' % max(map(len,self.subtype)), array=self.subtype) )
+            colslist.append( fits.Column(name='FNAME', format='%iA' % max(map(len,self.fname)), array=self.fname) )
+            colslist.append( fits.Column(name='MINVECTOR', format='%iA' % max(map(len,self.minvector)), array=self.minvector) )
+            colslist.append( fits.Column(name='MINRCHI2', format='E', array=self.minrchi2) )
+            colslist.append( fits.Column(name='NPOLY', format='J', array=self.npoly) )
+            colslist.append( fits.Column(name='NPIXSTEP', format='J', array=self.npixstep) )
+            colslist.append( fits.Column(name='THETA', format='%iA' % max(map(len,self.theta)), array=self.theta) )
+            colslist.append( fits.Column(name='ZWARNING', format='J', array=self.zwarning) )
+            colslist.append( fits.Column(name='RCHI2DIFF', format='E', array=self.rchi2diff) )
+            
+            cols = fits.ColDefs(colslist)
+            tbhdu = fits.BinTableHDU.from_columns(cols)
+            thdulist = fits.HDUList([prihdu, tbhdu])
+            
+            dest = join(topdir, run2d, 'redmonster-all-%s.fits' % run1d)
+            thdulist.writeto( dest, clobber=True )
 
 
     def merge_chi2(self):
