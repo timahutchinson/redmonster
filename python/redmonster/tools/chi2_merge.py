@@ -10,7 +10,7 @@ from os import environ, makedirs, getcwd
 from os.path import exists, join, basename
 # time import gmtime, strftime
 from glob import iglob
-from redmonster.datamgr import io
+from redmonster.datamgr import io2
 import re
 
 try: topdir = environ['REDMONSTER_SPECTRO_REDUX']

@@ -9,7 +9,7 @@ from os import environ, makedirs, getcwd
 from os.path import exists, join, basename
 # time import gmtime, strftime
 from glob import iglob
-from redmonster.datamgr import io, io2
+from redmonster.datamgr import io2
 
 try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
 except: topdir = None
@@ -46,4 +46,4 @@ if platedir:
             for mjd in mjds:
                 print 'Merging fibers for plate %s, mjd %s' % (plate, mjd)
                 x = io2.Merge_Redmonster(plate, mjd)
-                x.merge_fibers()
+                x.merge_fibers2()
