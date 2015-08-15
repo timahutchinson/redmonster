@@ -602,7 +602,7 @@ class Merge_Redmonster:
                 self.z1.append(hdu[1].data.Z1[0])
                 self.z_err1.append(hdu[1].data.Z_ERR1[0])
                 self.class1.append(hdu[1].data.CLASS1[0])
-                self.subclass1.append(SUBCLASS1[0])
+                self.subclass1.append(hdu[1].data.SUBCLASS1[0])
                 self.fname1.append(hdu[1].data.FNAME1[0])
                 self.minvector1.append(hdu[1].data.MINVECTOR1[0])
                 self.minrchi21.append(hdu[1].data.MINRCHI21[0])
