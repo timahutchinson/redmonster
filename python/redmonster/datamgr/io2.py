@@ -274,7 +274,7 @@ class Write_Redmonster:
                 fnamelist.append( self.zpick.fname[j][i] )
                 minvectorlist.append( repr(self.zpick.minvector[j][i]) )
                 npolylist.append( self.zpick.npoly[j][i] )
-                npixsteplist.append( self.zpick.npoly[j][i] )
+                npixsteplist.append( self.zpick.npixstep[j][i] )
                 minrchi2list.append( self.zpick.minrchi2[j][i] )
                 fslist.append( repr(self.zpick.fs[j][i]) )
             colslist.append( fits.Column(name='Z%s' % (i+1), format='E', array=zlist) )
