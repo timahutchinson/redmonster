@@ -1373,6 +1373,8 @@ class verify_rm:
 
 # To see fibers with zwarning != 0, ztype = 'galaxy', and boss_target1 = 'cmass', use >>> print n.where( (x.rm_zwarning != 0) & (x.rm_type == 'ssp_em_galaxy') & (x.boss_target1 & 2 == 2) )[0]+1
 
+# Plate 7338 has 6 MJDs
+
 
 
 

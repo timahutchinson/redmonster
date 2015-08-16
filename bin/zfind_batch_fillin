@@ -46,14 +46,15 @@ if platedir:
             mjds.append(mjd)
             print plate
 
-writepath = '/uufs/chpc.utah.edu/common/home/bolton_data0/redmonster/v5_7_0'
+#writepath = '/uufs/chpc.utah.edu/common/home/bolton_data0/redmonster/v5_7_0'
+writepath = join( environ['REDMONSTER_SPECTRO_REDUX'], 'v5_8_0' )
 
 cjob = 0
 q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
 blocksize = nodes*ppn*ncycles
 for i,plate in enumerate(plates):
     for fiberid in xrange(1000):
-        if not isfile(join( writepath, '%s' % plate, 'v5_7_0', 'redmonster-%s-%s-%03d.fits' % (plate,mjds[i],fiberid) )):
+        if not isfile(join( writepath, '%s' % plate, 'v5_8_0', 'redmonster-%s-%s-%03d.fits' % (plate,mjds[i],fiberid) )):
             print 'Appending plate %s mjd %s fiber %03d' % (plate,mjds[i],fiberid)
             q.append("zfind -p %i -m %i -f %i" % (plate,mjds[i],fiberid))
             if q.task_number >= blocksize:
