@@ -26,11 +26,11 @@ fiberid = [0] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy a
 
 #specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 
-specs = donna_spec.Spec('/Users/timhutchinson/test.fits')
-skyfibers = n.where(specs.ebt1 == 0)[0][0:2]
-specs.flux = specs.flux[skyfibers]
-specs.ivar = specs.ivar[skyfibers]
-specs.dof = specs.dof[skyfibers]
+specs = donna_spec.Spec('/uufs/astro.utah.edu/common/home/u0814744/test.fits')
+#skyfibers = n.where(specs.ebt1 == 0)[0][0:2]
+#specs.flux = specs.flux[skyfibers]
+#specs.ivar = specs.ivar[skyfibers]
+#specs.dof = specs.dof[skyfibers]
 
 ''' Instantiate zfinder object that will do z-finding for the entire plate using a single template.  Here, fname is the template filename, assumed to be in $REDMONSTER_DIR/templates/ . npoly specifies number of polynomial terms to be used in finding, zmin and zmax are upper and lower bounds of the redshift range to be explored. Optionally, npixstep can specify the width of pixel steps in doing the cross-correlation.  If left blank, it defaults to 1.'''
 
