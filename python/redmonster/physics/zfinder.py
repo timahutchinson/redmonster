@@ -124,7 +124,7 @@ class Zfinder:
                                 if (f[0] < 0):
                                     temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model #if (f[0] < 0): temp_zwarning[i,j,l] = int(temp_zwarning[i,j,l]) | flag_val_neg_model
                                     zchi2arr[i,j,(l/self.npixstep)] = 1e9
-                            else:
+                            except:
                                 zchi2arr[i,j,(l/self.npixstep)] = 1e9
                     else:
                         for l in n.arange(num_z)*self.npixstep: #for l in range(num_z):
@@ -134,7 +134,7 @@ class Zfinder:
                                 if (f[0] < 0.):
                                     temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model #if (f[0] < 0.): temp_zwarning[i,j,l] = int(temp_zwarning[i,j,l]) | flag_val_neg_model
                                     zchi2arr[i,j,(l/self.npixstep)] = 1e9
-                            else:
+                            except:
                                 zchi2arr[i,j,(l/self.npixstep)] = 1e9
         for i in xrange(self.zwarning.shape[0]): # Use only neg_model flag from best fit model/redshift and add it to self.zwarning
             minpos = ( n.where(zchi2arr[i] == n.min(zchi2arr[i]))[0][0] , n.where(zchi2arr[i] == n.min(zchi2arr[i]))[1][0] )
