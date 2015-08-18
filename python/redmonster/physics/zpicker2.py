@@ -26,10 +26,11 @@ class Zpicker:
         self.npixflux = specobj.npix
         self.flux = specobj.flux
         self.ivar = specobj.ivar
-        if specobj.plate: self.plate = specobj.plate
-        if specobj.mjd: self.mjd = specobj.mjd
-        if specobj.fiberid: self.fiberid = specobj.fiberid
-        if specobj.hdr: self.hdr = specobj.hdr
+        if hasattr(specobj,'plate'): self.plate = specobj.plate
+        if hasattr(specobj,'mjd'): self.mjd = specobj.mjd
+        if hasattr(specobj,'fiberid'): self.fiberid = specobj.fiberid
+        if hasattr(specobj,'hdr'): self.hdr = specobj.hdr
+        else: self.hdr = fits.Header()
         self.threshold = zfitobjs[0].threshold
         self.fname = []
         self.type = []

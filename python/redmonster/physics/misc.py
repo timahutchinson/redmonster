@@ -97,7 +97,7 @@ def comb_flags(specobj, zfindobj, zfitobj):
     flags = n.zeros(nfib)
     for ifiber in xrange(nfib):
         if hasattr(specobj, 'zwarning'): flags[ifiber] = (int(specobj.zwarning[ifiber]) | int(zfindobj.zwarning[ifiber])) | int(zfitobj.zwarning[ifiber])
-        else: flags[fiber] = int(zfindobj.zwarning[ifiber]) | int(zfitobj.zwarning[ifiber])
+        else: flags[ifiber] = int(zfindobj.zwarning[ifiber]) | int(zfitobj.zwarning[ifiber])
     return flags
 
 def comb_flags_2(specobj, zfitflags):

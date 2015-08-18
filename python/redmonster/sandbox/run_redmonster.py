@@ -8,6 +8,7 @@
 import numpy as n
 from astropy.io import fits
 from redmonster.datamgr import spec, io, io2
+from redmonster.sandbox import donna_spec
 from redmonster.physics import zfinder, zfitter, zpicker, zpicker2
 from redmonster.sandbox import yanny as y
 from redmonster.physics import misc
@@ -23,7 +24,13 @@ fiberid = [0] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy a
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
 
-specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
+#specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
+
+specs = donna_spec.Spec('/Users/timhutchinson/test.fits')
+skyfibers = n.where(specs.ebt1 == 0)[0][0:2]
+specs.flux = specs.flux[skyfibers]
+specs.ivar = specs.ivar[skyfibers]
+specs.dof = specs.dof[skyfibers]
 
 ''' Instantiate zfinder object that will do z-finding for the entire plate using a single template.  Here, fname is the template filename, assumed to be in $REDMONSTER_DIR/templates/ . npoly specifies number of polynomial terms to be used in finding, zmin and zmax are upper and lower bounds of the redshift range to be explored. Optionally, npixstep can specify the width of pixel steps in doing the cross-correlation.  If left blank, it defaults to 1.'''
 
@@ -78,6 +85,10 @@ flags.append(star_flags)
 flags.append(qso_flags)
 
 zpick = zpicker2.Zpicker(specs, zfindobjs, zfitobjs, flags)
+
+zpick.plate = 0000
+zpick.mjd = 00000
+zpick.fiberid = skyfibers.tolist()
 
 ''' Write output file.  Arguments are zpick object from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
 
