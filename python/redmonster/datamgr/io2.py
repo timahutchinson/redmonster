@@ -249,7 +249,7 @@ class Write_Redmonster:
         try: hdr.remove('HUMIDITY')
         except: pass
         hdr.extend([('VERS_RM','v0.1.0','Version of redmonster used'),('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster completion'), ('NFIBERS', len(self.zpick.z), 'Number of fibers'), ('NZ', len(self.zpick.z[0]), 'Number of redshifts retained'),('RCHI2TH',self.zpick.threshold,'Reduced chi**2 threshold used')])
-        prihdu = fits.PrimaryHDU(hdr)
+        prihdu = fits.PrimaryHDU(header=hdr)
         # Columns for 1st BIN table
         colslist = []
         colslist.append( fits.Column(name='FIBERID', format='J', array=self.zpick.fiberid) )
