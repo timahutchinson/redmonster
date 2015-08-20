@@ -88,7 +88,7 @@ zpick = zpicker2.Zpicker(specs, zfindobjs, zfitobjs, flags)
 
 zpick.plate = 0000
 zpick.mjd = 00000
-#zpick.fiberid = skyfibers.tolist()
+zpick.fiberid = [0]
 
 ''' Write output file.  Arguments are zpick object from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
 
