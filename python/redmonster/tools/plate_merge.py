@@ -1,4 +1,4 @@
 from redmonster.datamgr import io2
 
-output = io.Merge_Redmonster()
+output = io2.Merge_Redmonster()
 output.merge_plates2()
