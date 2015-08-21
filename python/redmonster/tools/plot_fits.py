@@ -23,7 +23,7 @@ from astropy.convolution import convolve, Box1DKernel
 class Plot_Fit(Frame):
     def __init__ (self):
         self.root = Tk()
-        self.ablinelist = [3733.7, 3968.5]
+        self.ablinelist = [3933.7, 3968.5]
         self.ablinenames = ['Ca K', 'Ca H']
         self.emlinelist = [2500]
         self.emlinenames = ['test emline']
