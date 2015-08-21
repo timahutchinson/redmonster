@@ -125,7 +125,7 @@ class Plot_Fit(Frame):
         loc = n.where(self.fiberid == self.fiber)[0]
         if self.znum == 1:
             z = self.z[loc[0],0]
-                thistype = self.type1[loc[0]]
+            thistype = self.type1[loc[0]]
         elif self.znum == 2:
             z = self.z[loc[0],1]
             thistype = self.type2[loc[0]]
