@@ -169,7 +169,8 @@ class Zpicker:
             ninv = n.diag(ivar)
             f = n.linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat), n.dot( n.dot(n.transpose(pmat),ninv),flux) ); f = n.array(f)
             return n.dot(pmat,f), tuple(f)
-        except:
+        except Exception as e:
+            print "Exception: %r" % e
             return n.zeros(self.npixflux), (0,)
         '''
         try: # Some eBOSS spectra have ivar[i] = 0 for all i
