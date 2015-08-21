@@ -810,6 +810,8 @@ class Merge_Redmonster:
             prihdu = fits.PrimaryHDU(header=self.hdr)
             colslist = []
             colslist.append( fits.Column(name='FIBERID', format='J', array=self.fiberid) )
+            colslist.append( fits.Column(name='PLATE', format='J', array=self.platelist) )
+            colslist.append( fits.Column(name='MJD', format='J', array=self.mjdlist) )
             colslist.append( fits.Column(name='DOF', format='J', array=self.dof) )
             try: colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.boss_target1) )
             except: pass
