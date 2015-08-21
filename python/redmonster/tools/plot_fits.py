@@ -167,7 +167,7 @@ class Plot_Fit(Frame):
                         for i, line in enumerate(self.emlinelist):
                             a.axvline(line*(1+z), color='red', linestyle='--', label=self.emlinenames[i])
                     if self.ablines.get() == 1 or self.emlines.get() == 1:
-                        p.legend(prop={'size':10})
+                        a.legend(prop={'size':10})
                 elif self.restframe.get() == 1:
                     #a.plot(self.wave/(1+self.z[loc][0]), self.models[loc[0]], color='black')
                     a.plot(self.wave/(1+z), self.models[loc[0]][self.znum], color='cyan') # See comment above
@@ -178,7 +178,7 @@ class Plot_Fit(Frame):
                         for i, line in enumerate(self.emlinelist):
                             a.axvline(line, color='red', linestyle='--', label=self.emlinenames[i])
                     if self.ablines.get() == 1 or self.emlines.get() == 1:
-                        p.legend(prop={'size':10})
+                        a.legend(prop={'size':10})
                 a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, z, thistype, self.zwarning[loc[0]]))
             else:
                 print 'Fiber %s is not in redmonster-%s-%s.fits' % (self.fiber, self.plate, self.mjd)
