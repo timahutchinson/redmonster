@@ -149,12 +149,12 @@ class Plot_Fit(Frame):
                 if self.restframe.get() == 0:
                     a.plot(self.wave, self.specs[self.fiber], color='black')
                 elif self.restframe.get() == 1:
-                    a.plot(self.wave/(1+self.z[loc][0]), self.specs[self.fiber], color='black')
+                    a.plot(self.wave/(1+z), self.specs[self.fiber], color='black')
             else:
                 if self.restframe.get() == 0:
                     a.plot(self.wave, convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='black')
                 elif self.restframe.get() == 1:
-                    a.plot(self.wave/(1+self.z[loc][0]), convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='black')
+                    a.plot(self.wave/(1+z), convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='black')
             # Overplot model
             if len(loc) is not 0:
                 if self.restframe.get() == 0:
@@ -162,10 +162,10 @@ class Plot_Fit(Frame):
                     a.plot(self.wave, self.models[loc[0]][self.znum], color='cyan') # This for when multiple models are in redmonster file
                     if self.ablines.get() == 1:
                         for i, line in enumerate(self.ablinelist):
-                            p.axvline(line*(1+z), color='blue', linestyle='--', label=self.ablinenames[i])
+                            a.axvline(line*(1+z), color='blue', linestyle='--', label=self.ablinenames[i])
                     if self.emlines.get() == 1:
                         for i, line in enumerate(self.emlinelist):
-                            p.axvline(line*(1+z), color='red', linestyle='--', label=self.emlinenames[i])
+                            a.axvline(line*(1+z), color='red', linestyle='--', label=self.emlinenames[i])
                     if self.ablines.get() == 1 or self.emlines.get() == 1:
                         p.legend(prop={'size':10})
                 elif self.restframe.get() == 1:
@@ -173,13 +173,13 @@ class Plot_Fit(Frame):
                     a.plot(self.wave/(1+z), self.models[loc[0]][self.znum], color='cyan') # See comment above
                     if self.ablines.get() == 1:
                         for i, line in enumerate(self.ablinelist):
-                            p.axvline(line, color='blue', linestyle='--', label=self.ablinenames[i])
+                            a.axvline(line, color='blue', linestyle='--', label=self.ablinenames[i])
                     if self.emlines.get() == 1:
                         for i, line in enumerate(self.emlinelist):
-                            p.axvline(line, color='red', linestyle='--', label=self.emlinenames[i])
+                            a.axvline(line, color='red', linestyle='--', label=self.emlinenames[i])
                     if self.ablines.get() == 1 or self.emlines.get() == 1:
                         p.legend(prop={'size':10})
-                a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, z, thistype, self.zwarning[loc][0]))
+                a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, z, thistype, self.zwarning[loc[0]]))
             else:
                 print 'Fiber %s is not in redmonster-%s-%s.fits' % (self.fiber, self.plate, self.mjd)
                 a.set_title('Plate %s Fiber %s' % (self.plate, self.fiber))
