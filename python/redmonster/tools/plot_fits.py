@@ -123,6 +123,21 @@ class Plot_Fit(Frame):
         f = Figure(figsize=(10,6), dpi=100)
         a = f.add_subplot(111)
         loc = n.where(self.fiberid == self.fiber)[0]
+        if self.znum == 1:
+            z = self.z[loc[0],0]
+                thistype = self.type1[loc[0]]
+            elif self.znum == 2:
+                z = self.z[loc[0],1]
+                thistype = self.type2[loc[0]]
+        elif self.znum == 3:
+            z = self.z[loc[0],2]
+                thistype = self.type3[loc[0]]
+            elif self.znum == 4:
+                z = self.z[loc[0],3]
+                thistype = self.type4[loc[0]]
+        elif self.znum == 5:
+            z = self.z[loc[0],4]
+                thistype = self.type5[loc[0]]
         if self.var.get() == 0:
             if self.restframe.get() == 0:
                 a.plot(self.wave, self.specs[self.fiber], color='black')
@@ -142,21 +157,6 @@ class Plot_Fit(Frame):
                     a.plot(self.wave/(1+self.z[loc][0]), convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='black')
             # Overplot model
             if len(loc) is not 0:
-                if self.znum == 1:
-                    z = self.z[loc[0],0]
-                    thistype = self.type1[loc[0]]
-                elif self.znum == 2:
-                    z = self.z[loc[0],1]
-                    thistype = self.type2[loc[0]]
-                elif self.znum == 3:
-                    z = self.z[loc[0],2]
-                    thistype = self.type3[loc[0]]
-                elif self.znum == 4:
-                    z = self.z[loc[0],3]
-                    thistype = self.type4[loc[0]]
-                elif self.znum == 5:
-                    z = self.z[loc[0],4]
-                    thistype = self.type5[loc[0]]
                 if self.restframe.get() == 0:
                     #a.plot(self.wave, self.models[loc[0]], color='black')
                     a.plot(self.wave, self.models[loc[0]][self.znum], color='cyan') # This for when multiple models are in redmonster file
