@@ -178,7 +178,7 @@ class Plot_Fit(Frame):
                         for i, line in self.emlinelist:
                             p.axvline(line, color='red', linestyle='--', label=self.emlinenames[i])
                     if self.ablines.get() == 1 or self.emlines.get() == 1:
-                        p.legend(prop={'size':10}))
+                        p.legend(prop={'size':10})
                 a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, z, thistype, self.zwarning[loc][0]))
             else:
                 print 'Fiber %s is not in redmonster-%s-%s.fits' % (self.fiber, self.plate, self.mjd)
