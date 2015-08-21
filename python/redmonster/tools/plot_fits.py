@@ -161,10 +161,10 @@ class Plot_Fit(Frame):
                     #a.plot(self.wave, self.models[loc[0]], color='black')
                     a.plot(self.wave, self.models[loc[0]][self.znum], color='cyan') # This for when multiple models are in redmonster file
                     if self.ablines.get() == 1:
-                        for i, line in self.ablinelist:
+                        for i, line in enumerate(self.ablinelist):
                             p.axvline(line*(1+z), color='blue', linestyle='--', label=self.ablinenames[i])
                     if self.emlines.get() == 1:
-                        for i, line in self.emlinelist:
+                        for i, line in enumerate(self.emlinelist):
                             p.axvline(line*(1+z), color='red', linestyle='--', label=self.emlinenames[i])
                     if self.ablines.get() == 1 or self.emlines.get() == 1:
                         p.legend(prop={'size':10})
@@ -172,10 +172,10 @@ class Plot_Fit(Frame):
                     #a.plot(self.wave/(1+self.z[loc][0]), self.models[loc[0]], color='black')
                     a.plot(self.wave/(1+z), self.models[loc[0]][self.znum], color='cyan') # See comment above
                     if self.ablines.get() == 1:
-                        for i, line in self.ablinelist:
+                        for i, line in enumerate(self.ablinelist):
                             p.axvline(line, color='blue', linestyle='--', label=self.ablinenames[i])
                     if self.emlines.get() == 1:
-                        for i, line in self.emlinelist:
+                        for i, line in enumerate(self.emlinelist):
                             p.axvline(line, color='red', linestyle='--', label=self.emlinenames[i])
                     if self.ablines.get() == 1 or self.emlines.get() == 1:
                         p.legend(prop={'size':10})
