@@ -786,8 +786,8 @@ class Merge_Redmonster:
                         if exists(filepath):
                             hdu = fits.open(filepath)
                             self.fiberid += hdu[1].data.FIBERID.tolist()
-                            self.platelist += [plate]*len(hdu[1].data.FIBERID.tolist())
-                            self.mjdlist += [mjd]*len(hdu[1].data.FIBERID.tolist())
+                            self.platelist += [int(plate)]*len(hdu[1].data.FIBERID.tolist())
+                            self.mjdlist += [int(mjd)]*len(hdu[1].data.FIBERID.tolist())
                             self.dof += hdu[1].data.DOF.tolist()
                             try: self.boss_target1 += hdu[1].data.BOSS_TARGET1.tolist()
                             except: pass
