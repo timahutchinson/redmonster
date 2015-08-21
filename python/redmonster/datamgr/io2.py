@@ -779,6 +779,7 @@ class Merge_Redmonster:
                     for x in iglob( join( topdir, run2d, '%s' % plate, run1d, 'redmonster-%s-*.fits' % plate) ):
                         if basename(x)[16:21] not in mjds: mjds.append(basename(x)[16:21])
                 except: mjds = None
+                import pdb; pdb.set_trace()
                 if mjds is not [] and mjds is not None:
                     for mjd in mjds:
                         filepath = join( topdir, run2d, '%s' % plate, run1d, 'redmonster-%s-%s.fits' % (plate, mjd))
