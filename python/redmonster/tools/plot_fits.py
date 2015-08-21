@@ -94,8 +94,17 @@ class Plot_Fit(Frame):
             self.wave = 10**(hdu[0].header['COEFF0'] + n.arange(hdu[0].header['NAXIS1'])*hdu[0].header['COEFF1'])
             self.models = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[2].data
             self.fiberid = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.FIBERID
-            self.type = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS
-            self.z = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z1
+            self.type1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS1
+            self.type2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS2
+            self.type3 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS3
+            self.type4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS4
+            self.type5 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS5
+            self.z = n.zeros((self.fiberid.shape[0],5))
+            self.z[:,0] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z1
+            self.z[:,1] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z2
+            self.z[:,2] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z3
+            self.z[:,3] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z4
+            self.z[:,4] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z5
             self.zwarning = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.ZWARNING
         else:
             self.fiber = int(self.e3.get())
@@ -121,13 +130,28 @@ class Plot_Fit(Frame):
                     a.plot(self.wave/(1+self.z[loc][0]), convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='red')
             # Overplot model
             if len(loc) is not 0:
+                if self.znum == 1:
+                    z = self.z[loc[0],0]
+                    thistype = self.type1[loc[0]]
+                elif self.znum == 2:
+                    z = self.z[loc[0],1]
+                    thistype = self.type2[loc[0]]
+                elif self.znum == 3:
+                    z = self.z[loc[0],2]
+                    thistype = self.type3[loc[0]]
+                elif self.znum == 4:
+                    z = self.z[loc[0],3]
+                    thistype = self.type4[loc[0]]
+                elif self.znum == 5:
+                    z = self.z[loc[0],4]
+                    thistype = self.type5[loc[0]]
                 if self.restframe.get() == 0:
-                    a.plot(self.wave, self.models[loc[0]], color='black')
-                    #a.plot(self.wave, self.models[loc[0]][znum], color='black') # This for when multiple models are in redmonster file
+                    #a.plot(self.wave, self.models[loc[0]], color='black')
+                    a.plot(self.wave, self.models[loc[0]][znum], color='black') # This for when multiple models are in redmonster file
                 elif self.restframe.get() == 1:
-                    a.plot(self.wave/(1+self.z[loc][0]), self.models[loc[0]], color='black')
-                    #a.plot(self.wave/(1+self.z[loc][0]), self.models[loc[0]][znum], color='black') # See comment above
-                a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, self.z[loc][0], self.type[loc][0], self.zwarning[loc][0]))
+                    #a.plot(self.wave/(1+self.z[loc][0]), self.models[loc[0]], color='black')
+                    a.plot(self.wave/(1+z), self.models[loc[0]][znum], color='black') # See comment above
+                    a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, z, thistype, self.zwarning[loc][0]))
             else:
                 print 'Fiber %s is not in redmonster-%s-%s.fits' % (self.fiber, self.plate, self.mjd)
                 a.set_title('Plate %s Fiber %s' % (self.plate, self.fiber))
