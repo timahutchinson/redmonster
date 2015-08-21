@@ -806,7 +806,7 @@ class Merge_Redmonster:
                             self.rchi2diff += hdu[1].data.RCHI2DIFF.tolist()
         
             #self.hdr['NFIBERS'] = len(self.fiberid)
-            self.hdr.extend([('SPEC2D',environ['RUN2D'],'Version of spec2d reductions used'),('VERS_RM','v0.1.0','Version of redmonster used'),('TIME',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster-all creation'), ('NFIBERS', len(self.zpick.z), 'Number of fibers'), ('NZ', len(self.zpick.z[0]), 'Number of redshifts retained'),('RCHI2TH',self.zpick.threshold,'Reduced chi**2 threshold used')])
+            self.hdr.extend([('SPEC2D',environ['RUN2D'],'Version of spec2d reductions used'),('VERS_RM','v0.1.0','Version of redmonster used'),('TIME',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster-all creation'), ('NFIBERS', len(self.fiberid)), 'Number of fibers'), ('RCHI2TH',0.005,'Reduced chi**2 threshold used')])
             prihdu = fits.PrimaryHDU(header=self.hdr)
             colslist = []
             colslist.append( fits.Column(name='FIBERID', format='J', array=self.fiberid) )
