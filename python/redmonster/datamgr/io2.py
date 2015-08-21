@@ -248,7 +248,7 @@ class Write_Redmonster:
         except: hdr = fits.Header()
         try: hdr.remove('HUMIDITY')
         except: pass
-        hdr.extend([('SPEC2D',environ['RUN2D'],'Version of spec2d reductions used'),('VERS_RM','v0.1.0','Version of redmonster used'),('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster completion'), ('NFIBERS', len(self.zpick.z), 'Number of fibers'), ('NZ', len(self.zpick.z[0]), 'Number of redshifts retained'),('RCHI2TH',self.zpick.threshold,'Reduced chi**2 threshold used')])
+        hdr.extend([('SPEC2D',environ['RUN2D'],'Version of spec2d reductions used'),('VERS_RM','v0.1.0','Version of redmonster used'),('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster completion'), ('NFIBERS', len(self.zpick.z), 'Number of fibers'), ('NZ', len(self.zpick.z[0]), 'Number of redshifts retained'),('RCHI2TH',self.zpick.rchi2threshold,'Reduced chi**2 threshold used')])
         prihdu = fits.PrimaryHDU(header=hdr)
         # Columns for 1st BIN table
         colslist = []

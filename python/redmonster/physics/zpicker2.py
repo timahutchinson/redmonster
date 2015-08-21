@@ -63,9 +63,10 @@ class Zpicker:
         self.classify_obj(zfindobjs, zfitobjs, flags)
 
 
-    def classify_obj(self, zfindobjs, zfitobjs, flags, rchi2threshold=0.01):
+    def classify_obj(self, zfindobjs, zfitobjs, flags, rchi2threshold=0.005):
         # Build dictionary of template position in object lists vs position in ordered lists (i.e. if the chi2.argmin() = 14, and tempdict[14] = 3, then the min chi2 is from the template corresponding to zfindobjs[3])
         # While looping over templates, also build out an array of rchi2 values for each
+        self.rchi2threshold = rchi2threshold
         tempdict = {}
         poslist = range(self.num_z)*len(zfindobjs) # Builds list of 0:num_z repeated ntemps times (i.e., [0,1,2,3,0,1,2,3,0,1,2,3] for num_z=4 and 3 templates)
         rchi2s = []
@@ -137,7 +138,7 @@ class Zpicker:
             self.npixstep.append(npixsteptuple)
             self.rchi2diff.append( self.minrchi2[ifiber][1] - self.minrchi2[ifiber][0])
             self.fs.append( fstuple )
-            if self.rchi2diff < rchi2threshold:
+            if self.rchi2diff < self.rchi2threshold:
                 self.flag_small_dchi2(ifiber)
             self.flag_null_fit(ifiber, flags)
         self.zwarning = map(int, self.zwarning)
