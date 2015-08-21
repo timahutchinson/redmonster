@@ -803,7 +803,7 @@ class Merge_Redmonster:
                             self.npixstep += hdu[1].data.NPIXSTEP1.tolist()
                             self.theta += hdu[1].data.THETA1.tolist()
                             self.zwarning += hdu[1].data.ZWARNING.tolist()
-                            self.rchi2diff += hdu[1].data.CHI2DIFF.tolist()
+                            self.rchi2diff += hdu[1].data.RCHI2DIFF.tolist()
         
             self.hdr['NFIBERS'] = len(self.fiberid)
             prihdu = fits.PrimaryHDU(header=self.hdr)
