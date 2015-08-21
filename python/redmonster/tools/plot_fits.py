@@ -159,7 +159,7 @@ class Plot_Fit(Frame):
                     thistype = self.type5[loc[0]]
                 if self.restframe.get() == 0:
                     #a.plot(self.wave, self.models[loc[0]], color='black')
-                    a.plot(self.wave, self.models[loc[0]][znum], color='cyan') # This for when multiple models are in redmonster file
+                    a.plot(self.wave, self.models[loc[0]][self.znum], color='cyan') # This for when multiple models are in redmonster file
                     if self.ablines.get() == 1:
                         for i, line in self.ablinelist:
                             p.axvline(line*(1+z), color='blue', linestyle='--', label=self.ablinenames[i])
@@ -170,7 +170,7 @@ class Plot_Fit(Frame):
                         p.legend(prop={'size':10})
                 elif self.restframe.get() == 1:
                     #a.plot(self.wave/(1+self.z[loc][0]), self.models[loc[0]], color='black')
-                    a.plot(self.wave/(1+z), self.models[loc[0]][znum], color='cyan') # See comment above
+                    a.plot(self.wave/(1+z), self.models[loc[0]][self.znum], color='cyan') # See comment above
                     if self.ablines.get() == 1:
                         for i, line in self.ablinelist:
                             p.axvline(line, color='blue', linestyle='--', label=self.ablinenames[i])
