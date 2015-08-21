@@ -24,7 +24,7 @@ class Plot_Fit(Frame):
     def __init__ (self):
         self.root = Tk()
         self.ablinelist = [3890.2, 3933.7, 3968.5, 4102.9, 4307, 4341.7, 4862.7, 5175, 5889, 5895]
-        self.ablinenames = ['H$\epsilon$','Ca K', 'Ca H', 'H$\delta$', 'Ca G', 'H$\gamma$', 'H$\beta$', 'Mg I', 'Na I', 'Na I']
+        self.ablinenames = [r'H$\epsilon$','Ca K', 'Ca H', r'H$\delta$', 'Ca G', r'H$\gamma$', r'H$\beta$', 'Mg I', 'Na I', 'Na I']
         self.emlinelist = [2500]
         self.emlinenames = ['test emline']
         self.plate = None
