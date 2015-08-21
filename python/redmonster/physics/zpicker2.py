@@ -138,7 +138,7 @@ class Zpicker:
             self.npixstep.append(npixsteptuple)
             self.rchi2diff.append( self.minrchi2[ifiber][1] - self.minrchi2[ifiber][0])
             self.fs.append( fstuple )
-            if self.rchi2diff[ifiber] < self.rchi2threshold:
+            if self.rchi2diff[ifiber] < self.rchi2threshold or n.isnan(self.rchi2diff[ifiber]):
                 self.flag_small_dchi2(ifiber)
             self.flag_null_fit(ifiber, flags)
         self.zwarning = map(int, self.zwarning)
