@@ -23,6 +23,10 @@ from astropy.convolution import convolve, Box1DKernel
 class Plot_Fit(Frame):
     def __init__ (self):
         self.root = Tk()
+        self.ablinelist = [3729]
+        self.ablinenames = ['test abline']
+        self.emlinelist = [2500]
+        self.emlinenames = ['test emline']
         self.plate = None
         self.mjd = None
         #
@@ -60,21 +64,29 @@ class Plot_Fit(Frame):
         self.var.set(1)
         self.restframe = BooleanVar()
         self.restframe.set(0)
+        self.ablines = BooleanVar()
+        self.ablines.set(0)
+        self.emlines = BooleanVar()
+        self.emlines.set(0)
         c = Checkbutton(self.root, text='Overplot best-fit model', variable=self.var)
         c.grid(row=4, column=1)
         restframe = Checkbutton(self.root, text='Rest-frame wavelength', variable=self.restframe)
         restframe.grid(row=5,column=1)
+        ablines = Checkbutton(self.root, text='Show absorption lines ', variable=self.ablines)
+        ablines.grid(row=6, column=1)
+        emlines = Checkbutton(self.root, text='Show emission lines    ', variable=self.emlines)
+        emlines.grid(row=7, column=1)
         #
         smooth = StringVar()
         smooth.set('5')
         L4 = Label(self.root, text='Smooth')
         L4.grid(sticky=E)
         self.e4 = Entry(self.root, textvariable=smooth)
-        self.e4.grid(row=6, column=1)
+        self.e4.grid(row=8, column=1)
         plot = Button(self.root, text='Plot', command=self.do_plot)
-        plot.grid(row=7, column=1)
+        plot.grid(row=9, column=1)
         qbutton = Button(self.root, text='QUIT', fg='red', command=self.root.destroy)
-        qbutton.grid(row=8, column=1)
+        qbutton.grid(row=10, column=1)
         nextfiber = Button(self.root, text='>', command=self.next_fiber)
         nextfiber.grid(row=2, column=4)
         prevfiber = Button(self.root, text='<', command=self.prev_fiber)
@@ -113,21 +125,21 @@ class Plot_Fit(Frame):
         loc = n.where(self.fiberid == self.fiber)[0]
         if self.var.get() == 0:
             if self.restframe.get() == 0:
-                a.plot(self.wave, self.specs[self.fiber], color='red')
+                a.plot(self.wave, self.specs[self.fiber], color='black')
             elif self.restframe.get() == 1:
-                a.plot(self.wave/(1+self.z[loc][0]), self.specs[self.fiber], color='red')
+                a.plot(self.wave/(1+self.z[loc][0]), self.specs[self.fiber], color='black')
         elif self.var.get() == 1:
             smooth = self.e4.get()
             if smooth is '':
                 if self.restframe.get() == 0:
-                    a.plot(self.wave, self.specs[self.fiber], color='red')
+                    a.plot(self.wave, self.specs[self.fiber], color='black')
                 elif self.restframe.get() == 1:
-                    a.plot(self.wave/(1+self.z[loc][0]), self.specs[self.fiber], color='red')
+                    a.plot(self.wave/(1+self.z[loc][0]), self.specs[self.fiber], color='black')
             else:
                 if self.restframe.get() == 0:
-                    a.plot(self.wave, convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='red')
+                    a.plot(self.wave, convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='black')
                 elif self.restframe.get() == 1:
-                    a.plot(self.wave/(1+self.z[loc][0]), convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='red')
+                    a.plot(self.wave/(1+self.z[loc][0]), convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='black')
             # Overplot model
             if len(loc) is not 0:
                 if self.znum == 1:
@@ -147,11 +159,27 @@ class Plot_Fit(Frame):
                     thistype = self.type5[loc[0]]
                 if self.restframe.get() == 0:
                     #a.plot(self.wave, self.models[loc[0]], color='black')
-                    a.plot(self.wave, self.models[loc[0]][znum], color='black') # This for when multiple models are in redmonster file
+                    a.plot(self.wave, self.models[loc[0]][znum], color='cyan') # This for when multiple models are in redmonster file
+                    if self.ablines.get() == 1:
+                        for i, line in self.ablinelist:
+                            p.axvline(line*(1+z), color='blue', linestyle='--', label=self.ablinenames[i])
+                    if self.emlines.get() == 1:
+                        for i, line in self.emlinelist:
+                            p.axvline(line*(1+z), color='red', linestyle='--', label=self.emlinenames[i])
+                    if self.ablines.get() == 1 or self.emlines.get() == 1:
+                        p.legend(prop={'size':10})
                 elif self.restframe.get() == 1:
                     #a.plot(self.wave/(1+self.z[loc][0]), self.models[loc[0]], color='black')
-                    a.plot(self.wave/(1+z), self.models[loc[0]][znum], color='black') # See comment above
-                    a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, z, thistype, self.zwarning[loc][0]))
+                    a.plot(self.wave/(1+z), self.models[loc[0]][znum], color='cyan') # See comment above
+                    if self.ablines.get() == 1:
+                        for i, line in self.ablinelist:
+                            p.axvline(line, color='blue', linestyle='--', label=self.ablinenames[i])
+                    if self.emlines.get() == 1:
+                        for i, line in self.emlinelist:
+                            p.axvline(line, color='red', linestyle='--', label=self.emlinenames[i])
+                    if self.ablines.get() == 1 or self.emlines.get() == 1:
+                        p.legend(prop={'size':10}))
+                a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, z, thistype, self.zwarning[loc][0]))
             else:
                 print 'Fiber %s is not in redmonster-%s-%s.fits' % (self.fiber, self.plate, self.mjd)
                 a.set_title('Plate %s Fiber %s' % (self.plate, self.fiber))
