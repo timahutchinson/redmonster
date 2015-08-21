@@ -176,11 +176,11 @@ class Plot_Fit(Frame):
                     if self.ablines.get() == 1:
                         for i, line in enumerate(self.ablinelist):
                             if (line > self.wave[0]) & (line < self.wave[-1]):
-                            a.axvline(line, color='blue', linestyle='--', label=self.ablinenames[i])
+                                a.axvline(line, color='blue', linestyle='--', label=self.ablinenames[i])
                     if self.emlines.get() == 1:
                         for i, line in enumerate(self.emlinelist):
                             if (line > self.wave[0]) & (line < self.wave[-1]):
-                            a.axvline(line, color='red', linestyle='--', label=self.emlinenames[i])
+                                a.axvline(line, color='red', linestyle='--', label=self.emlinenames[i])
                     if self.ablines.get() == 1 or self.emlines.get() == 1:
                         a.legend(prop={'size':10})
                 a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, z, thistype, self.zwarning[loc[0]]))
