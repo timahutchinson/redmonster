@@ -188,6 +188,12 @@ class Plot_Fit(Frame):
                 print 'Fiber %s is not in redmonster-%s-%s.fits' % (self.fiber, self.plate, self.mjd)
                 a.set_title('Plate %s Fiber %s' % (self.plate, self.fiber))
 
+        if self.restframe.get() == 1:
+            lower_data, upper_data = self.set_limits()
+            a.axis([self.wave[0]/(1+z)-100,self.wave[-1]/(1+z)+100,lower_data,upper_data])
+        elif self.restframe.get() == 0:
+            lower_data, upper_data = self.set_limits()
+            a.axis([self.wave[0]-100,self.wave[-1]+100,lower_data,upper_data])
         a.set_xlabel('Wavelength ($\AA$)')
         a.set_ylabel('Flux ($10^{-17} erg\ cm^2 s^{-1} \AA^{-1}$)')
         canvas = FigureCanvasTkAgg(f, master=self.root)
@@ -254,6 +260,12 @@ class Plot_Fit(Frame):
                 self.e5.delete(0, END)
                 self.e5.insert(0, str(self.znum))
                 self.do_plot()
+
+    def set_limits(self, percentile=.95):
+        sorted_flux = n.sort( self.specs[self.fiber] )
+        bottom_ind = int(n.floor((1-percentile)/2. * sorted_flux.shape[0]))
+        top_ind = n.ceil(sorted_flux.shape[0] - bottom_ind)
+        return sorted_flux[bottom_ind], sorted_flux[top_ind]
 
 
 
