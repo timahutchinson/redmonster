@@ -31,7 +31,7 @@ try: run2d = environ['RUN2D']
 except: run2d = None
 spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
-if platedir:
+if spallpath:
     cjob = 0
     q.create(label='zfind_sequels_lrg_r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
     hdu = fits.open(spallpath)
