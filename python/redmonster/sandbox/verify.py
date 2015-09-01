@@ -386,10 +386,10 @@ class verify_rm:
         print float(count) / float(total)
 
 
-    def dz_to_dv(self, dz):
+    def dz_to_dv(self, z, dz):
         # Convert redshift error dz to velocity error dv
         c_kms = 299792.458 # speed of light in km s^-1
-        return dz * c_kms
+        return (dz * c_kms) / (1 + z)
 
 
     def redshift_bin_fibers(self, fibers, zmin, zmax):
@@ -798,12 +798,13 @@ class verify_rm:
         p.axis([.55,2,0,.4])
         '''
         ax2 = f.add_subplot(1,1,1)
-        labels = ['0.4<z<0.5','0.5<z<0.6','0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0']
+        labels = ['0.5<z<0.6','0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0','0.9<z<1.0']
         nbins = 25
-        for j,zmin in enumerate(n.linspace(.4,.9,6)): #from (.4,.7,4)
+        for j,zmin in enumerate(n.linspace(.5,1.0,6)): #from (.4,.7,4)
             #import pdb; pdb.set_trace()
             zmax = zmin + .1
             errors = n.array([])
+            zs = n.array([])
             count = 0
             '''
             for plate in self.plates:
@@ -822,8 +823,9 @@ class verify_rm:
                     if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
                         count += 1
                         errors = n.append(errors,self.rm_zerr1[i])
+                        zs = n.append(zs,z)
             #errors.append(self.rm_zerr1[fibers].tolist())
-            errors = self.dz_to_dv(errors)
+            errors = self.dz_to_dv(zs, errors)
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
             bins = n.zeros(nbins)
