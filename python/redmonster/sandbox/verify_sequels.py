@@ -779,7 +779,7 @@ class verify_rm:
         ax2 = f.add_subplot(1,1,1)
         labels = ['0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0','0.9<z<1.0']
         nbins = 25
-        for j,zmin in enumerate(n.linspace(.6,1.0,5)): #from (.4,.7,4)
+        for j,zmin in enumerate(n.linspace(.6,.9,4)): #from (.4,.7,4)
             #import pdb; pdb.set_trace()
             zmax = zmin + .1
             errors = n.array([])
