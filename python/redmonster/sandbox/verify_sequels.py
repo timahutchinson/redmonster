@@ -845,6 +845,7 @@ class verify_rm:
         for i,fiber in enumerate(self.rm_fibers_summary):
             plate = self.rm_plates_summary[i]
             mjd = self.rm_mjds_summary[i]
+            print '%s-%s-%s' % (plate,fiber,mjd)
             self.read_spZbest_all(plate,mjd)
             if (self.sn_median[fiber,0] <= sn_max):
                 total += 1
