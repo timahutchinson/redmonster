@@ -663,20 +663,30 @@ class verify_rm:
         #self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
         self.rm_type = hdu[1].data.CLASS
         self.rm_zwarning = hdu[1].data.ZWARNING
+        self.rm_fibers_summary = hdu[1].data.FIBERID
+        self.rm_plates_summary = hdu[1].data.PLATE
+        self.rm_mjds_summary = hdu[1].data.MJD
 
 
-    def read_spPlate_all(self,plate):
+    def read_spPlate_all(self,plate, mjd=None):
         # Read in the spPlate file for a given plate in the context of the entire DR10 dataset
-        globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-*.fits' % plate )
-        spPlatepaths = []
-        for spPlatepath in iglob(globpath):
-            spPlatepaths.append(spPlatepath)
-        spPlatepaths.sort()
-        hdu = fits.open(spPlatepaths[0])
-        try: self.eboss_target0 = hdu[5].data.EBOSS_TARGET0
-        except: pass
-        try: self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
-        except: pass
+        if mjd is not None:
+            hdu = fits.open( join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-%.fits' % (plate,mjd) ) )
+            try: self.eboss_target0 = hdu[5].data.EBOSS_TARGET0
+            except: pass
+            try: self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
+            except: pass
+        else:
+            globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-*.fits' % plate )
+            spPlatepaths = []
+            for spPlatepath in iglob(globpath):
+                spPlatepaths.append(spPlatepath)
+            spPlatepaths.sort()
+            hdu = fits.open(spPlatepaths[0])
+            try: self.eboss_target0 = hdu[5].data.EBOSS_TARGET0
+            except: pass
+            try: self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
+            except: pass
 
 
     def read_spZbest_all(self,plate):
@@ -826,6 +836,14 @@ class verify_rm:
         i_sn = []
         z_sn = []
         globpath = join( self.redmonster_spectro_redux,'*')
+        self.read_redmonster_summary_file()
+        for i,fiber in enumerate(self.rm_fibers_summary):
+            plate = self.rm_plates_summary[i]
+            mjd = self.rm_mjds_summary[i]
+            self.read_spZbest_all(plate,mjd)
+            if self.sn_median[fiber,0] <= sn_max):
+                total += 1
+        '''
         for path in iglob(globpath):
             plate = basename(path)
             if plate != 'redmonster-all-%s.fits' % self.version:
@@ -892,9 +910,12 @@ class verify_rm:
         print rbins
         print rhist
         print rtotal
+        '''
         print total
+        '''
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
+        '''
 
 
     def cmass_logdv_vs_sn_histos_all(self, nbins=25):
