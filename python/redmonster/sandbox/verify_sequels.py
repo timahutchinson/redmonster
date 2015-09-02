@@ -812,7 +812,7 @@ class verify_rm:
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
             p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
-        ax2.tick_params(axis='x',which='minor',bottom='off')
+        p.minorticks_on()
         p.xlabel(r'$\log_{10} \delta v$ (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta v$', size=16)
         p.title('SEQUELS LRGs', size=18)
