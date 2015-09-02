@@ -828,7 +828,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
 
 
-    def sequels_failure_vs_sn_all(self,sn_max=5,nbins=40):
+    def sequels_failure_vs_sn_all(self,sn_max=5,nbins=25):
         # Makes plot of SEQUELS LRG target failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
         f = p.figure()
         ax = f.add_subplot(1,1,1)
