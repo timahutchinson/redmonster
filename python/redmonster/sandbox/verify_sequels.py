@@ -689,26 +689,14 @@ class verify_rm:
         self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
 
 
-    def cmass_completeness_all(self):
+    def sequels_completeness_all(self):
         # Prints percent of all SEQUELS LRG targets with rm_zwarning == 0
         count = 0
         total = 0
-        #globpath = join( self.redmonster_spectro_redux, '*')
-        #for path in iglob(globpath):
-        #    plate = basename(path)
-        #    print plate
-        #    #self.read_spPlate_all(plate)
-        #    #fibers = self.get_cmass()
-        #    self.read_redmonster_all(plate)
-        #    #for fiber in fibers:
-        #    for fiber in xrange(self.rm_zwarning.shape[0]):
-        #        total += 1
-        #        if self.rm_zwarning[fiber] == 0:
-        #            count += 1
         self.read_redmonster_summary_file()
         for zwarn in self.rm_zwarning:
             total += 1
-            if zwarn == 0:
+            if zwarn & 2 == 0:
                 count += 1
         avg = float(count) / float(total)
         print count
@@ -716,7 +704,7 @@ class verify_rm:
         print avg
 
 
-    def cmass_galaxy_completeness_all(self):
+    def sequels_galaxy_completeness_all(self):
         # Prints percent of all DR10 CMASS targets that have rm_warning == 0 and were classified as 'ssp_em_galaxy'
         count = 0
         total = 0
@@ -743,7 +731,7 @@ class verify_rm:
         print avg
 
 
-    def cmass_logdv_vs_z_histos_all(self, nbins=12):
+    def sequels_logdv_vs_z_histos_all(self, nbins=12):
         # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
         colors = ['tomato','sage','cornflowerblue','sandybrown','mediumpurple','grey']
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
@@ -823,8 +811,8 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
 
 
-    def cmass_failure_vs_sn_all(self,sn_max=10,nbins=29):
-        # Makes plot of CMASS failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
+    def sequels_failure_vs_sn_all(self,sn_max=10,nbins=29):
+        # Makes plot of SEQUELS LRG target failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
         f = p.figure()
         ax = f.add_subplot(1,1,1)
         total = 0
@@ -898,7 +886,7 @@ class verify_rm:
         p.plot(zbins,zhist,color='cyan',label='z-band')
         ax.set_yscale('log')
         p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=14)
-        p.ylabel(r'CMASS failure rate', size=14)
+        p.ylabel(r'SEQUELS LRG target failure rate', size=14)
         #print rbins
         #print rhist
         #print rtotal
