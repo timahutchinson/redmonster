@@ -889,9 +889,9 @@ class verify_rm:
         ax.set_yscale('log')
         p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=14)
         p.ylabel(r'SEQUELS LRG target failure rate', size=14)
-        #print rbins
-        #print rhist
-        #print rtotal
+        print rbins
+        print rhist
+        print rtotal
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
 
