@@ -13,7 +13,7 @@ from scipy.optimize import curve_fit
 
 class verify_rm:
     
-    def __init__(self,version='v5_7_0',plates=[3686,3687,3804,3805,3853,3855,3856,3860],mjds={3686:55268,3687:55269,3804:55267,3805:55269,3853:55268,3855:55268,3856:55269,3860:55269}):
+    def __init__(self,version='v5_8_0',plates=[3686,3687,3804,3805,3853,3855,3856,3860],mjds={3686:55268,3687:55269,3804:55267,3805:55269,3853:55268,3855:55268,3856:55269,3860:55269}):
         self.version = version
         self.plates = plates
         self.mjds = mjds
@@ -23,7 +23,7 @@ class verify_rm:
         self.zpipe = None
         self.vitype = None
         self.comments = None
-        self.yanny_to_arrays()
+        #self.yanny_to_arrays()
         #self.rm_z = []
         #self.rm_class = []
         #self.rm_zwarning = []
@@ -634,7 +634,7 @@ class verify_rm:
 
 # --------------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------------
-# ---------------------------------------- FULL DR10 METHODS ONLY BELOW THIS LINE ------------------------------------------------------
+# ---------------------------------------- FULL SEQUELS METHODS ONLY BELOW THIS LINE ------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------------
 
@@ -650,7 +650,7 @@ class verify_rm:
         self.rm_z1 = hdu[1].data.Z1
         self.rm_zerr1 = hdu[1].data.Z_ERR1
         self.rm_fibers = hdu[1].data.FIBERID
-        self.rm_type = hdu[1].data.CLASS
+        self.rm_type = hdu[1].data.CLASS1
         self.rm_zwarning = hdu[1].data.ZWARNING
         
         
@@ -658,8 +658,8 @@ class verify_rm:
         # Read the redmonster summary file
         summary_path = join( self.redmonster_spectro_redux, 'redmonster-all-%s.fits' % self.version )
         hdu = fits.open(summary_path)
-        self.rm_z1 = hdu[1].data.Z1
-        self.rm_zerr1 = hdu[1].data.Z_ERR1
+        self.rm_z1 = hdu[1].data.Z
+        self.rm_zerr1 = hdu[1].data.Z_ERR
         #self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
         self.rm_type = hdu[1].data.CLASS
         self.rm_zwarning = hdu[1].data.ZWARNING
@@ -673,7 +673,7 @@ class verify_rm:
             spPlatepaths.append(spPlatepath)
         spPlatepaths.sort()
         hdu = fits.open(spPlatepaths[0])
-        self.boss_target1 = hdu[5].data.BOSS_TARGET1
+        self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
 
 
     def read_spZbest_all(self,plate):
@@ -689,7 +689,7 @@ class verify_rm:
 
 
     def cmass_completeness_all(self):
-        # Prints percent of all DR10 CMASS targets with rm_zwarning == 0
+        # Prints percent of all SEQUELS LRG targets with rm_zwarning == 0
         count = 0
         total = 0
         #globpath = join( self.redmonster_spectro_redux, '*')
@@ -709,27 +709,6 @@ class verify_rm:
             total += 1
             if zwarn == 0:
                 count += 1
-        avg = float(count) / float(total)
-        print count
-        print total
-        print avg
-
-
-    def lowz_completeness_all(self):
-        # Prints percent of all DR10 LOWZ targets with rm_zwarning == 0
-        count = 0
-        total = 0
-        globpath = join( self.redmonster_spectro_redux, '*')
-        for path in iglob(globpath):
-            plate = basename(path)
-            print plate
-            self.read_spPlate_all(plate)
-            self.read_redmonster_all(plate)
-            fibers = self.get_lowz()
-            for fiber in fibers:
-                total += 1
-                if self.rm_zwarning[fiber] == 0:
-                    count += 1
         avg = float(count) / float(total)
         print count
         print total
@@ -798,9 +777,9 @@ class verify_rm:
         p.axis([.55,2,0,.4])
         '''
         ax2 = f.add_subplot(1,1,1)
-        labels = ['0.5<z<0.6','0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0','0.9<z<1.0']
+        labels = ['0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0','0.9<z<1.0']
         nbins = 25
-        for j,zmin in enumerate(n.linspace(.5,1.0,6)): #from (.4,.7,4)
+        for j,zmin in enumerate(n.linspace(.6,1.0,5)): #from (.4,.7,4)
             #import pdb; pdb.set_trace()
             zmax = zmin + .1
             errors = n.array([])
