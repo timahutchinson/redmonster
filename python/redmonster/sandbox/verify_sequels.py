@@ -777,9 +777,9 @@ class verify_rm:
         p.axis([.55,2,0,.4])
         '''
         ax2 = f.add_subplot(1,1,1)
-        labels = ['0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0','0.9<z<1.0']
+        labels = ['0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0']
         nbins = 25
-        for j,zmin in enumerate(n.linspace(.6,.9,4)): #from (.4,.7,4)
+        for j,zmin in enumerate(n.linspace(.6,.9,4)):
             #import pdb; pdb.set_trace()
             zmax = zmin + .1
             errors = n.array([])
@@ -814,7 +814,7 @@ class verify_rm:
             p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
-        p.title('CMASS Sample', size=18)
+        p.title('SEQUELS LRGs', size=18)
         p.axis([.5,3.0,0,.3])
         p.legend()
         p.subplots_adjust(wspace = .35)
