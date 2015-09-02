@@ -892,6 +892,7 @@ class verify_rm:
         print rbins
         print rhist
         print rtotal
+        print total
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
 
