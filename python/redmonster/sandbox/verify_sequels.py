@@ -673,7 +673,7 @@ class verify_rm:
             spPlatepaths.append(spPlatepath)
         spPlatepaths.sort()
         hdu = fits.open(spPlatepaths[0])
-        self.eboss_target0 = hud[5].data.EBOSS_TARGET0
+        self.eboss_target0 = hdu[5].data.EBOSS_TARGET0
         self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
 
 
