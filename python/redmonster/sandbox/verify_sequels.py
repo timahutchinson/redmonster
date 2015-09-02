@@ -841,12 +841,17 @@ class verify_rm:
         i_sn = []
         z_sn = []
         globpath = join( self.redmonster_spectro_redux,'*')
+        openplate = 0
+        openmjd = 0
         self.read_redmonster_summary_file()
         for i,fiber in enumerate(self.rm_fibers_summary):
             plate = self.rm_plates_summary[i]
             mjd = self.rm_mjds_summary[i]
             print '%s-%s-%s' % (plate,fiber,mjd)
-            self.read_spZbest_all(plate,mjd)
+            if (openplate != plate) and (openmjd != mjd):
+                self.read_spZbest_all(plate,mjd)
+                openplate = plate
+                openmjd = mjd
             if (self.sn_median[fiber,0] <= sn_max):
                 total += 1
         '''
