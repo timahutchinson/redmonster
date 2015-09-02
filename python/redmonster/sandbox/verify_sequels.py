@@ -828,7 +828,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
 
 
-    def sequels_failure_vs_sn_all(self,sn_max=5,nbins=25):
+    def sequels_failure_vs_sn_all(self,sn_max=5,nbins=20):
         # Makes plot of SEQUELS LRG target failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
         f = p.figure()
         ax = f.add_subplot(1,1,1)
@@ -840,6 +840,9 @@ class verify_rm:
         r_sn = []
         i_sn = []
         z_sn = []
+        rmax = 0
+        imax = 0
+        zmax = 0
         globpath = join( self.redmonster_spectro_redux,'*')
         openplate = 0
         openmjd = 0
@@ -855,8 +858,11 @@ class verify_rm:
             if (self.sn_median[fiber,0] <= sn_max):
                 total += 1
                 r_sn.append(self.sn_median[fiber,0])
+                if self.sn_median[fiber,0] > rmax: rmax = self.sn_median[fiber,0]
                 i_sn.append(self.sn_median[fiber,1])
+                if self.sn_median[fiber,1] > imax: imax = self.sn_median[fiber,1]
                 z_sn.append(self.sn_median[fiber,2])
+                if self.sn_median[fiber,2] > zmax: zmax = self.sn_median[fiber,2]
                 if (self.rm_zwarning[i] > 0):
                     bad_fibers.append(fiber)
                     bad_r_sn.append(self.sn_median[fiber,0])
@@ -902,10 +908,13 @@ class verify_rm:
         ax.set_yscale('log')
         p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=14)
         p.ylabel(r'SEQUELS LRG target failure rate', size=14)
-        #print rbins
-        #print rhist
-        #print rtotal
-        #print total
+        print rbins
+        print rhist
+        print rtotal
+        print total
+        print rmax
+        print imax
+        print zmax
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
 
