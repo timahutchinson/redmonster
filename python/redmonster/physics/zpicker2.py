@@ -51,14 +51,9 @@ class Zpicker:
         #self.minrchi2 = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
         self.minrchi2 = []
         self.rchi2diff = []
-        try:
-            self.boss_target1 = specobj.boss_target1
-        except:
-            pass
-        try:
-            self.eboss_target1 = specobj.eboss_target1
-        except:
-            pass
+        if hasattr(specobj,'boss_target1'): self.boss_target1 = specobj.boss_target1
+        if hasattr(specobj,'eboss_target0'): self.eboss_target0 = specobj.eboss_target0
+        if hasattr(specojb, 'eboss_target1'): self.eboss_target1 = specobj.eboss_target1
 
         self.classify_obj(zfindobjs, zfitobjs, flags)
 

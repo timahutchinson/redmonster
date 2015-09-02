@@ -256,6 +256,8 @@ class Write_Redmonster:
         colslist.append( fits.Column(name='DOF', format='J', array=self.zpick.dof) )
         if hasattr(self.zpick, 'boss_target1'):
             colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.zpick.boss_target1) )
+        if hasattr(self.zpick, 'eboss_target0'):
+            colslist.append( fits.Column(name='EBOSS_TARGET0', format='J', array=self.zpick.eboss_target0) )
         if hasattr(self.zpick, 'eboss_target1'):
             colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.zpick.eboss_target1) )
         for i in xrange(len(self.zpick.z[0])):
@@ -430,6 +432,10 @@ class Merge_Redmonster:
                 except:
                     pass
                 try:
+                    self.eboss_target0.append(hdu[1].data.EBOSS_TARGET0[0])
+                except:
+                    pass
+                try:
                     self.eboss_target1.append(hdu[1].data.EBOSS_TARGET1[0])
                 except:
                     pass
@@ -451,6 +457,7 @@ class Merge_Redmonster:
         self.npixstep = []
         self.chi2diff = []
         self.boss_target1 = []
+        self.eboss_target0 = []
         self.eboss_target1 = []
         self.plates = []
         self.models = n.zeros((1,1))
@@ -520,6 +527,7 @@ class Merge_Redmonster:
         self.fiberid = []
         self.dof = []
         self.boss_target1 = []
+        self.eboss_target0 = []
         self.eboss_target1 = []
         self.z1 = []
         self.z_err1 = []
@@ -659,6 +667,10 @@ class Merge_Redmonster:
                 except:
                     pass
                 try:
+                    self.eboss_target0.append(hdu[1].data.EBOSS_TARGET0[0])
+                except:
+                    pass
+                try:
                     self.eboss_target1.append(hdu[1].data.EBOSS_TARGET1[0])
                 except:
                     pass
@@ -671,7 +683,8 @@ class Merge_Redmonster:
             colslist.append( fits.Column(name='DOF', format='J', array=self.dof) )
             try: colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.boss_target1) )
             except: pass
-            try:colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.eboss_target1) )
+            try: colslist.append( fits.Column(name='EBOSS_TARGET0', format='J', array=self.eboss_target0) )
+            try: colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.eboss_target1) )
             except: pass
             colslist.append( fits.Column(name='Z1', format='E', array=self.z1) )
             colslist.append( fits.Column(name='Z_ERR1', format='E', array=self.z_err1) )
@@ -741,6 +754,7 @@ class Merge_Redmonster:
         self.fiberid = []
         self.dof = []
         self.boss_target1 = []
+        self.eboss_target0 = []
         self.eboss_target1 = []
         self.z = []
         self.z_err = []
@@ -790,6 +804,8 @@ class Merge_Redmonster:
                             self.dof += hdu[1].data.DOF.tolist()
                             try: self.boss_target1 += hdu[1].data.BOSS_TARGET1.tolist()
                             except: pass
+                            try: self.eboss_target0 += hdu[1].data.EBOSS_TARGET0.tolist()
+                            except: pass
                             try: self.eboss_target1 += hdu[1].data.EBOSS_TARGET1.tolist()
                             except: pass
                             self.z += hdu[1].data.Z1.tolist()
@@ -814,6 +830,8 @@ class Merge_Redmonster:
             colslist.append( fits.Column(name='MJD', format='J', array=self.mjdlist) )
             colslist.append( fits.Column(name='DOF', format='J', array=self.dof) )
             try: colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.boss_target1) )
+            except: pass
+            try: colslist.append( fits.Column(name='EBOSS_TARGET0', format='J', array=self.eboss_target0) )
             except: pass
             try:colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.eboss_target1) )
             except: pass

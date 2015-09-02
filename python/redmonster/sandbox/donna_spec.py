@@ -14,5 +14,6 @@ class Spec:
         self.ivar = hdu[1].data
         self.loglambda = hdu[0].header['COEFF0'] + n.arange(hdu[0].header['NAXIS1']) * hdu[0].header['COEFF1']
         self.dof = n.array([self.flux.shape[-1]]*self.flux.shape[0])
+        self.ebt0 = hdu[5].data.EBOSS_TARGET0
         self.ebt1 = hdu[5].data.EBOSS_TARGET1
         self.npix = hdu[0].header['NAXIS1']

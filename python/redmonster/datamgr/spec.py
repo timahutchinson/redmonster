@@ -70,7 +70,11 @@ class Spec:
             self.plugmap = hdu[5].data
             try:
                 self.boss_target1 = hdu[5].data.BOSS_TARGET1
-            except:
+            except Exception as e:
+                pass
+            try:
+                self.eboss_target0 = hdu[5].data.EBOSS_TARGET0
+            except Exception as e:
                 pass
             try:
                 self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
@@ -111,6 +115,10 @@ class Spec:
             self.plugmap = self.plugmap[fiberid]
             try:
                 self.boss_target1 = self.boss_target1[fiberid]
+            except:
+                pass
+            try:
+                self.eboss_target0 = self.eboss_target0[fiberid]
             except:
                 pass
             try:
