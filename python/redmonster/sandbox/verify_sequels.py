@@ -692,7 +692,7 @@ class verify_rm:
     def read_spZbest_all(self,plate,mjd=None):
         # Read in the spZbest file for a given plate
         if mjd is not None:
-            hdu = fits.open(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd) )
+            hdu = fits.open(join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd) ))
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
         else:
