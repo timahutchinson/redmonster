@@ -673,8 +673,10 @@ class verify_rm:
             spPlatepaths.append(spPlatepath)
         spPlatepaths.sort()
         hdu = fits.open(spPlatepaths[0])
-        self.eboss_target0 = hdu[5].data.EBOSS_TARGET0
-        self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
+        try: self.eboss_target0 = hdu[5].data.EBOSS_TARGET0
+        except: pass
+        try: self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
+        except: pass
 
 
     def read_spZbest_all(self,plate):
@@ -696,7 +698,7 @@ class verify_rm:
         self.read_redmonster_summary_file()
         for zwarn in self.rm_zwarning:
             total += 1
-            if zwarn & 2 == 0:
+            if zwarn & 4 == 0:
                 count += 1
         avg = float(count) / float(total)
         print count
