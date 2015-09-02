@@ -841,7 +841,7 @@ class verify_rm:
             plate = self.rm_plates_summary[i]
             mjd = self.rm_mjds_summary[i]
             self.read_spZbest_all(plate,mjd)
-            if self.sn_median[fiber,0] <= sn_max):
+            if (self.sn_median[fiber,0] <= sn_max):
                 total += 1
         '''
         for path in iglob(globpath):
