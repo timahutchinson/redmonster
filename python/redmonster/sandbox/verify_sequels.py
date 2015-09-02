@@ -902,9 +902,9 @@ class verify_rm:
                         zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
                     except:
                         zhist[i] = 0
-        p.plot(rbins,rhist,color='purple',label='r-band')
-        p.plot(ibins,ihist,color='blue',label='i-band')
-        p.plot(zbins,zhist,color='cyan',label='z-band')
+        p.plot(rbins,rhist,color='purple',label='r-band', drawstyle='steps-mid')
+        p.plot(ibins,ihist,color='blue',label='i-band', drawstyle='steps-mid')
+        p.plot(zbins,zhist,color='cyan',label='z-band', drawstyle='steps-mid')
         ax.set_yscale('log')
         p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=14)
         p.ylabel(r'SEQUELS LRG target failure rate', size=14)
