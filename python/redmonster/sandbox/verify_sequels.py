@@ -671,7 +671,7 @@ class verify_rm:
     def read_spPlate_all(self,plate, mjd=None):
         # Read in the spPlate file for a given plate in the context of the entire DR10 dataset
         if mjd is not None:
-            hdu = fits.open( join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-%.fits' % (plate,mjd) ) )
+            hdu = fits.open( join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd) ) )
             try: self.eboss_target0 = hdu[5].data.EBOSS_TARGET0
             except: pass
             try: self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
@@ -689,16 +689,21 @@ class verify_rm:
             except: pass
 
 
-    def read_spZbest_all(self,plate):
+    def read_spZbest_all(self,plate,mjd=None):
         # Read in the spZbest file for a given plate
-        globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-*.fits' % plate )
-        spZbestpaths = []
-        for spZbestpath in iglob(globpath):
-            spZbestpaths.append(spZbestpath)
-        spZbestpaths.sort()
-        hdu = fits.open(spZbestpaths[0])
-        self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
-        self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
+        if mjd is not None:
+            hdu = fits.open(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd) )
+            self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
+            self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
+        else:
+            globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-*.fits' % plate )
+            spZbestpaths = []
+            for spZbestpath in iglob(globpath):
+                spZbestpaths.append(spZbestpath)
+            spZbestpaths.sort()
+            hdu = fits.open(spZbestpaths[0])
+            self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
+            self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
 
 
     def sequels_completeness_all(self):
