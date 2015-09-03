@@ -1170,6 +1170,7 @@ class verify_rm:
         print count4
         print count5
         print count6
+        print (count1+count2+count3+count4+count5+count6)/float(self.rm_fibers_summary.shape[0])
 
         '''ax3 = f.add_subplot(3,1,3)
         errors1 = n.array([])
