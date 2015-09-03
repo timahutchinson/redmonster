@@ -1375,7 +1375,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_scatter.pdf')
 
 
-    def sequels_rchi2_histos(self,nbins=50):
+    def sequels_rchi2_histos(self,nbins=50, rchi2=True):
         rm_rchi2s = []
         idl_rchi2s = []
         openplate = 0
@@ -1393,8 +1393,12 @@ class verify_rm:
                 openmjd = mjd
             if (self.rm_rchi2s[i] < 2) and (self.idl_rchi2s[fiber] < 2):
                 total += 1
-                rm_rchi2s.append(self.rm_rchi2s[i] * self.rm_dof[i])
-                idl_rchi2s.append(self.idl_rchi2s[fiber] * self.idl_dof[fiber])
+                if rchi2:
+                    rm_rchi2s.append(self.rm_rchi2s[i])
+                    idl_rchi2s.append(self.idl_rchi2s[fiber])
+                else:
+                    rm_rchi2s.append(self.rm_rchi2s[i] * self.rm_dof[i])
+                    idl_rchi2s.append(self.idl_rchi2s[fiber] * self.idl_dof[fiber])
                 #rm_rchi2s.append(self.rm_rchi2diff[i])
                 #idl_rchi2s.append(self.idl_rchi2diff[fiber])
         rmhist,rmbinedges = n.histogram(rm_rchi2s,nbins)
