@@ -669,6 +669,7 @@ class verify_rm:
         self.rm_mjds_summary = hdu[1].data.MJD
         self.rm_rchi2s = hdu[1].data.MINRCHI2
         self.rm_dof = hdu[1].data.DOF
+        self.rm_rchi2diff = hdu[1].data.RCHI2DIFF
 
 
     def read_spPlate_all(self,plate, mjd=None):
@@ -700,6 +701,7 @@ class verify_rm:
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
             self.idl_rchi2s = hdu[1].data.RCHI2
             self.idl_dof = hdu[1].data.DOF
+            self.idl_rchi2diff = hdu[1].data.RCHI2DIFF
             #self.modelmag = hdu[1].data.MODELMAG[:,2:]
             #self.extinction = hdu[1].data.EXTINCTION[:,2:]
         else:
@@ -711,6 +713,8 @@ class verify_rm:
             hdu = fits.open(spZbestpaths[0])
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
+            self.idl_dof = hdu[1].data.DOF
+            self.idl_rchi2diff = hdu[1].data.RCHI2DIFF
             #self.modelmag = hdu[1].data.MODELMAG[:,2:]
             #eself.extinction = hdu[1].data.EXTINCTION[:,2:]
 
@@ -1389,8 +1393,10 @@ class verify_rm:
                 openmjd = mjd
             if (self.rm_rchi2s[i] < 2) and (self.idl_rchi2s[fiber] < 2):
                 total += 1
-                rm_rchi2s.append(self.rm_rchi2s[i] * self.rm_dof[i])
-                idl_rchi2s.append(self.idl_rchi2s[fiber] * self.idl_dof[fiber])
+                #rm_rchi2s.append(self.rm_rchi2s[i] * self.rm_dof[i])
+                #idl_rchi2s.append(self.idl_rchi2s[fiber] * self.idl_dof[fiber])
+                rm_rchi2s.append(self.rm_rchi2diff[i])
+                idl_rchi2s.append(self.idl_rchi2diff[fiber])
         rmhist,rmbinedges = n.histogram(rm_rchi2s,nbins)
         rmbins = n.zeros(nbins)
         for i in xrange(nbins):
@@ -1403,6 +1409,7 @@ class verify_rm:
         idlhist = idlhist / float(total)
         p.plot(rmbins, rmhist, color='red', drawstyle='steps-mid', label='redmonster')
         p.plot(idlbins, idlhist, color='blue', drawstyle='steps-mid', label='idlspec1d')
+        p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_histos.pdf')
 
 
