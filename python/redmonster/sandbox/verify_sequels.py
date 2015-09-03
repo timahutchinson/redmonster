@@ -1397,7 +1397,7 @@ class verify_rm:
         idlhist, idlbinedges = n.histogram(idl_rchi2s,nbins)
         idlbins = n.zeros(nbins)
         for i in xrange(nbins):
-            idlins[i] = (idlbinedges[i+1]+idlbinedges[i])/2.
+            idlbins[i] = (idlbinedges[i+1]+idlbinedges[i])/2.
         idlhist = idlhist / float(total)
         p.plot(rmbins, rmhist, color='blue', drawstyle='steps-mid', label='redmonster')
         p.plot(idlbins, idlhist, color='red', drawstyle='steps-mid', label='idlspec1d')
