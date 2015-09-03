@@ -695,8 +695,8 @@ class verify_rm:
             hdu = fits.open(join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd) ))
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
-            self.modelmag = hdu[1].data.MODELMAG[:,2:]
-            self.extinction = hdu[1].data.EXTINCTION[:,2:]
+            #self.modelmag = hdu[1].data.MODELMAG[:,2:]
+            #self.extinction = hdu[1].data.EXTINCTION[:,2:]
         else:
             globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-*.fits' % plate )
             spZbestpaths = []
@@ -706,8 +706,8 @@ class verify_rm:
             hdu = fits.open(spZbestpaths[0])
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
-            self.modelmag = hdu[1].data.MODELMAG[:,2:]
-            self.extinction = hdu[1].data.EXTINCTION[:,2:]
+            #self.modelmag = hdu[1].data.MODELMAG[:,2:]
+            #self.extinction = hdu[1].data.EXTINCTION[:,2:]
 
 
     def sequels_completeness_all(self):
