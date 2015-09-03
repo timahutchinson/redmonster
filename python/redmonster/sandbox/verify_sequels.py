@@ -983,7 +983,7 @@ class verify_rm:
                             errors6 = n.append(errors6,self.rm_zerr1[i])
                             z6 = n.append(z1,self.rm_z1[i])
                             count6 += 1
-        errors1 = self.dz_to_dv(errors1)
+        errors1 = self.dz_to_dv(errors1,z1)
         errors1 = n.log10(errors1)
         hist1,binedges1 = n.histogram(errors1, bins=nbins)
         bins1 = n.zeros(nbins)
@@ -991,7 +991,7 @@ class verify_rm:
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
         normhist1 = hist1 / float(count1)
         p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0], label=labels[0])
-        errors2 = self.dz_to_dv(errors2)
+        errors2 = self.dz_to_dv(errors2, z2)
         errors2 = n.log10(errors2)
         hist2,binedges2 = n.histogram(errors2, bins=nbins)
         bins2 = n.zeros(nbins)
@@ -999,7 +999,7 @@ class verify_rm:
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         normhist2 = hist2 / float(count2)
         p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1], label=labels[1])
-        errors3 = self.dz_to_dv(errors3)
+        errors3 = self.dz_to_dv(errors3,z3)
         errors3 = n.log10(errors3)
         hist3,binedges3 = n.histogram(errors3, bins=nbins)
         bins3 = n.zeros(nbins)
@@ -1007,7 +1007,7 @@ class verify_rm:
             bins3[i] = (binedges3[i+1]+binedges3[i])/2.
         normhist3 = hist3 / float(count3)
         p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2], label=labels[2])
-        errors4 = self.dz_to_dv(errors4)
+        errors4 = self.dz_to_dv(errors4,z4)
         errors4 = n.log10(errors4)
         hist4,binedges4 = n.histogram(errors4, bins=nbins)
         bins4 = n.zeros(nbins)
@@ -1015,7 +1015,7 @@ class verify_rm:
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
         p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3], label=labels[3])
-        errors5 = self.dz_to_dv(errors5)
+        errors5 = self.dz_to_dv(errors5,z5)
         errors5 = n.log10(errors5)
         hist5,binedges5 = n.histogram(errors5, bins=nbins)
         bins5 = n.zeros(nbins)
@@ -1023,7 +1023,7 @@ class verify_rm:
             bins5[i] = (binedges5[i+1]+binedges5[i])/2.
         normhist5 = hist5 / float(count5)
         p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4], label=labels[4])
-        errors6 = self.dz_to_dv(errors6)
+        errors6 = self.dz_to_dv(errors6,z6)
         errors6 = n.log10(errors6)
         hist6,binedges6 = n.histogram(errors6, bins=nbins)
         bins6 = n.zeros(nbins)
