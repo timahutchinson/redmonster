@@ -945,6 +945,8 @@ class verify_rm:
         count4 = 0
         count5 = 0
         count6 = 0
+        openplate = 0
+        openmjd = 0
         self.read_redmonster_summary_file()
         for j,sn_min in enumerate(n.linspace(1,6,6)):
             sn_max = sn_min + 1
