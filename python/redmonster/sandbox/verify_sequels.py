@@ -1036,6 +1036,7 @@ class verify_rm:
         print count5
         print bins1
         print normhist1
+        print errors1
 
     '''
         for path in iglob(globpath):
