@@ -1171,8 +1171,7 @@ class verify_rm:
         print count5
         print count6
 
-'''
-        ax3 = f.add_subplot(3,1,3)
+        '''ax3 = f.add_subplot(3,1,3)
         errors1 = n.array([])
         errors2 = n.array([])
         errors3 = n.array([])
