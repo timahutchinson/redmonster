@@ -652,6 +652,7 @@ class verify_rm:
         self.rm_fibers = hdu[1].data.FIBERID
         self.rm_type = hdu[1].data.CLASS1
         self.rm_zwarning = hdu[1].data.ZWARNING
+
         
         
     def read_redmonster_summary_file(self):
@@ -666,6 +667,7 @@ class verify_rm:
         self.rm_fibers_summary = hdu[1].data.FIBERID
         self.rm_plates_summary = hdu[1].data.PLATE
         self.rm_mjds_summary = hdu[1].data.MJD
+        self.rm_rchi2s = hdu[1].data.RCHI2
 
 
     def read_spPlate_all(self,plate, mjd=None):
@@ -695,6 +697,7 @@ class verify_rm:
             hdu = fits.open(join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd) ))
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
+            self.idl_rchi2s = hdu[1].data.RCHI2
             #self.modelmag = hdu[1].data.MODELMAG[:,2:]
             #self.extinction = hdu[1].data.EXTINCTION[:,2:]
         else:
@@ -1336,7 +1339,7 @@ class verify_rm:
                     except:
                         ihist[i] = 0
         p.plot(ibins,ihist,color='blue',drawstyle='steps-mid',label='i-band')
-        p.axis([imin,imax,.001,1])
+        p.axis([imin,imax,.01,1])
         ax.set_yscale('log')
         p.axvline(21.8,linestyle='--',color='k')
         p.xlabel(r'$i$-band magnitude',size=14)
@@ -1364,6 +1367,37 @@ class verify_rm:
         p.xlabel('Redshift',size=16)
         p.ylabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_scatter.pdf')
+
+
+    def sequels_rchi2_histos(self,nbins=25):
+        rm_rchi2s = []
+        idl_rchi2s = []
+        openplate = 0
+        openmjd = 0
+        total = 0
+        self.read_redmonster_summary_file()
+        for i,fiber in enumerate(self.rm_fibers_summary):
+            plate = self.rm_plates_summary[i]
+            mjd = self.rm_mjds_summary[i]
+            print '%s-%s-%s' % (plate,fiber,mjd)
+            if (openplate != plate) and (openmjd != mjd):
+                self.read_spZbest_all(plate,mjd)
+                self.read_spPlate_all(plate,mjd)
+                openplate = plate
+                openmjd = mjd
+            if self.rm_rchi2s[i] < 2:
+                total += 1
+                rm_rchi2s.append(self.rm_rmchi2s[i])
+                idl_rchi2s.append(self.idl_rchi2s[fiber])
+        rmhist,rmbinedges = n.histogram(rm_rchi2s,nbins)
+        rmbins = n.zeros(nbins)
+        for i in xrange(nbins):
+            rmbins[i] = (rmbinedges[i+1]+rmbinedges[i])/2.
+        rmhist = rmhist / float(total)
+        p.plot(rmbins, rmhist, color='blue', drawstyle='steps-mid', label='redmonster')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_histos.pdf')
+
+
 
 
     def cmass_reobs_errors(self, nbins=25):
