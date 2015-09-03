@@ -1297,7 +1297,7 @@ class verify_rm:
         print (count1+count2+count3+count4+count5+count6)/float(self.rm_fibers_summary.shape[0])
 
 
-    def sequels_failure_vs_imag_all(self,imin=17.5,imax=24,nbins=25):
+    def sequels_failure_vs_imag_all(self,imin=18,imax=24,nbins=21):
         # Makes plot of SEQUELS LRG failure rate (zwarning > 0) vs i-band magnitude
         f = p.figure()
         ax = f.add_subplot(1,1,1)
@@ -1339,7 +1339,7 @@ class verify_rm:
         p.axis([imin,imax,.001,1])
         ax.set_yscale('log')
         p.axvline(21.8,linestyle='--',color='k')
-        p.xlabel(r'i-band magnitude',size=14)
+        p.xlabel(r'$i$-band magnitude',size=14)
         p.ylabel(r'Failure rate', size=14)
         #print rbins
         #print rhist
