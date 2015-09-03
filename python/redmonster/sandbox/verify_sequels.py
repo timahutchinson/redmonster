@@ -1338,7 +1338,7 @@ class verify_rm:
         p.plot(ibins,ihist,color='blue',drawstyle='steps-mid',label='i-band')
         p.axis([imin,imax,.001,1])
         ax.set_yscale('log')
-        p.axvline(21.5,linestyle='--',color='k')
+        p.axvline(21.8,linestyle='--',color='k')
         p.xlabel(r'i-band magnitude',size=14)
         p.ylabel(r'Failure rate', size=14)
         #print rbins
