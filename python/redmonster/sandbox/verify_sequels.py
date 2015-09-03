@@ -1393,10 +1393,10 @@ class verify_rm:
                 openmjd = mjd
             if (self.rm_rchi2s[i] < 2) and (self.idl_rchi2s[fiber] < 2):
                 total += 1
-                #rm_rchi2s.append(self.rm_rchi2s[i] * self.rm_dof[i])
-                #idl_rchi2s.append(self.idl_rchi2s[fiber] * self.idl_dof[fiber])
-                rm_rchi2s.append(self.rm_rchi2diff[i])
-                idl_rchi2s.append(self.idl_rchi2diff[fiber])
+                rm_rchi2s.append(self.rm_rchi2s[i] * self.rm_dof[i])
+                idl_rchi2s.append(self.idl_rchi2s[fiber] * self.idl_dof[fiber])
+                #rm_rchi2s.append(self.rm_rchi2diff[i])
+                #idl_rchi2s.append(self.idl_rchi2diff[fiber])
         rmhist,rmbinedges = n.histogram(rm_rchi2s,nbins)
         rmbins = n.zeros(nbins)
         for i in xrange(nbins):
@@ -1409,6 +1409,8 @@ class verify_rm:
         idlhist = idlhist / float(total)
         p.plot(rmbins, rmhist, color='red', drawstyle='steps-mid', label='redmonster')
         p.plot(idlbins, idlhist, color='blue', drawstyle='steps-mid', label='idlspec1d')
+        p.xlabel(r'$\chi_r^2$', size=16)
+        p.ylabel(r'Fraction per bin', size=16)
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_histos.pdf')
 
