@@ -1385,7 +1385,7 @@ class verify_rm:
                 self.read_spPlate_all(plate,mjd)
                 openplate = plate
                 openmjd = mjd
-            if self.rm_rchi2s[i] < 2:
+            if (self.rm_rchi2s[i] < 2) and (self.idl_rchi2s[fiber] < 2):
                 total += 1
                 rm_rchi2s.append(self.rm_rchi2s[i])
                 idl_rchi2s.append(self.idl_rchi2s[fiber])
