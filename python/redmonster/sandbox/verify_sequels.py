@@ -948,7 +948,7 @@ class verify_rm:
         openplate = 0
         openmjd = 0
         self.read_redmonster_summary_file()
-        for j,sn_min in enumerate(n.linspace(1,5,5)):
+        for j,sn_min in enumerate(n.linspace(1,4,4)):
             sn_max = sn_min + 1
             for i,fiber in enumerate(self.rm_fibers_summary):
                 plate = self.rm_plates_summary[i]
@@ -1013,14 +1013,6 @@ class verify_rm:
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
         p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3], label=labels[3])
-        errors5 = self.dz_to_dv(z5,errors5)
-        errors5 = n.log10(errors5)
-        hist5,binedges5 = n.histogram(errors5, bins=nbins)
-        bins5 = n.zeros(nbins)
-        for i in xrange(nbins):
-            bins5[i] = (binedges5[i+1]+binedges5[i])/2.
-        normhist5 = hist5 / float(count5)
-        p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4], label=labels[4])
         p.text(0.8, 0.2, 'r-band', fontsize=12)
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
