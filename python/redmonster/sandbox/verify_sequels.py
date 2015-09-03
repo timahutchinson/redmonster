@@ -1399,8 +1399,8 @@ class verify_rm:
         for i in xrange(nbins):
             idlbins[i] = (idlbinedges[i+1]+idlbinedges[i])/2.
         idlhist = idlhist / float(total)
-        p.plot(rmbins, rmhist, color='blue', drawstyle='steps-mid', label='redmonster')
-        p.plot(idlbins, idlhist, color='red', drawstyle='steps-mid', label='idlspec1d')
+        p.plot(rmbins, rmhist, color='red', drawstyle='steps-mid', label='redmonster')
+        p.plot(idlbins, idlhist, color='blue', drawstyle='steps-mid', label='idlspec1d')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_histos.pdf')
 
 
