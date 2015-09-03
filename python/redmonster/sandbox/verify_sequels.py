@@ -1038,7 +1038,7 @@ class verify_rm:
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         #p.title('r-band', size=18)
-        #p.axis([.7,2.5,0,.25])
+        p.axis([.5,2.5,0,.25])
         p.legend(prop={'size':6})
         p.subplots_adjust(hspace = .5)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
