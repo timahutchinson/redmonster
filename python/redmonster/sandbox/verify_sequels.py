@@ -707,7 +707,7 @@ class verify_rm:
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
             #self.modelmag = hdu[1].data.MODELMAG[:,2:]
-            #self.extinction = hdu[1].data.EXTINCTION[:,2:]
+            #eself.extinction = hdu[1].data.EXTINCTION[:,2:]
 
 
     def sequels_completeness_all(self):
