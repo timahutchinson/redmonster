@@ -1321,6 +1321,7 @@ class verify_rm:
                     i_mag.append(self.spectroflux[fiber,3])
                     if (self.rm_zwarning[i] > 0):
                         bad_i_mag.append(self.spectroflux[fiber,3])
+        import pdb; pdb.set_trace()
         nbinsarr = n.linspace(16,imax,nbins+1)
         itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
         ihist,ibinedges = n.histogram(bad_i_mag,bins=nbinsarr)
@@ -1335,14 +1336,11 @@ class verify_rm:
                         ihist[i] = (ihist[i-1] + ihist[i+1]) / 2.
                     except:
                         ihist[i] = 0
-        #rhist = convolve(rhist,Box1DKernel(2))
-        #ihist = convolve(ihist,Box1DKernel(2))
-        #zhist = convolve(zhist,Box1DKernel(2))
         p.plot(ibins,ihist,color='blue',drawstyle='steps-mid',label='i-band')
         ax.set_yscale('log')
         p.axvline(21.5,linestyle='--',color='k')
         p.xlabel(r'i-band magnitude',size=14)
-        p.ylabel(r'CMASS failure rate', size=14)
+        p.ylabel(r'Failure rate', size=14)
         #print rbins
         #print rhist
         #print rtotal
