@@ -695,6 +695,8 @@ class verify_rm:
             hdu = fits.open(join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd) ))
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
+            self.modelmag = hdu[1].data.MODELMAG[:,2:]
+            self.extinction = hdu[1].data.EXTINCTION[:,2:]
         else:
             globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-*.fits' % plate )
             spZbestpaths = []
@@ -704,6 +706,8 @@ class verify_rm:
             hdu = fits.open(spZbestpaths[0])
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
+            self.modelmag = hdu[1].data.MODELMAG[:,2:]
+            self.extinction = hdu[1].data.EXTINCTION[:,2:]
 
 
     def sequels_completeness_all(self):
@@ -1161,8 +1165,6 @@ class verify_rm:
         #p.title('r-band', size=18)
         p.axis([.5,2.5,0,.25])
         p.legend(prop={'size':6})
-        p.subplots_adjust(hspace = .5)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
         print count1
         print count2
         print count3
@@ -1279,7 +1281,7 @@ class verify_rm:
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[6])
-        p.text(0.8, 0.2, '$z$-band', fontsize=12)
+        p.text(0.8, 0.28, '$z$-band', fontsize=12)
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.axis([.5,2.5,0,.35])
