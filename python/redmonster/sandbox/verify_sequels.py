@@ -1297,7 +1297,7 @@ class verify_rm:
         print (count1+count2+count3+count4+count5+count6)/float(self.rm_fibers_summary.shape[0])
 
 
-    def sequels_failure_vs_imag_all(self,imax=24,nbins=29):
+    def sequels_failure_vs_imag_all(self,imin=17.5,imax=24,nbins=25):
         # Makes plot of SEQUELS LRG failure rate (zwarning > 0) vs i-band magnitude
         f = p.figure()
         ax = f.add_subplot(1,1,1)
@@ -1321,8 +1321,7 @@ class verify_rm:
                 i_mag.append(self.spectroflux[fiber,3])
                 if (self.rm_zwarning[i] > 0):
                     bad_i_mag.append(self.spectroflux[fiber,3])
-        import pdb; pdb.set_trace()
-        nbinsarr = n.linspace(17.5,imax,nbins+1)
+        nbinsarr = n.linspace(imin,imax,nbins+1)
         itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
         ihist,ibinedges = n.histogram(bad_i_mag,bins=nbinsarr)
         ibins = n.zeros(nbins)
@@ -1337,6 +1336,7 @@ class verify_rm:
                     except:
                         ihist[i] = 0
         p.plot(ibins,ihist,color='blue',drawstyle='steps-mid',label='i-band')
+        p.axis([imin,imax,.001,1])
         ax.set_yscale('log')
         p.axvline(21.5,linestyle='--',color='k')
         p.xlabel(r'i-band magnitude',size=14)
