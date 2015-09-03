@@ -1298,28 +1298,27 @@ class verify_rm:
 
 
     def sequels_failure_vs_imag_all(self,imax=24,nbins=29):
-        # Makes plot of SEQUELS failure rate (zwarning > 0) vs i-band magnitude
+        # Makes plot of SEQUELS LRG failure rate (zwarning > 0) vs i-band magnitude
         f = p.figure()
         ax = f.add_subplot(1,1,1)
         total = 0
         bad_i_mag = []
         i_mag = []
-        globpath = join( self.redmonster_spectro_redux,'*')
-        for path in iglob(globpath):
-            plate = basename(path)
-            if plate != 'redmonster-all-%s.fits' % self.version:
-                print plate
-                self.read_redmonster_all(plate)
-                self.read_spPlate_all(plate)
-                self.read_spZbest_all(plate)
-                #self.get_all_yanny(plate)
-                #fibers = self.get_cmass()
-                for i,fiber in enumerate(self.rm_fibers):
-                    if (self.spectroflux[fiber,3] <= imax):
-                        total += 1.
-                        i_mag.append(self.spectroflux[fiber,3])
-                        if (self.rm_zwarning[i] > 0):
-                            bad_i_mag.append(self.spectroflux[fiber,3])
+        self.read_redmonster_summary_file()
+        for i,fiber in enumerate(self.rm_fibers_summary):
+            plate = self.rm_plates_summary[i]
+            mjd = self.rm_mjds_summary[i]
+            print '%s-%s-%s' % (plate,fiber,mjd)
+            if (openplate != plate) and (openmjd != mjd):
+                self.read_spZbest_all(plate,mjd)
+                self.read_spPlate_all(plate,mjd)
+                openplate = plate
+                openmjd = mjd
+                if (self.spectroflux[fiber,3] <= imax):
+                    total += 1.
+                    i_mag.append(self.spectroflux[fiber,3])
+                    if (self.rm_zwarning[i] > 0):
+                        bad_i_mag.append(self.spectroflux[fiber,3])
         nbinsarr = n.linspace(16,imax,nbins+1)
         itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
         ihist,ibinedges = n.histogram(bad_i_mag,bins=nbinsarr)
