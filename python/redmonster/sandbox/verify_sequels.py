@@ -1387,7 +1387,7 @@ class verify_rm:
                 openmjd = mjd
             if self.rm_rchi2s[i] < 2:
                 total += 1
-                rm_rchi2s.append(self.rm_rmchi2s[i])
+                rm_rchi2s.append(self.rm_rchi2s[i])
                 idl_rchi2s.append(self.idl_rchi2s[fiber])
         rmhist,rmbinedges = n.histogram(rm_rchi2s,nbins)
         rmbins = n.zeros(nbins)
