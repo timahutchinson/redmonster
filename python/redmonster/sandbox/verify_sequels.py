@@ -1029,6 +1029,7 @@ class verify_rm:
         p.legend(prop={'size':6})
         p.subplots_adjust(hspace = .5)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
+        import pdb; pdb.set_trace()
         print count1
         print count2
         print count3
