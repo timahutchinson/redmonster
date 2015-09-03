@@ -668,6 +668,7 @@ class verify_rm:
         self.rm_plates_summary = hdu[1].data.PLATE
         self.rm_mjds_summary = hdu[1].data.MJD
         self.rm_rchi2s = hdu[1].data.MINRCHI2
+        self.rm_dof = hdu[1].data.DOF
 
 
     def read_spPlate_all(self,plate, mjd=None):
@@ -698,6 +699,7 @@ class verify_rm:
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
             self.idl_rchi2s = hdu[1].data.RCHI2
+            self.idl_dof = hdu[1].data.DOF
             #self.modelmag = hdu[1].data.MODELMAG[:,2:]
             #self.extinction = hdu[1].data.EXTINCTION[:,2:]
         else:
@@ -1387,8 +1389,8 @@ class verify_rm:
                 openmjd = mjd
             if (self.rm_rchi2s[i] < 2) and (self.idl_rchi2s[fiber] < 2):
                 total += 1
-                rm_rchi2s.append(self.rm_rchi2s[i])
-                idl_rchi2s.append(self.idl_rchi2s[fiber])
+                rm_rchi2s.append(self.rm_rchi2s[i] * self.rm_dof[i])
+                idl_rchi2s.append(self.idl_rchi2s[fiber] * self.idl_dof[fiber])
         rmhist,rmbinedges = n.histogram(rm_rchi2s,nbins)
         rmbins = n.zeros(nbins)
         for i in xrange(nbins):
