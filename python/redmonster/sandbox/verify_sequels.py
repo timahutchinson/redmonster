@@ -1039,6 +1039,8 @@ class verify_rm:
         #p.title('r-band', size=18)
         p.axis([.7,2.5,0,.25])
         p.legend(prop={'size':6})
+        p.subplots_adjust(hspace = .5)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
 
     '''
         for path in iglob(globpath):
@@ -1323,8 +1325,6 @@ class verify_rm:
         #p.title('z-band', size=18)
         p.axis([.7,2.5,0,.25])
         #p.legend()'''
-        p.subplots_adjust(hspace = .5)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
 
     def cmass_failure_vs_imag_all(self,imax=24,nbins=29):
         # Makes plot of CMASS failure rate (zwarning > 0) vs i-band magnitude
