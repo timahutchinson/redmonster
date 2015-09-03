@@ -1304,6 +1304,8 @@ class verify_rm:
         total = 0
         bad_i_mag = []
         i_mag = []
+        openplate = 0
+        openmjd = 0
         self.read_redmonster_summary_file()
         for i,fiber in enumerate(self.rm_fibers_summary):
             plate = self.rm_plates_summary[i]
