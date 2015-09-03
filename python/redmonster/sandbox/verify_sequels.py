@@ -1034,6 +1034,8 @@ class verify_rm:
         print count3
         print count4
         print count5
+        print bins1
+        print normhist1
 
     '''
         for path in iglob(globpath):
