@@ -1319,7 +1319,7 @@ class verify_rm:
             if (self.spectroflux[fiber,3] <= imax):
                 total += 1.
                 i_mag.append(self.spectroflux[fiber,3])
-                if (self.rm_zwarning[i] > 0):
+                if (self.rm_zwarning[i] & 4 > 0):
                     bad_i_mag.append(self.spectroflux[fiber,3])
         nbinsarr = n.linspace(imin,imax,nbins+1)
         itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
