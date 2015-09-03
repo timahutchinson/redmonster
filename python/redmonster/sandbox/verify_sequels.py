@@ -948,7 +948,7 @@ class verify_rm:
         openmjd = 0
         self.read_redmonster_summary_file()
         for j,sn_min in enumerate(n.linspace(1,3.5,6)):
-            sn_max = sn_min + 1
+            sn_max = sn_min + .5
             for i,fiber in enumerate(self.rm_fibers_summary):
                 plate = self.rm_plates_summary[i]
                 mjd = self.rm_mjds_summary[i]
@@ -1072,7 +1072,7 @@ class verify_rm:
         openmjd = 0
         self.read_redmonster_summary_file()
         for j,sn_min in enumerate(n.linspace(1,3.5,6)):
-            sn_max = sn_min + 1
+            sn_max = sn_min + .5
             for i,fiber in enumerate(self.rm_fibers_summary):
                 plate = self.rm_plates_summary[i]
                 mjd = self.rm_mjds_summary[i]
@@ -1196,7 +1196,7 @@ class verify_rm:
                 for i,sn_min in enumerate(n.linspace(1,6,6)):
                     sn_max = sn_min + 1
                     for i,fiber in enumerate(self.rm_fibers):
-                        if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
+                        if & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
                             if (self.sn_median[fiber][2] >= sn_min) & (self.sn_median[fiber][2] <= sn_max):
                                 if i == 1:
                                     errors1 = n.append(errors1,self.rm_zerr1[i])
