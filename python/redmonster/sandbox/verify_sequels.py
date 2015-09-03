@@ -1316,11 +1316,11 @@ class verify_rm:
                 self.read_spPlate_all(plate,mjd)
                 openplate = plate
                 openmjd = mjd
-                if (self.spectroflux[fiber,3] <= imax):
-                    total += 1.
-                    i_mag.append(self.spectroflux[fiber,3])
-                    if (self.rm_zwarning[i] > 0):
-                        bad_i_mag.append(self.spectroflux[fiber,3])
+            if (self.spectroflux[fiber,3] <= imax):
+                total += 1.
+                i_mag.append(self.spectroflux[fiber,3])
+                if (self.rm_zwarning[i] > 0):
+                    bad_i_mag.append(self.spectroflux[fiber,3])
         import pdb; pdb.set_trace()
         nbinsarr = n.linspace(16,imax,nbins+1)
         itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
