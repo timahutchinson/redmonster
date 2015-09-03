@@ -948,7 +948,7 @@ class verify_rm:
         openplate = 0
         openmjd = 0
         self.read_redmonster_summary_file()
-        for j,sn_min in enumerate(n.linspace(1,6,6)):
+        for j,sn_min in enumerate(n.linspace(1,5,5)):
             sn_max = sn_min + 1
             for i,fiber in enumerate(self.rm_fibers_summary):
                 plate = self.rm_plates_summary[i]
@@ -981,10 +981,6 @@ class verify_rm:
                             errors5 = n.append(errors5,self.rm_zerr1[i])
                             z5 = n.append(z5,self.rm_z1[i])
                             count5 += 1
-                        elif j == 6:
-                            errors6 = n.append(errors6,self.rm_zerr1[i])
-                            z6 = n.append(z6,self.rm_z1[i])
-                            count6 += 1
         errors1 = self.dz_to_dv(errors1,z1)
         errors1 = n.log10(errors1)
         hist1,binedges1 = n.histogram(errors1, bins=nbins)
@@ -1025,14 +1021,6 @@ class verify_rm:
             bins5[i] = (binedges5[i+1]+binedges5[i])/2.
         normhist5 = hist5 / float(count5)
         p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4], label=labels[4])
-        errors6 = self.dz_to_dv(errors6,z6)
-        errors6 = n.log10(errors6)
-        hist6,binedges6 = n.histogram(errors6, bins=nbins)
-        bins6 = n.zeros(nbins)
-        for i in xrange(nbins):
-            bins6[i] = (binedges6[i+1]+binedges6[i])/2.
-        normhist6 = hist6 / float(count6)
-        p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
         p.text(0.8, 0.2, 'r-band', fontsize=12)
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
@@ -1046,7 +1034,6 @@ class verify_rm:
         print count3
         print count4
         print count5
-        print count6
 
     '''
         for path in iglob(globpath):
