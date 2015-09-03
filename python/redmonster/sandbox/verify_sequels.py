@@ -959,25 +959,25 @@ class verify_rm:
                     self.read_spPlate_all(plate,mjd)
                     openplate = plate
                     openmjd = mjd
-                if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
+                if (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
                     if (self.sn_median[fiber][0] >= sn_min) & (self.sn_median[fiber][0] <= sn_max):
-                        if j == 1:
+                        if j == 0:
                             errors1 = n.append(errors1,self.rm_zerr1[i])
                             z1 = n.append(z1,self.rm_z1[i])
                             count1 += 1
-                        elif j == 2:
+                        elif j == 1:
                             errors2 = n.append(errors2,self.rm_zerr1[i])
                             z2 = n.append(z2,self.rm_z1[i])
                             count2 += 1
-                        elif j == 3:
+                        elif j == 2:
                             errors3 = n.append(errors3,self.rm_zerr1[i])
                             z3 = n.append(z3,self.rm_z1[i])
                             count3 += 1
-                        elif j == 4:
+                        elif j == 3:
                             errors4 = n.append(errors4,self.rm_zerr1[i])
                             z4 = n.append(z4,self.rm_z1[i])
                             count4 += 1
-                        elif j == 5:
+                        elif j == 4:
                             errors5 = n.append(errors5,self.rm_zerr1[i])
                             z5 = n.append(z5,self.rm_z1[i])
                             count5 += 1
