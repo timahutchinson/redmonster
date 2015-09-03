@@ -684,6 +684,7 @@ class Merge_Redmonster:
             try: colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.boss_target1) )
             except: pass
             try: colslist.append( fits.Column(name='EBOSS_TARGET0', format='J', array=self.eboss_target0) )
+            except: pass
             try: colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.eboss_target1) )
             except: pass
             colslist.append( fits.Column(name='Z1', format='E', array=self.z1) )
