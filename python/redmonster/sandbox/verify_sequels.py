@@ -967,23 +967,23 @@ class verify_rm:
                             count1 += 1
                         elif j == 2:
                             errors2 = n.append(errors2,self.rm_zerr1[i])
-                            z2 = n.append(z1,self.rm_z1[i])
+                            z2 = n.append(z2,self.rm_z1[i])
                             count2 += 1
                         elif j == 3:
                             errors3 = n.append(errors3,self.rm_zerr1[i])
-                            z3 = n.append(z1,self.rm_z1[i])
+                            z3 = n.append(z3,self.rm_z1[i])
                             count3 += 1
                         elif j == 4:
                             errors4 = n.append(errors4,self.rm_zerr1[i])
-                            z4 = n.append(z1,self.rm_z1[i])
+                            z4 = n.append(z4,self.rm_z1[i])
                             count4 += 1
                         elif j == 5:
                             errors5 = n.append(errors5,self.rm_zerr1[i])
-                            z5 = n.append(z1,self.rm_z1[i])
+                            z5 = n.append(z5,self.rm_z1[i])
                             count5 += 1
                         elif j == 6:
                             errors6 = n.append(errors6,self.rm_zerr1[i])
-                            z6 = n.append(z1,self.rm_z1[i])
+                            z6 = n.append(z6,self.rm_z1[i])
                             count6 += 1
         errors1 = self.dz_to_dv(errors1,z1)
         errors1 = n.log10(errors1)
