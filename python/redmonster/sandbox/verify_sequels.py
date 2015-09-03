@@ -1369,7 +1369,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_scatter.pdf')
 
 
-    def sequels_rchi2_histos(self,nbins=25):
+    def sequels_rchi2_histos(self,nbins=50):
         rm_rchi2s = []
         idl_rchi2s = []
         openplate = 0
@@ -1394,7 +1394,13 @@ class verify_rm:
         for i in xrange(nbins):
             rmbins[i] = (rmbinedges[i+1]+rmbinedges[i])/2.
         rmhist = rmhist / float(total)
+        idlhist, idlbinedges = n.histogram(idl_rchi2s,nbins)
+        idlbins = n.zeros(nbins)
+        for i in xrange(nbins):
+            idlins[i] = (idlbinedges[i+1]+idlbinedges[i])/2.
+        idlhist = idlhist / float(total)
         p.plot(rmbins, rmhist, color='blue', drawstyle='steps-mid', label='redmonster')
+        p.plot(idlbins, idlhist, color='red', drawstyle='steps-mid', label='idlspec1d')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_histos.pdf')
 
 
