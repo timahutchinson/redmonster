@@ -918,81 +918,9 @@ class verify_rm:
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
 
-        '''
-        for path in iglob(globpath):
-            plate = basename(path)
-            if plate != 'redmonster-all-%s.fits' % self.version:
-                print plate
-                self.read_redmonster_all(plate)
-                self.read_spPlate_all(plate)
-                self.read_spZbest_all(plate)
-                #self.get_all_yanny(plate)
-                #fibers = self.get_cmass()
-                for i,fiber in enumerate(self.rm_fibers):
-                    if (self.sn_median[fiber,0] <= sn_max):
-                        total += 1.
-                        r_sn.append(self.sn_median[fiber,0])
-                        i_sn.append(self.sn_median[fiber,1])
-                        z_sn.append(self.sn_median[fiber,2])
-                        if (self.rm_zwarning[i] > 0):
-                            bad_fibers.append(fiber)
-                            bad_r_sn.append(self.sn_median[fiber,0])
-                            bad_i_sn.append(self.sn_median[fiber,1])
-                            bad_z_sn.append(self.sn_median[fiber,2])
-        nbinsarr = n.linspace(0,sn_max,nbins+1)
-        rtotal,rbinedges = n.histogram(r_sn,bins=nbinsarr)
-        itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
-        ztotal,zbinedges = n.histogram(z_sn,bins=nbinsarr)
-        rhist,rbinedges = n.histogram(bad_r_sn,bins=nbinsarr)
-        ihist,ibinedges = n.histogram(bad_i_sn,bins=nbinsarr)
-        zhist,zbinedges = n.histogram(bad_z_sn,bins=nbinsarr)
-        rbins = n.zeros(nbins)
-        ibins = n.zeros(nbins)
-        zbins = n.zeros(nbins)
-        for i in xrange(nbins):
-            rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
-            ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
-            zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        rhist = rhist / map(float,rtotal)
-        ihist = ihist / map(float,itotal)
-        zhist = zhist / map(float,ztotal)
-        for i in xrange(nbins):
-            if i != 0 and i != (nbins-1):
-                if isnan(rhist[i]):
-                    try:
-                        rhist[i] = (rhist[i-1] + rhist[i+1]) / 2.
-                    except:
-                        rhist[i] = 0
-                if isnan(ihist[i]):
-                    try:
-                        ihist[i] = (ihist[i-1] + ihist[i+1]) / 2.
-                    except:
-                        ihist[i] = 0
-                if isnan(zhist[i]):
-                    try:
-                        zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
-                    except:
-                        zhist[i] = 0
-        #rhist = convolve(rhist,Box1DKernel(2))
-        #ihist = convolve(ihist,Box1DKernel(2))
-        #zhist = convolve(zhist,Box1DKernel(2))
-        p.plot(rbins,rhist,color='purple',label='r-band')
-        p.plot(ibins,ihist,color='blue',label='i-band')
-        p.plot(zbins,zhist,color='cyan',label='z-band')
-        ax.set_yscale('log')
-        p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=14)
-        p.ylabel(r'SEQUELS LRG target failure rate', size=14)
-        print rbins
-        print rhist
-        print rtotal
-        print total
-        p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
-        '''
 
-
-    def cmass_logdv_vs_sn_histos_all(self, nbins=25):
-        # Make histograms of log10(dv) in S/N bins in bands r,i,z for CMASS galaxies
+    def sequels_logdv_vs_sn_histos_all(self, nbins=25):
+        # Make histograms of log10(dv) in S/N bins in bands r,i,z for SEQUELS LRG targets
         colors = ['tomato','sage','cornflowerblue','sandybrown','mediumpurple','grey'] #['purple', 'cyan', 'blue', 'lime', 'red', 'black']
         labels = ['1<S/N<2','2<S/N<3','3<S/N<4','4<S/N<5','5<S/N<6','6<S/N<7',]
         f = p.figure()
