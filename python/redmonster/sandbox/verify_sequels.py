@@ -667,7 +667,7 @@ class verify_rm:
         self.rm_fibers_summary = hdu[1].data.FIBERID
         self.rm_plates_summary = hdu[1].data.PLATE
         self.rm_mjds_summary = hdu[1].data.MJD
-        self.rm_rchi2s = hdu[1].data.RCHI2
+        self.rm_rchi2s = hdu[1].data.MINRCHI2
 
 
     def read_spPlate_all(self,plate, mjd=None):
