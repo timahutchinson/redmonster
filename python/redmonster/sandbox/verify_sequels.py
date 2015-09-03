@@ -922,7 +922,7 @@ class verify_rm:
     def sequels_logdv_vs_sn_histos_all(self, nbins=25):
         # Make histograms of log10(dv) in S/N bins in bands r,i,z for SEQUELS LRG targets
         colors = ['tomato','sage','cornflowerblue','sandybrown','mediumpurple','grey'] #['purple', 'cyan', 'blue', 'lime', 'red', 'black']
-        labels = ['1<S/N<2','2<S/N<3','3<S/N<4','4<S/N<5','5<S/N<6','6<S/N<7',]
+        labels = ['1.0<S/N<1.5','1.5<S/N<2.0','2.0<S/N<2.5','2.5<S/N<3.0','3.0<S/N<3.5','3.5<S/N<4.0']
         f = p.figure()
         
         ax1 = f.add_subplot(3,1,1)
@@ -948,7 +948,7 @@ class verify_rm:
         openplate = 0
         openmjd = 0
         self.read_redmonster_summary_file()
-        for j,sn_min in enumerate(n.linspace(1,4,4)):
+        for j,sn_min in enumerate(n.linspace(1,3.5,6)):
             sn_max = sn_min + 1
             for i,fiber in enumerate(self.rm_fibers_summary):
                 plate = self.rm_plates_summary[i]
@@ -981,6 +981,11 @@ class verify_rm:
                             errors5 = n.append(errors5,self.rm_zerr1[i])
                             z5 = n.append(z5,self.rm_z1[i])
                             count5 += 1
+                        elif j == 5:
+                            errors6 = n.append(errors6,self.rm_zerr1[i])
+                            z6 = n.append(z6,self.rm_z1[i])
+                            count6 += 1
+
         errors1 = self.dz_to_dv(z1,errors1)
         errors1 = n.log10(errors1)
         hist1,binedges1 = n.histogram(errors1, bins=nbins)
@@ -1013,6 +1018,22 @@ class verify_rm:
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
         p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3], label=labels[3])
+        errors5 = self.dz_to_dv(z5,errors5)
+        errors5 = n.log10(errors5)
+        hist5,binedges5 = n.histogram(errors5, bins=nbins)
+        bins5 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins5[i] = (binedges5[i+1]+binedges5[i])/2.
+        normhist5 = hist5 / float(count5)
+        p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4], label=labels[4])
+        errors6 = self.dz_to_dv(z6,errors6)
+        errors6 = n.log10(errors6)
+        hist6,binedges6 = n.histogram(errors6, bins=nbins)
+        bins6 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins6[i] = (binedges6[i+1]+binedges6[i])/2.
+        normhist6 = hist6 / float(count6)
+        p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
         p.text(0.8, 0.2, 'r-band', fontsize=12)
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
@@ -1021,15 +1042,12 @@ class verify_rm:
         p.legend(prop={'size':6})
         p.subplots_adjust(hspace = .5)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
-        import pdb; pdb.set_trace()
         print count1
         print count2
         print count3
         print count4
         print count5
-        print bins1
-        print normhist1
-        print errors1
+        print count6
 
     '''
         for path in iglob(globpath):
