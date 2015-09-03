@@ -1193,7 +1193,7 @@ class verify_rm:
         openplate = 0
         openmjd = 0
         self.read_redmonster_summary_file()
-        for j,sn_min in enumerate(n.linspace(1,3.5,6)):
+        for j,sn_min in enumerate(n.linspace(1.5,4.0,6)):
             sn_max = sn_min + .5
             for i,fiber in enumerate(self.rm_fibers_summary):
                 plate = self.rm_plates_summary[i]
@@ -1295,8 +1295,8 @@ class verify_rm:
         print (count1+count2+count3+count4+count5+count6)/float(self.rm_fibers_summary.shape[0])
 
 
-    def cmass_failure_vs_imag_all(self,imax=24,nbins=29):
-        # Makes plot of CMASS failure rate (zwarning > 0) vs i-band magnitude
+    def sequels_failure_vs_imag_all(self,imax=24,nbins=29):
+        # Makes plot of SEQUELS failure rate (zwarning > 0) vs i-band magnitude
         f = p.figure()
         ax = f.add_subplot(1,1,1)
         total = 0
