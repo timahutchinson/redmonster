@@ -925,7 +925,7 @@ class verify_rm:
         labels = ['1.0<S/N<1.5','1.5<S/N<2.0','2.0<S/N<2.5','2.5<S/N<3.0','3.0<S/N<3.5','3.5<S/N<4.0']
         f = p.figure()
         
-        ax1 = f.add_subplot(3,1,1)
+        '''ax1 = f.add_subplot(3,1,1)
         errors1 = n.array([])
         errors2 = n.array([])
         errors3 = n.array([])
@@ -1033,7 +1033,7 @@ class verify_rm:
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
 #p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
-        p.text(0.8, 0.2, 'r-band', fontsize=12)
+        p.text(0.8, 0.2, '$r$-band', fontsize=12)
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         #p.title('r-band', size=18)
@@ -1047,9 +1047,9 @@ class verify_rm:
         print count4
         print count5
         print count6
-        print (count1+count2+count3+count4+count5+count6)/float(self.rm_fibers_summary.shape[0])
+        print (count1+count2+count3+count4+count5+count6)/float(self.rm_fibers_summary.shape[0])'''
 
-        '''ax2 = f.add_subplot(3,1,2)
+        ax2 = f.add_subplot(3,1,2)
         errors1 = n.array([])
         errors2 = n.array([])
         errors3 = n.array([])
@@ -1157,7 +1157,7 @@ class verify_rm:
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
-        p.text(0.8, 0.2, 'r-band', fontsize=12)
+        p.text(0.8, 0.2, '$i$-band', fontsize=12)
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         #p.title('r-band', size=18)
@@ -1173,7 +1173,7 @@ class verify_rm:
         print count6
         print (count1+count2+count3+count4+count5+count6)/float(self.rm_fibers_summary.shape[0])
 
-        ax3 = f.add_subplot(3,1,3)
+        '''ax3 = f.add_subplot(3,1,3)
         errors1 = n.array([])
         errors2 = n.array([])
         errors3 = n.array([])
