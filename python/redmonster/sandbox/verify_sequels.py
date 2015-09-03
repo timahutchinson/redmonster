@@ -1322,8 +1322,7 @@ class verify_rm:
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         #p.title('z-band', size=18)
         p.axis([.7,2.5,0,.25])
-        #p.legend()
-        '''
+        #p.legend()'''
         p.subplots_adjust(hspace = .5)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
 
