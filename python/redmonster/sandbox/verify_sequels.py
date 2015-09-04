@@ -1548,11 +1548,11 @@ class verify_rm:
         def fit_func(x,a,sigma,mu): # Gaussian function to fit to histogram
             return a * n.exp( -((x-mu)**2)/(2*sigma**2) )
         
-        popt,pcov = curve_fit(normhist,bins)
+        popt,pcov = curve_fit(fit_func, normhist,bins)
         xfit = n.linspace(-6,6,1000)
         yfit = fit_func(xfit, popt[0], popt[1], popt[2])
         p.plot(xfit,yfit,color='cyan')
-        p.xlabel(r'$(z_2-z_1)/ z_{rms}$', size=16)
+        p.xlabel(r'$(z_2-z_1)/ \delta z_{rms}$', size=16)
         p.ylabel('Fraction per bin',size=16)
         p.text(3,.01,r'$\sigma_{fit}=1.18$',size=18)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
