@@ -1583,7 +1583,7 @@ class verify_rm:
         hdu6 = fits.open( join( '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/redmonster/u0814744/v5_8_0_full/', '7338', '%s' % self.version, 'redmonster-7338-57159.fits') )
         hdu7 = fits.open( join( '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/redmonster/u0814744/v5_8_0_full/', '7338', '%s' % self.version, 'redmonster-7338-57166.fits') )
         for i,type in enumerate(hdu1[1].data.CLASS1):
-            if type == 'ssp_em_galaxy':
+            if True:
                 if (hdu1[1].data.ZWARNING[i] == 0) & (hdu2[1].data.ZWARNING[i] == 0) & (hdu3[1].data.ZWARNING[i] == 0) & (hdu4[1].data.ZWARNING[i] == 0) & (hdu5[1].data.ZWARNING[i] == 0) & (hdu6[1].data.ZWARNING[i] == 0) & (hdu7[1].data.ZWARNING[i] == 0):
                     z1.append(hdu1[1].data.Z1[i])
                     z2.append(hdu2[1].data.Z1[i])
