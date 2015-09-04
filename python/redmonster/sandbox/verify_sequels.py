@@ -1484,7 +1484,6 @@ class verify_rm:
                 total += 1
                 if self.rm_rchi2diff[i] < diff: rm_failures += 1.
                 if self.idl_rchi2diff[fiber] < diff: idl_failures += 1.
-        import pdb; pdb.set_trace()
         return (rm_failures/total), (idl_failures/total)
 
 
@@ -1493,6 +1492,7 @@ class verify_rm:
         rm_data = []
         idl_data = []
         diffs = n.linspace(0,drchi2max, drchi2max/float(npoints))
+        import pdb; pdb.set_trace()
         for diff in diffs:
             rm_point, idl_point = self.dchi2_failure_diff_function(diff)
             rm_data.append(rm_point)
