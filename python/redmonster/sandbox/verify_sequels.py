@@ -1463,7 +1463,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_histos.pdf')
 
 
-    def dchi2_failure_diff_function(self, diff, drchi2_max=.05):
+    def dchi2_failure_diff_function(self, diff, drchi2max=.05):
         # Helper function for sequels_failure_vs_dchi2()
         rm_failures = 0
         idl_failures = 0
