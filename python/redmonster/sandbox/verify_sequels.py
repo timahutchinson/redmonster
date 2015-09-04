@@ -1457,6 +1457,8 @@ class verify_rm:
         idlhist = idlhist / float(total)
         p.plot(rmbins, rmhist, color='red', drawstyle='steps-mid', label='redmonster')
         p.plot(idlbins, idlhist, color='blue', drawstyle='steps-mid', label='idlspec1d')
+        p.axvline(.005,linestyle='--',color='red')
+        p.axvline(.01,linestyle='--',color='blue')
         p.xlabel(r'$\Delta\chi_r^2$', size=16)
         p.ylabel(r'Fraction per bin', size=16)
         p.legend()
