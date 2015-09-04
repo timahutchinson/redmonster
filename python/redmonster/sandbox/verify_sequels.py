@@ -701,7 +701,7 @@ class verify_rm:
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
             self.idl_rchi2s = hdu[1].data.RCHI2
             self.idl_dof = hdu[1].data.DOF
-            self.idl_rchi2diff = hdu[1].data.RCHI2DIFF
+            self.idl_rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO
             #self.modelmag = hdu[1].data.MODELMAG[:,2:]
             #self.extinction = hdu[1].data.EXTINCTION[:,2:]
         else:
@@ -714,7 +714,7 @@ class verify_rm:
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
             self.idl_dof = hdu[1].data.DOF
-            self.idl_rchi2diff = hdu[1].data.RCHI2DIFF
+            self.idl_rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO
             #self.modelmag = hdu[1].data.MODELMAG[:,2:]
             #eself.extinction = hdu[1].data.EXTINCTION[:,2:]
 
@@ -1319,7 +1319,7 @@ class verify_rm:
         for i,fiber in enumerate(self.rm_fibers_summary):
             plate = self.rm_plates_summary[i]
             mjd = self.rm_mjds_summary[i]
-            print '%s-%s-%s' % (plate,fiber,mjd)
+            print '%s-%s-%s' % (plate,mjd,fiber)
             if (openplate != plate) and (openmjd != mjd):
                 self.read_spZbest_all(plate,mjd)
                 self.read_spPlate_all(plate,mjd)
@@ -1375,7 +1375,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_scatter.pdf')
 
 
-    def sequels_rchi2_histos(self,nbins=50, rchi2=True):
+    def sequels_chi2_histos(self,nbins=50, rchi2=True):
         rm_rchi2s = []
         idl_rchi2s = []
         openplate = 0
@@ -1385,7 +1385,7 @@ class verify_rm:
         for i,fiber in enumerate(self.rm_fibers_summary):
             plate = self.rm_plates_summary[i]
             mjd = self.rm_mjds_summary[i]
-            print '%s-%s-%s' % (plate,fiber,mjd)
+            print '%s-%s-%s' % (plate,mjd,fiber)
             if (openplate != plate) and (openmjd != mjd):
                 self.read_spZbest_all(plate,mjd)
                 self.read_spPlate_all(plate,mjd)
@@ -1419,6 +1419,46 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_histos.pdf')
 
 
+    def sequels_drchi2_histos(self, nbins=50, rchi2=True):
+        rm_drchi2s = []
+        idl_drchi2s = []
+        openplate = 0
+        openmjd = 0
+        total = 0
+        self.read_redmonster_summary_file()
+        for i,fiber in enumerate(self.rm_fibers_summary):
+            plate = self.rm_plates_summary[i]
+            mjd = self.rm_mjds_summary[i]
+            print '%s-%s-%s' % (plate,mjd,fiber)
+            if (openplate != plate) and (openmjd != mjd):
+                self.read_spZbest_all(plate,mjd)
+                self.read_spPlate_all(plate,mjd)
+                openplate = plate
+                openmjd = mjd
+            if (self.rm_rchi2diff[i] < .1) and (self.idl_rchi2diff[fiber] < .1):
+                total += 1
+                if rchi2:
+                    rm_drchi2s.append( self.rm_rchi2diff[i] )
+                    idl_drchi2s.append( self.idl_rchi2diff[fiber] )
+                else:
+                    rm_drchi2s.append( self.rm_rchi2diff[i] * self.rm_dof[i] )
+                    idl_drchi2s.append( self.idl_rchi2diff[fiber] * self.idl_dof[fiber] )
+        rmhist, rmbinedges = n.histogram(rm_drchi2s,nbins)
+        rmbins = n.zeros(nbins)
+        for i in xrange(nbins):
+            rmbins[i] = (rmbinedges[i+1]+rmbinedges[i])/2.
+        rmhist = rmhist / float(total)
+        idlhist, idlbinedges = n.histogram(idl_drchi2s,nbins)
+        idlbins = n.zeros(nbins)
+        for i in xrange(nbins):
+            idlbins[i] = (idlbinedges[i+1]+idlbinedges[i])/2.
+        idlhist = idlhist / float(total)
+        p.plot(rmbins, rmhist, color='red', drawstyle='steps-mid', label='redmonster')
+        p.plot(idlbins, idlhist, color='blue', drawstyle='steps-mid', label='idlspec1d')
+        p.xlabel(r'$\Delta\chi_r^2$', size=16)
+        p.ylabel(r'Fraction per bin', size=16)
+        p.legend()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_histos.pdf')
 
 
     def cmass_reobs_errors(self, nbins=25):
