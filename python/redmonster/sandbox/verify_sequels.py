@@ -1419,7 +1419,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_histos.pdf')
 
 
-    def sequels_drchi2_histos(self, nbins=50, rchi2=True):
+    def sequels_drchi2_histos(self, drchi2max=.02, nbins=50, rchi2=True):
         rm_drchi2s = []
         idl_drchi2s = []
         openplate = 0
@@ -1435,7 +1435,7 @@ class verify_rm:
                 self.read_spPlate_all(plate,mjd)
                 openplate = plate
                 openmjd = mjd
-            if (self.rm_rchi2diff[i] < .1) and (self.idl_rchi2diff[fiber] < .1):
+            if (self.rm_rchi2diff[i] < drchi2max) and (self.idl_rchi2diff[fiber] < drchi2max):
                 total += 1
                 if rchi2:
                     rm_drchi2s.append( self.rm_rchi2diff[i] )
