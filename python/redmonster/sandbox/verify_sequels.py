@@ -1517,7 +1517,7 @@ class verify_rm:
             if plate != 'redmonster-all-%s.fits' % self.version:
                 print plate
                 mjds = []
-                mjdglobpath = join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-*.fits' % plate)
+                mjdglobpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*.fits' % plate)
                 for mjdpath in iglob(mjdglobpath):
                     mjd = basename(mjdpath)[16:21]
                     if mjd not in mjds:
