@@ -1492,8 +1492,8 @@ class verify_rm:
         rm_data = []
         idl_data = []
         diffs = n.linspace(0,drchi2max,npoints)
-        import pdb; pdb.set_trace()
-        for diff in diffs:
+        for i,diff in enumerate(diffs):
+            print '%s of %s' % (i,npoints)
             rm_point, idl_point = self.dchi2_failure_diff_function(diff)
             rm_data.append(rm_point)
             idl_data.append(idl_point)
