@@ -1616,6 +1616,7 @@ class verify_rm:
         def fit_func(x,a,sigma,mu): # Gaussian function to fit to histogram
             return a * n.exp( -((x-mu)**2)/(2*sigma**2) )
         
+        import pdb; pdb.set_trace()
         popt,pcov = curve_fit(fit_func, normhist,bins)
         xfit = n.linspace(-6,6,1000)
         yfit = fit_func(xfit, popt[0], popt[1], popt[2])
