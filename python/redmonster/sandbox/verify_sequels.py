@@ -1493,23 +1493,20 @@ class verify_rm:
         idl_data = []
         diffs = n.linspace(0,drchi2max,npoints)
         for i,diff in enumerate(diffs):
-            print '%s of %s' % (i,npoints)
+            print '%s of %s' % (i+1,npoints)
             rm_point, idl_point = self.dchi2_failure_diff_function(diff)
             rm_data.append(rm_point)
             idl_data.append(idl_point)
-        p.plot(diffs, rm_data, 'r.')
-        p.plot(diffs, idl_data, 'b.')
+        p.plot(diffs, rm_data, 'red', label='redmosnter')
+        p.plot(diffs, idl_data, 'blue', label='idlspec1d')
         p.xlabel(r'$\Delta\chi_{r}^2$ threshold', size=16)
         p.ylabel(r'Failure rate', size=16)
         p.grid(b=True, which='major', color='black', linestyle='--')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
-        
-
-
 
 
     def cmass_reobs_errors(self, nbins=25):
-        # Makes a histogram of (z2-z1)/sqrt(dz1**2 + dz2**2) with best fit Gaussian overplotted for all CMASS targets with repeat observations
+        # Makes a histogram of (z2-z1)/sqrt(dz1**2 + dz2**2) with best fit Gaussian overplotted for all SEQUELS LRG targets with repeat observations
         globpath = join( self.redmonster_spectro_redux,'*')
         z1 = []
         z2 = []
@@ -1529,7 +1526,7 @@ class verify_rm:
                     hdu1 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[0]) ) )
                     hdu2 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[1]) ) )
                     for i,z in enumerate(hdu1[1].data.Z1):
-                        if (hdu1[1].data.ZWARNING[i] == 0) & (hdu1[1].data.CLASS[i] == 'ssp_em_galaxy') & (hdu2[1].data.ZWARNING[i] == 0) & (hdu2[1].data.CLASS[i] == 'ssp_em_galaxy'):
+                        if (hdu1[1].data.ZWARNING[i] == 0) & (hdu1[1].data.CLASS1[i] == 'ssp_em_galaxy') & (hdu2[1].data.ZWARNING[i] == 0) & (hdu2[1].data.CLASS1[i] == 'ssp_em_galaxy'):
                             z1.append(z)
                             z2.append(hdu2[1].data.Z1[i])
                             zerr1.append(hdu1[1].data.Z_ERR1[i])
