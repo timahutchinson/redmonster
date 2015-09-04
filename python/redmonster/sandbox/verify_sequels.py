@@ -1605,7 +1605,7 @@ class verify_rm:
         zerr2 = n.array(zerr2)
         zdiff = z2-z1
         zerr_rms = n.sqrt( (zerr1**2 + zerr2**2)/2. )
-        scaled_diff = z_diff / zerr_rms
+        scaled_diff = zdiff / zerr_rms
         hist,binedges = n.histogram(scaled_diff,bins=nbins)
         normhist = hist / float(z1.shape[0])
         bins = n.zeros(nbins)
