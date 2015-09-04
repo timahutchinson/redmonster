@@ -1560,7 +1560,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
 
 
-    def plate_7338_reobs_errors(self, nbins):
+    def plate_7338_reobs_errors(self, nbins=25):
         z1 = []
         z2 = []
         z3 = []
@@ -1604,7 +1604,7 @@ class verify_rm:
         zerr1 = n.array(zerr1)
         zerr2 = n.array(zerr2)
         zdiff = z2-z1
-        zerr_rms = n.nsqrt( (zerr1**2 + zerr2**2)/2. )
+        zerr_rms = n.sqrt( (zerr1**2 + zerr2**2)/2. )
         scaled_diff = z_diff / zerr_rms
         hist,binedges = n.histogram(scaled_diff,bins=nbins)
         normhist = hist / float(z1.shape[0])
