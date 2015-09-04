@@ -1520,7 +1520,8 @@ class verify_rm:
                 mjdglobpath = join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-*.fits' % plate)
                 for mjdpath in iglob(mjdglobpath):
                     mjd = basename(mjdpath)[16:21]
-                    mjds.append(mjd)
+                    if mjd not in mjds:
+                        mjds.append(mjd)
                 if len(mjds) > 1:
                     print 'Plate %s has multiple MJDs' % plate
                     hdu1 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[0]) ) )
