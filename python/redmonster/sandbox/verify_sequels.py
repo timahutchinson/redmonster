@@ -1491,7 +1491,7 @@ class verify_rm:
         # Makes a plot of SEQUELS LRG failure rate as a function of dchi2 threshold for redmonster and idlspec1d
         rm_data = []
         idl_data = []
-        diffs = n.linspace(0,drchi2max, drchi2max/float(npoints))
+        diffs = n.linspace(0,drchi2max,npoints)
         import pdb; pdb.set_trace()
         for diff in diffs:
             rm_point, idl_point = self.dchi2_failure_diff_function(diff)
