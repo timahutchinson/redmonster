@@ -1484,6 +1484,7 @@ class verify_rm:
                 total += 1
                 if self.rm_rchi2diff[i] < diff: rm_failures += 1.
                 if self.idl_rchi2diff[fiber] < diff: idl_failures += 1.
+        import pdb; pdb.set_trace()
         return (rm_failures/total), (idl_failures/total)
 
 
