@@ -1505,7 +1505,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
 
 
-    def cmass_reobs_errors(self, nbins=25):
+    def sequels_reobs_errors(self, nbins=25):
         # Makes a histogram of (z2-z1)/sqrt(dz1**2 + dz2**2) with best fit Gaussian overplotted for all SEQUELS LRG targets with repeat observations
         globpath = join( self.redmonster_spectro_redux,'*')
         z1 = []
@@ -1543,6 +1543,7 @@ class verify_rm:
         bins = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
+        import pdb; pdb.set_trace()
         p.plot(bins, hist, drawstyle='steps-mid', color='black')
         
         def fit_func(x,a,sigma,mu): # Gaussian function to fit to histogram
