@@ -1376,6 +1376,7 @@ class verify_rm:
 
 
     def sequels_chi2_histos(self,nbins=50, rchi2=True):
+        # Makes histogram of SEQUELS chi2 values for redmonster and idlspec1d (in chi2 or rchi2)
         rm_rchi2s = []
         idl_rchi2s = []
         openplate = 0
@@ -1420,6 +1421,7 @@ class verify_rm:
 
 
     def sequels_drchi2_histos(self, drchi2max=.02, nbins=50, rchi2=True):
+        # Makes histogram of SEQUELS delta-rchi2 (or delta-chi2) values for redmonster and idlspec1d
         rm_drchi2s = []
         idl_drchi2s = []
         openplate = 0
@@ -1459,6 +1461,50 @@ class verify_rm:
         p.ylabel(r'Fraction per bin', size=16)
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_histos.pdf')
+
+
+    def dchi2_failure_diff_function(self, diff, drchi2_max=.05):
+        # Helper function for sequels_failure_vs_dchi2()
+        rm_failures = 0
+        idl_failures = 0
+        openplate = 0
+        openmjd = 0
+        total = 0
+        self.read_redmonster_summary_file()
+        for i,fiber in enumerate(self.rm_fibers_summary):
+            plate = self.rm_plates_summary[i]
+            mjd = self.rm_mjds_summary[i]
+            #print '%s-%s-%s' % (plate,mjd,fiber)
+            if (openplate != plate) and (openmjd != mjd):
+                self.read_spZbest_all(plate,mjd)
+                self.read_spPlate_all(plate,mjd)
+                openplate = plate
+                openmjd = mjd
+            if (self.rm_rchi2diff[i] < drchi2max) and (self.idl_rchi2diff[fiber] < drchi2max):
+                total += 1
+                if self.rm_rchi2diff[i] < diff: rm_failures += 1.
+                if self.idl_rchi2diff[fiber] < diff: idl_failures += 1.
+        return (rm_failures/total), (idl_failures/total)
+
+
+    def sequels_failure_vs_dchi2(self, drchi2max=.03, npoints=150):
+        # Makes a plot of SEQUELS LRG failure rate as a function of dchi2 threshold for redmonster and idlspec1d
+        rm_data = []
+        idl_data = []
+        diffs = n.linspace(0,drchi2max, drchi2max/float(npoints))
+        for diff in diffs:
+            rm_point, idl_point = self.dchi2_failure_diff_function(diff)
+            rm_data.append(rm_point)
+            idl_data.append(idl_point)
+        p.plot(diffs, rm_data, 'r.')
+        p.plot(diffs, idl_data, 'b.')
+        p.xlabel(r'$\Delta\chi_{r}^2$ threshold', size=16)
+        p.ylabel(r'Failure rate', size=16)
+        p.grid(b=True, which='major', color='black', linestyle='--')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
+        
+
+
 
 
     def cmass_reobs_errors(self, nbins=25):
