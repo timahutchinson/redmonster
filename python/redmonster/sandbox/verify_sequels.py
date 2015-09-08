@@ -1600,7 +1600,10 @@ class verify_rm:
             xfit = n.linspace(-6,6,1000)
             yfit = fit_func(xfit, popt[0], popt[1], popt[2])
             p.plot(xfit, yfit, color='cyan')
-#p.xlabel(
+            p.xlabel(r'$(z_2-z_1)/ \delta z_{rms}$', size=16)
+            p.ylabel('Fraction per bin', size=16)
+            p.text(3,.01, r'$\sigma_{fit}=$%s' % popt[1], size=18)
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
 
 
 
