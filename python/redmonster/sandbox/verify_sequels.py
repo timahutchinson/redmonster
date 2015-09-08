@@ -1600,7 +1600,7 @@ class verify_rm:
             xfit = n.linspace(-6,6,1000)
             yfit = fit_func(xfit, popt[0], popt[1], popt[2])
             p.plot(xfit, yfit, color='cyan')
-            p.xlabel(
+#p.xlabel(
 
 
 
