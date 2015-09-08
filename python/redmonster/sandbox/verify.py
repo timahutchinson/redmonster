@@ -688,7 +688,7 @@ class verify_rm:
         self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
 
 
-    def cmass_completeness_all(self):
+    def sequels_completeness_all(self):
         # Prints percent of all DR10 CMASS targets with rm_zwarning == 0
         count = 0
         total = 0

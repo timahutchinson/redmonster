@@ -17,16 +17,16 @@ import matplotlib.pyplot as p
 p.interactive(True)
 
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
-plate = 7623
-mjd = 56901
+plate = 8123
+mjd = 56931
 fiberid = [0] #[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
 
-#specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
+specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 
-specs = donna_spec.Spec('/uufs/astro.utah.edu/common/home/u0814744/test.fits')
+#specs = donna_spec.Spec('/uufs/astro.utah.edu/common/home/u0814744/test.fits')
 #skyfibers = n.where(specs.ebt1 == 0)[0][0:2]
 #specs.flux = specs.flux[skyfibers]
 #specs.ivar = specs.ivar[skyfibers]
@@ -86,9 +86,9 @@ flags.append(qso_flags)
 
 zpick = zpicker2.Zpicker(specs, zfindobjs, zfitobjs, flags)
 
-zpick.plate = 0000
-zpick.mjd = 00000
-zpick.fiberid = [0]
+#zpick.plate = 0000
+#zpick.mjd = 00000
+#zpick.fiberid = [0]
 
 ''' Write output file.  Arguments are zpick object from above, and optionally dest and clobber, the path in which to write to file and whether or not to clobber old files with the same name, respectively.  See class documentation for more detail on Write_Redmonster behavior.'''
 
