@@ -1504,7 +1504,7 @@ class verify_rm:
         p.xlabel(r'$\Delta\chi_{r}^2$ threshold', size=16)
         p.ylabel(r'Failure rate', size=16)
         p.grid(b=True, which='major', color='black', linestyle='--')
-        p.legend()
+        p.legend(loc=2)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
 
 
