@@ -1563,75 +1563,47 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
 
 
-    def plate_7338_reobs_errors(self, nbins=25):
+    def plate_7848_splits_errors(self, nbins=25, fit=True):
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split1/7848/v5_8_guy_split1/redmonster-7848-56959.fits'))
+        hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split2/7848/v5_8_guy_split2/redmonster-7848-56959.fits'))
+        hdu3 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '7848', 'spPlate-7848-56959'))
         z1 = []
         z2 = []
-        z3 = []
-        z4 = []
-        z5 = []
-        z6 = []
-        z7 = []
         zerr1 = []
         zerr2 = []
-        zerr3 = []
-        zerr4 = []
-        zerr5 = []
-        zerr6 = []
-        zerr7 = []
-        hdu1 = fits.open( join( '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/redmonster/u0814744/v5_8_0_full/', '7338', '%s' % self.version, 'redmonster-7338-57038.fits') )
-        hdu2 = fits.open( join( '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/redmonster/u0814744/v5_8_0_full/', '7338', '%s' % self.version, 'redmonster-7338-57050.fits') )
-        hdu3 = fits.open( join( '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/redmonster/u0814744/v5_8_0_full/', '7338', '%s' % self.version, 'redmonster-7338-57067.fits') )
-        hdu4 = fits.open( join( '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/redmonster/u0814744/v5_8_0_full/', '7338', '%s' % self.version, 'redmonster-7338-57127.fits') )
-        hdu5 = fits.open( join( '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/redmonster/u0814744/v5_8_0_full/', '7338', '%s' % self.version, 'redmonster-7338-57135.fits') )
-        hdu6 = fits.open( join( '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/redmonster/u0814744/v5_8_0_full/', '7338', '%s' % self.version, 'redmonster-7338-57159.fits') )
-        hdu7 = fits.open( join( '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/redmonster/u0814744/v5_8_0_full/', '7338', '%s' % self.version, 'redmonster-7338-57166.fits') )
-        for i,type in enumerate(hdu1[1].data.CLASS1):
-            if True:
-                if (hdu1[1].data.ZWARNING[i] == 0) & (hdu2[1].data.ZWARNING[i] == 0) & (hdu3[1].data.ZWARNING[i] == 0) & (hdu4[1].data.ZWARNING[i] == 0) & (hdu5[1].data.ZWARNING[i] == 0) & (hdu6[1].data.ZWARNING[i] == 0) & (hdu7[1].data.ZWARNING[i] == 0):
+        for i,ebt1 in enumerate(hdu[1].data.ZWARNIN):
+            if ebt1 & 2 > 0:
+                if (hdu1[1].data.ZWARNING[i] == 0) and (hdu2[1].data.ZWARNING[i] == 0):
                     z1.append(hdu1[1].data.Z1[i])
-                    z2.append(hdu2[1].data.Z1[i])
-                    z3.append(hdu3[1].data.Z1[i])
-                    z4.append(hdu4[1].data.Z1[i])
-                    z5.append(hdu5[1].data.Z1[i])
-                    z6.append(hdu6[1].data.Z1[i])
-                    z7.append(hdu7[1].data.Z1[i])
                     zerr1.append(hdu1[1].data.Z_ERR1[i])
+                    z2.append(hdu2[1].data.Z1[i])
                     zerr2.append(hdu2[1].data.Z_ERR1[i])
-                    zerr3.append(hdu3[1].data.Z_ERR1[i])
-                    zerr4.append(hdu4[1].data.Z_ERR1[i])
-                    zerr5.append(hdu5[1].data.Z_ERR1[i])
-                    zerr6.append(hdu6[1].data.Z_ERR1[i])
-                    zerr7.append(hdu7[1].data.Z_ERR1[i])
         z1 = n.array(z1)
         z2 = n.array(z2)
         zerr1 = n.array(zerr1)
         zerr2 = n.array(zerr2)
-        zdiff = z2-z1
+        z_diff = z2-z1
         zerr_rms = n.sqrt( (zerr1**2 + zerr2**2)/2. )
-        scaled_diff = zdiff / zerr_rms
-        hist,binedges = n.histogram(scaled_diff,bins=nbins)
+        scaled_diff = z_diff / zerr_rms
+        hist,binedges = n.histogram(scaled_diff, bins = nbins)
         normhist = hist / float(z1.shape[0])
         bins = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
         p.plot(bins, hist, drawstyle='steps-mid', color='black')
-        
-        def fit_func(x,a,sigma,mu): # Gaussian function to fit to histogram
-            return a * n.exp( -((x-mu)**2)/(2*sigma**2) )
-        
-        import pdb; pdb.set_trace()
-        popt,pcov = curve_fit(fit_func, normhist,bins)
-        xfit = n.linspace(-6,6,1000)
-        yfit = fit_func(xfit, popt[0], popt[1], popt[2])
-        p.plot(xfit,yfit,color='cyan')
-        p.xlabel(r'$(z_2-z_1)/ \delta z_{rms}$', size=16)
-        p.ylabel('Fraction per bin',size=16)
-        p.text(3,.01,r'$\sigma_{fit}=1.18$',size=18)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
 
+        def fit_func(x, a, sigma, mu): # Gaussian function to fit to histogram
+            return a * n.exp( -((x-mu)**2)/(2.*sigma**2) )
 
-
-
+        if fit:
+            popt, pcov = curve_fit(fit_func, normhist, bins)
+            xfit = n.linspace(-6,6,1000)
+            yfit = fit_func(xfit, popt[0], popt[1], popt[2])
+            p.plot(xfit, yfit, color='cyan')
+            p.xlabel(r'$(z_2-z_1)/ \delta z_{rms}$', size=16)
+            p.ylabel('Fraction per bin', size=16)
+            p.text(3,.01, r'$\sigma_{fit}=$%s' % popt[1], size=18)
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
 
 
 
