@@ -10,7 +10,7 @@ from astropy.io import fits
 q = queue()
 q.verbose = True
 nodes = 12
-walltime = '336:00:00'
+walltime = '36:00:00'
 ncycles = 250
 
 try: uufscell = environ['UUFSCELL']
