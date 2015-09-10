@@ -170,6 +170,7 @@ class Zpicker:
                     return n.dot(pmat,f), tuple(f)
                 except Exception as e:
                     print "Exception: %r" % e
+                    return n.zeros(self.npixflux), (0,)
             else:
                 return n.dot(pmat,f), tuple(f)
         except Exception as e:
