@@ -1566,7 +1566,7 @@ class verify_rm:
     def plate_7848_splits_errors(self, nbins=25, fit=True):
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split1/7848/v5_8_guy_split1/redmonster-7848-56959.fits'))
         hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split2/7848/v5_8_guy_split2/redmonster-7848-56959.fits'))
-        hdu3 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '7848', 'spPlate-7848-56959'))
+        hdu3 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '7848', 'spPlate-7848-56959.fits'))
         z1 = []
         z2 = []
         zerr1 = []
