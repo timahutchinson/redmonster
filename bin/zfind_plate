@@ -6,7 +6,7 @@ from pbs import queue
 q = queue()
 q.verbose = True
 nodes = 12
-walltime = '336:00:00'
+walltime = '36:00:00'
 
 try: uufscell = environ['UUFSCELL']
 except: uufscell = None
