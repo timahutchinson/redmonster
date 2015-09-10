@@ -17,9 +17,9 @@ import matplotlib.pyplot as p
 p.interactive(True)
 
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
-plate = 7848
-mjd = 56959
-fiberid = [i for i in xrange(1000)] # fiberid must be a list, not a numpy array
+plate = 8123
+mjd = 56931
+fiberid = [100]#[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
@@ -51,14 +51,16 @@ zqso.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=4)
 
 ''' Instantiate Zfitter to do subgrid fitting.  zchi2_ssp is chi^2 array from zfinder object above, and zssp.zbase is redshift-pixel baseline over the range explored by zfinder. '''
 
-zfit_ssp = zfitter.Zfitter(zssp.zchi2arr, zssp.zbase)
+zfit_ssp1 = zfitter.Zfitter(zssp1.zchi2arr, zssp1.zbase)
 
 ''' Do actual subgrid refinement and fitting.  Best-fit and second-best-fit redshifts will be in [nfibers,2] shaped array in zfit_*****.z , and associated errors are in zfit_*****.z_err .  This routine also flags for small delta chi^2 and if the global minimum chi^2 is on an edge of the input chi^2 array. z_refine() includes an optional parameter, 'width', which specifies half the width of a window around the global chi2 minimum in which local minima are ignored during calculation of second-best redshift and flagging small delta-chi2.  If not specified, 'width' defaults to 15.'''
 
-zfit_ssp.z_refine2()
+zfit_ssp1.z_refine2()
 
 ''' Same as above for second template. '''
 
+zfit_ssp2 = zfitter.Zfitter(zssp2.zchi2arr, zssp2.zbase)
+zfit_ssp2.z_refine2()
 zfit_star = zfitter.Zfitter(zstar.zchi2arr, zstar.zbase)
 zfit_star.z_refine2()
 zfit_qso = zfitter.Zfitter(zqso.zchi2arr, zqso.zbase)
@@ -66,7 +68,8 @@ zfit_qso.z_refine2()
 
 ''' Flagging throughout redmonster is done individually by the classes responsible for handling the relevant computations.  To have an 'overall' flag for each fiber, the individual flags need to be combined. '''
 
-ssp_flags = misc.comb_flags(specs, zssp, zfit_ssp)
+ssp1_flags = misc.comb_flags(specs, zssp1, zfit_ssp1)
+ssp2_flags = misc.comb_flags(specs, zssp2, zfit_ssp2)
 star_flags = misc.comb_flags(specs, zstar, zfit_star)
 qso_flags = misc.comb_flags(specs, zqso, zfit_qso)
 
@@ -74,15 +77,18 @@ qso_flags = misc.comb_flags(specs, zqso, zfit_qso)
 
 #zpick = zpicker.Zpicker(specs, zssp, zfit_ssp, ssp_flags, zstar, zfit_star, star_flags, zqso, zfit_qso, qso_flags)
 zfindobjs=[]
-zfindobjs.append(zssp)
+zfindobjs.append(zssp1)
+zfindobjs.append(zssp2)
 zfindobjs.append(zstar)
 zfindobjs.append(zqso)
 zfitobjs=[]
-zfitobjs.append(zfit_ssp)
+zfitobjs.append(zfit_ssp1)
+zfitobjs.append(zfit_ssp2)
 zfitobjs.append(zfit_star)
 zfitobjs.append(zfit_qso)
 flags = []
-flags.append(ssp_flags)
+flags.append(ssp1_flags)
+flags.append(ssp2_flags)
 flags.append(star_flags)
 flags.append(qso_flags)
 

@@ -141,7 +141,6 @@ class Zfitter:
             for iz in xrange(self.zchi2.shape[-1]): # Make vector of minimum chi2 at each trial redshift
                 bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
                 allminvectors.append( n.unravel_index( self.zchi2[ifiber,...,iz].argmin(), self.zchi2[ifiber,...,iz].shape ) ) # Location in zchi2[ifiber,...,iz] of min'''
-            import pdb; pdb.set_trace()
             zspline = gs.GridSpline(bestzvec) # Spline up bestzvec
             zminlocs = map(int,n.round(zspline.get_min())) # Minimun locations
             zminvals = zspline.get_val(zminlocs) # Minimum values
