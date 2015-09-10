@@ -1590,7 +1590,7 @@ class verify_rm:
         bins = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
-            import pdb; pdb.set_trace()
+        import pdb; pdb.set_trace()
         p.plot(bins, hist, drawstyle='steps-mid', color='black')
 
         def fit_func(x, a, sigma, mu): # Gaussian function to fit to histogram
