@@ -1571,7 +1571,7 @@ class verify_rm:
         z2 = []
         zerr1 = []
         zerr2 = []
-        for i,ebt1 in enumerate(hdu[1].data.ZWARNIN):
+        for i,ebt1 in enumerate(hdu3[1].data.ZWARNING):
             if ebt1 & 2 > 0:
                 if (hdu1[1].data.ZWARNING[i] == 0) and (hdu2[1].data.ZWARNING[i] == 0):
                     z1.append(hdu1[1].data.Z1[i])
