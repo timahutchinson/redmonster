@@ -164,7 +164,14 @@ class Zpicker:
             pmat[:,1:] = n.transpose(polyarr)
             ninv = n.diag(ivar)
             f = n.linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat), n.dot( n.dot(n.transpose(pmat),ninv),flux) ); f = n.array(f)
-            return n.dot(pmat,f), tuple(f)
+            if f[0] < 0:
+                try:
+                    f = nnls( n.dot(n.dot(n.transpose(pmat),ninv),pmat), n.dot( n.dot(n.transpose(pmat),ninv),flux) )[0]; f = n.array(f)
+                    return n.dot(pmat,f), tuple(f)
+                except Exception as e:
+                    print "Exception: %r" % e
+            else:
+                return n.dot(pmat,f), tuple(f)
         except Exception as e:
             print "Exception: %r" % e
             return n.zeros(self.npixflux), (0,)
