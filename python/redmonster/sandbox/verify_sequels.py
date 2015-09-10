@@ -1578,6 +1578,7 @@ class verify_rm:
                     zerr1.append(hdu1[1].data.Z_ERR1[i])
                     z2.append(hdu2[1].data.Z1[i])
                     zerr2.append(hdu2[1].data.Z_ERR1[i])
+                    if n.abs(z1[-1] - z2[-1]) > .1: import pdb; pdb.set_trace()
         z1 = n.array(z1)
         z2 = n.array(z2)
         zerr1 = n.array(zerr1)
@@ -1590,7 +1591,6 @@ class verify_rm:
         bins = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
-        import pdb; pdb.set_trace()
         p.plot(bins, hist, drawstyle='steps-mid', color='black')
 
         def fit_func(x, a, sigma, mu): # Gaussian function to fit to histogram
