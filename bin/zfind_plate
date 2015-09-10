@@ -26,8 +26,8 @@ try: run2d = environ['RUN2D']
 except: run2d = None
 platedir = join(topdir,run2d,'*','spPlate-*.fits') if topdir and run2d else None
 
-plates=[8055]
-mjds=[57187]
+plates=[7848]
+mjds=[56959]
 #if platedir:
 #    for path in iglob(platedir):
 #        spfile = basename(path)
