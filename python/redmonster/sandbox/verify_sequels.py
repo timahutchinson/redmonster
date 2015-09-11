@@ -1588,14 +1588,13 @@ class verify_rm:
         zerr1 = n.array(zerr1)
         zerr2 = n.array(zerr2)
         z_diff = z2-z1
-        zerr_rms = n.sqrt( (zerr1**2 + zerr2**2)/2. )
+        zerr_rms = n.sqrt( (zerr1**2 + zerr2**2) )
         scaled_diff = z_diff / zerr_rms
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
         normhist = hist / float(z1.shape[0])
         bins = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
-        import pdb; pdb.set_trace()
         p.plot(bins, normhist, drawstyle='steps-mid', color='black')
 
         def fit_func(x, a, sigma, mu): # Gaussian function to fit to histogram
