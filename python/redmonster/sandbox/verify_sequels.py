@@ -1602,7 +1602,7 @@ class verify_rm:
             return a * n.exp( -((x-mu)**2)/(2.*sigma**2) )
 
         if fit:
-            popt, pcov = curve_fit(fit_func, normhist, bins, p0=[.2,1.,0])
+            popt, pcov = curve_fit(fit_func, normhist, bins, p0=[1,1.,0])
             xfit = n.linspace(-6,6,1000)
             yfit = fit_func(xfit, popt[0], popt[1], popt[2])
             p.plot(xfit, yfit, color='cyan')
