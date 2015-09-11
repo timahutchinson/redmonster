@@ -1573,7 +1573,7 @@ class verify_rm:
         zerr2 = []
         for i,ebt1 in enumerate(hdu3[5].data.EBOSS_TARGET1):
             if ebt1 & 2 > 0:
-                if (hdu1[1].data.ZWARNING[i] == 0) and (hdu1[1].data.CLASS1[i][:3] == 'ssp') and (hdu2[1].data.CLASS1[i][:3] == 'ssp') and (hdu2[1].data.ZWARNING[i] == 0):
+                if (hdu1[1].data.ZWARNING[i] == 0) and (hdu2[1].data.ZWARNING[i] == 0):
                     z1.append(hdu1[1].data.Z1[i])
                     zerr1.append(hdu1[1].data.Z_ERR1[i])
                     z2.append(hdu2[1].data.Z1[i])
