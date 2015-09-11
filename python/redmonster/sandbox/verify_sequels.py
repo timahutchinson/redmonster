@@ -1596,13 +1596,13 @@ class verify_rm:
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
         import pdb; pdb.set_trace()
-        p.plot(bins, normhist, drawstyle='steps-mid', color='black')
+        p.plot(bins, hist, drawstyle='steps-mid', color='black')
 
         def fit_func(x, a, sigma, mu): # Gaussian function to fit to histogram
             return a * n.exp( -((x-mu)**2)/(2.*sigma**2) )
 
         if fit:
-            popt, pcov = curve_fit(fit_func, normhist, bins)
+            popt, pcov = curve_fit(fit_func, hist, bins)
             xfit = n.linspace(-6,6,1000)
             yfit = fit_func(xfit, popt[0], popt[1], popt[2])
             p.plot(xfit, yfit, color='cyan')
