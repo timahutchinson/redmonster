@@ -1605,8 +1605,8 @@ class verify_rm:
             xfit = n.linspace(-4,4,1000)
             yfit = fit_func(xfit, popt[0], popt[1], popt[2])
             p.plot(xfit, yfit, color='cyan')
-            p.text(2.5,.15, r'$\sigma_{fit}=$%.2f' % popt[1], size=16)
-            p.text(2.5, .14, r'$\mu_{fit}=$%.2f' % popt[2], size=16)
+            p.text(2.4,.15, r'$\sigma_{fit}=$%.2f' % popt[1], size=16)
+            p.text(2.4, .14, r'$\mu_{fit}=$%.2f' % popt[2], size=16)
 
         p.xlabel(r'$(z_2-z_1)/ \delta z_{rms}$', size=16)
         p.ylabel('Fraction per bin', size=16)
