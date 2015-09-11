@@ -1589,6 +1589,7 @@ class verify_rm:
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
         normhist = hist / float(z1.shape[0])
         bins = n.zeros(nbins)
+        import pdb; pdb.set_trace()
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
         p.plot(bins, hist, drawstyle='steps-mid', color='black')
