@@ -1578,7 +1578,11 @@ class verify_rm:
                     zerr1.append(hdu1[1].data.Z_ERR1[i])
                     z2.append(hdu2[1].data.Z1[i])
                     zerr2.append(hdu2[1].data.Z_ERR1[i])
-                    if n.abs(z1[-1] - z2[-1]) > .1: import pdb; pdb.set_trace()
+                    if n.abs(z1[-1] - z2[-1]) > .1:
+                        del(z1[-1])
+                        del(z2[-1])
+                        del(zerr1[-1])
+                        del(zerr2[-1])
         z1 = n.array(z1)
         z2 = n.array(z2)
         zerr1 = n.array(zerr1)
