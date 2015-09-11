@@ -1502,7 +1502,7 @@ class verify_rm:
         p.plot(diffs, rm_data, 'red', label='redmosnter')
         p.plot(diffs, idl_data, 'blue', label='idlspec1d')
         p.xlabel(r'$\Delta\chi_{r}^2$ threshold', size=16)
-        p.ylabel(r'Failure rate', size=16)
+        p.ylabel(r'Cumulative fraction below threshold', size=16)
         p.grid(b=True, which='major', color='black', linestyle='--')
         p.legend(loc=2)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
