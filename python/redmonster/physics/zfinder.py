@@ -35,6 +35,7 @@ class Zfinder:
         self.templates_flat = n.reshape(self.templates, (-1,self.fftnaxis1))
         self.t_fft = n.fft.fft(self.templates_flat)
         self.t2_fft = n.fft.fft(self.templates_flat**2)
+        self.f_nulls = []
     
 
     def read_template(self):
@@ -104,7 +105,6 @@ class Zfinder:
         
         for i in xrange(specs.shape[0]): # Loop over fibers
             print 'Fitting fiber %s of %s for template %s' % (i+1, specs.shape[0], self.fname) #print i, self.fname
-            #write_to_log(
             if len(n.where(specs[i] != 0.)[0]) == 0: # If flux is all zeros, flag as unplugged according to BOSS zwarning flags and don't bother with doing fit
                 self.zwarning[i] = int(self.zwarning[i]) | flag_val_unplugged
             else: # Otherwise, go ahead and do fit
@@ -112,6 +112,9 @@ class Zfinder:
                 sn2_data = n.sum( (specs[i]**2)*ivar[i] )
                 for ipos in xrange(self.npoly):
                     for jpos in xrange(self.npoly): pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] * poly_pad[jpos] * ivar_pad[i])
+                f_null = n.linalg.solve(pmat[1:,1:,0],bmat[1:,0])
+                f_nulls.append( f_null )
+                chi2_null = sn2_data - n.dot(n.dot(f_null,pmat[1:,1:,0]),f_null)
                 for j in xrange(self.templates_flat.shape[0]): # Loop over templates
                     pmat[0,0] = n.fft.ifft(self.t2_fft[j] * ivar_fft[i].conj()).real
                     bvec[0] = n.fft.ifft(self.t_fft[j] * data_fft[i].conj()).real
@@ -123,17 +126,17 @@ class Zfinder:
                                 zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
                                 if (f[0] < 0):
                                     temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model # Removed 12 Sept 2015 TH
-                                    zchi2arr[i,j,(l/self.npixstep)] = 1e9 # Removed 12 Sept 2015 TH
+                                    zchi2arr[i,j,(l/self.npixstep)] = chi2_null # Removed 12 Sept 2015 TH
                                     try: # Added 12 Sept 2015 TH
                                         #f = nnls(pmat[:,:,l+zminpix],bvec[:,l+zminpix])[0]
                                         #zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
                                         pass
                                     except Exception as e:
                                         print "Except: %r" % e
-                                        zchi2arr[i,j,(l/self.npixstep)] = 1e9
+                                        zchi2arr[i,j,(l/self.npixstep)] = chi2_null
                             except Exception as e:
                                 print "Exception: %r" % e
-                                zchi2arr[i,j,(l/self.npixstep)] = 1e9
+                                zchi2arr[i,j,(l/self.npixstep)] = chi2_null
                     else:
                         for l in n.arange(num_z)*self.npixstep: #for l in range(num_z):
                             try:
@@ -141,17 +144,17 @@ class Zfinder:
                                 zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
                                 if (f[0] < 0.):
                                     temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model # Removed 12 Sept 2015 TH
-                                    zchi2arr[i,j,(l/self.npixstep)] = 1e9 # Removed 12 Sept 2015 TH
+                                    zchi2arr[i,j,(l/self.npixstep)] = chi2_null # Removed 12 Sept 2015 TH
                                     try:
                                         #f = nnls(pmat[:,:,l],bvec[:,l])[0]
                                         #zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
                                         pass
                                     except Exception as e:
                                         print "Except: %r" % e
-                                        zchi2arr[i,j,(l/self.npixstep)] = 1e9
+                                        zchi2arr[i,j,(l/self.npixstep)] = chi2_null
                             except Exception as e:
                                 print "Exception: %r" % e
-                                zchi2arr[i,j,(l/self.npixstep)] = 1e9
+                                zchi2arr[i,j,(l/self.npixstep)] = chi2_null
         for i in xrange(self.zwarning.shape[0]): # Use only neg_model flag from best fit model/redshift and add it to self.zwarning
             minpos = ( n.where(zchi2arr[i] == n.min(zchi2arr[i]))[0][0] , n.where(zchi2arr[i] == n.min(zchi2arr[i]))[1][0] )
             self.zwarning[i] = int(self.zwarning[i]) | int(temp_zwarning[i,minpos[0],minpos[1]])
