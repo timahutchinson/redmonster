@@ -112,7 +112,7 @@ class Zfinder:
                 sn2_data = n.sum( (specs[i]**2)*ivar[i] )
                 for ipos in xrange(self.npoly):
                     for jpos in xrange(self.npoly): pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] * poly_pad[jpos] * ivar_pad[i])
-                f_null = n.linalg.solve(pmat[1:,1:,0],bmat[1:,0])
+                f_null = n.linalg.solve(pmat[1:,1:,0],bvec[1:,0])
                 f_nulls.append( f_null )
                 chi2_null = sn2_data - n.dot(n.dot(f_null,pmat[1:,1:,0]),f_null)
                 for j in xrange(self.templates_flat.shape[0]): # Loop over templates
