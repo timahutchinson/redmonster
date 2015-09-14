@@ -146,6 +146,7 @@ class Zfitter:
             zminvals = zspline.get_val(zminlocs) # Minimum values
             z_ind = 0
             stop = False
+            import pdb; pdb.set_trace()
             if len(zminvals) == 0:
                 self.flag_null_fit(ifiber)
             else:

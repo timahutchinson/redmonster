@@ -115,6 +115,7 @@ class Zfinder:
                 f_null = n.linalg.solve(pmat[1:,1:,0],bvec[1:,0])
                 self.f_nulls.append( f_null )
                 chi2_null = sn2_data - n.dot(n.dot(f_null,pmat[1:,1:,0]),f_null)
+                print chi2_null
                 for j in xrange(self.templates_flat.shape[0]): # Loop over templates
                     pmat[0,0] = n.fft.ifft(self.t2_fft[j] * ivar_fft[i].conj()).real
                     bvec[0] = n.fft.ifft(self.t_fft[j] * data_fft[i].conj()).real

@@ -1563,35 +1563,42 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
 
 
-    def plate_7848_splits_errors(self, nbins=25, fit=True):
-        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split1/7848/v5_8_guy_split1/redmonster-7848-56959.fits'))
-        hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split2/7848/v5_8_guy_split2/redmonster-7848-56959.fits'))
-        hdu3 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '7848', 'spPlate-7848-56959.fits'))
-        z1 = []
-        z2 = []
-        zerr1 = []
-        zerr2 = []
+    def plate_splits_function(self, plate=plate, mjd=mjd, nbins=nbins, fit=fit):
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split1/', '%s' % plate, '/v5_8_guy_split1/', 'redmonster-%s-%s.fits' % (plate,mjd)))
+        hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split2/', '%s' % plate, '/v5_8_guy_split2/', 'redmonster-%s-%s.fits' % (plate,mjd)))
+        hdu3 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd)))
         for i,ebt1 in enumerate(hdu3[5].data.EBOSS_TARGET1):
             if ebt1 & 2 > 0:
                 if True: #(hdu1[1].data.ZWARNING[i] == 0) and (hdu2[1].data.ZWARNING[i] == 0):
-                    z1.append(hdu1[1].data.Z1[i])
-                    zerr1.append(hdu1[1].data.Z_ERR1[i])
-                    z2.append(hdu2[1].data.Z1[i])
-                    zerr2.append(hdu2[1].data.Z_ERR1[i])
-                    if n.abs(z1[-1] - z2[-1]) > .01:
-                        del(z1[-1])
-                        del(z2[-1])
-                        del(zerr1[-1])
-                        del(zerr2[-1])
-        z1 = n.array(z1)
-        z2 = n.array(z2)
-        zerr1 = n.array(zerr1)
-        zerr2 = n.array(zerr2)
-        z_diff = z2-z1
-        zerr_rms = n.sqrt( (zerr1**2 + zerr2**2) )
+                    self.z1.append(hdu1[1].data.Z1[i])
+                    self.zerr1.append(hdu1[1].data.Z_ERR1[i])
+                    self.z2.append(hdu2[1].data.Z1[i])
+                    self.zerr2.append(hdu2[1].data.Z_ERR1[i])
+                    if n.abs(self.z1[-1] - self.z2[-1]) > .01:
+                        del(self.z1[-1])
+                        del(self.z2[-1])
+                        del(self.zerr1[-1])
+                        del(self.zerr2[-1])
+
+
+    def plate_splits_errors(self, plate, mjd, nbins=25, fit=True):
+        plates = [7834,7839,7848]
+        mjds = [56979,56900,56959]
+        self.z1 = []
+        self.z2 = []
+        self.zerr1 = []
+        self.zerr2 = []
+        for i,plate in enumerate(plates):
+            self.plate_splits_function(plate=plate, mjd=mjds[i], nbins=nbins, fit=fit)
+        self.z1 = n.array(self.z1)
+        self.z2 = n.array(self.z2)
+        self.zerr1 = n.array(self.zerr1)
+        self.zerr2 = n.array(self.zerr2)
+        z_diff = self.z2-self.z1
+        zerr_rms = n.sqrt( (self.zerr1**2 + self.zerr2**2) )
         scaled_diff = z_diff / zerr_rms
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
-        normhist = hist / float(z1.shape[0])
+        normhist = hist / float(self.z1.shape[0])
         bins = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
@@ -1608,7 +1615,7 @@ class verify_rm:
             p.text(2.4,.15, r'$\sigma_{fit}=$%.2f' % popt[1], size=16)
             p.text(2.4, .14, r'$\mu_{fit}=$%.2f' % popt[2], size=16)
 
-        p.xlabel(r'$(z_2-z_1)/ \delta z_{rms}$', size=16)
+        p.xlabel(r'$(z_2-z_1)/ (\delta z_1^2 + \delta z_2^2)^{1/2}$', size=16)
         p.ylabel('Fraction per bin', size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
 

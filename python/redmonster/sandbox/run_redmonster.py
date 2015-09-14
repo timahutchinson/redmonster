@@ -17,8 +17,8 @@ import matplotlib.pyplot as p
 p.interactive(True)
 
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
-plate = 8123
-mjd = 56931
+plate = 7286
+mjd = 57096
 fiberid = [100]#[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 
 
