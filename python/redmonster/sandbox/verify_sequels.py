@@ -1603,6 +1603,9 @@ class verify_rm:
         z_diff = self.z2-self.z1
         zerr_rms = n.sqrt( (self.zerr1**2 + self.zerr2**2) )
         scaled_diff = z_diff / zerr_rms
+        for i, diff in enumerate(scaled_diff):
+            if n.abs(diff) > 5:
+                del(scaled_diff[i])
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
         normhist = hist / float(self.z1.shape[0])
         bins = n.zeros(nbins)
