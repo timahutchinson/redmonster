@@ -1608,6 +1608,7 @@ class verify_rm:
             else:
                 break
         print n.max(n.abs(scaled_diff))
+        print scaled_diff.shape
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
         normhist = hist / float(self.z1.shape[0])
         bins = n.zeros(nbins)
