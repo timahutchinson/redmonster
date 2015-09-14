@@ -1586,7 +1586,7 @@ class verify_rm:
                         del(self.zerr2[-1])
 
 
-    def plate_splits_errors(self, nbins=25, fit=True):
+    def plate_splits_errors(self, nbins=25, fit=True, normed=True):
         plates = [7834,7839,7848]
         mjds = [56979,56900,56959]
         self.z1 = []
@@ -1610,7 +1610,8 @@ class verify_rm:
         print n.max(n.abs(scaled_diff))
         print scaled_diff.shape
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
-        normhist = hist / float(self.z1.shape[0])
+        if normed:
+            normhist = hist / float(self.z1.shape[0])
         bins = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
@@ -1630,6 +1631,7 @@ class verify_rm:
         p.xlabel(r'$(z_2-z_1)/ (\delta z_1^2+$ $\delta z_2^2)^{1/2}$', size=16)
         p.ylabel('Fraction per bin', size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
+        p.clf()
 
 
 
