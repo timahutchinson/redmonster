@@ -1564,8 +1564,8 @@ class verify_rm:
 
 
     def plate_splits_function(self, plate, mjd, nbins=25, fit=True):
-        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split1/', '%s' % plate, '/v5_8_guy_split1/', 'redmonster-%s-%s.fits' % (plate,mjd)))
-        hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split2/', '%s' % plate, '/v5_8_guy_split2/', 'redmonster-%s-%s.fits' % (plate,mjd)))
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split1', '%s' % plate, 'v5_8_guy_split1', 'redmonster-%s-%s.fits' % (plate,mjd)))
+        hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split2', '%s' % plate, 'v5_8_guy_split2', 'redmonster-%s-%s.fits' % (plate,mjd)))
         hdu3 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd)))
         for i,ebt1 in enumerate(hdu3[5].data.EBOSS_TARGET1):
             if ebt1 & 2 > 0:
