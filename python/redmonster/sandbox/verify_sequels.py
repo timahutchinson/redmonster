@@ -1563,7 +1563,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
 
 
-    def plate_splits_function(self, plate, mjd, nbins=nbins, fit=fit):
+    def plate_splits_function(self, plate, mjd, nbins=25, fit=True):
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split1/', '%s' % plate, '/v5_8_guy_split1/', 'redmonster-%s-%s.fits' % (plate,mjd)))
         hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split2/', '%s' % plate, '/v5_8_guy_split2/', 'redmonster-%s-%s.fits' % (plate,mjd)))
         hdu3 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd)))
