@@ -1636,6 +1636,47 @@ class verify_rm:
         p.clf()
 
 
+    def sequels_sky_drchi2(self):
+        xdata = n.linspace(0,.01,40)
+        rm_ydata = []
+        idl_ydata = []
+        globpath1 = join(environ['REDMONSTER_SPECTRO_REDUX'],'v5_8_0_kyle', '*')
+        for chi2max in xdata:
+            total = 0.
+            countidl = 0.
+            countrm = 0.
+            for path in iglob(globpath1):
+                plate = basename(path)
+                if len(plate) == 4:
+                    globpath2 = join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-*.fits' % plate)
+                    for file in iglob(globpath2):
+                        if len(basename(file)) == 23:
+                            mjd = basename(file)[16:21]
+                            hduplate = fits.open(file)
+                            globpath3 = join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-*%s.fits' % (plate,mjd))
+                            hduidl = fits.open(file)
+                            hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
+                            for i,ebt0 in enumerate(hduplate[5].data.EBOSS_TARGET1):
+                                if ebt0 == 0:
+                                    total += 1.
+                                    if hduidl[1].data.RCHI2DIFF > chi2max: countidl += 1.
+                                    if hdurm[1].data.RCHI2DIFF > chi2max: countrm += 1.
+            rm_ydata.append(countrm/total)
+            idl_ydata.append(countidl/total)
+
+        f = p.figure()
+        ax = f.add_subplot(1,1,1)
+        p.plot(xdata, rm_ydata, drawstyle='steps-mid', color='red', label='redmonster')
+        p.plot(xdata, idl_ydata, drawstyle='steps-mid', color='blue', label='idlspec1d')
+        p.xlabel(r'$\Delta\chi_r^2$', size=16)
+        p.ylabel(r'Cumulative fraction below threshold', size=16)
+        ax.set_yscale('log')
+        p.grid(b=True, which='major', color='black', linestyle='-')
+        p.grid(b=True, which='minor', color='black', linestyle='--')
+        p.legend()
+        p.savefile('/uufs/astro.utah.edu/common/home/u0814744/boss/sky_failure_vs_drchi2.pdf')
+
+
 
 
 
