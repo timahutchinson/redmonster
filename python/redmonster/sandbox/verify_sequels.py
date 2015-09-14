@@ -1580,6 +1580,11 @@ class verify_rm:
                         del(self.z2[-1])
                         del(self.zerr1[-1])
                         del(self.zerr2[-1])
+                    if n.sqrt( (self.zerr1[-1]**2 + self.zerr2[-1]**2) ) == 0:
+                        del(self.z1[-1])
+                        del(self.z2[-1])
+                        del(self.zerr1[-1])
+                        del(self.zerr2[-1])
 
 
     def plate_splits_errors(self, nbins=25, fit=True):
