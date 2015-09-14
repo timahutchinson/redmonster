@@ -1568,7 +1568,7 @@ class verify_rm:
         hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split2', '%s' % plate, 'v5_8_guy_split2', 'redmonster-%s-%s.fits' % (plate,mjd)))
         hdu3 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd)))
         for i,ebt1 in enumerate(hdu3[5].data.EBOSS_TARGET1):
-            if ebt1 & 2 > 0:
+            if ebt1 & 4 > 0:
                 if True: #(hdu1[1].data.ZWARNING[i] == 0) and (hdu2[1].data.ZWARNING[i] == 0):
                     self.z1.append(hdu1[1].data.Z1[i])
                     self.zerr1.append(hdu1[1].data.Z_ERR1[i])
@@ -1588,6 +1588,7 @@ class verify_rm:
         self.z2 = []
         self.zerr1 = []
         self.zerr2 = []
+        import pdb; pdb.set_trace()
         for i,plate in enumerate(plates):
             self.plate_splits_function(plate=plate, mjd=mjds[i], nbins=nbins, fit=fit)
         self.z1 = n.array(self.z1)
