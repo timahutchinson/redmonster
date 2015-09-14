@@ -1602,12 +1602,11 @@ class verify_rm:
         z_diff = self.z2-self.z1
         zerr_rms = n.sqrt( (self.zerr1**2 + self.zerr2**2) )
         scaled_diff = z_diff / zerr_rms
-        for i, diff in enumerate(scaled_diff):
-            if n.abs(diff) > 5:
-                import pdb; pdb.set_trace()
-                scaled_diff = n.delete(scaled_diff, i)
-                print 'deleting index %s' % i
-        print n.max(scaled_diff)
+        while True:
+            if n.abs(scaled_diff[n.abs(scaled_diff).argmax()]):
+                scaled_diff = n.delete(scaled_diff, n.abs(scaled_diff).argmax())
+                break
+        print n.max(n.abs(scaled_diff))
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
         normhist = hist / float(self.z1.shape[0])
         bins = n.zeros(nbins)
