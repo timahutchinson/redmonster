@@ -1605,6 +1605,7 @@ class verify_rm:
         while True:
             if n.abs(scaled_diff[n.abs(scaled_diff).argmax()]):
                 scaled_diff = n.delete(scaled_diff, n.abs(scaled_diff).argmax())
+            else:
                 break
         print n.max(n.abs(scaled_diff))
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
