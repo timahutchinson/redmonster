@@ -1604,6 +1604,7 @@ class verify_rm:
         scaled_diff = z_diff / zerr_rms
         for i, diff in enumerate(scaled_diff):
             if n.abs(diff) > 5:
+                import pdb; pdb.set_trace()
                 scaled_diff = n.delete(scaled_diff, i)
                 print 'deleting index %s' % i
         print n.max(scaled_diff)
