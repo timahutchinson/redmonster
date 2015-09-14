@@ -19,7 +19,7 @@ p.interactive(True)
 ''' Set plate, mjd, and fibers to be run.  If fiberid is not specified here and subsequently passed in during the next step, the default behavior is to run on all fibers. '''
 plate = 7286
 mjd = 57096
-fiberid = [100]#[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
+fiberid = [122]#[i for i in xrange(1000)] # fiberid must be a list, not a numpy array
 
 
 ''' Read spPlate file.  specs.flux, specs.ivar, specs.loglambda, are [nfibers, npix] arrays containing flux, inverse variances, and log-wavelength, respectively.  This step also flags sky fibers and masks pixels with unreasonable S/N. '''
@@ -42,8 +42,8 @@ zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
 
 ''' New objects and fitting for different templates. '''
 
-zssp2 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_emit-v002.fits', npoly=4, zmin=-0.01, zmax=1.2)
-zssp2.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
+#zssp2 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_emit-v002.fits', npoly=4, zmin=-0.01, zmax=1.2)
+#zssp2.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
 zstar = zfinder.Zfinder(fname='ndArch-all-CAP-grids.fits', npoly=4, zmin=-.005, zmax=.005)
 zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
 zqso = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.4, zmax=3.5)
@@ -59,8 +59,8 @@ zfit_ssp1.z_refine2()
 
 ''' Same as above for second template. '''
 
-zfit_ssp2 = zfitter.Zfitter(zssp2.zchi2arr, zssp2.zbase)
-zfit_ssp2.z_refine2()
+#zfit_ssp2 = zfitter.Zfitter(zssp2.zchi2arr, zssp2.zbase)
+#zfit_ssp2.z_refine2()
 zfit_star = zfitter.Zfitter(zstar.zchi2arr, zstar.zbase)
 zfit_star.z_refine2()
 zfit_qso = zfitter.Zfitter(zqso.zchi2arr, zqso.zbase)
@@ -69,7 +69,7 @@ zfit_qso.z_refine2()
 ''' Flagging throughout redmonster is done individually by the classes responsible for handling the relevant computations.  To have an 'overall' flag for each fiber, the individual flags need to be combined. '''
 
 ssp1_flags = misc.comb_flags(specs, zssp1, zfit_ssp1)
-ssp2_flags = misc.comb_flags(specs, zssp2, zfit_ssp2)
+#ssp2_flags = misc.comb_flags(specs, zssp2, zfit_ssp2)
 star_flags = misc.comb_flags(specs, zstar, zfit_star)
 qso_flags = misc.comb_flags(specs, zqso, zfit_qso)
 
@@ -78,17 +78,17 @@ qso_flags = misc.comb_flags(specs, zqso, zfit_qso)
 #zpick = zpicker.Zpicker(specs, zssp, zfit_ssp, ssp_flags, zstar, zfit_star, star_flags, zqso, zfit_qso, qso_flags)
 zfindobjs=[]
 zfindobjs.append(zssp1)
-zfindobjs.append(zssp2)
+#zfindobjs.append(zssp2)
 zfindobjs.append(zstar)
 zfindobjs.append(zqso)
 zfitobjs=[]
 zfitobjs.append(zfit_ssp1)
-zfitobjs.append(zfit_ssp2)
+#zfitobjs.append(zfit_ssp2)
 zfitobjs.append(zfit_star)
 zfitobjs.append(zfit_qso)
 flags = []
 flags.append(ssp1_flags)
-flags.append(ssp2_flags)
+#flags.append(ssp2_flags)
 flags.append(star_flags)
 flags.append(qso_flags)
 
