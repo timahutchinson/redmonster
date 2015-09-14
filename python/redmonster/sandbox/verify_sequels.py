@@ -1569,7 +1569,7 @@ class verify_rm:
         hdu3 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd)))
         import pdb; pdb.set_trace()
         for i,ebt1 in enumerate(hdu3[5].data.EBOSS_TARGET1):
-            if ebt1 & 4 > 0:
+            if ebt1 & 2 > 0:
                 if True: #(hdu1[1].data.ZWARNING[i] == 0) and (hdu2[1].data.ZWARNING[i] == 0):
                     self.z1.append(hdu1[1].data.Z1[i])
                     self.zerr1.append(hdu1[1].data.Z_ERR1[i])
