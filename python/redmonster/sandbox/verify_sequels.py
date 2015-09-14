@@ -1612,6 +1612,8 @@ class verify_rm:
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
         if normed:
             normhist = hist / float(self.z1.shape[0])
+        else:
+            normhist = hist
         bins = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
