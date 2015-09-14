@@ -1581,7 +1581,7 @@ class verify_rm:
                         del(self.zerr2[-1])
 
 
-    def plate_splits_errors(self, plate, mjd, nbins=25, fit=True):
+    def plate_splits_errors(self, nbins=25, fit=True):
         plates = [7834,7839,7848]
         mjds = [56979,56900,56959]
         self.z1 = []
