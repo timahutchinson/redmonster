@@ -1589,7 +1589,7 @@ class verify_rm:
         self.zerr1 = []
         self.zerr2 = []
         for i,plate in enumerate(plates):
-            self.plate_splits_function(plate=plate, mjd=mjds[i], nbins=nbins, fit=fit)
+            self.plate_splits_function(plate, mjds[i], nbins=nbins, fit=fit)
         self.z1 = n.array(self.z1)
         self.z2 = n.array(self.z2)
         self.zerr1 = n.array(self.zerr1)
