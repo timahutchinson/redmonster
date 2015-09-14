@@ -1603,7 +1603,7 @@ class verify_rm:
         zerr_rms = n.sqrt( (self.zerr1**2 + self.zerr2**2) )
         scaled_diff = z_diff / zerr_rms
         while True:
-            if n.abs(scaled_diff[n.abs(scaled_diff).argmax()]):
+            if n.abs(scaled_diff[n.abs(scaled_diff).argmax()]) > 5:
                 scaled_diff = n.delete(scaled_diff, n.abs(scaled_diff).argmax())
             else:
                 break
