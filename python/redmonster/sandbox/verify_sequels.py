@@ -1606,6 +1606,7 @@ class verify_rm:
             if n.abs(diff) > 5:
                 scaled_diff = n.delete(scaled_diff, i)
                 print 'deleting index %s' % i
+        print n.max(n.abs(scaled_diff))
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
         normhist = hist / float(self.z1.shape[0])
         bins = n.zeros(nbins)
