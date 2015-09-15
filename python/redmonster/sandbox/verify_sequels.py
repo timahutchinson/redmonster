@@ -1642,6 +1642,7 @@ class verify_rm:
         idl_ydata = []
         globpath1 = join(environ['REDMONSTER_SPECTRO_REDUX'],'v5_8_0_bad', '*')
         for chi2max in xdata:
+            print chi2max
             total = 0.
             countidl = 0.
             countrm = 0.
