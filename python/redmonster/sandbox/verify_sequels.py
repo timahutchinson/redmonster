@@ -1654,8 +1654,8 @@ class verify_rm:
                         if len(basename(file)) == 23:
                             mjd = basename(file)[13:18]
                             hduplate = fits.open(file)
-                            globpath3 = join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-*%s.fits' % (plate,mjd))
-                            hduidl = fits.open(file)
+                            #globpath3 = join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd))
+                            hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd)))
                             hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
                             for i,ebt0 in enumerate(hduplate[5].data.EBOSS_TARGET0):
                                 if ebt0 == 0:
