@@ -1657,7 +1657,7 @@ class verify_rm:
                             globpath3 = join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-*%s.fits' % (plate,mjd))
                             hduidl = fits.open(file)
                             hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
-                            for i,ebt0 in enumerate(hduplate[5].data.EBOSS_TARGET1):
+                            for i,ebt0 in enumerate(hduplate[5].data.EBOSS_TARGET0):
                                 if ebt0 == 0:
                                     total += 1.
                                     if hduidl[1].data.RCHI2DIFF > chi2max: countidl += 1.
