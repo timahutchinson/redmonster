@@ -1675,7 +1675,8 @@ class verify_rm:
         p.grid(b=True, which='major', color='black', linestyle='-')
         p.grid(b=True, which='minor', color='black', linestyle='--')
         p.legend()
-        p.savefile('/uufs/astro.utah.edu/common/home/u0814744/boss/sky_failure_vs_drchi2.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/sky_failure_vs_drchi2.pdf')
+        p.clf()
 
 
 
