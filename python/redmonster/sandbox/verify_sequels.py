@@ -1651,7 +1651,7 @@ class verify_rm:
                     globpath2 = join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-*.fits' % plate)
                     for file in iglob(globpath2):
                         if len(basename(file)) == 23:
-                            mjd = basename(file)[16:21]
+                            mjd = basename(file)[13:18]
                             hduplate = fits.open(file)
                             globpath3 = join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-*%s.fits' % (plate,mjd))
                             hduidl = fits.open(file)
