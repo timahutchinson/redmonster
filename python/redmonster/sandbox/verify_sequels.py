@@ -1654,11 +1654,12 @@ class verify_rm:
                         if len(basename(file)) == 23:
                             mjd = basename(file)[13:18]
                             hduplate = fits.open(file)
-                            #globpath3 = join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd))
                             hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd)))
                             hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
-                            for i,ebt0 in enumerate(hduplate[5].data.EBOSS_TARGET0):
-                                if ebt0 == 0:
+                            #for i,ebt0 in enumerate(hduplate[5].data.EBOSS_TARGET0):
+                                #if ebt0 == 0:
+                            for i,zwarn in enumerate(hdurm[1].data.ZWARNING):
+                                if zwarn & 1 > 0:
                                     total += 1.
                                     if hduidl[1].data.RCHI2DIFF[i] > chi2max: countidl += 1.
                                     if hdurm[1].data.RCHI2DIFF[i] > chi2max: countrm += 1.
