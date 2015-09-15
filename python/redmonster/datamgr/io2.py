@@ -139,11 +139,11 @@ def write_ndArch(data, baselines, infodict):
         'coeff0': log10 Angstroms of the zeroth wavelength pixel
         'coeff1': delta-log10-Angstrom gridding in wavelength
         'par_axistype': baseline specification for each axis, from:
-        'regular' (regular numerical gridding)
-        'irregular' (irregular numerical gridding)
-        'labeled' (string-labeled physical parameter gridding)
-        'named' (arbitrary string-named objects)
-        'index' (one-based index; default -- need not be explicit)
+            'regular' (regular numerical gridding)
+            'irregular' (irregular numerical gridding)
+            'labeled' (string-labeled physical parameter gridding)
+            'named' (arbitrary string-named objects)
+            'index' (one-based index; default -- need not be explicit)
         
         infodict can also have the following OPTIONAL keywords:
         'fluxunit': unit of archetype fluxes (string)
