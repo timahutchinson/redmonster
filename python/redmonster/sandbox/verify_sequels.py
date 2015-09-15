@@ -1645,7 +1645,6 @@ class verify_rm:
             total = 0.
             countidl = 0.
             countrm = 0.
-            import pdb; pdb.set_trace()
             for path in iglob(globpath1):
                 plate = basename(path)
                 if len(plate) == 4:
