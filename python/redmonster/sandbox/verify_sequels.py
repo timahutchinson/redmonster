@@ -1659,8 +1659,8 @@ class verify_rm:
                             for i,ebt0 in enumerate(hduplate[5].data.EBOSS_TARGET0):
                                 if ebt0 == 0:
                                     total += 1.
-                                    if hduidl[1].data.RCHI2DIFF > chi2max: countidl += 1.
-                                    if hdurm[1].data.RCHI2DIFF > chi2max: countrm += 1.
+                                    if hduidl[1].data.RCHI2DIFF[i] > chi2max: countidl += 1.
+                                    if hdurm[1].data.RCHI2DIFF[i] > chi2max: countrm += 1.
             rm_ydata.append(countrm/total)
             idl_ydata.append(countidl/total)
 
