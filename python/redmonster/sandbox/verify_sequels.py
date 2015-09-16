@@ -1514,7 +1514,7 @@ class verify_rm:
         p.ylabel(r'Cumulative fraction below threshold', size=16)
         p.grid(b=True, which='major', color='black', linestyle='--')
         p.legend(loc=2)
-        p.axis(pz)[0,.02,0,.7])
+        p.axis([0,.02,0,.7])
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
         p.clf()
 
