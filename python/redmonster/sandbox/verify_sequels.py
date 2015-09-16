@@ -1489,7 +1489,7 @@ class verify_rm:
         return (rm_failures/total), (idl_failures/total)
 
 
-    def sequels_failure_vs_dchi2(self, drchi2max=.03, npoints=150):
+    def sequels_failure_vs_dchi2(self, drchi2max=.02, npoints=150):
         # Makes a plot of SEQUELS LRG failure rate as a function of dchi2 threshold for redmonster and idlspec1d
         rm_data = []
         idl_data = []
