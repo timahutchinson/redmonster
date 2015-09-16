@@ -639,18 +639,20 @@ class verify_rm:
 # --------------------------------------------------------------------------------------------------------------------------------------
 
 
-    def read_redmonster_all(self,plate):
-        # Read a redmonster file in the context of looking at entire DR10 dataset
-        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*.fits' % plate )
-        paths = []
-        for path in iglob(redmonsterpath):
-            paths.append(path)
-        paths.sort()
-        hdu = fits.open(paths[0])
+    def read_redmonster_all(self,plate, mjd):
+        # Read a redmonster file in the context of looking at SEQUELS LRG dataset
+        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,mjd) )
+        #paths = []
+        #for path in iglob(redmonsterpath):
+        #    paths.append(path)
+        #paths.sort()
+        #hdu = fits.open(paths[0])
+        hdu = fits.open(redmonsterpath)
         self.rm_z1 = hdu[1].data.Z1
         self.rm_zerr1 = hdu[1].data.Z_ERR1
         self.rm_fibers = hdu[1].data.FIBERID
         self.rm_type = hdu[1].data.CLASS1
+        self.rm_type2 = hdu[1].data.CLASS2
         self.rm_zwarning = hdu[1].data.ZWARNING
 
         
@@ -839,6 +841,7 @@ class verify_rm:
         p.legend()
         p.subplots_adjust(wspace = .35)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
+        p.clf()
 
 
     def sequels_failure_vs_sn_all(self,sn_max=4.5,nbins=18):
@@ -930,6 +933,7 @@ class verify_rm:
         print zmax
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
+        p.clf()
 
 
     def sequels_logdv_vs_sn_histos_all(self, nbins=25):
@@ -1297,6 +1301,7 @@ class verify_rm:
         p.legend(prop={'size':6})
         p.subplots_adjust(hspace = .5)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
+        p.clf()
         print count1
         print count2
         print count3
@@ -1355,6 +1360,7 @@ class verify_rm:
         #print rtotal
         #p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_imag.pdf')
+        p.clf()
 
 
     def cmass_logdv_vs_z_scatter_all(self,nobjs=100000):
@@ -1373,6 +1379,7 @@ class verify_rm:
         p.xlabel('Redshift',size=16)
         p.ylabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_scatter.pdf')
+        p.clf()
 
 
     def sequels_chi2_histos(self,nbins=50, rchi2=True):
@@ -1418,6 +1425,7 @@ class verify_rm:
         p.ylabel(r'Fraction per bin', size=16)
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_histos.pdf')
+        p.clf()
 
 
     def sequels_drchi2_histos(self, drchi2max=.02, nbins=50, rchi2=True):
@@ -1463,6 +1471,7 @@ class verify_rm:
         p.ylabel(r'Fraction per bin', size=16)
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_histos.pdf')
+        p.clf()
 
 
     def dchi2_failure_diff_function(self, diff, drchi2max=.05):
@@ -1506,6 +1515,7 @@ class verify_rm:
         p.grid(b=True, which='major', color='black', linestyle='--')
         p.legend(loc=2)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
+        p.clf()
 
 
     def sequels_reobs_errors(self, nbins=25):
@@ -1561,6 +1571,7 @@ class verify_rm:
         p.ylabel('Fraction per bin',size=16)
         p.text(3,.01,r'$\sigma_{fit}=1.18$',size=18)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
+        p.clf()
 
 
     def plate_splits_function(self, plate, mjd, nbins=25, fit=True):
@@ -1678,6 +1689,49 @@ class verify_rm:
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/sky_failure_vs_drchi2.pdf')
         p.clf()
+
+
+    def sequels_failure_confusion(self):
+        galgal = 0
+        galstar = 0
+        galqso = 0
+        starstar = 0
+        starqso = 0
+        qsoqso = 0
+        total = 0
+        self.read_redmonster_summary_file()
+        openplate = 0
+        openmjd = 0
+        for i,zwarn in enumerate(self.rm_zwarning):
+            if zwarn & 4 > 0:
+                total += 1.
+                plate = self.rm_plates_summary[i]
+                mjd = self.rm_mjds_summary[i]
+                fiber = self.rm_fibers_summary[i]
+                if openplate != plate and openmjd != mjd:
+                    self.read_redmonster_all(plate,mjd)
+                    openplate = plate
+                    openmjd = mjd
+                ind = n.where(self.rm_fibers == fiber)[0][0]
+                if self.rm_type[ind] == 'ssp_galaxy_glob':
+                    if self.rm_type2[ind] == 'ssp_galaxy_glob': galgal += 1
+                    elif self.rm_type2[ind] == 'QSO': galqso += 1
+                    elif self.rm_type2[ind] == 'CAP': galstar += 1
+                if self.rm_type[ind] == 'QSO':
+                    if self.rm_type2[ind] == 'ssp_galaxy_glob': galqso += 1
+                    elif self.rm_type2[ind] == 'QSO': qsoqso += 1
+                    elif self.rm_type2[ind] == 'CAP': starqso += 1
+                if self.rm_type[ind] == 'CAP':
+                    if self.rm_type2[ind] == 'ssp_galaxy_glob': galstar += 1
+                    if self.rm_type2[ind] == 'QSO': starqso += 1
+                    if self.rm_type2[ind] == 'CAP': starstar += 1
+        print '%s galaxy-galaxy confusions of %s, fractionally %s' % (galgal,total,galgal/total)
+        print '%s galaxy-star confusions of %s, fractionally %s' % (galstar,total,galstar/total)
+        print '%s galaxy-QSO confusions of %s, fractionally %s' % (galqso,total,galqso/total)
+        print '%s star-star confusions of %s, fractionally %s' % (starstar,total,starstar/total)
+        print '%s star-QSO confusions of %s, fractionally %s' % (starqso,total,starqso/total)
+        print '%s QSO-QSO confusions of %s, fractionally %s' % (qsoqso,total,qsoqso/total)
+
 
 
 
