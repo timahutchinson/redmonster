@@ -1482,10 +1482,10 @@ class verify_rm:
                 self.read_spPlate_all(plate,mjd)
                 openplate = plate
                 openmjd = mjd
-            if (self.rm_rchi2diff[i] < drchi2max) and (self.idl_rchi2diff[fiber] < drchi2max):
-                total += 1
-                if self.rm_rchi2diff[i] < diff: rm_failures += 1.
-                if self.idl_rchi2diff[fiber] < diff: idl_failures += 1.
+            #if (self.rm_rchi2diff[i] < drchi2max) and (self.idl_rchi2diff[fiber] < drchi2max):
+            total += 1
+            if self.rm_rchi2diff[i] < diff: rm_failures += 1.
+            if self.idl_rchi2diff[fiber] < diff: idl_failures += 1.
         return (rm_failures/total), (idl_failures/total)
 
 
