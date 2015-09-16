@@ -1713,18 +1713,18 @@ class verify_rm:
                     openplate = plate
                     openmjd = mjd
                 ind = n.where(self.rm_fibers == fiber)[0][0]
-                if self.rm_type[ind] == 'ssp_galaxy_glob':
-                    if self.rm_type2[ind] == 'ssp_galaxy_glob': galgal += 1
-                    elif self.rm_type2[ind] == 'QSO': galqso += 1
-                    elif self.rm_type2[ind] == 'CAP': galstar += 1
-                if self.rm_type[ind] == 'QSO':
-                    if self.rm_type2[ind] == 'ssp_galaxy_glob': galqso += 1
-                    elif self.rm_type2[ind] == 'QSO': qsoqso += 1
-                    elif self.rm_type2[ind] == 'CAP': starqso += 1
-                if self.rm_type[ind] == 'CAP':
-                    if self.rm_type2[ind] == 'ssp_galaxy_glob': galstar += 1
-                    if self.rm_type2[ind] == 'QSO': starqso += 1
-                    if self.rm_type2[ind] == 'CAP': starstar += 1
+                if self.rm_type[ind][:3] == 'ssp':
+                    if self.rm_type2[ind][:3] == 'ssp': galgal += 1
+                    elif self.rm_type2[ind][:3] == 'QSO': galqso += 1
+                    elif self.rm_type2[ind][:3] == 'CAP': galstar += 1
+                if self.rm_type[ind][:3] == 'QSO':
+                    if self.rm_type2[ind][:3] == 'ssp': galqso += 1
+                    elif self.rm_type2[ind][:3] == 'QSO': qsoqso += 1
+                    elif self.rm_type2[ind][:3] == 'CAP': starqso += 1
+                if self.rm_type[ind][:3] == 'CAP':
+                    if self.rm_type2[ind][:3] == 'ssp': galstar += 1
+                    if self.rm_type2[ind][:3] == 'QSO': starqso += 1
+                    if self.rm_type2[ind][:3] == 'CAP': starstar += 1
         print '%s galaxy-galaxy confusions of %s, fractionally %s' % (galgal,total,galgal/total)
         print '%s galaxy-star confusions of %s, fractionally %s' % (galstar,total,galstar/total)
         print '%s galaxy-QSO confusions of %s, fractionally %s' % (galqso,total,galqso/total)
