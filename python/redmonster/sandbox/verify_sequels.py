@@ -1726,12 +1726,12 @@ class verify_rm:
                     if self.rm_type2[ind][:3] == 'ssp': galstar += 1
                     if self.rm_type2[ind][:3] == 'QSO': starqso += 1
                     if self.rm_type2[ind][:3] == 'CAP': starstar += 1
-        print '%s galaxy-galaxy confusions of %s, fractionally %s' % (galgal,total,galgal/total)
-        print '%s galaxy-star confusions of %s, fractionally %s' % (galstar,total,galstar/total)
-        print '%s galaxy-QSO confusions of %s, fractionally %s' % (galqso,total,galqso/total)
-        print '%s star-star confusions of %s, fractionally %s' % (starstar,total,starstar/total)
-        print '%s star-QSO confusions of %s, fractionally %s' % (starqso,total,starqso/total)
-        print '%s QSO-QSO confusions of %s, fractionally %s' % (qsoqso,total,qsoqso/total)
+        print '%s galaxy-galaxy confusions of %s, which is %s' % (galgal,total,(galgal/total)*100)
+        print '%s galaxy-star confusions of %s, which is %s' % (galstar,total,(galstar/total)*100)
+        print '%s galaxy-QSO confusions of %s, which is %s' % (galqso,total,(galqso/total)*100)
+        print '%s star-star confusions of %s, which is %s' % (starstar,total,(starstar/total)*100)
+        print '%s star-QSO confusions of %s, which is %s' % (starqso,total,(starqso/total)*100)
+        print '%s QSO-QSO confusions of %s, which is %s' % (qsoqso,total,(qsoqso/total)*100)
 
 
 
