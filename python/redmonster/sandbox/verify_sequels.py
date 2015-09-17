@@ -672,6 +672,7 @@ class verify_rm:
         self.rm_rchi2s = hdu[1].data.MINRCHI2
         self.rm_dof = hdu[1].data.DOF
         self.rm_rchi2diff = hdu[1].data.RCHI2DIFF
+        self.rm_chi2_null = hdu[1].data.CHI2NULL
 
 
     def read_spPlate_all(self,plate, mjd=None):
@@ -1732,6 +1733,17 @@ class verify_rm:
         print '%s star-star confusions of %s, which is %s' % (starstar,total,(starstar/total)*100)
         print '%s star-QSO confusions of %s, which is %s' % (starqso,total,(starqso/total)*100)
         print '%s QSO-QSO confusions of %s, which is %s' % (qsoqso,total,(qsoqso/total)*100)
+
+
+    def rchi2_null_histo(self, nbins=25):
+        self.read_redmonster_summary_file()
+        rchi2_nulls = self.rm_chi2_null / self.rm_dof
+        hist, binedges = n.histogram(rchi2_nulls, bins=nbins)
+        bins = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins[i] = (binedges[i+1] + binedges[i]) / 2.
+        p.plot(bins, hist, drawstyle='steps-mid')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_histo.pdf')
 
 
 

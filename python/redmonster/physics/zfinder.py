@@ -116,7 +116,7 @@ class Zfinder:
                     for jpos in xrange(self.npoly): pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] * poly_pad[jpos] * ivar_pad[i])
                 f_null = n.linalg.solve(pmat[1:,1:,0],bvec[1:,0])
                 self.f_nulls.append( f_null )
-                self.chi2_null.append( self.sn2_data - n.dot(n.dot(f_null,pmat[1:,1:,0]),f_null) )
+                self.chi2_null.append( self.sn2_data[i] - n.dot(n.dot(f_null,pmat[1:,1:,0]),f_null) )
                 print self.chi2_null[i]
                 for j in xrange(self.templates_flat.shape[0]): # Loop over templates
                     pmat[0,0] = n.fft.ifft(self.t2_fft[j] * ivar_fft[i].conj()).real
