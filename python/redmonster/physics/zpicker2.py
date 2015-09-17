@@ -52,7 +52,7 @@ class Zpicker:
         self.minrchi2 = []
         self.rchi2diff = []
         self.chi2_null = []
-        self.sn2_flux = []
+        self.sn2_data = []
         if hasattr(specobj,'boss_target1'): self.boss_target1 = specobj.boss_target1
         if hasattr(specobj,'eboss_target0'): self.eboss_target0 = specobj.eboss_target0
         if hasattr(specobj, 'eboss_target1'): self.eboss_target1 = specobj.eboss_target1
