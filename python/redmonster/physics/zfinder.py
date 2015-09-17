@@ -126,8 +126,8 @@ class Zfinder:
                                 f = n.linalg.solve(pmat[:,:,l+zminpix],bvec[:,l+zminpix])
                                 zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
                                 if (f[0] < 0):
-                                    temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model # Removed 12 Sept 2015 TH
-                                    zchi2arr[i,j,(l/self.npixstep)] = chi2_null # Removed 12 Sept 2015 TH
+                                    temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model
+                                    zchi2arr[i,j,(l/self.npixstep)] = chi2_null
                                     try: # Added 12 Sept 2015 TH
                                         #f = nnls(pmat[:,:,l+zminpix],bvec[:,l+zminpix])[0]
                                         #zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
@@ -144,8 +144,8 @@ class Zfinder:
                                 f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
                                 zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
                                 if (f[0] < 0.):
-                                    temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model # Removed 12 Sept 2015 TH
-                                    zchi2arr[i,j,(l/self.npixstep)] = chi2_null # Removed 12 Sept 2015 TH
+                                    temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model
+                                    zchi2arr[i,j,(l/self.npixstep)] = chi2_null
                                     try:
                                         #f = nnls(pmat[:,:,l],bvec[:,l])[0]
                                         #zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)

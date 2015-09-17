@@ -10,6 +10,7 @@ import numpy as n
 from math import ceil, floor
 from redmonster.physics.misc import flux_check
 from redmonster.datamgr.io import remove_log, write_to_log
+from astropy.convolution import convolve, Box1DKernel
 
 class Spec:
 
@@ -37,6 +38,8 @@ class Spec:
         try: self.run2d = environ['RUN2D']
         except: self.run2d = None
         self.set_plate_mjd(plate=plate, mjd=mjd, fiberid=fiberid, data_range=data_range)
+        for i in xrange(self.flux.shape[0]):
+            self.flux[i] = convolve(self.flux[i], Box1DKernel(5))
         if exists(self.platepath):
             self.ivar, self.dof = flux_check(self.flux, self.ivar, plate, mjd)
         else:
