@@ -294,6 +294,8 @@ class Write_Redmonster:
             colslist.append( fits.Column(name='THETA%s' % (i+1), format='%iA' % max(map(len,fslist)), array=fslist) )
         colslist.append( fits.Column(name='ZWARNING', format='J', array=self.zpick.zwarning) )
         colslist.append( fits.Column(name='RCHI2DIFF', format='E', array=self.zpick.rchi2diff) )
+        colslist.append( fits.Column(name='CHI2NULL', format='E', array=self.zpick.chi2_null) )
+        colslist.append( fits.Column(name='SN2DATA', format='E', array=self.zpick.sn2_data) )
         cols = fits.ColDefs(colslist)
         tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
         # ImageHDU of models
@@ -388,6 +390,8 @@ class Merge_Redmonster:
         self.npixstep = []
         self.boss_target1 = []
         self.chi2diff = []
+        self.chi2_null = []
+        self.sn2_data = []
         self.models = None
         self.hdr = None
         
@@ -581,6 +585,8 @@ class Merge_Redmonster:
         self.theta5 = []
         self.zwarning = []
         self.rchi2diff = []
+        self.chi2_null = []
+        self.sn2_data = []
     
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
         except: topdir = None
@@ -662,6 +668,8 @@ class Merge_Redmonster:
                 self.theta5.append(hdu[1].data.THETA5[0])
                 self.zwarning.append(hdu[1].data.ZWARNING[0])
                 self.rchi2diff.append(hdu[1].data.RCHI2DIFF[0])
+                self.chi2_null.append(hdu[1].data.CHI2NULL[0])
+                self.sn2_data.append(hdu[1].data.SN2DATA[0])
                 try:
                     self.boss_target1.append(hdu[1].data.BOSS_TARGET1[0])
                 except:
@@ -739,6 +747,8 @@ class Merge_Redmonster:
             colslist.append( fits.Column(name='THETA5', format='%iA' % max(map(len,self.theta5)), array=self.theta5) )
             colslist.append( fits.Column(name='ZWARNING', format='J', array=self.zwarning) )
             colslist.append( fits.Column(name='RCHI2DIFF', format='E', array=self.rchi2diff) )
+            colslist.append( fits.Column(name='CHI2NULL', format='E', array=self.chi2_null) )
+            colslist.append( fits.Column(name='SN2DATA', format='E', array=self.sn2_data) )
             cols = fits.ColDefs(colslist)
             tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
             # ImageHDU of models
@@ -769,6 +779,8 @@ class Merge_Redmonster:
         self.theta = []
         self.zwarning = []
         self.rchi2diff = []
+        self.chi2_null = []
+        self.sn2_data = []
         
         self.plates = []
         self.hdr = fits.Header()
@@ -821,6 +833,8 @@ class Merge_Redmonster:
                             self.theta += hdu[1].data.THETA1.tolist()
                             self.zwarning += hdu[1].data.ZWARNING.tolist()
                             self.rchi2diff += hdu[1].data.RCHI2DIFF.tolist()
+                            self.chi2_null += hdu[1].data.CHI2NULL.tolist()
+                            self.sn2_data += hdu[1].data.SN2DATA.tolist()
         
             #self.hdr['NFIBERS'] = len(self.fiberid)
             self.hdr.extend([('SPEC2D',environ['RUN2D'],'Version of spec2d reductions used'),('VERS_RM','v0.1.0','Version of redmonster used'),('TIME',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster-all creation'), ('NFIBERS', len(self.fiberid), 'Number of fibers'), ('RCHI2TH',0.005,'Reduced chi**2 threshold used')])
@@ -848,6 +862,8 @@ class Merge_Redmonster:
             colslist.append( fits.Column(name='THETA', format='%iA' % max(map(len,self.theta)), array=self.theta) )
             colslist.append( fits.Column(name='ZWARNING', format='J', array=self.zwarning) )
             colslist.append( fits.Column(name='RCHI2DIFF', format='E', array=self.rchi2diff) )
+            colslist.append( fits.Column(name='CHI2NULL', format='E', array=self.chi2_null) )
+            colslist.append( fits.Column(name='SN2DATA', format='E', array=self.sn2_data) )
             
             cols = fits.ColDefs(colslist)
             tbhdu = fits.BinTableHDU.from_columns(cols)

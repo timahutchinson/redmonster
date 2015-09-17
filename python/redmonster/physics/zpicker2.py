@@ -51,6 +51,8 @@ class Zpicker:
         #self.minrchi2 = n.zeros( (zfindobjs[0].zchi2arr.shape[0],self.num_z) )
         self.minrchi2 = []
         self.rchi2diff = []
+        self.chi2_null = []
+        self.sn2_flux = []
         if hasattr(specobj,'boss_target1'): self.boss_target1 = specobj.boss_target1
         if hasattr(specobj,'eboss_target0'): self.eboss_target0 = specobj.eboss_target0
         if hasattr(specobj, 'eboss_target1'): self.eboss_target1 = specobj.eboss_target1
@@ -118,6 +120,8 @@ class Zpicker:
                 if iz == 0: # Only the first flag is kept
                     #self.models[ifiber] = zfindobjs[tempnum].models[ifiber]
                     self.zwarning.append( flags[tempnum][ifiber] )
+                    self.chi2_null.append( zfindobjs[tempnum].chi2_null[ifiber])
+                    self.sn2_data.append( zfindobjs[tempnum].sn2_data[ifiber])
                 fibermins[zpos] = 1e9
                 self.models[ifiber,iz], f = self.create_model(fnametuple[iz], npolytuple[iz], npixsteptuple[iz], vectortuple[iz], zfindobjs[tempnum], self.flux[ifiber], self.ivar[ifiber])
                 fstuple += (f,)

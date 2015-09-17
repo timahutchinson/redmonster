@@ -36,6 +36,8 @@ class Zfinder:
         self.t_fft = n.fft.fft(self.templates_flat)
         self.t2_fft = n.fft.fft(self.templates_flat**2)
         self.f_nulls = []
+        self.chi2_null = []
+        self.sn2_data = []
     
 
     def read_template(self):
@@ -109,13 +111,13 @@ class Zfinder:
                 self.zwarning[i] = int(self.zwarning[i]) | flag_val_unplugged
             else: # Otherwise, go ahead and do fit
                 for ipos in xrange(self.npoly): bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] * ivar_pad[i])
-                sn2_data = n.sum( (specs[i]**2)*ivar[i] )
+                self.sn2_data.append (n.sum( (specs[i]**2)*ivar[i] ) )
                 for ipos in xrange(self.npoly):
                     for jpos in xrange(self.npoly): pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] * poly_pad[jpos] * ivar_pad[i])
                 f_null = n.linalg.solve(pmat[1:,1:,0],bvec[1:,0])
                 self.f_nulls.append( f_null )
-                chi2_null = sn2_data - n.dot(n.dot(f_null,pmat[1:,1:,0]),f_null)
-                print chi2_null
+                self.chi2_null.append( self.sn2_data - n.dot(n.dot(f_null,pmat[1:,1:,0]),f_null) )
+                print self.chi2_null[i]
                 for j in xrange(self.templates_flat.shape[0]): # Loop over templates
                     pmat[0,0] = n.fft.ifft(self.t2_fft[j] * ivar_fft[i].conj()).real
                     bvec[0] = n.fft.ifft(self.t_fft[j] * data_fft[i].conj()).real
@@ -124,38 +126,38 @@ class Zfinder:
                         for l in n.arange(num_z)*self.npixstep: #for l in range(num_z):
                             try:
                                 f = n.linalg.solve(pmat[:,:,l+zminpix],bvec[:,l+zminpix])
-                                zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
+                                zchi2arr[i,j,(l/self.npixstep)] = self.sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
                                 if (f[0] < 0):
                                     temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model
-                                    zchi2arr[i,j,(l/self.npixstep)] = chi2_null
+                                    zchi2arr[i,j,(l/self.npixstep)] = self.chi2_null[i]
                                     try: # Added 12 Sept 2015 TH
                                         #f = nnls(pmat[:,:,l+zminpix],bvec[:,l+zminpix])[0]
-                                        #zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
+                                        #zchi2arr[i,j,(l/self.npixstep)] = self.sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
                                         pass
                                     except Exception as e:
                                         print "Except: %r" % e
-                                        zchi2arr[i,j,(l/self.npixstep)] = chi2_null
+                                        zchi2arr[i,j,(l/self.npixstep)] = self.chi2_null[i]
                             except Exception as e:
                                 print "Exception: %r" % e
-                                zchi2arr[i,j,(l/self.npixstep)] = chi2_null
+                                zchi2arr[i,j,(l/self.npixstep)] = self.chi2_null[i]
                     else:
                         for l in n.arange(num_z)*self.npixstep: #for l in range(num_z):
                             try:
                                 f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
-                                zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
+                                zchi2arr[i,j,(l/self.npixstep)] = self.sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
                                 if (f[0] < 0.):
                                     temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model
-                                    zchi2arr[i,j,(l/self.npixstep)] = chi2_null
+                                    zchi2arr[i,j,(l/self.npixstep)] = self.chi2_null[i]
                                     try:
                                         #f = nnls(pmat[:,:,l],bvec[:,l])[0]
-                                        #zchi2arr[i,j,(l/self.npixstep)] = sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
+                                        #zchi2arr[i,j,(l/self.npixstep)] = self.sn2_data - n.dot(n.dot(f,pmat[:,:,l]),f)
                                         pass
                                     except Exception as e:
                                         print "Except: %r" % e
-                                        zchi2arr[i,j,(l/self.npixstep)] = chi2_null
+                                        zchi2arr[i,j,(l/self.npixstep)] = self.chi2_null[i]
                             except Exception as e:
                                 print "Exception: %r" % e
-                                zchi2arr[i,j,(l/self.npixstep)] = chi2_null
+                                zchi2arr[i,j,(l/self.npixstep)] = self.chi2_null[i]
         for i in xrange(self.zwarning.shape[0]): # Use only neg_model flag from best fit model/redshift and add it to self.zwarning
             minpos = ( n.where(zchi2arr[i] == n.min(zchi2arr[i]))[0][0] , n.where(zchi2arr[i] == n.min(zchi2arr[i]))[1][0] )
             self.zwarning[i] = int(self.zwarning[i]) | int(temp_zwarning[i,minpos[0],minpos[1]])
