@@ -1760,7 +1760,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_histo.pdf')
         p.clf()
         # Plot cumulative histogram
-        ydata = []
+        '''ydata = []
         for xpoint in xdata:
             ypoint = 0
             for rchi2null in rchi2_nulls:
@@ -1772,7 +1772,7 @@ class verify_rm:
         p.ylabel('Cumulative fraction below', size=16)
         p.grid(b=True, which='major', color='black', linestyle='--')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_cumul_histo.pdf')
-        p.clf()
+        p.clf()'''
 
 
 
