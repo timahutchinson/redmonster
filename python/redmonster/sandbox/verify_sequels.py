@@ -1744,8 +1744,9 @@ class verify_rm:
             xdata = n.linspace(.6,2,400)
         else:
             rchi2_nulls = self.rm_chi2_null
-            rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 10000)[0]]
+            rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 8000)[0]]
             rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls > 3000)[0]]
+            xdata = n.linespace(3000,8000,4000)
         # Plot normal histogram
         hist, binedges = n.histogram(rchi2_nulls, bins=nbins)
         normhist = hist / float(rchi2_nulls.shape[0])
@@ -1758,11 +1759,15 @@ class verify_rm:
         else:
             p.plot(bins, hist, drawstyle='steps-mid')
             p.yabel('Number per bin')
-        p.xlabel(r'$\chi_{null,red}^2$',size=16)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_histo.pdf')
+        if reduced:
+            p.xlabel(r'$\chi_{null,red}^2$',size=16)
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_histo.pdf')
+        else:
+            p.xlabel(r'$\chi_{null}^2$',size=16)
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_histo.pdf')
         p.clf()
         # Plot cumulative histogram
-        '''ydata = []
+        ydata = []
         for xpoint in xdata:
             ypoint = 0
             for rchi2null in rchi2_nulls:
@@ -1770,11 +1775,15 @@ class verify_rm:
                     ypoint += 1
             ydata.append( ypoint/float(rchi2_nulls.shape[0]) )
         p.plot(xdata,ydata)
-        p.xlabel(r'$\chi_{null,red}^2$',size=16)
         p.ylabel('Cumulative fraction below', size=16)
         p.grid(b=True, which='major', color='black', linestyle='--')
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_cumul_histo.pdf')
-        p.clf()'''
+        if reduced:
+            p.xlabel(r'$\chi_{null,red}^2$',size=16)
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_cumul_histo.pdf')
+        else:
+            p.xlabel(r'$\chi_{null}^2$',size=16)
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_cumul_histo.pdf')
+        p.clf()
 
 
 
