@@ -1741,7 +1741,7 @@ class verify_rm:
             rchi2_nulls = self.rm_chi2_null / self.rm_dof
             rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 2)[0]]
             rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls > 0.6)[0]]
-            xdata = n.linspace(.6,2,400)
+            xdata = n.linspace(.6,1.8,400)
         else:
             rchi2_nulls = self.rm_chi2_null
             rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 8000)[0]]
@@ -1779,7 +1779,7 @@ class verify_rm:
         p.grid(b=True, which='major', color='black', linestyle='--')
         if reduced:
             p.xlabel(r'$\chi_{null,red}^2$',size=16)
-            p.axis([.6,2,0,1])
+            p.axis([.6,1.8,0,1])
             p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_cumul_histo.pdf')
         else:
             p.xlabel(r'$\chi_{null}^2$',size=16)
