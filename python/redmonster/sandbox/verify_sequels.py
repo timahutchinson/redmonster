@@ -1735,9 +1735,10 @@ class verify_rm:
         print '%s QSO-QSO confusions of %s, which is %s' % (qsoqso,total,(qsoqso/total)*100)
 
 
-    def rchi2_null_histos(self, nbins=25, normed=True):
+    def rchi2_null_histos(self, nbins=25, reduced=True, normed=True):
         self.read_redmonster_summary_file()
-        rchi2_nulls = self.rm_chi2_null / self.rm_dof
+        if reduced: rchi2_nulls = self.rm_chi2_null / self.rm_dof
+        else: rchi2_nulls = self.rm_chi2_null
         rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 2)[0]]
         rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls > 0.6)[0]]
         # Plot normal histogram
