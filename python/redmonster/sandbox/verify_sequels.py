@@ -1739,7 +1739,7 @@ class verify_rm:
         self.read_redmonster_summary_file()
         if reduced:
             rchi2_nulls = self.rm_chi2_null / self.rm_dof
-            rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 2)[0]]
+            rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 1.8)[0]]
             rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls > 0.6)[0]]
             xdata = n.linspace(.6,1.8,400)
         else:
