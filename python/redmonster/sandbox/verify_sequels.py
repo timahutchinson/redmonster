@@ -1735,18 +1735,40 @@ class verify_rm:
         print '%s QSO-QSO confusions of %s, which is %s' % (qsoqso,total,(qsoqso/total)*100)
 
 
-    def rchi2_null_histo(self, nbins=25):
+    def rchi2_null_histos(self, nbins=25, normed=True):
         self.read_redmonster_summary_file()
         rchi2_nulls = self.rm_chi2_null / self.rm_dof
         rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 2)[0]]
         rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls > 0.6)[0]]
+        # Plot normal histogram
         hist, binedges = n.histogram(rchi2_nulls, bins=nbins)
+        normhist = hist / float(rchi2_nulls.shape[0])
         bins = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1] + binedges[i]) / 2.
-        p.plot(bins, hist, drawstyle='steps-mid')
+        if normed:
+            p.plot(bins, normhist, drawstyle='steps-mid')
+            p.ylabel('Fraction per bin')
+        else:
+            p.plot(bins, hist, drawstyle='steps-mid')
+            p.yabel('Number per bin')
+        p.xlabel(r'$\chi_{null,red}^2',size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_histo.pdf')
-
+        p.clf()
+        # Plot cumulative histogram
+        xdata = n.linspace(.6,2,40)
+        ydata = []
+        for xpoint in xdata:
+            ypoint = 0
+            for rchi2null in rchi2_nulls:
+                if rchi2null < xpoint:
+                    ypoint += 1
+            ydata.append( ypoint/float(rchi2_nulls.shape[0]) )
+        p.plot(xdata,ydata, drawstyle='steps-mid')
+        p.xlabel(r'$\chi_{null,red}^2',size=16)
+        p.yabel('Cumulative fraction below threshold', size=16)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/rchi2_null_cumul_histo.pdf')
+        p.clf()
 
 
 
