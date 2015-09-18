@@ -1744,6 +1744,8 @@ class verify_rm:
             xdata = n.linspace(.6,2,400)
         else:
             rchi2_nulls = self.rm_chi2_null
+            rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 10000)[0]]
+            rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 3000)[0]]
         # Plot normal histogram
         hist, binedges = n.histogram(rchi2_nulls, bins=nbins)
         normhist = hist / float(rchi2_nulls.shape[0])
