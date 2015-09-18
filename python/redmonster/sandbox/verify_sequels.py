@@ -1735,7 +1735,7 @@ class verify_rm:
         print '%s QSO-QSO confusions of %s, which is %s' % (qsoqso,total,(qsoqso/total)*100)
 
 
-    def rchi2_null_histos(self, nbins=25, reduced=True, normed=True):
+    def rchi2_null_histos(self, nbins=35, reduced=True, normed=True):
         self.read_redmonster_summary_file()
         if reduced:
             rchi2_nulls = self.rm_chi2_null / self.rm_dof
