@@ -1738,7 +1738,7 @@ class verify_rm:
     def rchi2_null_histo(self, nbins=25):
         self.read_redmonster_summary_file()
         rchi2_nulls = self.rm_chi2_null / self.rm_dof
-        rchi2_nulls = rchi_nulls[n.where(rchi2_nulls < 2)[0]]
+        rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 2)[0]]
         hist, binedges = n.histogram(rchi2_nulls, bins=nbins)
         bins = n.zeros(nbins)
         for i in xrange(nbins):
