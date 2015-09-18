@@ -1761,7 +1761,6 @@ class verify_rm:
             p.yabel('Number per bin')
         if reduced:
             p.xlabel(r'$\chi_{null,red}^2$',size=16)
-            p.axis([.6,2,0,1])
             p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_histo.pdf')
         else:
             p.xlabel(r'$\chi_{null}^2$',size=16)
@@ -1780,6 +1779,7 @@ class verify_rm:
         p.grid(b=True, which='major', color='black', linestyle='--')
         if reduced:
             p.xlabel(r'$\chi_{null,red}^2$',size=16)
+            p.axis([.6,2,0,1])
             p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_cumul_histo.pdf')
         else:
             p.xlabel(r'$\chi_{null}^2$',size=16)
