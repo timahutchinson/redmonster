@@ -1737,10 +1737,13 @@ class verify_rm:
 
     def rchi2_null_histos(self, nbins=25, reduced=True, normed=True):
         self.read_redmonster_summary_file()
-        if reduced: rchi2_nulls = self.rm_chi2_null / self.rm_dof
-        else: rchi2_nulls = self.rm_chi2_null
-        rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 2)[0]]
-        rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls > 0.6)[0]]
+        if reduced:
+            rchi2_nulls = self.rm_chi2_null / self.rm_dof
+            rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 2)[0]]
+            rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls > 0.6)[0]]
+            xdata = n.linspace(.6,2,400)
+        else:
+            rchi2_nulls = self.rm_chi2_null
         # Plot normal histogram
         hist, binedges = n.histogram(rchi2_nulls, bins=nbins)
         normhist = hist / float(rchi2_nulls.shape[0])
@@ -1757,7 +1760,6 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_histo.pdf')
         p.clf()
         # Plot cumulative histogram
-        xdata = n.linspace(.6,2,400)
         ydata = []
         for xpoint in xdata:
             ypoint = 0
