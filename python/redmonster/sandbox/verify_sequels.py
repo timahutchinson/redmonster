@@ -1756,7 +1756,7 @@ class verify_rm:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_histo.pdf')
         p.clf()
         # Plot cumulative histogram
-        xdata = n.linspace(.6,2,40)
+        xdata = n.linspace(.6,2,400)
         ydata = []
         for xpoint in xdata:
             ypoint = 0
@@ -1764,9 +1764,9 @@ class verify_rm:
                 if rchi2null < xpoint:
                     ypoint += 1
             ydata.append( ypoint/float(rchi2_nulls.shape[0]) )
-        p.plot(xdata,ydata, drawstyle='steps-mid')
+        p.plot(xdata,ydata)
         p.xlabel(r'$\chi_{null,red}^2$',size=16)
-        p.ylabel('Cumulative fraction below threshold', size=16)
+        p.ylabel('Cumulative fraction below', size=16)
         p.grid(b=True, which='major', color='black', linestyle='--')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_cumul_histo.pdf')
         p.clf()
