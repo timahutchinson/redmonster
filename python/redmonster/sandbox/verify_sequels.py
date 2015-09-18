@@ -659,7 +659,7 @@ class verify_rm:
         
     def read_redmonster_summary_file(self):
         # Read the redmonster summary file
-        summary_path = join( self.redmonster_spectro_redux, 'redmonster-all-%s.fits' % self.version )
+        summary_path = join( self.redmonster_spectro_redux, 'redmonsterAll-%s.fits' % self.version )
         hdu = fits.open(summary_path)
         self.rm_z1 = hdu[1].data.Z
         self.rm_zerr1 = hdu[1].data.Z_ERR
@@ -1529,7 +1529,7 @@ class verify_rm:
         zerr2 = []
         for path in iglob(globpath):
             plate = basename(path)
-            if plate != 'redmonster-all-%s.fits' % self.version:
+            if plate != 'redmonsterAll-%s.fits' % self.version:
                 print plate
                 mjds = []
                 mjdglobpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*.fits' % plate)

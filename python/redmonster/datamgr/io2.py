@@ -523,7 +523,7 @@ class Merge_Redmonster:
         
         output = Write_Redmonster(self)
         output.create_hdulist()
-        output.thdulist.writeto( join( topdir, run2d, 'redmonster-all-%s.fits' % run2d), clobber=True)
+        output.thdulist.writeto( join( topdir, run2d, 'redmonsterAll-%s.fits' % run2d), clobber=True)
 
 
     def merge_fibers2(self):
@@ -798,7 +798,7 @@ class Merge_Redmonster:
                 self.plates.append( basename(path) )
             self.plates.sort()
             for listitem in self.plates:
-                if listitem[-5:] == '.fits': self.plates.remove(listitem) # Ignore any existing redmonster-all files
+                if listitem[-5:] == '.fits': self.plates.remove(listitem) # Ignore any existing redmonsterAll files
             for plate in self.plates:
                 print 'Merging plate %s' % plate
                 mjds = []
@@ -837,7 +837,7 @@ class Merge_Redmonster:
                             self.sn2_data += hdu[1].data.SN2DATA.tolist()
         
             #self.hdr['NFIBERS'] = len(self.fiberid)
-            self.hdr.extend([('SPEC2D',environ['RUN2D'],'Version of spec2d reductions used'),('VERS_RM','v0.1.0','Version of redmonster used'),('TIME',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster-all creation'), ('NFIBERS', len(self.fiberid), 'Number of fibers'), ('RCHI2TH',0.005,'Reduced chi**2 threshold used')])
+            self.hdr.extend([('SPEC2D',environ['RUN2D'],'Version of spec2d reductions used'),('VERS_RM','v0.1.0','Version of redmonster used'),('TIME',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonsterAll creation'), ('NFIBERS', len(self.fiberid), 'Number of fibers'), ('RCHI2TH',0.005,'Reduced chi**2 threshold used')])
             prihdu = fits.PrimaryHDU(header=self.hdr)
             colslist = []
             colslist.append( fits.Column(name='FIBERID', format='J', array=self.fiberid) )
@@ -869,7 +869,7 @@ class Merge_Redmonster:
             tbhdu = fits.BinTableHDU.from_columns(cols)
             thdulist = fits.HDUList([prihdu, tbhdu])
             
-            dest = join(topdir, run2d, 'redmonster-all-%s.fits' % run1d)
+            dest = join(topdir, run2d, 'redmonsterAll-%s.fits' % run1d)
             thdulist.writeto( dest, clobber=True )
 
 
