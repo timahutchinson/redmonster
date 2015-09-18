@@ -1766,7 +1766,7 @@ class verify_rm:
             ydata.append( ypoint/float(rchi2_nulls.shape[0]) )
         p.plot(xdata,ydata, drawstyle='steps-mid')
         p.xlabel(r'$\chi_{null,red}^2',size=16)
-        p.yabel('Cumulative fraction below threshold', size=16)
+        p.ylabel('Cumulative fraction below threshold', size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/rchi2_null_cumul_histo.pdf')
         p.clf()
 
