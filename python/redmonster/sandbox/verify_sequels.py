@@ -1811,12 +1811,12 @@ class verify_rm:
             p.plot(bins, hist, drawstyle='steps-mid')
             p.plot(bins2, hist2, drawstyle='steps-mid', color='red')
             p.ylabel('Number per bin')
-        if bins1[0] < bins2[0]:
-            if bins1[-1] > bins2[-1]: p.axis([bins2[0],bins2[0],0,.25])
-            else: p.axis([bins2[0],bins1[0],0,.25])
+        if bins[0] < bins2[0]:
+            if bins[-1] > bins2[-1]: p.axis([bins2[0],bins2[0],0,.25])
+            else: p.axis([bins2[0],bins[0],0,.25])
         else:
-            if bins1[-1] > bins2[-1]: p.axis([bins1[0],bins2[0],0,.25])
-            else: p.axis([bins1[0],bins1[0],0,.25])
+            if bins[-1] > bins2[-1]: p.axis([bins[0],bins2[0],0,.25])
+            else: p.axis([bins[0],bins[0],0,.25])
         p.xlabel(r'$\chi_{null}^2-\chi_{min}^2$', size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_less_chi2_min_histo.pdf')
         p.clf()
