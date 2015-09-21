@@ -1790,7 +1790,7 @@ class verify_rm:
         self.read_redmonster_summary_file()
         diffs = self.rm_chi2_null - self.rm_rchi2s
         diffs = diffs[n.where(diffs < 5000)[0]]
-        diffs = diffs[n.where(diffs < -5000)[0]]
+        diffs = diffs[n.where(diffs > -5000)[0]]
         diffs = diffs
         hist, binedges = n.histogram(diffs, bins=nbins)
         normhist = hist / float(diffs.shape[0])
