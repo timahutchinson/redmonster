@@ -1804,8 +1804,8 @@ class verify_rm:
             bins[i] = (binedges[i+1] + binedges[i]) / 2.
             bins2[i] = (binedges2[i+1] + binedges2[i]) / 2.
         if normed:
-            p.plot(bins, normhist, drawstyle='steps-mid', label=r'\chi_{null}^2$')
-            p.plot(bins2, normhist2, drawstyle='steps-mid', color='red', label=r'\chi_2^2')
+            p.plot(bins, normhist, drawstyle='steps-mid', label=r'$\chi_{null}^2$')
+            p.plot(bins2, normhist2, drawstyle='steps-mid', color='red', label=r'$\chi_2^2$')
             p.ylabel('Fraction per bin')
         else:
             p.plot(bins, hist, drawstyle='steps-mid')
