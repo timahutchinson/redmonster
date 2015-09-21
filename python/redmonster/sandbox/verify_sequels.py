@@ -1793,7 +1793,7 @@ class verify_rm:
         normhist = hist / float(diffs.shape[0])
         bins = n.zeros(nbins)
         for i in xrange(nbins):
-            bins[i] = (bins[i+1] - bins[i]) / 2.
+            bins[i] = (binsedges[i+1] - binsedges[i]) / 2.
         if normed:
             p.plot(bins, normhist, drawstyle='steps-mid')
             p.ylabel('Fraction per bin')
