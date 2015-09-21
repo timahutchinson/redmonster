@@ -1804,8 +1804,8 @@ class verify_rm:
             bins[i] = (binedges[i+1] + binedges[i]) / 2.
             bins2[i] = (binedges2[i+1] + binedges2[i]) / 2.
         if normed:
-            p.plot(bins, normhist, drawstyle='steps-mid')
-            p.plot(bins2, normhist2, drawstyle='steps-mid', color='red')
+            p.plot(bins, normhist, drawstyle='steps-mid', label=r'\chi_{null}^2$')
+            p.plot(bins2, normhist2, drawstyle='steps-mid', color='red', label=r'\chi_2^2')
             p.ylabel('Fraction per bin')
         else:
             p.plot(bins, hist, drawstyle='steps-mid')
@@ -1817,7 +1817,7 @@ class verify_rm:
         else:
             if bins[-1] > bins2[-1]: p.axis([bins2[0],bins[-1],0,.25])
             else: p.axis([bins2[0],bins2[-1],0,.25])
-        p.xlabel(r'$\chi_{null}^2-\chi_{min}^2$', size=16)
+        p.xlabel(r'$\chi_^2-\chi_{1}^2$', size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_less_chi2_min_histo.pdf')
         p.clf()
 
