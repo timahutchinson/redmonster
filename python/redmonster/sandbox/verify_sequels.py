@@ -1789,6 +1789,9 @@ class verify_rm:
     def chi2_null_less_chi2_min(self, nbins=35, normed=True):
         self.read_redmonster_summary_file()
         diffs = self.rm_chi2_null - self.rm_rchi2s
+        diffs = diffs[n.where(diffs < 5000)[0]]
+        diffs = diffs[n.where(diffs < -5000)[0]]
+        diffs = diffs
         hist, binedges = n.histogram(diffs, bins=nbins)
         normhist = hist / float(diffs.shape[0])
         bins = n.zeros(nbins)
