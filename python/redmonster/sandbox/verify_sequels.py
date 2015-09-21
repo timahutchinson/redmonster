@@ -1789,21 +1789,31 @@ class verify_rm:
     def chi2_null_less_chi2_min(self, nbins=35, normed=True):
         self.read_redmonster_summary_file()
         diffs = self.rm_chi2_null - (self.rm_rchi2s * self.rm_dof)
-        diffs = diffs[n.where(diffs < 5000)[0]]
-        diffs = diffs[n.where(diffs > -5000)[0]]
+        diffs = diffs[n.where(diffs < 1000)[0]]
+        diffs = diffs[n.where(diffs > -1000)[0]]
         hist, binedges = n.histogram(diffs, bins=nbins)
         normhist = hist / float(diffs.shape[0])
         bins = n.zeros(nbins)
+        diffs2 = self.rm_chi2_null - ( (self.rm_rchi2s + self.rm_rchi2diff) * self.rm_dof )
+        diffs2 = diffs2[n.where(diffs2 < 1000)[0]]
+        diffs2 = diffs2[n.where(diffs2 > -1000)[0]]
+        hist2, binedges2 = n.histogram(diffs2,bins=nbins)
+        normhist2 = hist2 / float(diffs2.shape[0])
+        bins2 = n.zeros(nbins)
         for i in xrange(nbins):
-            bins[i] = (binedges[i+1] - binedges[i]) / 2.
+            bins[i] = (binedges[i+1] + binedges[i]) / 2.
+            bins2[i] = (binedges2[i+1] + binedges2[i]) / 2.
         if normed:
             p.plot(bins, normhist, drawstyle='steps-mid')
+            p.plot(bins2, normhist2, drawstyle='steps-mid', color='red')
             p.ylabel('Fraction per bin')
         else:
             p.plot(bins, hist, drawstyle='steps-mid')
+            p.plot(bins2, hist2, drawstyle='steps-mid', color='red')
             p.ylabel('Number per bin')
         p.xlabel(r'$\chi_{null}^2-\chi_{min}^2$', size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_less_chi2_min_histo.pdf')
+        p.clf()
 
 
 
