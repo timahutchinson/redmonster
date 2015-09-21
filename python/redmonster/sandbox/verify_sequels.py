@@ -1743,7 +1743,6 @@ class verify_rm:
             rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls > 0.6)[0]]
             xdata = n.linspace(.6,1.8,400)
         else:
-            rchi2_nulls = self.rm_chi2_null
             rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls < 8000)[0]]
             rchi2_nulls = rchi2_nulls[n.where(rchi2_nulls > 3000)[0]]
             xdata = n.linspace(3000,8000,400)
@@ -1785,6 +1784,24 @@ class verify_rm:
             p.xlabel(r'$\chi_{null}^2$',size=16)
             p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_cumul_histo.pdf')
         p.clf()
+
+
+    def chi2_null_less_chi2_min(self, nbins=35, normed=True):
+        self.read_redmonster_summary_file()
+        diffs = self.rm_chi2_null - self.rm_rchi2s
+        hist, binedges = n.histogram(diffs, bins=nbins)
+        normhist = hist / float(diffs.shape[0])
+        bins = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins[i] = (bins[i+1] - bins[i]) / 2.
+        if normed:
+            p.plot(bins, normhist, drawstyle='steps-mid')
+            p.ylabel('Fraction per bin')
+        else:
+            p.plot(bins, hist, drawstyle='steps-mid')
+            p.ylabel('Number per bin')
+        p.xlabel(r'$\chi_{null}^2-\chi_{min}^2$', size=16)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_less_chi2_min_histo.pdf')
 
 
 
