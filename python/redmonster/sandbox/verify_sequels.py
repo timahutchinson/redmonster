@@ -1794,7 +1794,7 @@ class verify_rm:
         hist, binedges = n.histogram(diffs, bins=nbins)
         normhist = hist / float(diffs.shape[0])
         bins = n.zeros(nbins)
-        diffs2 = self.rm_chi2_null - ( (self.rm_rchi2s + self.rm_rchi2diff) * self.rm_dof )
+        diffs2 = -1*(self.rm_rchi2s - ( (self.rm_rchi2s + self.rm_rchi2diff) * self.rm_dof ))
         diffs2 = diffs2[n.where(diffs2 < 1000)[0]]
         diffs2 = diffs2[n.where(diffs2 > -1000)[0]]
         hist2, binedges2 = n.histogram(diffs2,bins=nbins)
