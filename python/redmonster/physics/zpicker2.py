@@ -95,7 +95,7 @@ class Zpicker:
                         fibermins.append( zfitobjs[itemp].chi2vals[ifiber][imin] / (self.dof[ifiber] - zfindobjs[itemp].npoly) ) # Add num_z best chi2s found in zfitter divided by (number of pixels - number of poly terms) to convert to rchi2
                         fiberminvecs.append( zfitobjs[itemp].minvectors[ifiber][imin]) # Add num_z vectors for location of each chi2 in the above step
                     except:
-                        fibermins.append( 1e9 )
+                        fibermins.append( n.max(zfitobjs[itemp].chi2vals[ifiber]) / (self.dof[ifiber] - zfindobjs[itemp].npoly) )
                         fiberminvecs.append( (-1,) )
             for iz in xrange(self.num_z): # Build tuples of num_z best redshifts and classifications for this fiber
                 zpos = n.asarray(fibermins).argmin() # Location of this best redshfit in fibermins array - to be fed into tempdict to find template

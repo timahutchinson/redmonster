@@ -159,7 +159,7 @@ class Zfitter:
                             self.z[ifiber] = -1.
                             self.z_err[ifiber] = -1.
                             self.minvectors.append( [(-1,)]*num_z )
-                            self.chi2vals.append( [1e9]*num_z )
+                            self.chi2vals.append( [n.max(bestzvec)]*num_z) # 21 Sept 2015 TH changed from self.chi2vals.append( [1e9]*num_z )
                             stop = True
                         elif posinvec == 0: # If it's not the first, and if it's on the left edge, set the 15 pixels to the right = 1e9 and move on
                             k = 0
@@ -167,19 +167,19 @@ class Zfitter:
                                 k += 1
                                 try:
                                     if n.abs(zminlocs[thisminloc+k]-zminlocs[thisminloc]) < self.width:
-                                        zminvals[thisminloc+k] = 1e9
+                                        zminvals[thisminloc+k] = n.max(bestzvec) # 21 Sept 2015 TH changed from zminvals[thisminloc+k] = 1e9
                                     else:
                                         break
                                 except:
                                     break
                             z_ind += 1
-                        elif posinvec == bestzvec.shape[0]-1: # If it's not the first, and if it's on the right edge, set the 15 pixels to the left = 1e9 and move on
+                        elif posinvec == bestzvec.shape[0]-1: # If it's not the first, and if it's on the right edge, set the 15 pixels to the left = n.max(bestzvec) and move on
                             k = 0
                             while True:
                                 k += 1
                                 try:
                                     if n.abs(zminlocs[thisminloc-k]-zminlocs[thisminloc]) < self.width:
-                                        zminvals[thisminloc-k] = 1e9
+                                        zminvals[thisminloc-k] = n.max(bestzvec) # 21 Sept 2015 TH changed from 1e9
                                     else:
                                         break
                                 except:
@@ -197,16 +197,16 @@ class Zfitter:
                         else:
                             self.z[ifiber,z_ind] = -1.
                             self.z_err[ifiber,z_ind] = -1.
-                            bestchi2vals.append(1e9)
+                            bestchi2vals.append(n.max(bestzvec)) # 21 Sept 2015 TH changed from bestchi2vals.append(1e9)
                             bestminvectors.append((-1,))
-                        zminvals[thisminloc] = 1e9
+                        zminvals[thisminloc] = n.max(bestzvec) # 21 Sept 2015 TH changed from 1e9
                         #self.minvectors.append( n.unravel_index(self.zchi2[ifiber,...,posinvec].argmin(), self.zchi2[ifiber,...,posinvec].shape) + (posinvec,) )
                         k = 0
                         while True: # Set width points to the right and left of minimum to 1e9
                             k += 1
                             try:
                                 if n.abs(zminlocs[thisminloc+k]-zminlocs[thisminloc]) < self.width:
-                                    zminvals[thisminloc+k] = 1e9
+                                    zminvals[thisminloc+k] = n.max(bestzvec) # 21 Sept 2015 TH changed from 1e9
                                 else:
                                     break
                             except:
@@ -216,7 +216,7 @@ class Zfitter:
                             k += 1
                             try:
                                 if n.abs(zminlocs[thisminloc-k]-zminlocs[thisminloc]) < self.width:
-                                    zminvals[thisminloc-k] = 1e9
+                                    zminvals[thisminloc-k] = n.max(bestzvec) # 21 Sept 2015 TH changed from 1e9
                                 else:
                                     break
                             except:
