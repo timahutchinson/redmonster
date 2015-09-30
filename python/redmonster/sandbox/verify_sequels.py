@@ -10,6 +10,8 @@ import matplotlib.pyplot as p
 from math import isnan
 from astropy.convolution import convolve, Box1DKernel
 from scipy.optimize import curve_fit
+from redmonster.io import spec
+from redmonster.physics import zfinder
 
 class verify_rm:
     
@@ -673,6 +675,7 @@ class verify_rm:
         self.rm_dof = hdu[1].data.DOF
         self.rm_rchi2diff = hdu[1].data.RCHI2DIFF
         self.rm_chi2_null = hdu[1].data.CHI2NULL
+        self.rm_sn2_data = hdu[1].data.SN2DATA
 
 
     def read_spPlate_all(self,plate, mjd=None):
@@ -1800,16 +1803,25 @@ class verify_rm:
         hist2, binedges2 = n.histogram(diffs2,bins=nbins)
         normhist2 = hist2 / float(diffs2.shape[0])
         bins2 = n.zeros(nbins)
+        diffs3 = self.rm_sn2_data - (self.rm_rchi2s * self.rm_dof)
+        diffs3 = diffs3[n.where(diffs3 < 1000)[0]]
+        diffs3 = diffs3[n.where(diffs3 > -1000)[0]]
+        hist3, binedges3 = n.histogram(diffs3,bins=nbins)
+        normhist3 = hist3 / float(diffs3.shape[0])
+        bins3 = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1] + binedges[i]) / 2.
             bins2[i] = (binedges2[i+1] + binedges2[i]) / 2.
+            bins3[i] = (binedges3[i+1] + binedges3[i]) / 2.
         if normed:
             p.plot(bins, normhist, drawstyle='steps-mid', label=r'$\chi_{\mathrm{null}}^2$')
             p.plot(bins2, normhist2, drawstyle='steps-mid', color='red', label=r'$\chi_{\mathrm{fit2}}^2$')
+            p.plot(bins3, normhist3, drawstyle='steps-mid', color='cyan', label=r'$\chi_{0}^2$')
             p.ylabel('Fraction per bin')
         else:
-            p.plot(bins, hist, drawstyle='steps-mid')
-            p.plot(bins2, hist2, drawstyle='steps-mid', color='red')
+            p.plot(bins, hist, drawstyle='steps-mid', label=r'$\chi_{\mathrm{null}}^2$')
+            p.plot(bins2, hist2, drawstyle='steps-mid', color='red', label=r'$\chi_{\mathrm{fit2}}^2$')
+            p.plot(bins3, hist3, drawstyle='steps-mid', color='cyan', label=r'$\chi_{0}^2$')
             p.ylabel('Number per bin')
         if bins[0] < bins2[0]:
             if bins[-1] > bins2[-1]: p.axis([bins[0],bins[-1],0,.25])
@@ -1825,6 +1837,56 @@ class verify_rm:
 
     def sequels_stack_spectra(self):
         pass
+
+
+    def sequels_example_chi2s(self, plates, mjds, fibers):
+        # Create stacked plots of three chi2 vs z curves for three fibers.  plates, mjds, and fibers are lists
+        # of plate, mjd, fiberid sets to have chi2 curve plotted
+        f = p.figure()
+        ax1 = f.add_subplot(311)
+        specs = spec.Spec(plate=plates[0], mjd=mjd[0], fiberid=fibers[0].tolist())
+        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
+        zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
+        bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
+        p.plot(zssp1.zbase, bestzvec)
+        ax2 = f.add_subplot(312)
+        specs = spec.Spec(plate=plates[1], mjd=mjd[1], fiberid=fibers[1].tolist())
+        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
+        zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
+        bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
+        p.plot(zssp1.zbase, bestzvec)
+        p.ylabel(r'$\chi^2', size=16)
+        ax3 = f.add_subplot(313)
+        specs = spec.Spec(plate=plates[2], mjd=mjd[2], fiberid=fibers[2].tolist())
+        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
+        zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
+        bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
+        p.plot(zssp1.zbase, bestzvec)
+        p.xlabel(r'$z$', size=16)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/example_chi2_vs_z.pdf')
+        p.clf()
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------
+# modified version of zfitter.z_refine2() to create chi2 vs z curves for self.sequels_example_chi2s()
+
+    def chi2_curves_helper(self, zchi2, zbase, threshold=23.3, width=15):
+        self.zchi2 = zchi2
+        self.zbase = zbase
+        self.z = n.zeros((zchi2.shape[0],5))
+        self.z_err = n.zeros((zchi2.shape[0],5))
+        self.minvector = []
+        self.zwarning = n.zeros(zchi2.shape[0])
+        self.threshold = threshold
+        self.width = width
+        for ifiber in xrange(self.zchi2.shape[0]):
+            self.minvector.append( (ifiber,) + n.unravel_index(self.zchi2[ifiber].argmin(),self.zchi2[ifiber].shape))
+            bestzvec = n.zeros( self.zchi2.shape[-1])
+            for iz in xrange(self.zchi2.shape[-1]):
+                bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
+        return bestzvec
+
+# ----------------------------------------------------------------------------------------------------------------------------------
 
 
 
