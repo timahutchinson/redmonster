@@ -1868,7 +1868,7 @@ class verify_rm:
         zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
         p.plot(zssp1.zbase, bestzvec)
-        p.axis([0,1.2,4000,4020])
+        p.axis([0,1.2,4000,4017])
         p.xlabel(r'$z$', size=16)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/example_chi2_vs_z.pdf')
         p.clf()
