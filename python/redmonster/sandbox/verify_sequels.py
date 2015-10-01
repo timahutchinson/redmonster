@@ -1833,6 +1833,7 @@ class verify_rm:
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_less_chi2_min_histo.pdf')
         p.clf()
+        print bins[0:3], normhist[0:3], bins2[0:3], normhist2[0:3], bins2[0:3], normhist2[0:3],
 
 
     def sequels_stack_spectra(self):
