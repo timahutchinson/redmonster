@@ -1854,7 +1854,7 @@ class verify_rm:
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
         p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--', color='orange')
         p.plot(zssp1.zbase, bestzvec)
-        p.axis([0,1.2,3955,4100])
+        p.axis([0,1.2,3955,4110])
         ax2 = f.add_subplot(312)
         specs = spec.Spec(plate=plates[1], mjd=mjds[1], fiberid=[fibers[1]])
         zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
