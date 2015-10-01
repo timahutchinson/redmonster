@@ -10,7 +10,7 @@ import matplotlib.pyplot as p
 from math import isnan
 from astropy.convolution import convolve, Box1DKernel
 from scipy.optimize import curve_fit
-from redmonster.io import spec
+from redmonster.datamgr import spec
 from redmonster.physics import zfinder
 
 class verify_rm:
