@@ -1815,12 +1815,12 @@ class verify_rm:
             bins3[i] = (binedges3[i+1] + binedges3[i]) / 2.
         if normed:
             p.plot(bins, normhist, drawstyle='steps-mid', color='magenta', label=r'$\chi_{\mathrm{null}}^2$')
-            p.plot(bins2, normhist2, drawstyle='steps-mid', color='blueviolet', label=r'$\chi_{\mathrm{fit2}}^2$')
+            p.plot(bins2, normhist2, drawstyle='steps-mid', color='mediumpurple', label=r'$\chi_{\mathrm{fit2}}^2$')
             p.plot(bins3, normhist3, drawstyle='steps-mid', color='cyan', label=r'$\chi_{0}^2$')
             p.ylabel('Fraction per bin')
         else:
             p.plot(bins, hist, drawstyle='steps-mid', color='magenta', label=r'$\chi_{\mathrm{null}}^2$')
-            p.plot(bins2, hist2, drawstyle='steps-mid', color='blueviolet', label=r'$\chi_{\mathrm{fit2}}^2$')
+            p.plot(bins2, hist2, drawstyle='steps-mid', color='mediumpurple', label=r'$\chi_{\mathrm{fit2}}^2$')
             p.plot(bins3, hist3, drawstyle='steps-mid', color='cyan', label=r'$\chi_{0}^2$')
             p.ylabel('Number per bin')
         if bins[0] < bins2[0]:
