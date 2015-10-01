@@ -1843,9 +1843,12 @@ class verify_rm:
     def sequels_example_chi2s(self, plates, mjds, fibers):
         # Create stacked plots of three chi2 vs z curves for three fibers.  plates, mjds, and fibers are lists
         # of plate, mjd, fiberid sets to have chi2 curve plotted
+        # 7397 57129 784
+        # 7311 57038 465
+        # 7394 57131 322
         f = p.figure()
         ax1 = f.add_subplot(311)
-        specs = spec.Spec(plate=plates[0], mjd=mjd[0], fiberid=fibers[0].tolist())
+        specs = spec.Spec(plate=plates[0], mjd=mjds[0], fiberid=fibers[0].tolist())
         zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
         zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
