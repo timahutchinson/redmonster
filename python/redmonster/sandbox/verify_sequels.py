@@ -1854,6 +1854,7 @@ class verify_rm:
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
         p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--', color='mediumpurple')
         p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--', color='mediumaquamarine')
+        print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
         p.text(0.1,3970,'7397-57129-784', fontsize=12)
         #p.axis([0,1.2,3955,4110])
@@ -1865,6 +1866,7 @@ class verify_rm:
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
         p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--', color='mediumpurple')
         p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--', color='mediumaquamarine')
+        print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
         p.text(0.1,4865.80645,'7311-57038-465', fontsize=12)
         #p.axis([0,1.2,4860,4920])
@@ -1876,6 +1878,7 @@ class verify_rm:
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
         p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--', color='mediumpurple')
         p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--', color='mediumaquamarine')
+        print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
         p.text(0.1,4001.6451612,'7305-56991-692', fontsize=12)
         #p.axis([0,1.2,4000,4017])
