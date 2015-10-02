@@ -1858,7 +1858,7 @@ class verify_rm:
         #print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
         p.text(0.1,3970,'7397-57129-784', fontsize=12)
-        p.text(0.9, 3970, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
+        p.text(0.89, 3970, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
         p.axis([0,1.2,3955,4110])
         ax1.set_yticks([3960,3990,4020,4050,4080,4110])
         ax2 = f.add_subplot(312)
@@ -1871,7 +1871,7 @@ class verify_rm:
         #print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
         p.text(0.1,4865.80645,'7311-57038-465', fontsize=12)
-        p.text(0.9, 4865.80645, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
+        p.text(0.89, 4865.80645, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
         p.axis([0,1.2,4860,4920])
         p.ylabel(r'$\chi^2$', size=16)
         ax3 = f.add_subplot(313)
@@ -1884,7 +1884,7 @@ class verify_rm:
         #print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
         p.text(0.1,4001.6451612,'7305-56991-692', fontsize=12)
-        p.text(0.9, 4001.6451612, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
+        p.text(0.89, 4001.6451612, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
         p.axis([0,1.2,4000,4017])
         ax3.set_yticks([4000,4004,4008,4012,4016])
         p.xlabel(r'$z$', size=16)
