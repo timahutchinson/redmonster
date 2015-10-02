@@ -1846,6 +1846,7 @@ class verify_rm:
         # 7397 57129 784
         # 7311 57038 465
         # 7305 56991 692
+        # This is a comment
         f = p.figure()
         ax1 = f.add_subplot(311)
         specs = spec.Spec(plate=plates[0], mjd=mjds[0], fiberid=[fibers[0]])
