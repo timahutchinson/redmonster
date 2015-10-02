@@ -1845,7 +1845,7 @@ class verify_rm:
         # of plate, mjd, fiberid sets to have chi2 curve plotted
         # 7397 57129 784
         # 7311 57038 465
-        # 7394 57131 322
+        # 7305 56991 692
         f = p.figure()
         ax1 = f.add_subplot(311)
         specs = spec.Spec(plate=plates[0], mjd=mjds[0], fiberid=[fibers[0]])
@@ -1864,6 +1864,7 @@ class verify_rm:
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
         p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--', color='mediumpurple')
         p.plot(zssp1.zbase, bestzvec, color='black')
+        p.text(0.1,4865.80645,'7311-57038-465', fontsize=12)
         p.axis([0,1.2,4860,4920])
         p.ylabel(r'$\chi^2$', size=16)
         ax3 = f.add_subplot(313)
@@ -1873,6 +1874,7 @@ class verify_rm:
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
         p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--', color='mediumpurple')
         p.plot(zssp1.zbase, bestzvec, color='black')
+        p.text(0.1,4001.6451612,'7305-56991-692', fontsize=12)
         p.axis([0,1.2,4000,4017])
         ax3.set_yticks([4000,4004,4008,4012,4016])
         p.xlabel(r'$z$', size=16)
