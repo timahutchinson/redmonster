@@ -1854,7 +1854,7 @@ class verify_rm:
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
         p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--', color='mediumpurple')
         p.plot(zssp1.zbase, bestzvec, color='black')
-        p.text(0.1,3970,'7397-57129-784', size=12)
+        p.text(0.1,3970,'7397-57129-784', fontsize=12)
         p.axis([0,1.2,3955,4110])
         ax1.set_yticks([3960,3990,4020,4050,4080,4110])
         ax2 = f.add_subplot(312)
