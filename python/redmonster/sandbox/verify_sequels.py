@@ -1892,6 +1892,7 @@ class verify_rm:
         ax3.set_yticks([4000,4004,4008,4012,4016])
         ax3.set_xticks([0,0.2,0.4,0.6,0.8,1.0,1.2])
         p.xlabel(r'$z$', size=16)
+        p.subplots_adjust(wspace = .3, hspace = .3)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/example_chi2_vs_z.pdf')
         p.clf()
 
