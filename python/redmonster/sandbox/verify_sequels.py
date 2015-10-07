@@ -1873,6 +1873,7 @@ class verify_rm:
         p.text(0.1,4865.80645,'7311-57038-465', fontsize=12)
         p.text(0.89, 4865.80645, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
         p.axis([0,1.2,4860,4920])
+        ax1.set_yticks([4860,4875,4890,4905,4920])
         p.ylabel(r'$\chi^2$', size=16)
         ax3 = f.add_subplot(313)
         specs = spec.Spec(plate=plates[2], mjd=mjds[2], fiberid=[fibers[2]])
