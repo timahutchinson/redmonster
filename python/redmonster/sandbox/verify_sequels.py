@@ -1642,7 +1642,7 @@ class verify_rm:
             popt, pcov = curve_fit(fit_func, bins, normhist)
             xfit = n.linspace(-4,4,1000)
             yfit = fit_func(xfit, popt[0], popt[1], popt[2])
-            p.plot(xfit, yfit, color='cyan')
+            p.plot(xfit, yfit, color='mediumpurple')
             p.text(2.4,.11, r'$\sigma_{\mathrm{fit}}=$%.2f' % popt[1], size=16)
             p.text(2.4, .10, r'$\mu_{\mathrm{fit}}=$%.2f' % popt[2], size=16)
 
@@ -1857,7 +1857,7 @@ class verify_rm:
         #p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--', color='mediumaquamarine')
         #print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
-        p.text(0.1,3970,'7397-57129-784', fontsize=12)
+        p.text(0.1,3970,'7397-57129-785', fontsize=12)
         p.text(0.89, 3970, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
         p.axis([0,1.2,3955,4110])
         ax1.set_yticks([3960,3990,4020,4050,4080,4110])
@@ -1871,7 +1871,7 @@ class verify_rm:
         #p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--', color='mediumaquamarine')
         #print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
-        p.text(0.1,4865.80645,'7311-57038-465', fontsize=12)
+        p.text(0.1,4865.80645,'7311-57038-466', fontsize=12)
         p.text(0.89, 4865.80645, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
         p.axis([0,1.2,4860,4920])
         ax2.set_yticks([4860,4875,4890,4905,4920])
@@ -1886,7 +1886,7 @@ class verify_rm:
         #p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--', color='mediumaquamarine')
         #print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
-        p.text(0.1,4001.6451612,'7305-56991-692', fontsize=12)
+        p.text(0.1,4001.6451612,'7305-56991-693', fontsize=12)
         p.text(0.89, 4001.6451612, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
         p.axis([0,1.2,4000,4017])
         ax3.set_yticks([4000,4004,4008,4012,4016])
