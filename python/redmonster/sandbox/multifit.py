@@ -422,6 +422,8 @@ class MultiProjector:
             2. an emission-line width dimension
                (see set_emvdisp for how this is specified)
             3. the redshift dimension specified by 'pixlags'
+          It also sets the 'current' model to the 'best' model in
+            terms of the minimum chi^2 mapped over the grid.
         """
         # Figure out what dimensionality we need for the chi-squared grid
         # in the initial working (flattened) form (including always a dimension

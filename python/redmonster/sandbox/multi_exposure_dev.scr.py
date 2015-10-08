@@ -25,15 +25,27 @@ import multifit as mf
 #export RUN2D=v5_5_12
 #export RUN1D=v5_5_12
 
+
+### BEGIN code specific for the LRG case:
+
 # Absorption-line galaxy:
 plate = 3686
 mjd = 55268
 fiberid = 265
 
+### END code specific for the LRG case:
+
+
+
+### BEGIN code specific for the ELG case:
+
 # Emission-line galaxy:
-#plate = 4399
-#mjd = 55811
-#fiberid = 476
+plate = 4399
+mjd = 55811
+fiberid = 476
+
+### END code specific for the ELG case:
+
 
 # Get the data:
 SpC = sdss.SpCFrameAll(plate, mjd)
@@ -47,7 +59,7 @@ spz = fits.getdata(spZbest_file, 1)
 
 
 # Get the models:
-data, baselines, infodict = io.read_ndArch('../templates/ndArch-ssp_hires_galaxy-v002.fits')
+data, baselines, infodict = io.read_ndArch('../../../templates/ndArch-ssp_hires_galaxy-v002.fits')
 loglam_ssp = infodict['coeff0'] + infodict['coeff1'] * n.arange(infodict['nwave'])
 logbound_ssp = misc.cen2bound(loglam_ssp)
 wave_ssp = 10.**loglam_ssp
@@ -75,13 +87,20 @@ MP = mf.MultiProjector(wavebound_list=wavebound_fib,
                        coeff1=infodict['coeff1'],
                        npoly=3)
 
+# That runs in between 30 and 40 seconds on my macbook pro...
 
 
-# Code for the ELG case:
-MP.set_models(data, baselines=baselines, n_linear_dims=1)
-MP.set_emvdisp([100.])
 
 
+### BEGIN code specific for the ELG case:
+# Here, chi-squared is fairly insensitive to the continuum vdisp,
+# so we will cut that down to a few values, and also marginalize
+# over it as a linear dimension.
+idx_v_sub = [1,3,6,9,15]
+data_sub = data[idx_v_sub,:,:].copy()
+baselines_sub = [baselines[0][idx_v_sub], baselines[1]]
+MP.set_models(data_sub, baselines=baselines_sub, n_linear_dims=2)
+MP.set_emvdisp([30.,60.,120.])
 
 # Cheating values from idlspec2d:
 z_best = 0.8568
@@ -95,13 +114,13 @@ n_zbase = len(pixlagvec)
 
 MP.grid_chisq_zmapper(pixlagvec)
 
+### END code specific for the ELG case
 
 
-# Code for the LRG case:
+
+### BEGIN code for the LRG case:
 MP.set_models(data, baselines=baselines, n_linear_dims=1)
 MP.set_emvdisp()
-
-
 
 # Cheating values from idlspec2d:
 # Abs. line gal.:
@@ -118,13 +137,17 @@ n_zbase = len(pixlagvec)
 
 MP.grid_chisq_zmapper(pixlagvec)
 
+# That takes between 40 and 50 seconds on my macbook pro.
+
+### END code specific for the LRG case
+
+
+
+# If you want to plot individual spectra in individual windows:
 MP.plot_current_models((MP.nspec//2,2))
 
 
-myargs = {'interpolation': 'nearest', 'hold': False, 'origin': 'lower', 'cmap': m.cm.hot}
-
-
-
+# If you want to plot everything on one set of axes:
 holdvec = MP.nspec * [True]
 holdvec[0] = False
 for i_spec in xrange(MP.nspec):
@@ -135,21 +158,21 @@ for i_spec in xrange(MP.nspec):
 
 
 
-junk = p.figure()
-for i_spec in xrange(MP.nspec):
-    junk.add_subplot(n_vert, n_horiz, i_spec+1)
-    p.plot(MP.wavecen_list[i_spec], MP.flux_list[i_spec], 'k', hold=False)
+#junk = p.figure()
+#for i_spec in xrange(MP.nspec):
+#    junk.add_subplot(n_vert, n_horiz, i_spec+1)
+#    p.plot(MP.wavecen_list[i_spec], MP.flux_list[i_spec], 'k', hold=False)
 
 
 
-
-
+# Look at the chi-squared gid:
+myargs = {'interpolation': 'nearest', 'hold': False, 'origin': 'lower', 'cmap': m.cm.hot}
 p.imshow(MP.chisq_grid.squeeze() - MP.chisq_grid.min(), **myargs)
 p.colorbar()
 
 
-MP.n_linear_dims = 0
-MP.grid_chisq_zmapper(pixlagvec)
+#MP.n_linear_dims = 0
+#MP.grid_chisq_zmapper(pixlagvec)
 
 
 
