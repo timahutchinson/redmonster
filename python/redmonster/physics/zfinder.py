@@ -126,7 +126,7 @@ class Zfinder:
                         for l in n.arange(num_z)*self.npixstep: #for l in range(num_z):
                             try:
                                 f = n.linalg.solve(pmat[:,:,l+zminpix],bvec[:,l+zminpix])
-                                zchi2arr[i,j,(l/self.npixstep)] = self.sn2_data - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
+                                zchi2arr[i,j,(l/self.npixstep)] = self.sn2_data[i] - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
                                 if (f[0] < 0):
                                     temp_zwarning[i,j,(l/self.npixstep)] = int(temp_zwarning[i,j,(l/self.npixstep)]) | flag_val_neg_model
                                     zchi2arr[i,j,(l/self.npixstep)] = self.chi2_null[i]
