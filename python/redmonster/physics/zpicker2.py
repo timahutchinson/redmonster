@@ -23,7 +23,7 @@ class Zpicker:
 
     def __init__(self, specobj, zfindobjs, zfitobjs, flags, num_z=5):
         self.num_z = num_z # Number of redshifts to retain
-        self.npixflux = specobj.npix
+        self.npixflux = specobj.npix if hasattr(specobj,'npix') else specobj.flux.shape[-1]
         self.flux = specobj.flux
         self.ivar = specobj.ivar
         if hasattr(specobj,'plate'): self.plate = specobj.plate
@@ -157,7 +157,6 @@ class Zpicker:
 
 
     def create_model(self, fname, npoly, npixstep, minvector, zfindobj, flux, ivar):
-        #import pdb; pdb.set_trace()
         try:
             pixoffset = zfindobj.pixoffset
             temps = read_ndArch( join( environ['REDMONSTER_TEMPLATES_DIR'], fname ) )[0]
