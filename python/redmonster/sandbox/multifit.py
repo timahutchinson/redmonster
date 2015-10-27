@@ -58,7 +58,6 @@ def npix2slices(npix_list):
     return [slice(slice_lo[k], slice_hi[k])
             for k in xrange(len(slice_hi))]
 
-
 def multi_projector(wavebound_list, sigma_list, coeff0, coeff1):
     """
     Function to take a list of spectro wavelength baselines and

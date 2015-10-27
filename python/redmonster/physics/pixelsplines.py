@@ -274,3 +274,47 @@ class PixelSpline:
             new_counts[wh_this] += icounts_this
         # Divide out for average and return:
         return new_counts / new_fulldx
+
+class WeightedRebinCoadder:
+    """
+        Objet class for weighted rebinning and coaddition of spectra
+        
+        Initialize as follows:
+        WRC = WeighedRebinCoadder(fluxes, invvars, pixbounds)
+        where
+        fluxes = list of arrays of specific flux values
+        invvars = list of arrays of associated inverse variances
+        pixbounds = list of arrays of pixel boundaries in baseline units
+        """
+    def __init__(self, fluxes, invvars, pixbounds):
+        # Determine minimum and maximum values of independent variable:
+        self.min_indep = [this_bound.min() for this_bound in pixbounds]
+        self.max_indep = [this_bound.max() for this_bound in pixbounds]
+        self._n_input = len(fluxes)
+        # Compute pixel widths:
+        dpixes = [this_bound[1:] - this_bound[:-1] for this_bound in pixbounds]
+        # Compute "specific inverse variances":
+        sp_invvars = [invvars[i] / dpixes[i] for i in xrange(self._n_input)]
+        # Compute pixelspline objects for fluxes:
+        self._PXS_fluxes = [PixelSpline(pixbounds[i], fluxes[i]) for i in xrange(self._n_input)]
+        # Compute pixelspline objects for specific inverse variances:
+        self._PXS_sp_invvars = [PixelSpline(pixbounds[i], sp_invvars[i]) for i in xrange(self._n_input)]
+    def coadd(self, pixbound_out):
+        # Compute coverage masks:
+        masks = [(pixbound_out[:-1] > self.min_indep[i]) *
+                 (pixbound_out[1:] < self.max_indep[i]) for i in xrange(self._n_input)]
+        # Compute output pixel widths:
+        dpix_out = pixbound_out[1:] - pixbound_out[:-1]
+        # Compute interpolated fluxes:
+        new_fluxes = [this_PXS.resample(pixbound_out) for this_PXS in self._PXS_fluxes]
+        # Compute interpolated specific inverse variances (converted to inverse variances):
+        new_invvars = [dpix_out * this_PXS.resample(pixbound_out) for this_PXS in self._PXS_sp_invvars]
+        # Compute coadded flux and inverse variance and return:
+        flux_coadd = 0.
+        invvar_coadd = 0.
+        for i in xrange(self._n_input):
+            flux_coadd += new_fluxes[i] * new_invvars[i] * masks[i]
+            invvar_coadd += new_invvars[i] * masks[i]
+        is_good = n.where(invvar_coadd > 0.)
+        flux_coadd[is_good] /= invvar_coadd[is_good]
+        return flux_coadd, invvar_coadd
