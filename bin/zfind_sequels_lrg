@@ -31,6 +31,8 @@ try: run2d = environ['RUN2D']
 except: run2d = None
 spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
+data_range = [4000,9000]
+
 if spallpath:
     cjob = 0
     q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
@@ -41,7 +43,10 @@ if spallpath:
             plate = hdu[1].data.PLATE[ind]
             mjd = hdu[1].data.MJD[ind]
             fiberid = hdu[1].data.FIBERID[ind] - 1
-            q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
+            if data_range:
+                q.append( "zfind -p %i -m %i -f %i -g %s -h %s" % (plate, mjd, fiberid, data_range[0], data_range[1]) )
+            else:
+                q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
         if q.task_number >= blocksize:
             cjob += 1
             q.commit(hard=True, submit=True)

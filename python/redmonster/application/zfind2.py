@@ -150,7 +150,7 @@ class Zfind:
             else:
                 self.npixstep = map(int, self.npixstep)
 
-    def reduce_plate_mjd(self, plate, mjd, fiberid=None, chi2file=False):
+    def reduce_plate_mjd(self, plate, mjd, fiberid=None, data_range=None, chi2file=False):
         self.chi2file = chi2file
         # Check types and try to convert to proper types if necessary
         if fiberid is None: fiberid = [i for i in xrange(1000)]

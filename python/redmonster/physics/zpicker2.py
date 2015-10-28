@@ -123,7 +123,8 @@ class Zpicker:
                     self.chi2_null.append( zfindobjs[tempnum].chi2_null[ifiber])
                     self.sn2_data.append( zfindobjs[tempnum].sn2_data[ifiber])
                 fibermins[zpos] = 1e9
-                self.models[ifiber,iz], f = self.create_model(fnametuple[iz], npolytuple[iz], npixsteptuple[iz], vectortuple[iz], zfindobjs[tempnum], self.flux[ifiber], self.ivar[ifiber])
+                self.models[ifiber,iz], f = self.create_model(fnametuple[iz], npolytuple[iz], npixsteptuple[iz], vectortuple[iz],
+                                                              zfindobjs[tempnum], self.flux[ifiber], self.ivar[ifiber])
                 fstuple += (f,)
             
             self.z.append(ztuple)
@@ -144,11 +145,13 @@ class Zpicker:
 
 
     def flag_small_dchi2(self, ifiber):
+        """Set the small delta chi**2 zwarning flag."""
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
         self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
     
     
-    def flag_null_fit(self, ifiber, flags): # Flag if *any* of the template classes had a null fit
+    def flag_null_fit(self, ifiber, flags):
+        """Set flag if any template classes had a null fit."""
         null_fit_flag = int('0b100000000',2)
         for template in flags:
             if int(template[ifiber]) & null_fit_flag > 0:
@@ -157,6 +160,7 @@ class Zpicker:
 
 
     def create_model(self, fname, npoly, npixstep, minvector, zfindobj, flux, ivar):
+        """Return the best fit model for a given template at a given redshift."""
         try:
             pixoffset = zfindobj.pixoffset
             temps = read_ndArch( join( environ['REDMONSTER_TEMPLATES_DIR'], fname ) )[0]
@@ -179,17 +183,6 @@ class Zpicker:
         except Exception as e:
             print "Exception: %r" % e
             return n.zeros(self.npixflux), (0,)
-        '''
-        try: # Some eBOSS spectra have ivar[i] = 0 for all i
-            f = nnls( n.dot(n.dot(n.transpose(pmat),ninv),pmat), n.dot( n.dot(n.transpose(pmat),ninv),flux) ); f = n.array(f)[0]
-            return n.dot(pmat, f), tuple(f)
-        except:
-            try:
-                f = n.linalg.solve(pmat[:,:,l],bvec[:,l])
-                return n.dot(pmat, f), tuple(f)
-            except:
-                return n.zeros(self.npixflux), tuple(f)
-        '''
 
 
 
