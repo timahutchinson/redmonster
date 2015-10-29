@@ -44,7 +44,7 @@ if spallpath:
             mjd = hdu[1].data.MJD[ind]
             fiberid = hdu[1].data.FIBERID[ind] - 1
             if data_range:
-                q.append( "zfind -p %i -m %i -f %i -g %s -h %s" % (plate, mjd, fiberid, data_range[0], data_range[1]) )
+                q.append( "zfind -p %i -m %i -f %i -j %s -k %s" % (plate, mjd, fiberid, data_range[0], data_range[1]) )
             else:
                 q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
         if q.task_number >= blocksize:
