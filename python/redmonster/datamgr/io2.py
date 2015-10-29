@@ -14,6 +14,7 @@ from time import gmtime, strftime
 from glob import iglob
 import re
 
+
 def read_ndArch(fname):
     """
         Read in an ndArch archetype file, parsing parameter baselines.
@@ -80,13 +81,14 @@ def read_ndArch(fname):
         # Translate Python axis index integer to FITS axis index string:
         ax = str(npars + 1 - ipar)
         # Populate name & units for this axis, if available:
-        if ('CNAME'+ax in header): infodict['par_names'][ipar] = header['CNAME'+ax]
-        if ('CUNIT'+ax in header): infodict['par_units'][ipar] = header['CUNIT'+ax]
+        if ('CNAME'+ax in header):
+            infodict['par_names'][ipar] = header['CNAME'+ax]
+        if ('CUNIT'+ax in header):
+            infodict['par_units'][ipar] = header['CUNIT'+ax]
         # The axis condition tests -- maybe inefficient to always compute
         # all of these, but makes for nicer code:
-        is_regular = ('CRPIX'+ax in header) and \
-            ('CRVAL'+ax in header) and \
-            ('CDELT'+ax in header)
+        is_regular = (('CRPIX'+ax in header) and ('CRVAL'+ax in header) and
+                      ('CDELT'+ax in header))
         pv_base = ['PV'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
         pv_test = n.asarray([this_pv in header for this_pv in pv_base])
         is_irregular = pv_test.prod() > 0
@@ -97,14 +99,17 @@ def read_ndArch(fname):
         n_test = n.asarray([this_n in header for this_n in n_base])
         is_named = n_test.prod() > 0
         if is_regular:
-            baselines[ipar] = (n.arange(data.shape[ipar]) + 1 - header['CRPIX'+ax]) \
-                * header['CDELT'+ax] + header['CRVAL'+ax]
+            baselines[ipar] = ((n.arange(data.shape[ipar]) + 1 -
+                                header['CRPIX'+ax]) * header['CDELT'+ax] +
+                               header['CRVAL'+ax])
             infodict['par_axistype'][ipar] = 'regular'
         elif is_irregular:
-            baselines[ipar] = n.asarray([header[this_pv] for this_pv in pv_base])
+            baselines[ipar] = n.asarray([header[this_pv] for this_pv in
+                                         pv_base])
             infodict['par_axistype'][ipar] = 'irregular'
         elif is_labeled:
-            baselines[ipar] = n.asarray([header[this_ps] for this_ps in ps_base])
+            baselines[ipar] = n.asarray([header[this_ps] for this_ps in
+                                         ps_base])
             infodict['par_axistype'][ipar] = 'labeled'
         elif is_named:
             baselines[ipar] = n.asarray([header[this_n] for this_n in n_base])
@@ -158,60 +163,75 @@ def write_ndArch(data, baselines, infodict):
     # Initialize the HDU:
     hdu = fits.PrimaryHDU(data)
     # Set the flux units, if they are provided:
-    if ('fluxunit' in infodict): hdu.header.set('BUNIT', value=infodict['fluxunit'], comment='Data unit')
+    if ('fluxunit' in infodict):
+        hdu.header.set('BUNIT', value=infodict['fluxunit'], comment='Data unit')
     # Work out the number of parameters:
     npars = len(data.shape) - 1
     # Set the keywords for the wavelength baseline:
     hdu.header.set('CNAME1', value='loglam', comment='Axis 1 name')
     hdu.header.set('CUNIT1', value='log10(Angstroms)', comment='Axis 1 unit')
     hdu.header.set('CRPIX1', value=1., comment='Axis 1 reference pixel')
-    hdu.header.set('CRVAL1', value=infodict['coeff0'], comment='Axis 1 reference value')
-    hdu.header.set('CDELT1', value=infodict['coeff1'], comment='Axis 1 increment')
+    hdu.header.set('CRVAL1', value=infodict['coeff0'],
+                   comment='Axis 1 reference value')
+    hdu.header.set('CDELT1', value=infodict['coeff1'],
+                   comment='Axis 1 increment')
     # Loop over parameters...
     # Reverse ordering is to get things in FITS header in natural order.
     for ipar in range(npars)[::-1]:
         # Translate Python axis index integer to FITS axis index string:
         ax = str(npars + 1 - ipar)
         # Populate name & units for this axis, if available:
-        if ('par_names' in infodict): hdu.header.set('CNAME'+ax, value=infodict['par_names'][ipar], comment='Axis ' + ax + ' name')
-        if ('par_units' in infodict): hdu.header.set('CUNIT'+ax, value=infodict['par_units'][ipar], comment='Axis ' + ax + ' unit')
+        if ('par_names' in infodict):
+            hdu.header.set('CNAME'+ax, value=infodict['par_names'][ipar],
+                           comment='Axis ' + ax + ' name')
+        if ('par_units' in infodict):
+            hdu.header.set('CUNIT'+ax, value=infodict['par_units'][ipar],
+                           comment='Axis ' + ax + ' unit')
         if (infodict['par_axistype'][ipar].strip() == 'regular'):
-            hdu.header.set('CRPIX'+ax, value=1.0, comment='Axis '+ax+' reference pixel')
-            hdu.header.set('CRVAL'+ax, value=baselines[ipar][0], comment='Axis '+ax+' reference value')
-            hdu.header.set('CDELT'+ax, value=(baselines[ipar][1]-baselines[ipar][0]), comment='Axis '+ax+' increment')
+            hdu.header.set('CRPIX'+ax, value=1.0,
+                           comment='Axis '+ax+' reference pixel')
+            hdu.header.set('CRVAL'+ax, value=baselines[ipar][0],
+                           comment='Axis '+ax+' reference value')
+            hdu.header.set('CDELT'+ax,
+                           value=(baselines[ipar][1]-baselines[ipar][0]),
+                           comment='Axis '+ax+' increment')
         elif (infodict['par_axistype'][ipar].strip() == 'irregular'):
             pv_base = ['PV'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
             for j in xrange(data.shape[ipar]):
-                hdu.header.set(pv_base[j], value=baselines[ipar][j], comment='Axis '+ax+' value at pixel ' + str(j+1))
+                hdu.header.set(pv_base[j], value=baselines[ipar][j],
+                               comment='Axis '+ax+' value at pixel ' + str(j+1))
         elif (infodict['par_axistype'][ipar].strip() == 'labeled'):
             ps_base = ['PS'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
             for j in xrange(data.shape[ipar]):
-                hdu.header.set(ps_base[j], value=baselines[ipar][j], comment='Axis '+ax+' label at pixel ' + str(j+1))
+                hdu.header.set(ps_base[j], value=baselines[ipar][j],
+                               comment='Axis '+ax+' label at pixel ' + str(j+1))
         elif (infodict['par_axistype'][ipar].strip() == 'named'):
             n_base = ['N'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
             for j in xrange(data.shape[ipar]):
-                hdu.header.set(n_base[j], value=baselines[ipar][j], comment='Axis '+ax+' name at pixel ' + str(j+1))
+                hdu.header.set(n_base[j], value=baselines[ipar][j],
+                               comment='Axis '+ax+' name at pixel ' + str(j+1))
         else:
             pass
     hdu.writeto(infodict['filename'], clobber=True)
-
 
 
 class Write_Redmonster:
     '''
         Class to write output file at the end of running redmonster.
         
-        The zpick argument is simply the entire object created by running
-        redmonster.physics.zpicker.py . The self.dest argument is a string
-        containing the path in which to save the output file.
+        The zpick argument is simply the entire object created by
+        running redmonster.physics.zpicker.py . The self.dest argument is
+        a string containing the path in which to save the output file.
         
-        If no dest argument is given, or the path does not exist, then the write_rm() method
-        will default to writing in $REDMONSTER_SPECTRO_REDUX/$RUN2D/pppp/$RUN1D/ .  If the
-        necessary environmental variables are also not specified, it will write in
-        directory in which it is being run.
+        If no dest argument is given, or the path does not exist, then
+        the write_rm() method will default to writing in
+        $REDMONSTER_SPECTRO_REDUX/$RUN2D/pppp/$RUN1D/ . If the necessary
+        environmental variables are also not specified, it will write in
+        the directory in which it is being run.
         
-        The default behavior is to not clobber any older version of the output file in the
-        given directory.  Setting clobber=True will overwrite old versions of the output file.
+        The default behavior is to not clobber any older version of the
+        output file in the given directory.  Setting clobber=True will
+        overwrite old versions of the output file.
         '''
     def __init__(self, zpick, dest=None, clobber=True):
         self.clobber = clobber
@@ -248,18 +268,31 @@ class Write_Redmonster:
         except: hdr = fits.Header()
         try: hdr.remove('HUMIDITY')
         except: pass
-        hdr.extend([('SPEC2D',environ['RUN2D'],'Version of spec2d reductions used'),('VERS_RM','v0.1.0','Version of redmonster used'),('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonster completion'), ('NFIBERS', len(self.zpick.z), 'Number of fibers'), ('NZ', len(self.zpick.z[0]), 'Number of redshifts retained'),('RCHI2TH',self.zpick.rchi2threshold,'Reduced chi**2 threshold used')])
+        hdr.extend([('SPEC2D',environ['RUN2D'],
+                     'Version of spec2d reductions used'),
+                    ('VERS_RM','v0.1.0','Version of redmonster used'),
+                    ('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),
+                     'Time of redmonster completion'),
+                    ('NFIBERS', len(self.zpick.z), 'Number of fibers'),
+                    ('NZ', len(self.zpick.z[0]),'Number of redshifts retained'),
+                    ('RCHI2TH',self.zpick.rchi2threshold,
+                     'Reduced chi**2 threshold used')])
         prihdu = fits.PrimaryHDU(header=hdr)
         # Columns for 1st BIN table
         colslist = []
-        colslist.append( fits.Column(name='FIBERID', format='J', array=self.zpick.fiberid) )
-        colslist.append( fits.Column(name='DOF', format='J', array=self.zpick.dof) )
+        colslist.append( fits.Column(name='FIBERID', format='J',
+                                     array=self.zpick.fiberid) )
+        colslist.append( fits.Column(name='DOF', format='J',
+                                     array=self.zpick.dof) )
         if hasattr(self.zpick, 'boss_target1'):
-            colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.zpick.boss_target1) )
+            colslist.append( fits.Column(name='BOSS_TARGET1', format='J',
+                                         array=self.zpick.boss_target1) )
         if hasattr(self.zpick, 'eboss_target0'):
-            colslist.append( fits.Column(name='EBOSS_TARGET0', format='J', array=self.zpick.eboss_target0) )
+            colslist.append( fits.Column(name='EBOSS_TARGET0', format='J',
+                                         array=self.zpick.eboss_target0) )
         if hasattr(self.zpick, 'eboss_target1'):
-            colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.zpick.eboss_target1) )
+            colslist.append( fits.Column(name='EBOSS_TARGET1', format='J',
+                                         array=self.zpick.eboss_target1) )
         for i in xrange(len(self.zpick.z[0])):
             zlist = []
             zerrlist = []
@@ -282,91 +315,188 @@ class Write_Redmonster:
                 npixsteplist.append( self.zpick.npixstep[j][i] )
                 minrchi2list.append( self.zpick.minrchi2[j][i] )
                 fslist.append( repr(self.zpick.fs[j][i]) )
-            colslist.append( fits.Column(name='Z%s' % (i+1), format='E', array=zlist) )
-            colslist.append( fits.Column(name='Z_ERR%s' % (i+1), format='E', array=zerrlist) )
-            colslist.append( fits.Column(name='CLASS%s' % (i+1), format='%iA' % max(map(len,classlist)), array=classlist) )
-            colslist.append( fits.Column(name='SUBCLASS%s' % (i+1), format='%iA' % max(map(len,subclasslist)), array=subclasslist) )
-            colslist.append( fits.Column(name='FNAME%s' % (i+1), format='%iA' % max(map(len,fnamelist)), array=fnamelist) )
-            colslist.append( fits.Column(name='MINVECTOR%s' % (i+1), format='%iA' % max(map(len,minvectorlist)), array=minvectorlist) )
-            colslist.append( fits.Column(name='MINRCHI2%s' % (i+1), format='E', array=minrchi2list) )
-            colslist.append( fits.Column(name='NPOLY%s' % (i+1), format='J', array=npolylist) )
-            colslist.append( fits.Column(name='NPIXSTEP%s' % (i+1), format='J', array=npixsteplist) )
-            colslist.append( fits.Column(name='THETA%s' % (i+1), format='%iA' % max(map(len,fslist)), array=fslist) )
-        colslist.append( fits.Column(name='ZWARNING', format='J', array=self.zpick.zwarning) )
-        colslist.append( fits.Column(name='RCHI2DIFF', format='E', array=self.zpick.rchi2diff) )
-        colslist.append( fits.Column(name='CHI2NULL', format='E', array=self.zpick.chi2_null) )
-        colslist.append( fits.Column(name='SN2DATA', format='E', array=self.zpick.sn2_data) )
+            colslist.append( fits.Column(name='Z%s' % (i+1), format='E',
+                                         array=zlist) )
+            colslist.append( fits.Column(name='Z_ERR%s' % (i+1), format='E',
+                                         array=zerrlist) )
+            colslist.append( fits.Column(name='CLASS%s' % (i+1), format='%iA' %
+                                         max(map(len,classlist)),
+                                         array=classlist) )
+            colslist.append( fits.Column(name='SUBCLASS%s' % (i+1), format='%iA'
+                                         % max(map(len,subclasslist)),
+                                         array=subclasslist) )
+            colslist.append( fits.Column(name='FNAME%s' % (i+1), format='%iA' %
+                                         max(map(len,fnamelist)),
+                                         array=fnamelist) )
+            colslist.append( fits.Column(name='MINVECTOR%s' % (i+1),
+                                         format='%iA' %
+                                         max(map(len,minvectorlist)),
+                                         array=minvectorlist) )
+            colslist.append( fits.Column(name='MINRCHI2%s' % (i+1), format='E',
+                                         array=minrchi2list) )
+            colslist.append( fits.Column(name='NPOLY%s' % (i+1), format='J',
+                                         array=npolylist) )
+            colslist.append( fits.Column(name='NPIXSTEP%s' % (i+1), format='J',
+                                         array=npixsteplist) )
+            colslist.append( fits.Column(name='THETA%s' % (i+1), format='%iA' %
+                                         max(map(len,fslist)), array=fslist) )
+        colslist.append( fits.Column(name='ZWARNING', format='J',
+                                     array=self.zpick.zwarning) )
+        colslist.append( fits.Column(name='RCHI2DIFF', format='E',
+                                     array=self.zpick.rchi2diff) )
+        colslist.append( fits.Column(name='CHI2NULL', format='E',
+                                     array=self.zpick.chi2_null) )
+        colslist.append( fits.Column(name='SN2DATA', format='E',
+                                     array=self.zpick.sn2_data) )
         cols = fits.ColDefs(colslist)
-        tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
+        tbhdu = fits.BinTableHDU.from_columns(cols)
         # ImageHDU of models
         sechdu = fits.ImageHDU(data=self.zpick.models)
-        self.thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #self.thdulist = fits.HDUList([prihdu, tbhdu])
-
+        self.thdulist = fits.HDUList([prihdu, tbhdu, sechdu])
 
     def write_fiber(self):
         self.clobber = True # Temporary fix!!
         self.create_hdulist()
         if self.clobber:
             if self.dest is not None:
-                self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])), clobber=self.clobber)
-                print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
+                self.thdulist.writeto(join(self.dest, '%s' %
+                                           'redmonster-%s-%s-%03d.fits' %
+                                           (self.zpick.plate, self.zpick.mjd,
+                                            self.zpick.fiberid[0])),
+                                      clobber=self.clobber)
+                print 'Writing redmonster file to %s' % \
+                        join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' %
+                             (self.zpick.plate, self.zpick.mjd,
+                              self.zpick.fiberid[0]))
             else:
-                self.thdulist.writeto('redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]), clobber=self.clobber)
-                print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd) )
+                self.thdulist.writeto('redmonster-%s-%s-%03d.fits' %
+                                      (self.zpick.plate, self.zpick.mjd,
+                                       self.zpick.fiberid[0]),
+                                      clobber=self.clobber)
+                print 'Writing redmonster file to %s' % \
+                        join( getcwd(), 'redmonster-%s-%s-%03d.fits' %
+                             (self.zpick.plate, self.zpick.mjd) )
         else:
             if self.dest is not None:
-                if exists(join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))):
-                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
-                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                if exists(join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' %
+                               (self.zpick.plate, self.zpick.mjd,
+                                self.zpick.fiberid[0]))):
+                    self.thdulist.writeto(join(self.dest, '%s' %
+                                               'redmonster-%s-%s-%s-%03d.fits' %
+                                               (self.zpick.plate,
+                                                self.zpick.mjd,
+                                                self.zpick.fiberid[0],
+                                                strftime("%Y-%m-%d_%H:%M:%S",
+                                                         gmtime()))))
+                    print 'Writing redmonster file to %s' % \
+                            join(self.dest, '%s' %
+                                 'redmonster-%s-%s-%s-%03d.fits' %
+                                 (self.zpick.plate, self.zpick.mjd,
+                                  self.zpick.fiberid[0],
+                                  strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
                 else:
-                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])))
-                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
+                    self.thdulist.writeto(join(self.dest, '%s' %
+                                               'redmonster-%s-%s-%03d.fits' %
+                                               (self.zpick.plate,
+                                                self.zpick.mjd,
+                                                self.zpick.fiberid[0])))
+                    print 'Writing redmonster file to %s' % \
+                            join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits'
+                                 % (self.zpick.plate, self.zpick.mjd,
+                                    self.zpick.fiberid[0]))
             else:
-                if exists('redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])):
-                    self.thdulist.writeto('redmonster-%s-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
-                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                if exists('redmonster-%s-%s-%03d.fits' %
+                          (self.zpick.plate, self.zpick.mjd,
+                           self.zpick.fiberid[0])):
+                    self.thdulist.writeto('redmonster-%s-%s-%s-%03d.fits' %
+                                          (self.zpick.plate, self.zpick.mjd,
+                                           self.zpick.fiberid[0],
+                                           strftime("%Y-%m-%d_%H:%M:%S",
+                                                    gmtime())))
+                    print 'Writing redmonster file to %s' % \
+                            join( getcwd(), 'redmonster-%s-%s-%s-%03d.fits' %
+                                 (self.zpick.plate, self.zpick.mjd,
+                                  self.zpick.fiberid[0],
+                                  strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
                 else:
-                    self.thdulist.writeto('redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
-                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
-
-
+                    self.thdulist.writeto('redmonster-%s-%s-%03d.fits' %
+                                          (self.zpick.plate, self.zpick.mjd,
+                                           self.zpick.fiberid[0]))
+                    print 'Writing redmonster file to %s' % \
+                            join( getcwd(), 'redmonster-%s-%s-%03d.fits' %
+                                 (self.zpick.plate, self.zpick.mjd,
+                                  self.zpick.fiberid[0]))
 
     def write_plate(self):
         self.create_hdulist()
-        
         if self.clobber:
             if self.dest is not None:
-                self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd)), clobber=self.clobber)
-                print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd))
+                self.thdulist.writeto(join(self.dest, '%s' %
+                                           'redmonster-%s-%s.fits' %
+                                           (self.zpick.plate, self.zpick.mjd)),
+                                      clobber=self.clobber)
+                print 'Writing redmonster file to %s' % \
+                        join(self.dest, '%s' % 'redmonster-%s-%s.fits' %
+                             (self.zpick.plate, self.zpick.mjd))
             else:
-                self.thdulist.writeto('redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd), clobber=self.clobber)
-                print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd) )
+                self.thdulist.writeto('redmonster-%s-%s.fits' %
+                                      (self.zpick.plate, self.zpick.mjd),
+                                      clobber=self.clobber)
+                print 'Writing redmonster file to %s' % \
+                        join( getcwd(), 'redmonster-%s-%s.fits' %
+                             (self.zpick.plate, self.zpick.mjd) )
         else:
             if self.dest is not None:
-                if exists(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd))):
-                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
-                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                if exists(join(self.dest, '%s' % 'redmonster-%s-%s.fits' %
+                               (self.zpick.plate, self.zpick.mjd))):
+                    self.thdulist.writeto(join(self.dest,
+                                               '%s' % 'redmonster-%s-%s-%s.fits'
+                                               % (self.zpick.plate,
+                                                  self.zpick.mjd,
+                                                  strftime("%Y-%m-%d_%H:%M:%S",
+                                                           gmtime()))))
+                    print 'Writing redmonster file to %s' % \
+                            join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' %
+                                 (self.zpick.plate, self.zpick.mjd,
+                                  strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
                 else:
-                    self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd)))
-                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd))
+                    self.thdulist.writeto(join(self.dest, '%s' %
+                                               'redmonster-%s-%s.fits' %
+                                               (self.zpick.plate,
+                                                self.zpick.mjd)))
+                    print 'Writing redmonster file to %s' % \
+                            join(self.dest, '%s' % 'redmonster-%s-%s.fits' %
+                                 (self.zpick.plate, self.zpick.mjd))
             else:
-                if exists('redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd)):
-                    self.thdulist.writeto('redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
-                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                if exists('redmonster-%s-%s.fits' % (self.zpick.plate,
+                                                     self.zpick.mjd)):
+                    self.thdulist.writeto('redmonster-%s-%s-%s.fits' %
+                                          (self.zpick.plate, self.zpick.mjd,
+                                           strftime("%Y-%m-%d_%H:%M:%S",
+                                                    gmtime())))
+                    print 'Writing redmonster file to %s' % \
+                            join( getcwd(), 'redmonster-%s-%s-%s.fits' %
+                                 (self.zpick.plate, self.zpick.mjd,
+                                  strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
                 else:
-                    self.thdulist.writeto('redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd))
-                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd))
+                    self.thdulist.writeto('redmonster-%s-%s.fits' %
+                                          (self.zpick.plate, self.zpick.mjd))
+                    print 'Writing redmonster file to %s' % \
+                            join( getcwd(), 'redmonster-%s-%s.fits' %
+                                 (self.zpick.plate, self.zpick.mjd))
 
+# ------------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------------------------------------
+'''Combine individual fiber fits files into a single plate file, orxxxxx
+combine all plate files into an spAll-like file to combine fiber files,
+create object for a given plate, mjd and call
+method merge_fibers() to create spAll-like file,
+instantiate with no plate, mjd and call methond merge_plates()
+'''
 
-
-# Combine individual fiber fits files into a single plate file, or combine all plate files into an spAll-like file
-# To combine fiber files, create object for a given plate, mjd and call method merge_fibers()
-# To create spAll-like file, instantiate with no plate, mjd and call methond merge_plates()
-#
 # Tim Hutchinson, University of Utah, November 2014
 # t.hutchinson@utah.edu
+
 
 class Merge_Redmonster:
     
@@ -374,7 +504,6 @@ class Merge_Redmonster:
         self.plate = plate
         self.mjd = mjd
         self.temp = temp
-    
     
     def merge_fibers(self):
         self.filepaths = []
@@ -394,15 +523,15 @@ class Merge_Redmonster:
         self.sn2_data = []
         self.models = None
         self.hdr = None
-        
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
         except: topdir = None
         try: run2d = environ['RUN2D']
         except: run2d = None
         try: run1d = environ['RUN1D']
         except: run1d = None
-        fiberdir = join(topdir, run2d, '%s' % self.plate, run1d, 'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if topdir and run2d and run1d else None
-        
+        fiberdir = join(topdir, run2d, '%s' % self.plate, run1d,
+                        'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if \
+                               topdir and run2d and run1d else None
         if fiberdir:
             for path in iglob(fiberdir):
                 self.filepaths.append(path)
@@ -410,9 +539,15 @@ class Merge_Redmonster:
                 self.fiberid.append( int(fiberfile[22:25]) )
             self.z = n.zeros( (len(self.fiberid),5) )
             self.z_err = n.zeros( self.z.shape )
-            try: self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
+            try: self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'],
+                                            environ['RUN2D'], '%s' % self.plate,
+                                            'spPlate-%s-%s.fits' %
+                                            (self.plate,self.mjd) ) )[0].header
             except: self.hdr = fits.Header()
-            npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].data.shape[1]
+            npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'],
+                                   environ['RUN2D'], '%s' % self.plate,
+                                   'spPlate-%s-%s.fits' %
+                                   (self.plate,self.mjd) ) )[0].data.shape[1]
             self.models = n.zeros( (self.z.shape[0],npix) )
             self.filepaths.sort()
             self.fiberid.sort()
@@ -445,9 +580,9 @@ class Merge_Redmonster:
                     pass
                 self.models[i] = hdu[2].data[0]
                 #remove(path)
+                               
             output = Write_Redmonster(self, clobber=True)
             output.write_plate()
-
 
     def merge_plates(self):
         self.type = []
@@ -466,7 +601,6 @@ class Merge_Redmonster:
         self.plates = []
         self.models = n.zeros((1,1))
         self.hdr = fits.Header()
-        
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
         except: topdir = None
         try: run2d = environ['RUN2D']
@@ -474,7 +608,6 @@ class Merge_Redmonster:
         try: run1d = environ['RUN1D']
         except: run1d = None
         platedir = join( topdir, run2d, '*') if topdir and run2d else None
-        
         if platedir:
             for path in iglob(platedir):
                 self.plates.append( basename(path) )
@@ -486,15 +619,15 @@ class Merge_Redmonster:
                 print 'Merging plate %s' % plate
                 mjds = []
                 try:
-                    for x in iglob( join( topdir, run2d, '%s' % plate, run1d, 'redmonster-%s-*.fits' % plate) ):
-                        if basename(x)[16:21] not in mjds: mjds.append(basename(x)[16:21])
-                #if mjds is not basename(x)[16:21]: mjds.append(basename(x)[16:21])
-                #else: mjds.append( basename(x)[16:21] )
+                    for x in iglob( join( topdir, run2d, '%s' % plate, run1d,
+                                         'redmonster-%s-*.fits' % plate) ):
+                        if basename(x)[16:21] not in mjds:
+                            mjds.append(basename(x)[16:21])
                 except: mjds = None
                 if mjds is not [] and mjds is not None:
                     for mjd in mjds:
-                        filepath = join( topdir, run2d, str(plate), run1d, 'redmonster-%s-%s.fits' % (plate, mjd))
-                        #npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd) ) )[0].data.shape[1]
+                        filepath = join( topdir, run2d, str(plate), run1d,
+                                        'redmonster-%s-%s.fits' % (plate, mjd))
                         if exists(filepath):
                             hdu = fits.open(filepath)
                             self.type += hdu[1].data.CLASS.tolist()
@@ -508,11 +641,13 @@ class Merge_Redmonster:
                             self.chi2diff += hdu[1].data.CHI2DIFF.tolist()
                             try: self.z1 = n.append(self.z1, hdu[1].data.Z1)
                             except: self.z1 = hdu[1].data.Z1
-                            try: self.z_err1 = n.append(self.z_err1, hdu[1].data.Z_ERR1)
+                            try: self.z_err1 = n.append(self.z_err1,
+                                                        hdu[1].data.Z_ERR1)
                             except: self.z_err1 = hdu[1].data.Z_ERR1
                             try: self.z2 = n.append(self.z2, hdu[1].data.Z2)
                             except: self.z2 = hdu[1].data.Z2
-                            try: self.z_err2 = n.append(self.z_err2, hdu[1].data.Z_ERR2)
+                            try: self.z_err2 = n.append(self.z_err2,
+                                                        hdu[1].data.Z_ERR2)
                             except: self.z_err2 = hdu[1].data.Z_ERR2
         self.z = n.zeros( (self.z1.shape[0],2) )
         self.z_err = n.zeros( self.z.shape )
@@ -523,7 +658,8 @@ class Merge_Redmonster:
         
         output = Write_Redmonster(self)
         output.create_hdulist()
-        output.thdulist.writeto( join( topdir, run2d, 'redmonsterAll-%s.fits' % run2d), clobber=True)
+        output.thdulist.writeto( join( topdir, run2d, 'redmonsterAll-%s.fits' %
+                                      run2d), clobber=True)
 
 
     def merge_fibers2(self):
@@ -587,14 +723,15 @@ class Merge_Redmonster:
         self.rchi2diff = []
         self.chi2_null = []
         self.sn2_data = []
-    
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
         except: topdir = None
         try: run2d = environ['RUN2D']
         except: run2d = None
         try: run1d = environ['RUN1D']
         except: run1d = None
-        fiberdir = join(topdir, run2d, '%s' % self.plate, run1d, 'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if topdir and run2d and run1d else None
+        fiberdir = join(topdir, run2d, '%s' % self.plate, run1d,
+                        'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if \
+                               topdir and run2d and run1d else None
         
         if fiberdir:
             for path in iglob(fiberdir):
@@ -602,10 +739,16 @@ class Merge_Redmonster:
                 fiberfile = basename( path )
                 self.fiberid.append( int(fiberfile[22:25]) )
             try:
-                self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
+                self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'],
+                                           environ['RUN2D'], '%s' % self.plate,
+                                           'spPlate-%s-%s.fits' %
+                                           (self.plate,self.mjd) ) )[0].header
             except:
                 self.hdr = fits.Header()
-            npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].data.shape[1]
+            npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'],
+                                   environ['RUN2D'], '%s' % self.plate,
+                                   'spPlate-%s-%s.fits' %
+                                   (self.plate,self.mjd) ) )[0].data.shape[1]
             self.models = n.zeros( (len(self.fiberid),5,npix) )
             self.filepaths.sort()
             self.fiberid.sort()
@@ -687,77 +830,156 @@ class Merge_Redmonster:
             self.hdr['NFIBERS'] = len(self.fiberid)
             prihdu = fits.PrimaryHDU(header=self.hdr)
             colslist = []
-            colslist.append( fits.Column(name='FIBERID', format='J', array=self.fiberid) )
-            colslist.append( fits.Column(name='DOF', format='J', array=self.dof) )
-            try: colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.boss_target1) )
+            colslist.append( fits.Column(name='FIBERID', format='J',
+                                         array=self.fiberid) )
+            colslist.append( fits.Column(name='DOF', format='J',
+                                         array=self.dof) )
+            try: colslist.append( fits.Column(name='BOSS_TARGET1', format='J',
+                                              array=self.boss_target1) )
             except: pass
-            try: colslist.append( fits.Column(name='EBOSS_TARGET0', format='J', array=self.eboss_target0) )
+            try: colslist.append( fits.Column(name='EBOSS_TARGET0', format='J',
+                                              array=self.eboss_target0) )
             except: pass
-            try: colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.eboss_target1) )
+            try: colslist.append( fits.Column(name='EBOSS_TARGET1', format='J',
+                                              array=self.eboss_target1) )
             except: pass
             colslist.append( fits.Column(name='Z1', format='E', array=self.z1) )
-            colslist.append( fits.Column(name='Z_ERR1', format='E', array=self.z_err1) )
-            colslist.append( fits.Column(name='CLASS1', format='%iA' % max(map(len,self.class1)), array=self.class1) )
-            colslist.append( fits.Column(name='SUBCLASS1', format='%iA' % max(map(len,self.subclass1)), array=self.subclass1) )
-            colslist.append( fits.Column(name='FNAME1', format='%iA' % max(map(len,self.fname1)), array=self.fname1) )
-            colslist.append( fits.Column(name='MINVECTOR1', format='%iA' % max(map(len,self.minvector1)), array=self.minvector1) )
-            colslist.append( fits.Column(name='MINRCHI21', format='E', array=self.minrchi21) )
-            colslist.append( fits.Column(name='NPOLY1', format='J', array=self.npoly1) )
-            colslist.append( fits.Column(name='NPIXSTEP1', format='J', array=self.npixstep1) )
-            colslist.append( fits.Column(name='THETA1', format='%iA' % max(map(len,self.theta1)), array=self.theta1) )
+            colslist.append( fits.Column(name='Z_ERR1', format='E',
+                                         array=self.z_err1) )
+            colslist.append( fits.Column(name='CLASS1', format='%iA' %
+                                         max(map(len,self.class1)),
+                                         array=self.class1) )
+            colslist.append( fits.Column(name='SUBCLASS1', format='%iA' %
+                                         max(map(len,self.subclass1)),
+                                         array=self.subclass1) )
+            colslist.append( fits.Column(name='FNAME1', format='%iA' %
+                                         max(map(len,self.fname1)),
+                                         array=self.fname1) )
+            colslist.append( fits.Column(name='MINVECTOR1', format='%iA' %
+                                         max(map(len,self.minvector1)),
+                                         array=self.minvector1) )
+            colslist.append( fits.Column(name='MINRCHI21', format='E',
+                                         array=self.minrchi21) )
+            colslist.append( fits.Column(name='NPOLY1', format='J',
+                                         array=self.npoly1) )
+            colslist.append( fits.Column(name='NPIXSTEP1', format='J',
+                                         array=self.npixstep1) )
+            colslist.append( fits.Column(name='THETA1', format='%iA' %
+                                         max(map(len,self.theta1)),
+                                         array=self.theta1) )
             colslist.append( fits.Column(name='Z2', format='E', array=self.z2) )
-            colslist.append( fits.Column(name='Z_ERR2', format='E', array=self.z_err2) )
-            colslist.append( fits.Column(name='CLASS2', format='%iA' % max(map(len,self.class2)), array=self.class2) )
-            colslist.append( fits.Column(name='SUBCLASS2', format='%iA' % max(map(len,self.subclass2)), array=self.subclass2) )
-            colslist.append( fits.Column(name='FNAME2', format='%iA' % max(map(len,self.fname2)), array=self.fname2) )
-            colslist.append( fits.Column(name='MINVECTOR2', format='%iA' % max(map(len,self.minvector2)), array=self.minvector2) )
-            colslist.append( fits.Column(name='MINRCHI22', format='E', array=self.minrchi22) )
-            colslist.append( fits.Column(name='NPOLY2', format='J', array=self.npoly2) )
-            colslist.append( fits.Column(name='NPIXSTEP2', format='J', array=self.npixstep2) )
-            colslist.append( fits.Column(name='THETA2', format='%iA' % max(map(len,self.theta2)), array=self.theta2) )
+            colslist.append( fits.Column(name='Z_ERR2', format='E',
+                                         array=self.z_err2) )
+            colslist.append( fits.Column(name='CLASS2', format='%iA' %
+                                         max(map(len,self.class2)),
+                                         array=self.class2) )
+            colslist.append( fits.Column(name='SUBCLASS2', format='%iA' %
+                                         max(map(len,self.subclass2)),
+                                         array=self.subclass2) )
+            colslist.append( fits.Column(name='FNAME2', format='%iA' %
+                                         max(map(len,self.fname2)),
+                                         array=self.fname2) )
+            colslist.append( fits.Column(name='MINVECTOR2', format='%iA' %
+                                         max(map(len,self.minvector2)),
+                                         array=self.minvector2) )
+            colslist.append( fits.Column(name='MINRCHI22', format='E',
+                                         array=self.minrchi22) )
+            colslist.append( fits.Column(name='NPOLY2', format='J',
+                                         array=self.npoly2) )
+            colslist.append( fits.Column(name='NPIXSTEP2', format='J',
+                                         array=self.npixstep2) )
+            colslist.append( fits.Column(name='THETA2', format='%iA' %
+                                         max(map(len,self.theta2)),
+                                         array=self.theta2) )
             colslist.append( fits.Column(name='Z3', format='E', array=self.z3) )
-            colslist.append( fits.Column(name='Z_ERR3', format='E', array=self.z_err3) )
-            colslist.append( fits.Column(name='CLASS3', format='%iA' % max(map(len,self.class3)), array=self.class3) )
-            colslist.append( fits.Column(name='SUBCLASS3', format='%iA' % max(map(len,self.subclass3)), array=self.subclass3) )
-            colslist.append( fits.Column(name='FNAME3', format='%iA' % max(map(len,self.fname3)), array=self.fname3) )
-            colslist.append( fits.Column(name='MINVECTOR3', format='%iA' % max(map(len,self.minvector3)), array=self.minvector3) )
-            colslist.append( fits.Column(name='MINRCHI23', format='E', array=self.minrchi23) )
-            colslist.append( fits.Column(name='NPOLY3', format='J', array=self.npoly3) )
-            colslist.append( fits.Column(name='NPIXSTEP3', format='J', array=self.npixstep3) )
-            colslist.append( fits.Column(name='THETA3', format='%iA' % max(map(len,self.theta3)), array=self.theta3) )
+            colslist.append( fits.Column(name='Z_ERR3', format='E',
+                                         array=self.z_err3) )
+            colslist.append( fits.Column(name='CLASS3', format='%iA' %
+                                         max(map(len,self.class3)),
+                                         array=self.class3) )
+            colslist.append( fits.Column(name='SUBCLASS3', format='%iA' %
+                                         max(map(len,self.subclass3)),
+                                         array=self.subclass3) )
+            colslist.append( fits.Column(name='FNAME3', format='%iA' %
+                                         max(map(len,self.fname3)),
+                                         array=self.fname3) )
+            colslist.append( fits.Column(name='MINVECTOR3', format='%iA' %
+                                         max(map(len,self.minvector3)),
+                                         array=self.minvector3) )
+            colslist.append( fits.Column(name='MINRCHI23', format='E',
+                                         array=self.minrchi23) )
+            colslist.append( fits.Column(name='NPOLY3', format='J',
+                                         array=self.npoly3) )
+            colslist.append( fits.Column(name='NPIXSTEP3', format='J',
+                                         array=self.npixstep3) )
+            colslist.append( fits.Column(name='THETA3', format='%iA' %
+                                         max(map(len,self.theta3)),
+                                         array=self.theta3) )
             colslist.append( fits.Column(name='Z4', format='E', array=self.z4) )
-            colslist.append( fits.Column(name='Z_ERR4', format='E', array=self.z_err4) )
-            colslist.append( fits.Column(name='CLASS4', format='%iA' % max(map(len,self.class4)), array=self.class4) )
-            colslist.append( fits.Column(name='SUBCLASS4', format='%iA' % max(map(len,self.subclass4)), array=self.subclass4) )
-            colslist.append( fits.Column(name='FNAME4', format='%iA' % max(map(len,self.fname4)), array=self.fname4) )
-            colslist.append( fits.Column(name='MINVECTOR4', format='%iA' % max(map(len,self.minvector4)), array=self.minvector4) )
-            colslist.append( fits.Column(name='MINRCHI24', format='E', array=self.minrchi24) )
-            colslist.append( fits.Column(name='NPOLY4', format='J', array=self.npoly4) )
-            colslist.append( fits.Column(name='NPIXSTEP4', format='J', array=self.npixstep4) )
-            colslist.append( fits.Column(name='THETA4', format='%iA' % max(map(len,self.theta4)), array=self.theta4) )
+            colslist.append( fits.Column(name='Z_ERR4', format='E',
+                                         array=self.z_err4) )
+            colslist.append( fits.Column(name='CLASS4', format='%iA' %
+                                         max(map(len,self.class4)),
+                                         array=self.class4) )
+            colslist.append( fits.Column(name='SUBCLASS4', format='%iA' %
+                                         max(map(len,self.subclass4)),
+                                         array=self.subclass4) )
+            colslist.append( fits.Column(name='FNAME4', format='%iA' %
+                                         max(map(len,self.fname4)),
+                                         array=self.fname4) )
+            colslist.append( fits.Column(name='MINVECTOR4', format='%iA' %
+                                         max(map(len,self.minvector4)),
+                                         array=self.minvector4) )
+            colslist.append( fits.Column(name='MINRCHI24', format='E',
+                                         array=self.minrchi24) )
+            colslist.append( fits.Column(name='NPOLY4', format='J',
+                                         array=self.npoly4) )
+            colslist.append( fits.Column(name='NPIXSTEP4', format='J',
+                                         array=self.npixstep4) )
+            colslist.append( fits.Column(name='THETA4', format='%iA' %
+                                         max(map(len,self.theta4)),
+                                         array=self.theta4) )
             colslist.append( fits.Column(name='Z5', format='E', array=self.z5) )
-            colslist.append( fits.Column(name='Z_ERR5', format='E', array=self.z_err5) )
-            colslist.append( fits.Column(name='CLASS5', format='%iA' % max(map(len,self.class5)), array=self.class5) )
-            colslist.append( fits.Column(name='SUBCLASS5', format='%iA' % max(map(len,self.subclass5)), array=self.subclass5) )
-            colslist.append( fits.Column(name='FNAME5', format='%iA' % max(map(len,self.fname5)), array=self.fname5) )
-            colslist.append( fits.Column(name='MINVECTOR5', format='%iA' % max(map(len,self.minvector5)), array=self.minvector5) )
-            colslist.append( fits.Column(name='MINRCHI25', format='E', array=self.minrchi25) )
-            colslist.append( fits.Column(name='NPOLY5', format='J', array=self.npoly5) )
-            colslist.append( fits.Column(name='NPIXSTEP5', format='J', array=self.npixstep5) )
-            colslist.append( fits.Column(name='THETA5', format='%iA' % max(map(len,self.theta5)), array=self.theta5) )
-            colslist.append( fits.Column(name='ZWARNING', format='J', array=self.zwarning) )
-            colslist.append( fits.Column(name='RCHI2DIFF', format='E', array=self.rchi2diff) )
-            colslist.append( fits.Column(name='CHI2NULL', format='E', array=self.chi2_null) )
-            colslist.append( fits.Column(name='SN2DATA', format='E', array=self.sn2_data) )
+            colslist.append( fits.Column(name='Z_ERR5', format='E',
+                                         array=self.z_err5) )
+            colslist.append( fits.Column(name='CLASS5', format='%iA' %
+                                         max(map(len,self.class5)),
+                                         array=self.class5) )
+            colslist.append( fits.Column(name='SUBCLASS5', format='%iA' %
+                                         max(map(len,self.subclass5)),
+                                         array=self.subclass5) )
+            colslist.append( fits.Column(name='FNAME5', format='%iA' %
+                                         max(map(len,self.fname5)),
+                                         array=self.fname5) )
+            colslist.append( fits.Column(name='MINVECTOR5', format='%iA' %
+                                         max(map(len,self.minvector5)),
+                                         array=self.minvector5) )
+            colslist.append( fits.Column(name='MINRCHI25', format='E',
+                                         array=self.minrchi25) )
+            colslist.append( fits.Column(name='NPOLY5', format='J',
+                                         array=self.npoly5) )
+            colslist.append( fits.Column(name='NPIXSTEP5', format='J',
+                                         array=self.npixstep5) )
+            colslist.append( fits.Column(name='THETA5', format='%iA' %
+                                         max(map(len,self.theta5)),
+                                         array=self.theta5) )
+            colslist.append( fits.Column(name='ZWARNING', format='J',
+                                         array=self.zwarning) )
+            colslist.append( fits.Column(name='RCHI2DIFF', format='E',
+                                         array=self.rchi2diff) )
+            colslist.append( fits.Column(name='CHI2NULL', format='E',
+                                         array=self.chi2_null) )
+            colslist.append( fits.Column(name='SN2DATA', format='E',
+                                         array=self.sn2_data) )
             cols = fits.ColDefs(colslist)
-            tbhdu = fits.BinTableHDU.from_columns(cols) #tbhdu = fits.new_table(cols)
+            tbhdu = fits.BinTableHDU.from_columns(cols)
             # ImageHDU of models
             sechdu = fits.ImageHDU(data=self.models)
-            thdulist = fits.HDUList([prihdu, tbhdu, sechdu]) #self.thdulist = fits.HDUList([prihdu, tbhdu])
+            thdulist = fits.HDUList([prihdu, tbhdu, sechdu])
             
-            dest = join(topdir, run2d, '%s' % self.plate, run1d, 'redmonster-%s-%s.fits' % (self.plate, self.mjd))
+            dest = join(topdir, run2d, '%s' % self.plate, run1d,
+                        'redmonster-%s-%s.fits' % (self.plate, self.mjd))
             thdulist.writeto( dest, clobber=True )
-
 
     def merge_plates2(self):
         self.platelist = []
@@ -781,10 +1003,8 @@ class Merge_Redmonster:
         self.rchi2diff = []
         self.chi2_null = []
         self.sn2_data = []
-        
         self.plates = []
         self.hdr = fits.Header()
-        
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
         except: topdir = None
         try: run2d = environ['RUN2D']
@@ -792,35 +1012,48 @@ class Merge_Redmonster:
         try: run1d = environ['RUN1D']
         except: run1d = None
         platedir = join( topdir, run2d, '*') if topdir and run2d else None
-        
         if platedir:
             for path in iglob(platedir):
                 self.plates.append( basename(path) )
             self.plates.sort()
             for listitem in self.plates:
-                if listitem[-5:] == '.fits': self.plates.remove(listitem) # Ignore any existing redmonsterAll files
+                # Ignore any existing redmonsterAll files
+                if listitem[-5:] == '.fits': self.plates.remove(listitem)
             for plate in self.plates:
                 print 'Merging plate %s' % plate
                 mjds = []
                 try:
-                    for x in iglob( join( topdir, run2d, '%s' % plate, run1d, 'redmonster-%s-*.fits' % plate) ):
-                        if basename(x)[16:21] not in mjds: mjds.append(basename(x)[16:21])
+                    for x in iglob( join( topdir, run2d, '%s' % plate, run1d,
+                                         'redmonster-%s-*.fits' % plate) ):
+                        if basename(x)[16:21] not in mjds:
+                            mjds.append(basename(x)[16:21])
                 except: mjds = None
                 if mjds is not [] and mjds is not None:
                     for mjd in mjds:
-                        filepath = join( topdir, run2d, '%s' % plate, run1d, 'redmonster-%s-%s.fits' % (plate, mjd))
+                        filepath = join( topdir, run2d, '%s' % plate, run1d,
+                                        'redmonster-%s-%s.fits' % (plate, mjd))
                         if exists(filepath):
                             hdu = fits.open(filepath)
                             self.fiberid += hdu[1].data.FIBERID.tolist()
-                            self.platelist += [int(plate)]*len(hdu[1].data.FIBERID.tolist())
-                            self.mjdlist += [int(mjd)]*len(hdu[1].data.FIBERID.tolist())
+                            self.platelist += [int(plate)] * \
+                                    len(hdu[1].data.FIBERID.tolist())
+                            self.mjdlist += [int(mjd)] * \
+                                    len(hdu[1].data.FIBERID.tolist())
                             self.dof += hdu[1].data.DOF.tolist()
-                            try: self.boss_target1 += hdu[1].data.BOSS_TARGET1.tolist()
-                            except: pass
-                            try: self.eboss_target0 += hdu[1].data.EBOSS_TARGET0.tolist()
-                            except: pass
-                            try: self.eboss_target1 += hdu[1].data.EBOSS_TARGET1.tolist()
-                            except: pass
+                            try: self.boss_target1 += \
+                                        hdu[1].data.BOSS_TARGET1.tolist()
+                            except:
+                                pass
+                            try:
+                                self.eboss_target0 += \
+                                        hdu[1].data.EBOSS_TARGET0.tolist()
+                            except:
+                                pass
+                            try:
+                                self.eboss_target1 += \
+                                        hdu[1].data.EBOSS_TARGET1.tolist()
+                            except:
+                                pass
                             self.z += hdu[1].data.Z1.tolist()
                             self.z_err += hdu[1].data.Z_ERR1.tolist()
                             self.type += hdu[1].data.CLASS1.tolist()
@@ -835,35 +1068,70 @@ class Merge_Redmonster:
                             self.rchi2diff += hdu[1].data.RCHI2DIFF.tolist()
                             self.chi2_null += hdu[1].data.CHI2NULL.tolist()
                             self.sn2_data += hdu[1].data.SN2DATA.tolist()
-        
-            #self.hdr['NFIBERS'] = len(self.fiberid)
-            self.hdr.extend([('SPEC2D',environ['RUN2D'],'Version of spec2d reductions used'),('VERS_RM','v0.1.0','Version of redmonster used'),('TIME',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),'Time of redmonsterAll creation'), ('NFIBERS', len(self.fiberid), 'Number of fibers'), ('RCHI2TH',0.005,'Reduced chi**2 threshold used')])
+            self.hdr.extend([('SPEC2D',environ['RUN2D'],
+                              'Version of spec2d reductions used'),
+                             ('VERS_RM','v0.1.0','Version of redmonster used'),
+                             ('TIME',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),
+                              'Time of redmonsterAll creation'),
+                             ('NFIBERS', len(self.fiberid), 'Number of fibers'),
+                             ('RCHI2TH',0.005,'Reduced chi**2 threshold used')])
             prihdu = fits.PrimaryHDU(header=self.hdr)
             colslist = []
-            colslist.append( fits.Column(name='FIBERID', format='J', array=self.fiberid) )
-            colslist.append( fits.Column(name='PLATE', format='J', array=self.platelist) )
-            colslist.append( fits.Column(name='MJD', format='J', array=self.mjdlist) )
-            colslist.append( fits.Column(name='DOF', format='J', array=self.dof) )
-            try: colslist.append( fits.Column(name='BOSS_TARGET1', format='J', array=self.boss_target1) )
-            except: pass
-            try: colslist.append( fits.Column(name='EBOSS_TARGET0', format='J', array=self.eboss_target0) )
-            except: pass
-            try:colslist.append( fits.Column(name='EBOSS_TARGET1', format='J', array=self.eboss_target1) )
-            except: pass
+            colslist.append( fits.Column(name='FIBERID', format='J',
+                                         array=self.fiberid) )
+            colslist.append( fits.Column(name='PLATE', format='J',
+                                         array=self.platelist) )
+            colslist.append( fits.Column(name='MJD', format='J',
+                                         array=self.mjdlist) )
+            colslist.append( fits.Column(name='DOF', format='J',
+                                         array=self.dof) )
+            try:
+                colslist.append( fits.Column(name='BOSS_TARGET1', format='J',
+                                              array=self.boss_target1) )
+            except:
+                pass
+            try:
+                colslist.append( fits.Column(name='EBOSS_TARGET0', format='J',
+                                              array=self.eboss_target0) )
+            except:
+                pass
+            try:
+                colslist.append( fits.Column(name='EBOSS_TARGET1', format='J',
+                                             array=self.eboss_target1) )
+            except:
+                pass
             colslist.append( fits.Column(name='Z', format='E', array=self.z) )
-            colslist.append( fits.Column(name='Z_ERR', format='E', array=self.z_err) )
-            colslist.append( fits.Column(name='CLASS', format='%iA' % max(map(len,self.type)), array=self.type) )
-            colslist.append( fits.Column(name='SUBCLASS', format='%iA' % max(map(len,self.subtype)), array=self.subtype) )
-            colslist.append( fits.Column(name='FNAME', format='%iA' % max(map(len,self.fname)), array=self.fname) )
-            colslist.append( fits.Column(name='MINVECTOR', format='%iA' % max(map(len,self.minvector)), array=self.minvector) )
-            colslist.append( fits.Column(name='MINRCHI2', format='E', array=self.minrchi2) )
-            colslist.append( fits.Column(name='NPOLY', format='J', array=self.npoly) )
-            colslist.append( fits.Column(name='NPIXSTEP', format='J', array=self.npixstep) )
-            colslist.append( fits.Column(name='THETA', format='%iA' % max(map(len,self.theta)), array=self.theta) )
-            colslist.append( fits.Column(name='ZWARNING', format='J', array=self.zwarning) )
-            colslist.append( fits.Column(name='RCHI2DIFF', format='E', array=self.rchi2diff) )
-            colslist.append( fits.Column(name='CHI2NULL', format='E', array=self.chi2_null) )
-            colslist.append( fits.Column(name='SN2DATA', format='E', array=self.sn2_data) )
+            colslist.append( fits.Column(name='Z_ERR', format='E',
+                                         array=self.z_err) )
+            colslist.append( fits.Column(name='CLASS', format='%iA' %
+                                         max(map(len,self.type)),
+                                         array=self.type) )
+            colslist.append( fits.Column(name='SUBCLASS', format='%iA' %
+                                         max(map(len,self.subtype)),
+                                         array=self.subtype) )
+            colslist.append( fits.Column(name='FNAME', format='%iA' %
+                                         max(map(len,self.fname)),
+                                         array=self.fname) )
+            colslist.append( fits.Column(name='MINVECTOR', format='%iA' %
+                                         max(map(len,self.minvector)),
+                                         array=self.minvector) )
+            colslist.append( fits.Column(name='MINRCHI2', format='E',
+                                         array=self.minrchi2) )
+            colslist.append( fits.Column(name='NPOLY', format='J',
+                                         array=self.npoly) )
+            colslist.append( fits.Column(name='NPIXSTEP', format='J',
+                                         array=self.npixstep) )
+            colslist.append( fits.Column(name='THETA', format='%iA' %
+                                         max(map(len,self.theta)),
+                                         array=self.theta) )
+            colslist.append( fits.Column(name='ZWARNING', format='J',
+                                         array=self.zwarning) )
+            colslist.append( fits.Column(name='RCHI2DIFF', format='E',
+                                         array=self.rchi2diff) )
+            colslist.append( fits.Column(name='CHI2NULL', format='E',
+                                         array=self.chi2_null) )
+            colslist.append( fits.Column(name='SN2DATA', format='E',
+                                         array=self.sn2_data) )
             
             cols = fits.ColDefs(colslist)
             tbhdu = fits.BinTableHDU.from_columns(cols)
@@ -872,16 +1140,17 @@ class Merge_Redmonster:
             dest = join(topdir, run2d, 'redmonsterAll-%s.fits' % run1d)
             thdulist.writeto( dest, clobber=True )
 
-
     def merge_chi2(self):
-        
         try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
         except: topdir = None
         try: run2d = environ['RUN2D']
         except: run2d = None
         try: run1d = environ['RUN1D']
         except: run1d = None
-        chi2path = join( topdir, run2d, '%s' % self.plate, run1d, 'chi2arr-%s-%s-%s-*.fits' % (self.temp, self.plate, self.mjd) ) if topdir and run2d and run1d else None
+        chi2path = join( topdir, run2d, '%s' % self.plate, run1d,
+                        'chi2arr-%s-%s-%s-*.fits' %
+                        (self.temp, self.plate, self.mjd) ) if topdir and \
+                                run2d and run1d else None
         
         fiberid = []
         paths = []
@@ -889,7 +1158,8 @@ class Merge_Redmonster:
         if chi2path:
             for file in iglob(chi2path):
                 paths.append( file )
-                m = re.search( 'chi2arr-%s-%s-%s-(\d+).fits' % (self.temp, self.plate, self.mjd), basename(file) )
+                m = re.search( 'chi2arr-%s-%s-%s-(\d+).fits' %
+                              (self.temp, self.plate, self.mjd), basename(file))
                 if m.group(1): fiberid.append( int(m.group(1)) )
             fiberid.sort()
             paths.sort()
@@ -910,10 +1180,13 @@ class Merge_Redmonster:
             cols = fits.ColDefs([col1])
             tbhdu = fits.BinTableHDU.from_columns(cols)
             thdulist = fits.HDUList([prihdu,tbhdu])
-            thdulist.writeto( join( topdir, run2d, '%s' % self.plate, run1d, 'chi2arr-%s-%s-%s.fits' % (self.temp, self.plate, self.mjd) ), clobber=True)
+            thdulist.writeto( join( topdir, run2d, '%s' % self.plate, run1d,
+                                   'chi2arr-%s-%s-%s.fits' %
+                                   (self.temp, self.plate, self.mjd) ),
+                             clobber=True)
 
 
-# ------------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 def write_chi2arr(plate, mjd, fiberid, zchi2arr):
@@ -938,11 +1211,17 @@ def write_chi2arr(plate, mjd, fiberid, zchi2arr):
         dest = None
         if dest is not None:
             try:
-                thdulist.writeto(join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits' % (self.type, plate, mjd, fiberid)), clobber=True)
-                print 'Writing chi2 file to %s' % join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits' % (self.type, plate, mjd, fiberid))
+                thdulist.writeto(join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits'
+                                      % (self.type, plate, mjd, fiberid)),
+                                 clobber=True)
+                print 'Writing chi2 file to %s' % \
+                        join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits' %
+                             (self.type, plate, mjd, fiberid))
             except:
-                print 'Environment variables not set or path does not exist - not writing chi2 file!'
+                print 'Environment variables not set or path does not exist - \
+                        not writing chi2 file!'
     else:
-        print 'Environment variables not set or path does not exist - not writing chi2 file!'
+        print 'Environment variables not set or path does not exist - not \
+                writing chi2 file!'
 
 
