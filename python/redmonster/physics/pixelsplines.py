@@ -77,7 +77,8 @@ def gauss_blur_matrix(pixbound, sig_conv):
     # Derived values and error checks:
     npix = len(pixbound) - 1
     if (len(sig_conv) != npix):
-        raise PixSplineError('Need one more element in pixbound than in sig_conv!')
+        raise PixSplineError('Need one more element in pixbound than in \
+                             sig_conv!')
     if (sig_conv.min() <= 0.):
         raise PixSplineError('sig_conv must be > 0 everywhere!')
     xcen = 0.5 * (pixbound[1:] + pixbound[:-1])
@@ -114,8 +115,10 @@ def gauss_blur_matrix(pixbound, sig_conv):
     for k in range(npix):
         xbound = pixbound[bin_lo[k]:bin_hi[k]+2]
         # Gaussian integral in terms of error function:
-        erf_terms = cfact * 0.5 * sf.erf((xbound - xcen[k]) / (roottwo * sig_conv[k]))
-        erf_int = (erf_terms[1:] - erf_terms[:-1]) * dxpix[k] / dxpix[bin_lo[k]:bin_hi[k]+1]
+        erf_terms = cfact * 0.5 * sf.erf((xbound - xcen[k]) / (roottwo *
+                                                               sig_conv[k]))
+        erf_int = (erf_terms[1:] - erf_terms[:-1]) * \
+                dxpix[k] / dxpix[bin_lo[k]:bin_hi[k]+1]
         ij[0,pcount:pcount+n_each[k]] = bin_vec[bin_lo[k]:bin_hi[k]+1]
         ij[1,pcount:pcount+n_each[k]] = k
         v_vec[pcount:pcount+n_each[k]] = erf_int
@@ -150,12 +153,14 @@ class PixelSpline:
         npix = len(flux)
         # Test for correct argument dimensions:
         if (len(pixbound) - npix) != 1:
-            raise PixSplineError('Need one more element in pixbound than in flux!')
+            raise PixSplineError('Need one more element in pixbound \
+                                 than in flux!')
         # The array of "delta-x" values:
         dxpix = pixbound[1:] - pixbound[:-1]
         # Test for monotonic increase:
         if dxpix.min() <= 0.:
-            raise PixSplineError('Pixel boundaries not monotonically increasing!')
+            raise PixSplineError('Pixel boundaries not monotonically \
+                                 increasing!')
         self.npix = npix
         self.pixbound = pixbound.copy()
         self.dxpix = dxpix.copy()
@@ -190,18 +195,20 @@ class PixelSpline:
         adiff = self.duckslopes[idx_in+1] - self.duckslopes[idx_in]
         asum = self.duckslopes[idx_in+1] + self.duckslopes[idx_in]
         xdiff = xnew_in - self.xcen[idx_in]
-        fluxvals = adiff * xdiff**2 / (2. * self.dxpix[idx_in]) + asum * xdiff / 2. \
-            + self.flux[idx_in] - adiff * self.dxpix[idx_in] / 24.
+        fluxvals = adiff * xdiff**2 / (2. * self.dxpix[idx_in]) + asum * xdiff \
+                / 2. + self.flux[idx_in] - adiff * self.dxpix[idx_in] / 24.
         outflux[wh_in] = fluxvals
         return outflux
     def find_extrema(self, minima=False):
         # Find the formal extrema positions:
-        x_ext = self.xcen - 0.5 * self.dxpix * (self.duckslopes[1:] + self.duckslopes[:-1]) \
-            / (self.duckslopes[1:] - self.duckslopes[:-1])
+        x_ext = self.xcen - 0.5 * self.dxpix * \
+                (self.duckslopes[1:] + self.duckslopes[:-1]) / \
+                (self.duckslopes[1:] - self.duckslopes[:-1])
         # Digitize these into bins:
         bin_ext = n.digitize(x_ext, self.pixbound) - 1
         # The second derivatives, flipped in sign if minima is set:
-        curvat = (-1)**(minima == True) * (self.duckslopes[1:] - self.duckslopes[:-1]) / self.dxpix
+        curvat = (-1)**(minima == True) * (self.duckslopes[1:] -
+                                           self.duckslopes[:-1]) / self.dxpix
         # Find in-bin maxima:
         wh_ext = n.where((bin_ext == n.arange(self.npix)) * (curvat < 0))
         if len(wh_ext[0]) < 1:
@@ -213,8 +220,9 @@ class PixelSpline:
         asum = self.duckslopes[ipix+1] + self.duckslopes[ipix]
         xlo_c = xlo - self.xcen[ipix]
         xhi_c = xhi - self.xcen[ipix]
-        outval = adiff * ((xhi-xlo)**2 / 6. + xhi_c * xlo_c / 2.) / self.dxpix[ipix] \
-            + asum * (xhi_c + xlo_c) / 4. - adiff * self.dxpix[ipix] / 24. + self.flux[ipix]
+        outval = adiff * ((xhi-xlo)**2 / 6. + xhi_c * xlo_c / 2.) / \
+                self.dxpix[ipix] + asum * (xhi_c + xlo_c) / 4. - adiff * \
+                self.dxpix[ipix] / 24. + self.flux[ipix]
         return outval
     def resample(self, pb_new):
         """
@@ -227,7 +235,8 @@ class PixelSpline:
         # Test for monotonic:
         new_fulldx = xnew_hi - xnew_lo
         if new_fulldx.min() <= 0.:
-            raise PixSplineError('New pixel boundaries not monotonically increasing!')
+            raise PixSplineError('New pixel boundaries not monotonically \
+                                 increasing!')
         # Digitize the new boundaries into the original bins:
         bin_idx = n.digitize(pb_new, self.pixbound) - 1
         bin_lo = bin_idx[:-1].copy()
@@ -243,24 +252,31 @@ class PixelSpline:
         xold_hi = self.pixbound[1:]
         # 4 cases to cover:
         # Case 1: both bin_hi and bin_lo in the same bin:
-        wh_this = n.where((bin_hi == bin_lo) * (bin_lo >= 0) * (bin_hi < self.npix))
+        wh_this = n.where((bin_hi == bin_lo) * (bin_lo >= 0) * \
+                          (bin_hi < self.npix))
         if (len(wh_this[0]) > 0):
             dx_this = xnew_hi[wh_this] - xnew_lo[wh_this]
-            avgval_this = self.subpixel_average(bin_lo[wh_this], xnew_lo[wh_this], xnew_hi[wh_this])
+            avgval_this = self.subpixel_average(bin_lo[wh_this],
+                                                xnew_lo[wh_this],
+                                                xnew_hi[wh_this])
             #new_dxpix[wh_this] += dx_this
             new_counts[wh_this] += avgval_this * dx_this
         # Case 2: more than one bin, lower segment:
         wh_this = n.where((bin_hi > bin_lo) * (bin_lo >= 0))
         if (len(wh_this[0]) > 0):
             dx_this = xold_hi[bin_lo[wh_this]] - xnew_lo[wh_this]
-            avgval_this = self.subpixel_average(bin_lo[wh_this], xnew_lo[wh_this], xold_hi[bin_lo[wh_this]])
+            avgval_this = self.subpixel_average(bin_lo[wh_this],
+                                                xnew_lo[wh_this],
+                                                xold_hi[bin_lo[wh_this]])
             #new_dxpix[wh_this] += dx_this
             new_counts[wh_this] += avgval_this * dx_this
         # Case 3: more than one bin, upper segment:
         wh_this = n.where((bin_hi > bin_lo) * (bin_hi < self.npix))
         if (len(wh_this[0]) > 0):
             dx_this = xnew_hi[wh_this] - xold_lo[bin_hi[wh_this]]
-            avgval_this = self.subpixel_average(bin_hi[wh_this], xold_lo[bin_hi[wh_this]], xnew_hi[wh_this])
+            avgval_this = self.subpixel_average(bin_hi[wh_this],
+                                                xold_lo[bin_hi[wh_this]],
+                                                xnew_hi[wh_this])
             #new_dxpix[wh_this] += dx_this
             new_counts[wh_this] += avgval_this * dx_this
         # Case 4: enire bins covered, whole pixels:
@@ -268,8 +284,9 @@ class PixelSpline:
         nwhole = len(wh_this[0])
         if (nwhole > 0):
             pcounts = self.flux * self.dxpix
-            #dx_this = n.array([self.dxpix[bin_lo[wh_this[0][ii]]+1:bin_hi[wh_this[0][ii]]].sum() for ii in range(nwhole)])
-            icounts_this = n.array([pcounts[bin_lo[wh_this[0][ii]]+1:bin_hi[wh_this[0][ii]]].sum() for ii in range(nwhole)])
+            icounts_this = n.array([pcounts[bin_lo[wh_this[0][ii]]+1:\
+                                            bin_hi[wh_this[0][ii]]].sum()
+                                    for ii in range(nwhole)])
             #new_dxpix[wh_this] += dx_this
             new_counts[wh_this] += icounts_this
         # Divide out for average and return:
@@ -296,19 +313,25 @@ class WeightedRebinCoadder:
         # Compute "specific inverse variances":
         sp_invvars = [invvars[i] / dpixes[i] for i in xrange(self._n_input)]
         # Compute pixelspline objects for fluxes:
-        self._PXS_fluxes = [PixelSpline(pixbounds[i], fluxes[i]) for i in xrange(self._n_input)]
+        self._PXS_fluxes = [PixelSpline(pixbounds[i], fluxes[i]) for i in \
+                            xrange(self._n_input)]
         # Compute pixelspline objects for specific inverse variances:
-        self._PXS_sp_invvars = [PixelSpline(pixbounds[i], sp_invvars[i]) for i in xrange(self._n_input)]
+        self._PXS_sp_invvars = [PixelSpline(pixbounds[i], sp_invvars[i]) for \
+                                i in xrange(self._n_input)]
     def coadd(self, pixbound_out):
         # Compute coverage masks:
         masks = [(pixbound_out[:-1] > self.min_indep[i]) *
-                 (pixbound_out[1:] < self.max_indep[i]) for i in xrange(self._n_input)]
+                 (pixbound_out[1:] < self.max_indep[i]) for i in \
+                 xrange(self._n_input)]
         # Compute output pixel widths:
         dpix_out = pixbound_out[1:] - pixbound_out[:-1]
         # Compute interpolated fluxes:
-        new_fluxes = [this_PXS.resample(pixbound_out) for this_PXS in self._PXS_fluxes]
-        # Compute interpolated specific inverse variances (converted to inverse variances):
-        new_invvars = [dpix_out * this_PXS.resample(pixbound_out) for this_PXS in self._PXS_sp_invvars]
+        new_fluxes = [this_PXS.resample(pixbound_out) for this_PXS in \
+                      self._PXS_fluxes]
+        # Compute interpolated specific inverse variances (converted
+        # to inverse variances):
+        new_invvars = [dpix_out * this_PXS.resample(pixbound_out) for \
+                       this_PXS in self._PXS_sp_invvars]
         # Compute coadded flux and inverse variance and return:
         flux_coadd = 0.
         invvar_coadd = 0.

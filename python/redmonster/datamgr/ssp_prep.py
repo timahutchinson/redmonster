@@ -5,19 +5,24 @@
 #
 # May 2014 - now probably defunct, replaced by redmonster.templates.ssp_ztemplate.py
 
-import numpy as n
+
 from os import environ
 from os.path import join,exists
+from time import gmtime, strftime
+
+import numpy as n
 from astropy.io import fits
 from scipy.ndimage.filters import gaussian_filter1d
+
 from redmonster.physics.misc import cen2bound, bound2cen
-from time import gmtime, strftime
+
 
 # Assumes SSPs are a fits file located in $IDLSPEC2D_DIR/templates/SSPs/
 
 class SSP_Prep:
     
-    def __init__(self, coeff1 = .0001, velmin=None, velstep=None, nvel=None, ssp_file = 'SSP_Padova_RRLIB_Kroupa_Z0.0190.fits'):
+    def __init__(self, coeff1 = .0001, velmin=None, velstep=None, nvel=None,
+                 ssp_file = 'SSP_Padova_RRLIB_Kroupa_Z0.0190.fits'):
         self.ssp_path = None
         self.hdr = None
         self.specs = None
@@ -33,13 +38,15 @@ class SSP_Prep:
         try: self.specdir = environ['IDLSPEC2D_DIR']
         except: self.specdir = None
         if self.specdir:
-            self.ssp_path = join(self.specdir,"%s" % "templates","%s" % "SSPs","%s" % ssp_file)
+            self.ssp_path = join(self.specdir,"%s" % "templates","%s" % "SSPs",
+                                 "%s" % ssp_file)
             if exists(self.ssp_path):
                 self.read_ssp()
                 self.reduce_num() # THIS IS TEMPORARY JUST DURING TESTING
                 self.unit_conv()
                 self.rebin_ssp()
-                if self.velmin and self.velstep and nvel: self.add_velo_disp(self.velmin, self.velstep, nvel)
+                if self.velmin and self.velstep and nvel:
+                    self.add_velo_disp(self.velmin, self.velstep, nvel)
             else: print "%s IS NOT A VALID PATH" % self.ssp_path
     
     def read_ssp(self):
@@ -51,22 +58,29 @@ class SSP_Prep:
             self.wavebounds = cen2bound(self.wave)
             logwavebounds = n.log10(self.wavebounds)
             self.coeff0 = logwavebounds[0]
-            self.npix = int( n.floor( (logwavebounds[-1]-logwavebounds[0]) / self.coeff1 ) )
+            self.npix = int( n.floor( (logwavebounds[-1]-
+                                       logwavebounds[0]) / self.coeff1 ) )
     
-    # SSPs come in units of L_sun / Hz -- convert this to erg/s/Angstrom to match BOSS spectra
+    # SSPs come in units of L_sun / Hz -- convert this to erg/s/Angstrom
+    # to match BOSS spectra
     def unit_conv(self):
         self.specs = ( (3*10**18)/(self.wave**2) ) * (3.839*10**33) * self.specs
     
     def rebin_ssp(self):
-        self.specs = gaussian_filter1d(self.specs, sigma=(self.specs.shape[1]/float(self.npix)), order=0)
-        bwb = 10**(self.coeff0 + n.arange(self.npix)*self.coeff1) # Binned wavebounds
+        self.specs = gaussian_filter1d(self.specs,
+                                       sigma=(self.specs.shape[1]/ \
+                                              float(self.npix)), order=0)
+           # Binned wavebounds
+        bwb = 10**(self.coeff0 + n.arange(self.npix)*self.coeff1)
         binspecs = n.zeros(shape=(self.specs.shape[0],self.npix))
         pixlowbound = 0
         parts = n.zeros(shape=(4,self.npix))
         for i in range(self.npix-1):
             parts[0,i] = max(n.where( (bwb[i+1] - self.wavebounds) > 0)[0])
-            parts[1,i] = (bwb[i+1]-self.wavebounds[parts[0,i]]) / (self.wavebounds[parts[0,i]+1]-self.wavebounds[parts[0,i]])
-            parts[2,i] = (self.wavebounds[pixlowbound]-bwb[i]) / (self.wavebounds[pixlowbound]-self.wavebounds[pixlowbound-1])
+            parts[1,i] = (bwb[i+1]-self.wavebounds[parts[0,i]]) / \
+                    (self.wavebounds[parts[0,i]+1]-self.wavebounds[parts[0,i]])
+            parts[2,i] = (self.wavebounds[pixlowbound]-bwb[i]) / \
+                    (self.wavebounds[pixlowbound]-self.wavebounds[pixlowbound-1])
             parts[3,i] = pixlowbound
             pixlowbound = parts[0,i]+1
         for j in range(self.specs.shape[0]):

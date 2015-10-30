@@ -2,7 +2,9 @@
 from os import environ
 from os.path import join, basename
 from glob import iglob
+
 from pbs import queue
+
 q = queue()
 q.verbose = True
 nodes = 12
@@ -44,7 +46,8 @@ if platedir:
             print plate
 
 cjob = 0
-q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,
+         walltime=walltime)
 blocksize = nodes*ppn*ncycles
 for i,plate in enumerate(plates):
     for fiberid in xrange(1000):
@@ -54,7 +57,8 @@ for i,plate in enumerate(plates):
             q.commit(hard=True, submit=True)
             q = queue()
             q.verbose = True
-            q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+            q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,
+                     walltime=walltime)
 if not q.client.committed:
     q.commit(hard=True, submit=True)
 

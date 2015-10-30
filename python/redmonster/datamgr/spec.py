@@ -5,12 +5,15 @@
 
 from os import environ
 from os.path import exists, join
-from astropy.io import fits
-import numpy as n
 from math import ceil, floor
+
+import numpy as n
+from astropy.io import fits
+from astropy.convolution import convolve, Box1DKernel
+
 from redmonster.physics.misc import flux_check
 from redmonster.datamgr.io import remove_log, write_to_log
-from astropy.convolution import convolve, Box1DKernel
+
 
 
 class Spec:
@@ -124,7 +127,7 @@ class Spec:
             print ('Invalid value for FIBERID: must be between 0 and %s' %
                    hdu[0].header['NAXIS1'])
             #write_to_log(self.plate, self.mjd,
-                         #'Invalid value for FIBERID: must be between 0 and %s' %
+                         #'Invalid value for FIBERID: must be between 0 and %s'%
                          #hdu[0].header['NAXIS1'])
         else:
             self.fiberid = fiberid

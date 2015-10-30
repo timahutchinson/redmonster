@@ -1,18 +1,21 @@
+from os.path import join
+from os import environ
+
 import numpy as n
 from astropy.io import fits
 from matplotlib import pyplot as p
 from astropy.convolution import convolve, Box1DKernel
-from os.path import join
-from os import environ
 
 # Open spPlate file
 path = '/Users/timhutchinson/work/boss/run2d/7848/spPlate-7848-56959.fits'
 spp = fits.open(path)
 sigma = 1. / n.sqrt( spp[1].data )
-wave = 10**( spp[0].header['COEFF0'] + n.arange(spp[0].header['NAXIS1'])*spp[0].header['COEFF1'] )
+wave = 10**( spp[0].header['COEFF0'] + n.arange(spp[0].header['NAXIS1'])*
+            spp[0].header['COEFF1'] )
 
 # Open redmonster file
-path = '/Users/timhutchinson/work/boss/run2d/7848/run1d/redmonster-7848-56959.fits'
+path = '/Users/timhutchinson/work/boss/run2d/7848/run1d/\
+        redmonster-7848-56959.fits'
 redm = fits.open(path)
 
 f = p.figure()

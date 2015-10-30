@@ -1,4 +1,5 @@
-# Collection of miscellaneous functions used in redmonster that have no home in other modules
+# Collection of miscellaneous functions used in redmonster that have no
+# home in other modules
 #
 # Tim Hutchinson, April-September 2014
 # t.hutchinson@utah.edu
@@ -6,9 +7,12 @@
 import numpy as n
 from scipy import special as spc
 from scipy import sparse
+
 from redmonster.datamgr.io import write_to_log
 
-# Function to find where S/N is unreasonably large or where flux is unphysically negative
+
+# Function to find where S/N is unreasonably large or where flux is
+# unphysically negative
 def flux_check(flux, ivars, plate, mjd):
     dof = n.zeros(flux.shape[0])
     npix = flux.shape[1]
@@ -17,33 +21,42 @@ def flux_check(flux, ivars, plate, mjd):
         # CHANGE NEXT LINE SO IT ADDS TO LOG FILE RATHER THAN PRINTS
         if ct > 0:
             print 'WARNING: Fiber #%s has %s pixels with S/N > 200' % (i+1,ct)
-            #write_to_log(plate, mjd, 'WARNING: Fiber #%s has %s pixels with S/N > 200' % (i+1,ct))
+            #write_to_log(plate, mjd, 'WARNING: Fiber #%s has %s \
+                          #pixels with S/N > 200' % (i+1,ct))
         badpix = n.where(flux[i] * n.sqrt(ivars[i]) < -10.)[0]
         if len(badpix) > 0:
             # ALSO CHANGE TO ADD TO LOG
-            print 'WARNING: Fiber #%s has %s pixels with Flux < -10*Noise' % (i+1,len(badpix))
-            #write_to_log(plate, mjd, 'WARNING: Fiber #%s has %s pixels with Flux < -10*Noise' % (i+1,len(badpix)))
+            print 'WARNING: Fiber #%s has %s pixels with Flux < -10*Noise' % \
+                    (i+1,len(badpix))
+            #write_to_log(plate, mjd, 'WARNING: Fiber #%s has %s pixels \
+                          #with Flux < -10*Noise' % (i+1,len(badpix)))
             ivars[i] = mask_pixels(badpix, ivars[i])
         nummasks = len( n.where(ivars[i] == 0)[0] )
         dof[i] = npix - nummasks
     return ivars, dof
 
-# Mask unphysically negative pixels + neighboring two pixels in both directions
+
+# Mask unphysically negative pixels + neighboring two pixels in
+# both directions
 def mask_pixels(badpix, ivars):
     for j in badpix:
         ivars[j-2:j+3] = 0
     return ivars
 
+
 # Function to transform pixel centers to pixel boundaries
 def cen2bound(pixelcen):
     pixbound = 0.5 * (pixelcen[1:] + pixelcen[:-1])
-    pixbound = n.append( n.append( 2.*pixbound[0]-pixbound[1], pixbound ), 2.*pixbound[-1]-pixbound[-2] )
+    pixbound = n.append( n.append( 2.*pixbound[0]-pixbound[1], pixbound ),
+                        2.*pixbound[-1]-pixbound[-2] )
     return pixbound
+
 
 # Function to transform from pixel boundaries to pixel centers
 def bound2cen(pixbound):
     pixbound = .5 * (pixbound[:-1] + pixbound[1:])
     return pixbound
+
 
 # Create poly array to add polynomial terms in fitting
 def poly_array(npoly, npix):
@@ -52,6 +65,7 @@ def poly_array(npoly, npix):
     for i in range(npoly): arr[i] = xvec**i
     return arr
 
+
 def two_pad(npix):
     i = 0
     res = 0
@@ -59,6 +73,7 @@ def two_pad(npix):
         i += 1
         res = (2**i) // int(abs(npix))
     return (2**i)
+
 
 def multipoly_fit(ind, dep, order=2):
     ndata = n.prod(dep.shape)
@@ -69,7 +84,14 @@ def multipoly_fit(ind, dep, order=2):
         for j in xrange(ndim*(order+1)):
             A[i,j] = 0
 
-def quadfit_2d(ind, dep): # Requires (2x3) matrix ind where ind[0] is 3 coordinates along one dimension and ind[1] is three coordinates along other, dep is (3x3) matrix of datapoints where dep[i,j] corresponds to ind[0,i], ind[1,j], returns coeffs for ax^2+by^2+cxy+dx+ey+f=z
+
+def quadfit_2d(ind, dep):
+    '''Requires (2x3) matrix ind where ind[0] is 3
+    coordinates along one dimension and ind[1] is three coordinates
+    along other, dep is (3x3) matrix of datapoints where dep[i,j]
+    corresponds to ind[0,i], ind[1,j], returns coeffs for
+    ax^2+by^2+cxy+dx+ey+f=z
+    '''
     x = ind[0]
     y = ind[1]
     A = n.zeros((9,6))
@@ -81,12 +103,14 @@ def quadfit_2d(ind, dep): # Requires (2x3) matrix ind where ind[0] is 3 coordina
     f = n.dot(n.linalg.pinv(A),b)
     return f
 
+
 def quadfit(ind, dep): # Fit quadratic to 3 points
     A = n.zeros((3,3))
     for i in xrange(3):
         A[i] = n.array([ ind[i]**2, ind[i], 1 ])
     f = n.linalg.solve(A,dep)
     return f
+
 
 def comb_flags(specobj, zfindobj, zfitobj):
     '''
@@ -96,9 +120,15 @@ def comb_flags(specobj, zfindobj, zfitobj):
     nfib = specobj.flux.shape[0]
     flags = n.zeros(nfib)
     for ifiber in xrange(nfib):
-        if hasattr(specobj, 'zwarning'): flags[ifiber] = (int(specobj.zwarning[ifiber]) | int(zfindobj.zwarning[ifiber])) | int(zfitobj.zwarning[ifiber])
-        else: flags[ifiber] = int(zfindobj.zwarning[ifiber]) | int(zfitobj.zwarning[ifiber])
+        if hasattr(specobj, 'zwarning'):
+            flags[ifiber] = (int(specobj.zwarning[ifiber]) |
+                             int(zfindobj.zwarning[ifiber])) | \
+                    int(zfitobj.zwarning[ifiber])
+        else:
+            flags[ifiber] = int(zfindobj.zwarning[ifiber]) | \
+                    int(zfitobj.zwarning[ifiber])
     return flags
+
 
 def comb_flags_2(specobj, zfitflags):
     '''
@@ -108,11 +138,12 @@ def comb_flags_2(specobj, zfitflags):
     nfib = specobj.flux.shape[0]
     flags = n.zeros(nfib)
     for ifiber in xrange(nfib):
-        if hasattr(specobj, 'zwarning'): flags[ifiber] = (int(specobj.zwarning[ifiber]) | int(zfitflags[ifiber]))
+        if hasattr(specobj, 'zwarning'):
+            flags[ifiber] = (int(specobj.zwarning[ifiber]) |
+                             int(zfitflags[ifiber]))
         else: flags[fiber] = int(zfitflags[ifiber])
     return flags
 
-#--------------------------------------------------------------------------------------------------------------------------------------------
 
 def gaussflux(pixbound, cen, sig, h_order=0):
     """
@@ -144,17 +175,19 @@ def gaussflux(pixbound, cen, sig, h_order=0):
     # Compute and return:
     if h_order > 0:
         u = (pixbound - cen) / sig
-        int_term = - spc.hermitenorm(h_order-1)(u) * n.exp(-0.5 * u**2) / n.sqrt(2. * n.pi)
+        int_term = - spc.hermitenorm(h_order-1)(u) * n.exp(-0.5 * u**2) / \
+                n.sqrt(2. * n.pi)
     else:
         int_term = 0.5 * spc.erf((pixbound - cen) / (n.sqrt(2.) * sig))
     return (int_term[1:] - int_term[:-1]) / pixdiff
+
 
 def gaussbasis(pixbound, cen, sig, h_order=0, nsigma=6.0):
     """
     Function to generate a sparse matrix to broadcast integrated
     Gaussian amplitudes with sigma parameter 'sig' and centered on 'cen'
-    into pixel-averaged values over the pixel baseline specified by 'pixbound'.
-    Uses scipy sparse matrix class to implement.
+    into pixel-averaged values over the pixel baseline specified
+    by 'pixbound'. Uses scipy sparse matrix class to implement.
     Can also accept Gauss-Hermite order parameter in 'h_order'.
     Integrates out to at least +/- 'nsigma' times the sig parameter,
     with nsigma=6.0 by default.
@@ -184,9 +217,11 @@ def gaussbasis(pixbound, cen, sig, h_order=0, nsigma=6.0):
     # Loop over Gaussians, compute, and return:
     for i in xrange(ngauss):
         if (bin_hi[i] >= bin_lo[i]):
-            gbasis[i,bin_lo[i]:bin_hi[i]+1] = gaussflux(pixbound[bin_lo[i]:bin_hi[i]+2],
-                                                        cen[i], sig[i], h_order=h_order).reshape((1,-1))
+            gbasis[i,bin_lo[i]:bin_hi[i]+1] = \
+                    gaussflux(pixbound[bin_lo[i]:bin_hi[i]+2], cen[i], sig[i],
+                              h_order=h_order).reshape((1,-1))
     return gbasis.tocsr().T
+
 
 def gaussproj(pixbound_in, sigma_in, pixbound_out, h_order=0, nsigma=6.0):
     """

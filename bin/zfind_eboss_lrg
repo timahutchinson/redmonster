@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
 # Run redmonster on all eboss LRG targets according to Kyles papers selection
+
 from os import environ
 from os.path import join, basename
 from glob import iglob
-from pbs import queue
 import re
+
 from astropy.io import fits
+from pbs import queue
+
 q = queue()
 q.verbose = True
 nodes = 12
@@ -33,7 +36,8 @@ spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
 if spallpath:
     cjob = 0
-    q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+    q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,
+             ppn=ppn,walltime=walltime)
     hdu = fits.open(spallpath)
     blocksize = nodes*ppn*ncycles
     for ind,ebosstarg1 in enumerate(hdu[1].data.EBOSS_TARGET1):
@@ -47,7 +51,8 @@ if spallpath:
             q.commit(hard=True, submit=True)
             q = queue()
             q.verbose = True
-            q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+            q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,
+                     nodes=nodes,ppn=ppn,walltime=walltime)
     if not q.client.committed: q.commit(hard=True, submit=True)
 
 

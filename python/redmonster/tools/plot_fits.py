@@ -7,24 +7,33 @@
 #
 # thutchinson@utah.edu
 
+from os import environ
+from os.path import join, exists
 
 from Tkinter import *
 import numpy as n
 import matplotlib
 matplotlib.use('Agg')
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
+NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 from astropy.io import fits
-from os import environ
-from os.path import join, exists
-from redmonster.physics.misc import poly_array
 from astropy.convolution import convolve, Box1DKernel
+
+from redmonster.physics.misc import poly_array
+
 
 class Plot_Fit(Frame):
     def __init__ (self):
         self.root = Tk()
-        self.ablinelist = [3890.2, 3933.7, 3968.5, 4102.9, 4307, 4341.7, 4862.7, 5175, 5889, 5895]
-        self.ablinenames = [r'H$\epsilon$','Ca K', 'Ca H', r'H$\delta$', 'Ca G', r'H$\gamma$', r'H$\beta$', 'Mg I', 'Na I', 'Na I']
+        self.ablinelist = [
+                           3890.2, 3933.7, 3968.5, 4102.9, 4307, 4341.7, 4862.7,
+                           5175, 5889, 5895
+                           ]
+        self.ablinenames = [
+                            r'H$\epsilon$','Ca K', 'Ca H', r'H$\delta$', 'Ca G',
+                            r'H$\gamma$', r'H$\beta$', 'Mg I', 'Na I', 'Na I'
+                            ]
         self.emlinelist = [2500]
         self.emlinenames = ['test emline']
         self.plate = None
@@ -68,13 +77,17 @@ class Plot_Fit(Frame):
         self.ablines.set(0)
         self.emlines = BooleanVar()
         self.emlines.set(0)
-        c = Checkbutton(self.root, text='Overplot best-fit model', variable=self.var)
+        c = Checkbutton(self.root, text='Overplot best-fit model',
+                        variable=self.var)
         c.grid(row=4, column=1)
-        restframe = Checkbutton(self.root, text='Rest-frame wavelength', variable=self.restframe)
+        restframe = Checkbutton(self.root, text='Rest-frame wavelength',
+                                variable=self.restframe)
         restframe.grid(row=5,column=1)
-        ablines = Checkbutton(self.root, text='Show absorption lines ', variable=self.ablines)
+        ablines = Checkbutton(self.root, text='Show absorption lines ',
+                              variable=self.ablines)
         ablines.grid(row=6, column=1)
-        emlines = Checkbutton(self.root, text='Show emission lines    ', variable=self.emlines)
+        emlines = Checkbutton(self.root, text='Show emission lines    ',
+                              variable=self.emlines)
         emlines.grid(row=7, column=1)
         #
         smooth = StringVar()
@@ -85,7 +98,8 @@ class Plot_Fit(Frame):
         self.e4.grid(row=8, column=1)
         plot = Button(self.root, text='Plot', command=self.do_plot)
         plot.grid(row=9, column=1)
-        qbutton = Button(self.root, text='QUIT', fg='red', command=self.root.destroy)
+        qbutton = Button(self.root, text='QUIT', fg='red',
+                         command=self.root.destroy)
         qbutton.grid(row=10, column=1)
         nextfiber = Button(self.root, text='>', command=self.next_fiber)
         nextfiber.grid(row=2, column=4)
@@ -100,24 +114,82 @@ class Plot_Fit(Frame):
             self.mjd = int(self.e2.get())
             self.fiber = int(self.e3.get())
             self.znum = int(self.e5.get())
-            self.platepath = join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate, self.mjd))
+            self.platepath = join(environ['BOSS_SPECTRO_REDUX'],
+                                  environ['RUN2D'], '%s' % self.plate,
+                                  'spPlate-%s-%s.fits' % (self.plate, self.mjd))
             hdu = fits.open(self.platepath)
             self.specs = hdu[0].data
-            self.wave = 10**(hdu[0].header['COEFF0'] + n.arange(hdu[0].header['NAXIS1'])*hdu[0].header['COEFF1'])
-            self.models = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[2].data
-            self.fiberid = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.FIBERID
-            self.type1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS1
-            self.type2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS2
-            self.type3 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS3
-            self.type4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS4
-            self.type5 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.CLASS5
+            self.wave = 10**(hdu[0].header['COEFF0'] +
+                             n.arange(hdu[0].header['NAXIS1']) *
+                             hdu[0].header['COEFF1'])
+            self.models = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                         environ['RUN2D'], '%s' % self.plate,
+                                         environ['RUN1D'],
+                                         'redmonster-%s-%s.fits' %
+                                         (self.plate, self.mjd)))[2].data
+            self.fiberid = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                          environ['RUN2D'], '%s' % self.plate,
+                                          environ['RUN1D'],
+                                          'redmonster-%s-%s.fits' %
+                                          (self.plate,
+                                           self.mjd)))[1].data.FIBERID
+            self.type1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                        environ['RUN2D'], '%s' % self.plate,
+                                        environ['RUN1D'],
+                                        'redmonster-%s-%s.fits' %
+                                        (self.plate, self.mjd)))[1].data.CLASS1
+            self.type2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                        environ['RUN2D'], '%s' % self.plate,
+                                        environ['RUN1D'],
+                                        'redmonster-%s-%s.fits' %
+                                        (self.plate, self.mjd)))[1].data.CLASS2
+            self.type3 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                        environ['RUN2D'], '%s' % self.plate,
+                                        environ['RUN1D'],
+                                        'redmonster-%s-%s.fits' %
+                                        (self.plate, self.mjd)))[1].data.CLASS3
+            self.type4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                        environ['RUN2D'], '%s' % self.plate,
+                                        environ['RUN1D'],
+                                        'redmonster-%s-%s.fits' %
+                                        (self.plate, self.mjd)))[1].data.CLASS4
+            self.type5 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                        environ['RUN2D'], '%s' % self.plate,
+                                        environ['RUN1D'],
+                                        'redmonster-%s-%s.fits' %
+                                        (self.plate, self.mjd)))[1].data.CLASS5
             self.z = n.zeros((self.fiberid.shape[0],5))
-            self.z[:,0] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z1
-            self.z[:,1] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z2
-            self.z[:,2] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z3
-            self.z[:,3] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z4
-            self.z[:,4] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.Z5
-            self.zwarning = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, environ['RUN1D'], 'redmonster-%s-%s.fits' % (self.plate, self.mjd)))[1].data.ZWARNING
+            self.z[:,0] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                         environ['RUN2D'], '%s' % self.plate,
+                                         environ['RUN1D'],
+                                         'redmonster-%s-%s.fits' %
+                                         (self.plate, self.mjd)))[1].data.Z1
+            self.z[:,1] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                         environ['RUN2D'], '%s' % self.plate,
+                                         environ['RUN1D'],
+                                         'redmonster-%s-%s.fits' %
+                                         (self.plate, self.mjd)))[1].data.Z2
+            self.z[:,2] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                         environ['RUN2D'], '%s' % self.plate,
+                                         environ['RUN1D'],
+                                         'redmonster-%s-%s.fits' %
+                                         (self.plate, self.mjd)))[1].data.Z3
+            self.z[:,3] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                         environ['RUN2D'], '%s' % self.plate,
+                                         environ['RUN1D'],
+                                         'redmonster-%s-%s.fits' %
+                                         (self.plate, self.mjd)))[1].data.Z4
+            self.z[:,4] = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                         environ['RUN2D'], '%s' % self.plate,
+                                         environ['RUN1D'],
+                                         'redmonster-%s-%s.fits' %
+                                         (self.plate, self.mjd)))[1].data.Z5
+            self.zwarning = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                           environ['RUN2D'], '%s' % self.plate,
+                                           environ['RUN1D'],
+                                           'redmonster-%s-%s.fits' %
+                                           (self.plate,
+                                            self.mjd)))[1].data.ZWARNING
         else:
             self.fiber = int(self.e3.get())
         f = Figure(figsize=(10,6), dpi=100)
@@ -142,55 +214,75 @@ class Plot_Fit(Frame):
             if self.restframe.get() == 0:
                 a.plot(self.wave, self.specs[self.fiber], color='black')
             elif self.restframe.get() == 1:
-                a.plot(self.wave/(1+self.z[loc][0]), self.specs[self.fiber], color='black')
+                a.plot(self.wave/(1+self.z[loc][0]), self.specs[self.fiber],
+                       color='black')
         elif self.var.get() == 1:
             smooth = self.e4.get()
             if smooth is '':
                 if self.restframe.get() == 0:
                     a.plot(self.wave, self.specs[self.fiber], color='black')
                 elif self.restframe.get() == 1:
-                    a.plot(self.wave/(1+z), self.specs[self.fiber], color='black')
+                    a.plot(self.wave/(1+z), self.specs[self.fiber],
+                           color='black')
             else:
                 if self.restframe.get() == 0:
-                    a.plot(self.wave, convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='black')
+                    a.plot(self.wave, convolve(self.specs[self.fiber],
+                                               Box1DKernel(int(smooth))),
+                           color='black')
                 elif self.restframe.get() == 1:
-                    a.plot(self.wave/(1+z), convolve(self.specs[self.fiber], Box1DKernel(int(smooth))), color='black')
+                    a.plot(self.wave/(1+z), convolve(self.specs[self.fiber],
+                                                     Box1DKernel(int(smooth))),
+                           color='black')
             # Overplot model
             if len(loc) is not 0:
                 if self.restframe.get() == 0:
                     #a.plot(self.wave, self.models[loc[0]], color='black')
-                    a.plot(self.wave, self.models[loc[0],self.znum-1], color='cyan') # This for when multiple models are in redmonster file
+                    # This for when multiple models are in redmonster file
+                    a.plot(self.wave, self.models[loc[0],self.znum-1],
+                           color='cyan')
                     if self.ablines.get() == 1:
                         for i, line in enumerate(self.ablinelist):
-                            if (line*(1+z) > self.wave[0]) & (line*(1+z) < self.wave[-1]):
-                                a.axvline(line*(1+z), color='blue', linestyle='--', label=self.ablinenames[i])
+                            if ((line*(1+z) > self.wave[0]) &
+                                    (line*(1+z) < self.wave[-1])):
+                                a.axvline(line*(1+z), color='blue',
+                                          linestyle='--',
+                                          label=self.ablinenames[i])
                     if self.emlines.get() == 1:
                         for i, line in enumerate(self.emlinelist):
-                            if (line*(1+z) > self.wave[0]) & (line*(1+z) < self.wave[-1]):
-                                a.axvline(line*(1+z), color='red', linestyle='--', label=self.emlinenames[i])
+                            if (line*(1+z) > self.wave[0]) & (line*(1+z) < \
+                                                              self.wave[-1]):
+                                a.axvline(line*(1+z), color='red',
+                                          linestyle='--',
+                                          label=self.emlinenames[i])
                     if self.ablines.get() == 1 or self.emlines.get() == 1:
                         a.legend(prop={'size':10})
                 elif self.restframe.get() == 1:
-                    #a.plot(self.wave/(1+self.z[loc][0]), self.models[loc[0]], color='black')
-                    a.plot(self.wave/(1+z), self.models[loc[0],self.znum-1], color='cyan') # See comment above
+                    a.plot(self.wave/(1+z), self.models[loc[0],self.znum-1],
+                           color='cyan')
                     if self.ablines.get() == 1:
                         for i, line in enumerate(self.ablinelist):
                             if (line > self.wave[0]) & (line < self.wave[-1]):
-                                a.axvline(line, color='blue', linestyle='--', label=self.ablinenames[i])
+                                a.axvline(line, color='blue', linestyle='--',
+                                          label=self.ablinenames[i])
                     if self.emlines.get() == 1:
                         for i, line in enumerate(self.emlinelist):
                             if (line > self.wave[0]) & (line < self.wave[-1]):
-                                a.axvline(line, color='red', linestyle='--', label=self.emlinenames[i])
+                                a.axvline(line, color='red', linestyle='--',
+                                          label=self.emlinenames[i])
                     if self.ablines.get() == 1 or self.emlines.get() == 1:
                         a.legend(prop={'size':10})
-                a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' % (self.plate, self.fiber, z, thistype, self.zwarning[loc[0]]))
+                a.set_title('Plate %s Fiber %s: z=%s class=%s zwarning=%s' %
+                            (self.plate, self.fiber, z, thistype,
+                             self.zwarning[loc[0]]))
             else:
-                print 'Fiber %s is not in redmonster-%s-%s.fits' % (self.fiber, self.plate, self.mjd)
+                print 'Fiber %s is not in redmonster-%s-%s.fits' % \
+                        (self.fiber, self.plate, self.mjd)
                 a.set_title('Plate %s Fiber %s' % (self.plate, self.fiber))
 
         if self.restframe.get() == 1:
             lower_data, upper_data = self.set_limits()
-            a.axis([self.wave[0]/(1+z)-100,self.wave[-1]/(1+z)+100,lower_data,upper_data])
+            a.axis([self.wave[0]/(1+z)-100,self.wave[-1]/(1+z)+100,
+                    lower_data,upper_data])
         elif self.restframe.get() == 0:
             lower_data, upper_data = self.set_limits()
             a.axis([self.wave[0]-100,self.wave[-1]+100,lower_data,upper_data])

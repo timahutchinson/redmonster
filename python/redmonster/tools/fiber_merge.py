@@ -3,12 +3,15 @@
 # Tim Hutchinson, University of Utah, December 2014
 # t.hutchinson@utah.edu
 
-#import numpy as n
-#from astropy.io import fits
+
 from os import environ, makedirs, getcwd
 from os.path import exists, join, basename
-# time import gmtime, strftime
+from time import gmtime, strftime
+
+import numpy as n
+from astropy.io import fits
 from glob import iglob
+
 from redmonster.datamgr import io2
 
 try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
@@ -30,7 +33,8 @@ if platedir:
         mjds = []
         files = []
         try:
-            for x in iglob( join( topdir, run2d, str(plate), run1d, 'redmonster-%s-*-*.fits' % plate) ):
+            for x in iglob( join( topdir, run2d, str(plate), run1d,
+                                 'redmonster-%s-*-*.fits' % plate) ):
                 files.append(x)
             for file in files:
                 '''

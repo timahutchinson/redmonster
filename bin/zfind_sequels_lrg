@@ -4,9 +4,11 @@
 from os import environ
 from os.path import join, basename
 from glob import iglob
-from pbs import queue
 import re
+
+from pbs import queue
 from astropy.io import fits
+
 q = queue()
 q.verbose = True
 nodes = 12
@@ -35,16 +37,20 @@ data_range = [4000,9000]
 
 if spallpath:
     cjob = 0
-    q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+    q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,
+             ppn=ppn,walltime=walltime)
     hdu = fits.open(spallpath)
     blocksize = nodes*ppn*ncycles
     for ind,ebosstarg0 in enumerate(hdu[1].data.EBOSS_TARGET0):
-        if (ebosstarg0 & 4) and (hdu[1].data.MODELMAG[ind][3]-hdu[1].data.EXTINCTION[ind][3] < 21.8) and (hdu[1].data.SPECPRIMARY[ind] > 0):
+        if (ebosstarg0 & 4) and (hdu[1].data.MODELMAG[ind][3] -
+                                 hdu[1].data.EXTINCTION[ind][3] < 21.8) and \
+                (hdu[1].data.SPECPRIMARY[ind] > 0):
             plate = hdu[1].data.PLATE[ind]
             mjd = hdu[1].data.MJD[ind]
             fiberid = hdu[1].data.FIBERID[ind] - 1
             if data_range:
-                q.append( "zfind -p %i -m %i -f %i -j %s -k %s" % (plate, mjd, fiberid, data_range[0], data_range[1]) )
+                q.append( "zfind -p %i -m %i -f %i -j %s -k %s" %
+                         (plate, mjd, fiberid, data_range[0], data_range[1]) )
             else:
                 q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
         if q.task_number >= blocksize:
@@ -52,7 +58,8 @@ if spallpath:
             q.commit(hard=True, submit=True)
             q = queue()
             q.verbose = True
-            q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
+            q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,
+                     nodes=nodes,ppn=ppn,walltime=walltime)
     if not q.client.committed: q.commit(hard=True, submit=True)
 
 

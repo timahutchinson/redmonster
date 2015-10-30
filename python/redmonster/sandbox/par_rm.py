@@ -3,16 +3,18 @@
 # Tim Hutchinson, University of Utah, August 2014
 # t.hutchinson@utah.edu
 
+from time import gmtime, strftime
 
 import numpy as n
 import matplotlib.pyplot as p
 p.interactive(True)
-from redmonster.sandbox import yanny as y
+import multiprocessing as mp
 from astropy.io import fits
+
+from redmonster.sandbox import yanny as y
 from redmonster.datamgr import spec, io
 from redmonster.physics import zfinder, zfitter, zpicker
-from time import gmtime, strftime
-import multiprocessing as mp
+
 
 def parallel_rm( (plate,mjd,fiberid) ):
     specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
@@ -123,7 +125,10 @@ for i in args:
 
 
 
-args1= [(3686, 55268, fibers3686),(3687, 55269, fibers3687),(3804, 55267, fibers3804),(3805, 55269, fibers3805),(3853, 55268, fibers3853),(3855, 55268, fibers3855),(3856, 55269, fibers3856),(3860, 55269, fibers3860)]
+args1= [(3686, 55268, fibers3686),(3687, 55269, fibers3687),
+        (3804, 55267, fibers3804),(3805, 55269, fibers3805),
+        (3853, 55268, fibers3853),(3855, 55268, fibers3855),
+        (3856, 55269, fibers3856),(3860, 55269, fibers3860)]
 
 
 

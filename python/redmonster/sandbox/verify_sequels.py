@@ -1,25 +1,33 @@
-import numpy as n
-from astropy.io import fits
 from os.path import join, basename
 from os import environ
-from glob import iglob
-from redmonster.sandbox import yanny as y
+from math import isnan
+
+import numpy as n
+from astropy.io import fits
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as p
-from math import isnan
+from glob import iglob
 from astropy.convolution import convolve, Box1DKernel
 from scipy.optimize import curve_fit
+
+from redmonster.sandbox import yanny as y
 from redmonster.datamgr import spec
 from redmonster.physics import zfinder
 
 class verify_rm:
     
-    def __init__(self,version='v5_8_0',plates=[3686,3687,3804,3805,3853,3855,3856,3860],mjds={3686:55268,3687:55269,3804:55267,3805:55269,3853:55268,3855:55268,3856:55269,3860:55269}):
+    def __init__(self,version='v5_8_0',
+                 plates=[3686,3687,3804,3805,3853,3855,3856,3860],
+                 mjds={
+                        3686:55268,3687:55269,3804:55267,3805:55269,3853:55268,
+                        3855:55268,3856:55269,3860:55269
+                 }):
         self.version = version
         self.plates = plates
         self.mjds = mjds
-        self.redmonster_spectro_redux = join( environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version)
+        self.redmonster_spectro_redux = \
+                join( environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version)
         self.vifibers = None
         self.zperson = None
         self.zpipe = None
@@ -30,24 +38,12 @@ class verify_rm:
         #self.rm_class = []
         #self.rm_zwarning = []
         #self.vis_z = []
-        '''
-        for i,plate in enumerate(self.plates):
-            if i == 0: self.compare_redshifts(plate,self.fibers3686,self.zperson3686)
-            elif i == 1: self.compare_redshifts(plate,self.fibers3687,self.zperson3687)
-            elif i == 2: self.compare_redshifts(plate,self.fibers3804,self.zperson3804)
-            elif i == 3: self.compare_redshifts(plate,self.fibers3805,self.zperson3805)
-            elif i == 4: self.compare_redshifts(plate,self.fibers3853,self.zperson3853)
-            elif i == 5: self.compare_redshifts(plate,self.fibers3855,self.zperson3855)
-            elif i == 6: self.compare_redshifts(plate,self.fibers3856,self.zperson3856)
-            elif i == 7: self.compare_redshifts(plate,self.fibers3860,self.zperson3860)
-        '''
-
 
     def yanny_to_arrays(self):
         # Convert yanny file to arrays
         # Read yanny file
-        x = y.yanny(filename='/uufs/astro.utah.edu/common/home/u0814744/boss/spInspect_alltest_bolton.par.txt', np=True)
-        #x = y.yanny(filename='/Users/boltonlab3/boss/spInspect_alltest_bolton.par.txt', np=True)
+        x = y.yanny(filename='/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                    spInspect_alltest_bolton.par.txt', np=True)
         # Get fibers, zpipe, zperson for each plate
         args = n.where(x['BOSSOBJECT']['plate'] == 3686)[0]
         self.fibers3686 = []
@@ -217,28 +213,36 @@ class verify_rm:
 
     def read_redmonster(self,plate):
         # Read in the redmonster output file for a given plate
-        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,self.mjds[plate]) )
+        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate,
+                              '%s' % self.version, 'redmonster-%s-%s.fits' %
+                              (plate,self.mjds[plate]) )
         hdu = fits.open(redmonsterpath)
         self.rm_z1 = hdu[1].data.Z1
         self.rm_zerr1 = hdu[1].data.Z_ERR1
-        self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
+        # +1 here because rm fibers are 0-based and idlspec2d are 1-based
+        self.rm_fibers = hdu[1].data.FIBERID + 1
         self.rm_type = hdu[1].data.CLASS
         self.rm_zwarning = hdu[1].data.ZWARNING
     
     
     def read_spPlate(self,plate):
         # Read in the spPlate file for a given plate
-        spPlatepath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate, self.mjds[plate]) )
+        spPlatepath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version,
+                           '%s' % plate, 'spPlate-%s-%s.fits' %
+                           (plate, self.mjds[plate]) )
         hdu = fits.open(spPlatepath)
         self.boss_target1 = hdu[5].data.BOSS_TARGET1
     
     
     def read_spZbest(self,plate):
         # Read in the spZbest file for a given plate
-        spZbestpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate, self.mjds[plate]) )
+        spZbestpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version,
+                           '%s' % plate, '%s' % self.version,
+                           'spZbest-%s-%s.fits' % (plate, self.mjds[plate]) )
         hdu = fits.open(spZbestpath)
         self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
-        self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
+        # In i-band, note conversion from nanomaggies to magnitudes
+        self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX)
     
 
     def get_cmass(self):
@@ -252,10 +256,19 @@ class verify_rm:
     
     
     def get_okay_cmass(self):
-        # Return (0-based) indices of CMASS targets that have the yanny comment 'v5_4_9 ok' and imag <= 21.5
-        # self.get_fibers() and self.get_comments() need to have already been called on this plate for this method to work properly
-        okay_fibers = (n.asarray(self.vifibers)[n.where(n.asarray(self.comments) == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
-        return n.asarray(okay_fibers)[n.where( (self.boss_target1[okay_fibers] & 2 == 2) & (self.spectroflux[okay_fibers][:,3] <= 21.5) )[0].tolist()].tolist()
+        # Return (0-based) indices of CMASS targets that have the
+        # yanny comment 'v5_4_9 ok' and imag <= 21.5
+        # self.get_fibers() and self.get_comments() need to have
+        # already been called on this plate for this method to work properly
+        #
+        # -1 due to fibers being 1-based and python using 0-based
+        okay_fibers = (n.asarray(self.vifibers)[n.where(n.asarray(self.comments)
+                == 'v5_4_9 ok')[0].tolist()]-1).tolist()
+        return n.asarray(okay_fibers)[n.where( (self.boss_target1[okay_fibers]
+                                                & 2 == 2) &
+                                              (self.spectroflux[okay_fibers]\
+                                               [:,3] <= 21.5) )[0].tolist()]\
+                                                .tolist()
     
     
     def get_okay_lowz(self):
@@ -282,7 +295,8 @@ class verify_rm:
             self.read_spPlate(plate)
             self.read_spZbest(plate)
             fibers = self.get_cmass()
-            vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
+            vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0
+                                           )[0].tolist())) / float(len(fibers)))
         avg = n.sum(vals) / float(len(vals))
         print avg
                        
@@ -295,13 +309,15 @@ class verify_rm:
             self.read_spPlate(plate)
             self.read_spZbest(plate)
             fibers = self.get_lowz()
-            vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
+            vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0
+                                           )[0].tolist())) / float(len(fibers)))
         avg = n.sum(vals) / float(len(vals))
         print avg
 
 
     def cmass_galaxy_completeness(self):
-        # Prints percent of all CMASS targets that have rm_warning == 0 and were classified as 'ssp_em_galaxy'
+        # Prints percent of all CMASS targets that have rm_warning == 0
+        # and were classified as 'ssp_em_galaxy'
         #vals = []
         count = 0
         total = 0
@@ -315,8 +331,6 @@ class verify_rm:
                     total += 1
                     if self.rm_zwarning[fiber] == 0:
                         count += 1
-            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
-            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(fibers)) )
         #avg = n.sum(vals) / float(len(vals))
         avg = float(count) / float(total)
         print count
@@ -325,7 +339,8 @@ class verify_rm:
 
 
     def lowz_galaxy_completeness(self):
-        # Prints percent of all LOWZ targets that have rm_zwarning == 0 and were classified as 'ssp_em_galaxy'
+        # Prints percent of all LOWZ targets that have rm_zwarning == 0
+        # and were classified as 'ssp_em_galaxy'
         #vals = []
         for plate in self.plates:
             self.read_redmonster(plate)
@@ -337,8 +352,6 @@ class verify_rm:
                     total += 1
                     if self.rm_zwarning[fiber] == 0:
                         count += 1
-            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
-            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(fibers)) )
         #avg = n.sum(vals) / float(len(vals))
         avg = float(count) / float(total)
         print count
@@ -346,7 +359,8 @@ class verify_rm:
         print avg
 
     def count_okay_cmass_fibers(self):
-        # Prints number of CMASS targets with yanny comment 'v5_4_9 ok' and imag <= 21.5
+        # Prints number of CMASS targets with yanny comment
+        # 'v5_4_9 ok' and imag <= 21.5
         count = 0
         for plate in self.plates:
             self.read_redmonster(plate)
@@ -357,7 +371,8 @@ class verify_rm:
         print count
             
     def cmass_okay_completeness(self):
-        # Prints fraction of CMASS targets having yanny comment 'v5_4_9 ok' and imag <= 21.5 that have rm_zwarning == 0
+        # Prints fraction of CMASS targets having yanny comment
+        # 'v5_4_9 ok' and imag <= 21.5 that have rm_zwarning == 0
         count = 0
         total = 0
         for plate in self.plates:
@@ -372,7 +387,8 @@ class verify_rm:
         print float(count) / float(total)
 
     def cmass_okay_galaxy_completeness(self):
-        # Prints fraction of targets classified by RM as 'ssp_em_galaxies' in the subset of CMASS targets having yanny comment 'v5_4_9 ok'
+        # Prints fraction of targets classified by RM as 'ssp_em_galaxies'
+        # in the subset of CMASS targets having yanny comment 'v5_4_9 ok'
         # and imag <= 21.5
         count = 0
         total = 0
@@ -383,7 +399,8 @@ class verify_rm:
             self.read_spZbest(plate)
             fibers = self.get_okay_cmass()
             total += len(fibers)
-            count += len( n.where( self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist() )
+            count += len( n.where( self.rm_type[fibers] ==
+                                  'ssp_em_galaxy')[0].tolist() )
         print '%s out of %s' % (count,total)
         print float(count) / float(total)
 
@@ -404,7 +421,8 @@ class verify_rm:
 
 
     def logdv_histos(self, nbins=12):
-        # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
+        # Make histograms of log10(dv) in redshift bins for
+        # LOWZ and CMASS galaxies
         colors = ['purple', 'cyan', 'blue', 'red', 'gold', 'lime']
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
         f = p.figure()
@@ -429,7 +447,8 @@ class verify_rm:
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
-            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j],
+                   label=labels[j])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('LOWZ Sample', size=18)
@@ -460,18 +479,21 @@ class verify_rm:
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
-            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j],
+                   label=labels[j])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('CMASS Sample', size=18)
         p.axis([.9,2.4,0,.3])
         p.legend()
         p.subplots_adjust(wspace = .35)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_histo_cmass.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  dv_histo_cmass.pdf')
 
 
     def identify_catastrophic_failures(self):
-        # Identify fibers in 'okay CMASS' sample with zwarning == 0 and abs(z_rm - z_person) > .005
+        # Identify fibers in 'okay CMASS' sample with zwarning == 0
+        # and abs(z_rm - z_person) > .005
         self.bad_fibers = []
         self.bad_plates = []
         self.bad_rm_z = []
@@ -486,30 +508,39 @@ class verify_rm:
             self.get_all_yanny(plate)
             fibers = self.get_okay_cmass()
             for fiber in fibers:
-                if (fiber+1) in self.vifibers: # +1 to go from python indexing to boss fiber conventions
+                # +1 to go from python indexing to boss fiber conventions
+                if (fiber+1) in self.vifibers:
                     total += 1
-                    vi_index = n.where( n.asarray(self.vifibers) == (fiber+1) )[0][0]
+                    vi_index = n.where( n.asarray(self.vifibers) ==
+                                       (fiber+1) )[0][0]
                     if self.rm_zwarning[fiber] == 0:
                         if self.rm_type[fiber] == 'ssp_em_galaxy':
-                            if n.abs(self.rm_z1[fiber] - self.zperson[vi_index]) >= 0.005:
+                            if n.abs(self.rm_z1[fiber] -
+                                     self.zperson[vi_index]) >= 0.005:
                                 self.bad_plates.append(plate)
                                 self.bad_fibers.append(fiber)
                                 self.bad_rm_z.append(self.rm_z1[fiber])
                                 self.bad_zperson.append(self.zperson[vi_index])
                                 self.bad_type.append(self.rm_type[fiber])
                                 count_bad += 1
-        print '%s catastrophic failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_bad,total,(count_bad/float(total))*100)
+        print '%s catastrophic failures out of %s fibers, or %s PERCENT \
+                (not fraction!) of the total' % (count_bad,total,
+                                                 (count_bad/float(total))*100)
         for i,fiber in enumerate(self.bad_fibers):
-            print 'Plate %s, fiber %s, redmonster z = %s, zperson = %s' % (self.bad_plates[i],fiber,self.bad_rm_z[i], self.bad_zperson[i])
+            print 'Plate %s, fiber %s, redmonster z = %s, zperson = %s' % \
+                    (self.bad_plates[i],fiber,self.bad_rm_z[i],
+                     self.bad_zperson[i])
 
 
     def identify_unclear_impurities(self):
-        # Identify fibers that have zwarning == 0 but no confident visual redshift
+        # Identify fibers that have zwarning == 0
+        # but no confident visual redshift
         pass
 
 
     def identify_recoverable_incompleteness(self):
-        # Identify fibers with confident visual redshift and 'galaxy' classification but have zwarning != 0 or rm_type == 'star'
+        # Identify fibers with confident visual redshift and 'galaxy'
+        # classification but have zwarning != 0 or rm_type == 'star'
         # Also makes plot of z_visual vs z_rm for all identified fibers
         self.recoverable_fibers = []
         self.recoverable_plates = []
@@ -525,21 +556,34 @@ class verify_rm:
             self.get_all_yanny(plate)
             fibers = self.get_okay_cmass()
             for fiber in fibers:
-                if (fiber+1) in self.vifibers: # +1 to go from python indexing to boss fiber conventions
+                # +1 to go from python indexing to boss fiber conventions
+                if (fiber+1) in self.vifibers:
                     total += 1
-                    vi_index = n.where( n.asarray(self.vifibers) == (fiber+1) )[0][0]
-                    if (self.rm_zwarning[fiber] != 0) | (self.rm_type[fiber] != 'ssp_em_galaxy'):
-                        if (self.zperson[vi_index] != -9) & (self.vitype[vi_index] == 4):
+                    vi_index = n.where( n.asarray(self.vifibers) ==
+                                       (fiber+1) )[0][0]
+                    if (self.rm_zwarning[fiber] != 0) | \
+                            (self.rm_type[fiber] != 'ssp_em_galaxy'):
+                        if (self.zperson[vi_index] != -9) & \
+                                (self.vitype[vi_index] == 4):
                             self.recoverable_fibers.append(fiber)
                             self.recoverable_plates.append(plate)
                             self.recoverable_rm_z.append(self.rm_z1[fiber])
                             self.recoverable_rm_type.append(self.rm_type[fiber])
-                            self.recoverable_zperson.append(self.zperson[vi_index])
+                            self.recoverable_zperson.append(
+                                    self.zperson[vi_index])
                             count_recoverable += 1
-        print '%s recoverable failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_recoverable,total,(count_recoverable/float(total))*100)
+        print '%s recoverable failures out of %s fibers, or %s PERCENT \
+                (not fraction!) of the total' % (count_recoverable,total,
+                                                 (count_recoverable /
+                                                  float(total))*100)
         for i,fiber in enumerate(self.recoverable_fibers):
-            print 'Plate %s, fiber %s, redmonster z = %s, redmonster class = %s, zperson = %s' % (self.recoverable_plates[i],fiber,self.recoverable_rm_z[i], self.recoverable_rm_type[i], self.recoverable_zperson[i])
-        big_diff_num = len( n.where( n.abs(n.asarray(self.recoverable_rm_z)-n.asarray(self.recoverable_zperson)) >= .005 )[0] )
+            print 'Plate %s, fiber %s, redmonster z = %s, \
+                    redmonster class = %s, zperson = %s' % \
+                    (self.recoverable_plates[i],fiber,self.recoverable_rm_z[i],
+                     self.recoverable_rm_type[i], self.recoverable_zperson[i])
+        big_diff_num = len( n.where( n.abs(n.asarray(self.recoverable_rm_z) -
+                                           n.asarray(self.recoverable_zperson))
+                                    >= .005 )[0] )
         f = p.figure()
         ax1 = f.add_subplot(1,1,1)
         p.plot(self.recoverable_rm_z,self.recoverable_zperson, 'k.')
@@ -548,15 +592,18 @@ class verify_rm:
         p.xlabel(r'$z_{redmonster}$',size=16)
         p.ylabel(r'$z_{visual}$',size=16)
         p.title('Objects with "recoverable" redshifts', size=18)
-        p.text(1.25, .2, '%s out of %s fibers with confident visual' % (count_recoverable,total), fontsize=10)
+        p.text(1.25, .2, '%s out of %s fibers with confident visual' %
+               (count_recoverable,total), fontsize=10)
         p.text(1.25,.15, 'redshift and called "galaxy" but have', size=10)
         p.text(1.25, .1, 'zwarning > 0 or class != "galaxy". Of', size=10)
-        p.text(1.25,.05, 'these, %s have $\delta z > 0.005$.' % (big_diff_num), size=10)
+        p.text(1.25,.05, 'these, %s have $\delta z > 0.005$.' % (big_diff_num),
+               size=10)
         #p.savefig('recov.pdf')
 
 
     def cmass_failure_vs_sn(self,sn_max=7,nbins=29):
-        # Makes plot of CMASS failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
+        # Makes plot of CMASS failure rate (zwarning > 0) vs
+        # median S/N in r-, i-, and z-bands
         f = p.figure()
         ax = f.add_subplot(1,1,1)
         total = 0
@@ -634,16 +681,19 @@ class verify_rm:
         p.savefig('failure_vs_sn.pdf')
 
 
-# --------------------------------------------------------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------------
-# ---------------------------------------- FULL SEQUELS METHODS ONLY BELOW THIS LINE ------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ---------------FULL SEQUELS METHODS ONLY BELOW THIS LINE ---------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
     def read_redmonster_all(self,plate, mjd):
-        # Read a redmonster file in the context of looking at SEQUELS LRG dataset
-        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,mjd) )
+        # Read a redmonster file in the context of looking
+        #  at SEQUELS LRG dataset
+        redmonsterpath = join( self.redmonster_spectro_redux, '%s' % plate,
+                              '%s' % self.version, 'redmonster-%s-%s.fits' %
+                              (plate,mjd) )
         #paths = []
         #for path in iglob(redmonsterpath):
         #    paths.append(path)
@@ -661,11 +711,11 @@ class verify_rm:
         
     def read_redmonster_summary_file(self):
         # Read the redmonster summary file
-        summary_path = join( self.redmonster_spectro_redux, 'redmonsterAll-%s.fits' % self.version )
+        summary_path = join( self.redmonster_spectro_redux,
+                            'redmonsterAll-%s.fits' % self.version )
         hdu = fits.open(summary_path)
         self.rm_z1 = hdu[1].data.Z
         self.rm_zerr1 = hdu[1].data.Z_ERR
-        #self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
         self.rm_type = hdu[1].data.CLASS
         self.rm_zwarning = hdu[1].data.ZWARNING
         self.rm_fibers_summary = hdu[1].data.FIBERID
@@ -679,15 +729,19 @@ class verify_rm:
 
 
     def read_spPlate_all(self,plate, mjd=None):
-        # Read in the spPlate file for a given plate in the context of the entire DR10 dataset
+        # Read in the spPlate file for a given plate in the context of
+        # the entire DR10 dataset
         if mjd is not None:
-            hdu = fits.open( join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd) ) )
+            hdu = fits.open( join( environ['BOSS_SPECTRO_REDUX'], '%s' %
+                                  self.version, '%s' % plate,
+                                  'spPlate-%s-%s.fits' % (plate,mjd) ) )
             try: self.eboss_target0 = hdu[5].data.EBOSS_TARGET0
             except: pass
             try: self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
             except: pass
         else:
-            globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-*.fits' % plate )
+            globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version,
+                            '%s' % plate, 'spPlate-%s-*.fits' % plate )
             spPlatepaths = []
             for spPlatepath in iglob(globpath):
                 spPlatepaths.append(spPlatepath)
@@ -702,23 +756,30 @@ class verify_rm:
     def read_spZbest_all(self,plate,mjd=None):
         # Read in the spZbest file for a given plate
         if mjd is not None:
-            hdu = fits.open(join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd) ))
+            hdu = fits.open(join(environ['BOSS_SPECTRO_REDUX'],
+                                 '%s' % self.version, '%s' % plate,
+                                 '%s' % self.version,
+                                 'spZbest-%s-%s.fits' % (plate,mjd) ))
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
-            self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
+            # In i-band, note conversion from nanomaggies to magnitudes
+            self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX)
             self.idl_rchi2s = hdu[1].data.RCHI2
             self.idl_dof = hdu[1].data.DOF
             self.idl_rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO
             #self.modelmag = hdu[1].data.MODELMAG[:,2:]
             #self.extinction = hdu[1].data.EXTINCTION[:,2:]
         else:
-            globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-*.fits' % plate )
+            globpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version,
+                            '%s' % plate, '%s' % self.version,
+                            'spZbest-%s-*.fits' % plate )
             spZbestpaths = []
             for spZbestpath in iglob(globpath):
                 spZbestpaths.append(spZbestpath)
             spZbestpaths.sort()
             hdu = fits.open(spZbestpaths[0])
             self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
-            self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
+            # In i-band, note conversion from nanomaggies to magnitudes
+            self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX)
             self.idl_dof = hdu[1].data.DOF
             self.idl_rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO
             #self.modelmag = hdu[1].data.MODELMAG[:,2:]
@@ -741,7 +802,8 @@ class verify_rm:
 
 
     def sequels_galaxy_completeness_all(self):
-        # Prints percent of all DR10 CMASS targets that have rm_warning == 0 and were classified as 'ssp_em_galaxy'
+        # Prints percent of all DR10 CMASS targets that have
+        # rm_warning == 0 and were classified as 'ssp_em_galaxy'
         count = 0
         total = 0
         #globpath = join( self.redmonster_spectro_redux, '*')
@@ -752,7 +814,8 @@ class verify_rm:
         #    fibers = self.get_cmass()
         #    for fiber in fibers:
         #        total += 1
-        #        if (self.rm_zwarning[fiber] == 0) & (self.rm_type[fiber] == 'ssp_em_galaxy'):
+        #        if (self.rm_zwarning[fiber] == 0) & \
+        #                (self.rm_type[fiber] == 'ssp_em_galaxy'):
         #            count += 1
         self.read_redmonster_summary_file()
         for i,zwarn in enumerate(self.rm_zwarning):
@@ -768,8 +831,12 @@ class verify_rm:
 
 
     def sequels_logdv_vs_z_histos_all(self, nbins=12):
-        # Make histograms of log10(dv) in redshift bins for LOWZ and CMASS galaxies
-        colors = ['tomato','sage','cornflowerblue','sandybrown','mediumpurple','grey']
+        # Make histograms of log10(dv) in redshift bins for
+        # LOWZ and CMASS galaxies
+        colors = [
+                  'tomato','sage','cornflowerblue','sandybrown',
+                  'mediumpurple','grey'
+                  ]
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
         f = p.figure()
         '''
@@ -794,7 +861,8 @@ class verify_rm:
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
-            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j],
+                   label=labels[j])
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.title('LOWZ Sample', size=18)
@@ -824,7 +892,8 @@ class verify_rm:
             self.read_redmonster_summary_file()
             for i,z in enumerate(self.rm_z1):
                 if (z >= zmin) & (z <= zmax):
-                    if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
+                    if (self.rm_type[i] == 'ssp_em_galaxy') & \
+                            (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
                         count += 1
                         errors = n.append(errors,self.rm_zerr1[i])
                         zs = n.append(zs,z)
@@ -836,7 +905,8 @@ class verify_rm:
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
-            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j],
+                   label=labels[j])
         p.minorticks_on()
         p.xlabel(r'$\log_{10} \delta v$ (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta v$', size=16)
@@ -844,12 +914,14 @@ class verify_rm:
         p.axis([.5,3.0,0,.3])
         p.legend()
         p.subplots_adjust(wspace = .35)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  dv_vs_z_histos.pdf')
         p.clf()
 
 
     def sequels_failure_vs_sn_all(self,sn_max=4.5,nbins=18):
-        # Makes plot of SEQUELS LRG target failure rate (zwarning > 0) vs median S/N in r-, i-, and z-bands
+        # Makes plot of SEQUELS LRG target failure rate (zwarning > 0)
+        # vs median S/N in r-, i-, and z-bands
         f = p.figure()
         ax = f.add_subplot(1,1,1)
         total = 0
@@ -878,11 +950,14 @@ class verify_rm:
             if (self.sn_median[fiber,0] <= sn_max):
                 total += 1
                 r_sn.append(self.sn_median[fiber,0])
-                if self.sn_median[fiber,0] > rmax: rmax = self.sn_median[fiber,0]
+                if self.sn_median[fiber,0] > rmax:
+                    rmax = self.sn_median[fiber,0]
                 i_sn.append(self.sn_median[fiber,1])
-                if self.sn_median[fiber,1] > imax: imax = self.sn_median[fiber,1]
+                if self.sn_median[fiber,1] > imax:
+                    imax = self.sn_median[fiber,1]
                 z_sn.append(self.sn_median[fiber,2])
-                if self.sn_median[fiber,2] > zmax: zmax = self.sn_median[fiber,2]
+                if self.sn_median[fiber,2] > zmax:
+                    zmax = self.sn_median[fiber,2]
                 if (self.rm_zwarning[i] > 0):
                     bad_fibers.append(fiber)
                     bad_r_sn.append(self.sn_median[fiber,0])
@@ -936,14 +1011,22 @@ class verify_rm:
         print imax
         print zmax
         p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  failure_vs_sn.pdf')
         p.clf()
 
 
     def sequels_logdv_vs_sn_histos_all(self, nbins=25):
-        # Make histograms of log10(dv) in S/N bins in bands r,i,z for SEQUELS LRG targets
-        colors = ['tomato','sage','cornflowerblue','sandybrown','mediumpurple','grey'] #['purple', 'cyan', 'blue', 'lime', 'red', 'black']
-        labels = ['1.0<S/N<1.5','1.5<S/N<2.0','2.0<S/N<2.5','2.5<S/N<3.0','3.0<S/N<3.5','3.5<S/N<4.0','4.0<S/N<4.5']
+        # Make histograms of log10(dv) in S/N bins in bands
+        # r,i,z for SEQUELS LRG targets
+        colors = [
+                  'tomato','sage','cornflowerblue','sandybrown','mediumpurple',
+                  'grey'
+                  ] #['purple', 'cyan', 'blue', 'lime', 'red', 'black']
+        labels = [
+                  '1.0<S/N<1.5','1.5<S/N<2.0','2.0<S/N<2.5','2.5<S/N<3.0',
+                  '3.0<S/N<3.5','3.5<S/N<4.0','4.0<S/N<4.5'
+                  ]
         f = p.figure()
         
         ax1 = f.add_subplot(3,1,1)
@@ -980,7 +1063,8 @@ class verify_rm:
                     openplate = plate
                     openmjd = mjd
                 if (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
-                    if (self.sn_median[fiber][0] >= sn_min) & (self.sn_median[fiber][0] <= sn_max):
+                    if (self.sn_median[fiber][0] >= sn_min) & \
+                            (self.sn_median[fiber][0] <= sn_max):
                         if j == 0:
                             errors1 = n.append(errors1,self.rm_zerr1[i])
                             z1 = n.append(z1,self.rm_z1[i])
@@ -1013,7 +1097,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
         normhist1 = hist1 / float(count1)
-        p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0], label=labels[0])
+        p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0],
+               label=labels[0])
         errors2 = self.dz_to_dv(z2,errors2)
         errors2 = n.log10(errors2)
         hist2,binedges2 = n.histogram(errors2, bins=nbins)
@@ -1021,7 +1106,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         normhist2 = hist2 / float(count2)
-        p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1], label=labels[1])
+        p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1],
+               label=labels[1])
         errors3 = self.dz_to_dv(z3,errors3)
         errors3 = n.log10(errors3)
         hist3,binedges3 = n.histogram(errors3, bins=nbins)
@@ -1029,7 +1115,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins3[i] = (binedges3[i+1]+binedges3[i])/2.
         normhist3 = hist3 / float(count3)
-        p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2], label=labels[2])
+        p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2],
+               label=labels[2])
         errors4 = self.dz_to_dv(z4,errors4)
         errors4 = n.log10(errors4)
         hist4,binedges4 = n.histogram(errors4, bins=nbins)
@@ -1037,7 +1124,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
-        p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3], label=labels[3])
+        p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3],
+               label=labels[3])
         errors5 = self.dz_to_dv(z5,errors5)
         errors5 = n.log10(errors5)
         hist5,binedges5 = n.histogram(errors5, bins=nbins)
@@ -1045,7 +1133,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins5[i] = (binedges5[i+1]+binedges5[i])/2.
         normhist5 = hist5 / float(count5)
-        #p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4], label=labels[4])
+        #p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4],
+                #label=labels[4])
         errors6 = self.dz_to_dv(z6,errors6)
         errors6 = n.log10(errors6)
         hist6,binedges6 = n.histogram(errors6, bins=nbins)
@@ -1053,7 +1142,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
-        #p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
+        #p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5],
+                #label=labels[5])
         p.text(0.8, 0.2, '$r$-band', fontsize=12)
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
@@ -1066,7 +1156,8 @@ class verify_rm:
         print count4
         print count5
         print count6
-        print (count1+count2+count3+count4+count5+count6)/float(self.rm_fibers_summary.shape[0])
+        print (count1+count2+count3+count4+count5+count6) / \
+                float(self.rm_fibers_summary.shape[0])
 
         ax2 = f.add_subplot(3,1,2)
         errors1 = n.array([])
@@ -1102,7 +1193,8 @@ class verify_rm:
                     openplate = plate
                     openmjd = mjd
                 if (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
-                    if (self.sn_median[fiber][1] >= sn_min) & (self.sn_median[fiber][1] <= sn_max):
+                    if (self.sn_median[fiber][1] >= sn_min) & \
+                            (self.sn_median[fiber][1] <= sn_max):
                         if j == 0:
                             errors1 = n.append(errors1,self.rm_zerr1[i])
                             z1 = n.append(z1,self.rm_z1[i])
@@ -1135,7 +1227,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
         normhist1 = hist1 / float(count1)
-        p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0], label=labels[0])
+        p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0],
+               label=labels[0])
         errors2 = self.dz_to_dv(z2,errors2)
         errors2 = n.log10(errors2)
         hist2,binedges2 = n.histogram(errors2, bins=nbins)
@@ -1143,7 +1236,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         normhist2 = hist2 / float(count2)
-        p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1], label=labels[1])
+        p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1],
+               label=labels[1])
         errors3 = self.dz_to_dv(z3,errors3)
         errors3 = n.log10(errors3)
         hist3,binedges3 = n.histogram(errors3, bins=nbins)
@@ -1151,7 +1245,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins3[i] = (binedges3[i+1]+binedges3[i])/2.
         normhist3 = hist3 / float(count3)
-        p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2], label=labels[2])
+        p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2],
+               label=labels[2])
         errors4 = self.dz_to_dv(z4,errors4)
         errors4 = n.log10(errors4)
         hist4,binedges4 = n.histogram(errors4, bins=nbins)
@@ -1159,7 +1254,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
-        p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3], label=labels[3])
+        p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3],
+               label=labels[3])
         errors5 = self.dz_to_dv(z5,errors5)
         errors5 = n.log10(errors5)
         hist5,binedges5 = n.histogram(errors5, bins=nbins)
@@ -1167,7 +1263,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins5[i] = (binedges5[i+1]+binedges5[i])/2.
         normhist5 = hist5 / float(count5)
-        p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4], label=labels[4])
+        p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4],
+               label=labels[4])
         errors6 = self.dz_to_dv(z6,errors6)
         errors6 = n.log10(errors6)
         hist6,binedges6 = n.histogram(errors6, bins=nbins)
@@ -1175,7 +1272,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
-        p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
+        p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5],
+               label=labels[5])
         p.text(0.8, 0.2, '$i$-band', fontsize=12)
         #p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
@@ -1188,7 +1286,8 @@ class verify_rm:
         print count4
         print count5
         print count6
-        print (count1+count2+count3+count4+count5+count6)/float(self.rm_fibers_summary.shape[0])
+        print (count1+count2+count3+count4+count5+count6) / \
+                float(self.rm_fibers_summary.shape[0])
 
         ax3 = f.add_subplot(3,1,3)
         errors1 = n.array([])
@@ -1224,7 +1323,8 @@ class verify_rm:
                     openplate = plate
                     openmjd = mjd
                 if (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
-                    if (self.sn_median[fiber][2] >= sn_min) & (self.sn_median[fiber][2] <= sn_max):
+                    if (self.sn_median[fiber][2] >= sn_min) & \
+                            (self.sn_median[fiber][2] <= sn_max):
                         if j == 0:
                             errors1 = n.append(errors1,self.rm_zerr1[i])
                             z1 = n.append(z1,self.rm_z1[i])
@@ -1257,7 +1357,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
         normhist1 = hist1 / float(count1)
-        p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0], label=labels[1])
+        p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0],
+               label=labels[1])
         errors2 = self.dz_to_dv(z2,errors2)
         errors2 = n.log10(errors2)
         hist2,binedges2 = n.histogram(errors2, bins=nbins)
@@ -1265,7 +1366,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         normhist2 = hist2 / float(count2)
-        p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1], label=labels[2])
+        p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1],
+               label=labels[2])
         errors3 = self.dz_to_dv(z3,errors3)
         errors3 = n.log10(errors3)
         hist3,binedges3 = n.histogram(errors3, bins=nbins)
@@ -1273,7 +1375,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins3[i] = (binedges3[i+1]+binedges3[i])/2.
         normhist3 = hist3 / float(count3)
-        p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2], label=labels[3])
+        p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2],
+               label=labels[3])
         errors4 = self.dz_to_dv(z4,errors4)
         errors4 = n.log10(errors4)
         hist4,binedges4 = n.histogram(errors4, bins=nbins)
@@ -1281,7 +1384,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
-        p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3], label=labels[4])
+        p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3],
+               label=labels[4])
         errors5 = self.dz_to_dv(z5,errors5)
         errors5 = n.log10(errors5)
         hist5,binedges5 = n.histogram(errors5, bins=nbins)
@@ -1289,7 +1393,8 @@ class verify_rm:
         for i in xrange(nbins):
             bins5[i] = (binedges5[i+1]+binedges5[i])/2.
         normhist5 = hist5 / float(count5)
-        p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4], label=labels[5])
+        p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4],
+               label=labels[5])
         errors6 = self.dz_to_dv(z6,errors6)
         errors6 = n.log10(errors6)
         hist6,binedges6 = n.histogram(errors6, bins=nbins)
@@ -1297,14 +1402,16 @@ class verify_rm:
         for i in xrange(nbins):
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
-        p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[6])
+        p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5],
+               label=labels[6])
         p.text(0.8, 0.28, '$z$-band', fontsize=12)
         p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
         #p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
         p.axis([.5,2.5,0,.35])
         p.legend(prop={'size':6})
         p.subplots_adjust(hspace = .5)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  dv_vs_sn_histos.pdf')
         p.clf()
         print count1
         print count2
@@ -1312,11 +1419,13 @@ class verify_rm:
         print count4
         print count5
         print count6
-        print (count1+count2+count3+count4+count5+count6)/float(self.rm_fibers_summary.shape[0])
+        print (count1+count2+count3+count4+count5+count6) / \
+                float(self.rm_fibers_summary.shape[0])
 
 
     def sequels_failure_vs_imag_all(self,imin=18,imax=24,nbins=21):
-        # Makes plot of SEQUELS LRG failure rate (zwarning > 0) vs i-band magnitude
+        # Makes plot of SEQUELS LRG failure rate (zwarning > 0)
+        # vs i-band magnitude
         f = p.figure()
         ax = f.add_subplot(1,1,1)
         total = 0
@@ -1363,7 +1472,8 @@ class verify_rm:
         #print rhist
         #print rtotal
         #p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_imag.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  failure_vs_imag.pdf')
         p.clf()
 
 
@@ -1373,7 +1483,9 @@ class verify_rm:
         errors = []
         zs = []
         for i in xrange(nobjs):
-            if (self.rm_zwarning[i] == 0) & (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zerr1[i] != -1):
+            if (self.rm_zwarning[i] == 0) & \
+                    (self.rm_type[i] == 'ssp_em_galaxy') & \
+                    (self.rm_zerr1[i] != -1):
                 errors.append(self.rm_zerr1[i])
                 zs.append(self.rm_z1[i])
         errors = self.dz_to_dv(n.asarray(errors))
@@ -1382,12 +1494,14 @@ class verify_rm:
         p.axhline(2.48,linestyle='--',color='k')
         p.xlabel('Redshift',size=16)
         p.ylabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_scatter.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  dv_vs_z_scatter.pdf')
         p.clf()
 
 
     def sequels_chi2_histos(self,nbins=50, rchi2=True):
-        # Makes histogram of SEQUELS chi2 values for redmonster and idlspec1d (in chi2 or rchi2)
+        # Makes histogram of SEQUELS chi2 values for redmonster
+        # and idlspec1d (in chi2 or rchi2)
         rm_rchi2s = []
         idl_rchi2s = []
         openplate = 0
@@ -1410,7 +1524,8 @@ class verify_rm:
                     idl_rchi2s.append(self.idl_rchi2s[fiber])
                 else:
                     rm_rchi2s.append(self.rm_rchi2s[i] * self.rm_dof[i])
-                    idl_rchi2s.append(self.idl_rchi2s[fiber] * self.idl_dof[fiber])
+                    idl_rchi2s.append(self.idl_rchi2s[fiber] *
+                                      self.idl_dof[fiber])
                 #rm_rchi2s.append(self.rm_rchi2diff[i])
                 #idl_rchi2s.append(self.idl_rchi2diff[fiber])
         rmhist,rmbinedges = n.histogram(rm_rchi2s,nbins)
@@ -1423,17 +1538,21 @@ class verify_rm:
         for i in xrange(nbins):
             idlbins[i] = (idlbinedges[i+1]+idlbinedges[i])/2.
         idlhist = idlhist / float(total)
-        p.plot(rmbins, rmhist, color='red', drawstyle='steps-mid', label='redmonster')
-        p.plot(idlbins, idlhist, color='blue', drawstyle='steps-mid', label='idlspec1d')
+        p.plot(rmbins, rmhist, color='red', drawstyle='steps-mid',
+               label='redmonster')
+        p.plot(idlbins, idlhist, color='blue', drawstyle='steps-mid',
+               label='idlspec1d')
         p.xlabel(r'$\chi_r^2$', size=16)
         p.ylabel(r'Fraction per bin', size=16)
         p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_histos.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  rchi2_histos.pdf')
         p.clf()
 
 
     def sequels_drchi2_histos(self, drchi2max=.02, nbins=50, rchi2=True):
-        # Makes histogram of SEQUELS delta-rchi2 (or delta-chi2) values for redmonster and idlspec1d
+        # Makes histogram of SEQUELS delta-rchi2 (or delta-chi2) values
+        # for redmonster and idlspec1d
         rm_drchi2s = []
         idl_drchi2s = []
         openplate = 0
@@ -1449,14 +1568,16 @@ class verify_rm:
                 self.read_spPlate_all(plate,mjd)
                 openplate = plate
                 openmjd = mjd
-            if (self.rm_rchi2diff[i] < drchi2max) and (self.idl_rchi2diff[fiber] < drchi2max):
+            if (self.rm_rchi2diff[i] < drchi2max) and \
+                    (self.idl_rchi2diff[fiber] < drchi2max):
                 total += 1
                 if rchi2:
                     rm_drchi2s.append( self.rm_rchi2diff[i] )
                     idl_drchi2s.append( self.idl_rchi2diff[fiber] )
                 else:
                     rm_drchi2s.append( self.rm_rchi2diff[i] * self.rm_dof[i] )
-                    idl_drchi2s.append( self.idl_rchi2diff[fiber] * self.idl_dof[fiber] )
+                    idl_drchi2s.append( self.idl_rchi2diff[fiber] *
+                                       self.idl_dof[fiber] )
         rmhist, rmbinedges = n.histogram(rm_drchi2s,nbins)
         rmbins = n.zeros(nbins)
         for i in xrange(nbins):
@@ -1467,14 +1588,17 @@ class verify_rm:
         for i in xrange(nbins):
             idlbins[i] = (idlbinedges[i+1]+idlbinedges[i])/2.
         idlhist = idlhist / float(total)
-        p.plot(rmbins, rmhist, color='red', drawstyle='steps-mid', label='redmonster')
-        p.plot(idlbins, idlhist, color='blue', drawstyle='steps-mid', label='idlspec1d')
+        p.plot(rmbins, rmhist, color='red', drawstyle='steps-mid',
+               label='redmonster')
+        p.plot(idlbins, idlhist, color='blue', drawstyle='steps-mid',
+               label='idlspec1d')
         p.axvline(.005,linestyle='--',color='red')
         p.axvline(.01,linestyle='--',color='blue')
         p.xlabel(r'$\Delta\chi_r^2$', size=16)
         p.ylabel(r'Fraction per bin', size=16)
         p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_histos.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  drchi2_histos.pdf')
         p.clf()
 
 
@@ -1495,7 +1619,8 @@ class verify_rm:
                 self.read_spPlate_all(plate,mjd)
                 openplate = plate
                 openmjd = mjd
-            #if (self.rm_rchi2diff[i] < drchi2max) and (self.idl_rchi2diff[fiber] < drchi2max):
+            #if (self.rm_rchi2diff[i] < drchi2max) and \
+                    (self.idl_rchi2diff[fiber] < drchi2max):
             total += 1
             if self.rm_rchi2diff[i] < diff: rm_failures += 1.
             if self.idl_rchi2diff[fiber] < diff: idl_failures += 1.
@@ -1503,7 +1628,8 @@ class verify_rm:
 
 
     def sequels_failure_vs_dchi2(self, drchi2max=.02, npoints=150):
-        # Makes a plot of SEQUELS LRG failure rate as a function of dchi2 threshold for redmonster and idlspec1d
+        # Makes a plot of SEQUELS LRG failure rate as a function of
+        # dchi2 threshold for redmonster and idlspec1d
         rm_data = []
         idl_data = []
         diffs = n.linspace(0,drchi2max,npoints)
@@ -1519,12 +1645,15 @@ class verify_rm:
         p.grid(b=True, which='major', color='black', linestyle='--')
         p.legend(loc=2)
         p.axis([0,.02,0,.7])
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  drchi2_vs_failure.pdf')
         p.clf()
 
 
     def sequels_reobs_errors(self, nbins=25):
-        # Makes a histogram of (z2-z1)/sqrt(dz1**2 + dz2**2) with best fit Gaussian overplotted for all SEQUELS LRG targets with repeat observations
+        # Makes a histogram of (z2-z1)/sqrt(dz1**2 + dz2**2)
+        # with best fit Gaussian overplotted for all SEQUELS LRG
+        # targets with repeat observations
         globpath = join( self.redmonster_spectro_redux,'*')
         z1 = []
         z2 = []
@@ -1535,17 +1664,28 @@ class verify_rm:
             if plate != 'redmonsterAll-%s.fits' % self.version:
                 print plate
                 mjds = []
-                mjdglobpath = join( self.redmonster_spectro_redux, '%s' % plate, '%s' % self.version, 'redmonster-%s-*.fits' % plate)
+                mjdglobpath = join( self.redmonster_spectro_redux, '%s' % plate,
+                                   '%s' % self.version,
+                                   'redmonster-%s-*.fits' % plate)
                 for mjdpath in iglob(mjdglobpath):
                     mjd = basename(mjdpath)[16:21]
                     if mjd not in mjds:
                         mjds.append(mjd)
                 if len(mjds) > 1:
                     print 'Plate %s has multiple MJDs' % plate
-                    hdu1 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[0]) ) )
-                    hdu2 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[1]) ) )
+                    hdu1 = fits.open( join( self.redmonster_spectro_redux,
+                                           plate, self.version,
+                                           'redmonster-%s-%s.fits' %
+                                           (plate,mjds[0]) ) )
+                    hdu2 = fits.open( join( self.redmonster_spectro_redux,
+                                           plate, self.version,
+                                           'redmonster-%s-%s.fits' %
+                                           (plate,mjds[1]) ) )
                     for i,z in enumerate(hdu1[1].data.Z1):
-                        if (hdu1[1].data.ZWARNING[i] == 0) & (hdu1[1].data.CLASS1[i] == 'ssp_em_galaxy') & (hdu2[1].data.ZWARNING[i] == 0) & (hdu2[1].data.CLASS1[i] == 'ssp_em_galaxy'):
+                        if (hdu1[1].data.ZWARNING[i] == 0) & \
+                                (hdu1[1].data.CLASS1[i] == 'ssp_em_galaxy') & \
+                                (hdu2[1].data.ZWARNING[i] == 0) & \
+                                (hdu2[1].data.CLASS1[i] == 'ssp_em_galaxy'):
                             z1.append(z)
                             z2.append(hdu2[1].data.Z1[i])
                             zerr1.append(hdu1[1].data.Z_ERR1[i])
@@ -1555,7 +1695,7 @@ class verify_rm:
         zerr1 = n.array(zerr1)
         zerr2 = n.array(zerr2)
         z_diff = z2-z1
-        zerr_rms = n.sqrt( (zerr1**2 + zerr2**2)/2. ) # In original paper, this was n.sqrt( (zerr1**2 + zerr2**2) )
+        zerr_rms = n.sqrt( (zerr1**2 + zerr2**2) )
         scaled_diff = z_diff / zerr_rms
         hist,binedges = n.histogram(scaled_diff,bins=nbins)
         normhist = hist / float(z1.shape[0])
@@ -1565,7 +1705,8 @@ class verify_rm:
         import pdb; pdb.set_trace()
         p.plot(bins, hist, drawstyle='steps-mid', color='black')
         
-        def fit_func(x,a,sigma,mu): # Gaussian function to fit to histogram
+        def fit_func(x,a,sigma,mu):
+            # Gaussian function to fit to histogram
             return a * n.exp( -((x-mu)**2)/(2*sigma**2) )
         
         popt,pcov = curve_fit(fit_func, normhist,bins)
@@ -1575,17 +1716,26 @@ class verify_rm:
         p.xlabel(r'$(z_2-z_1)/ \delta z_{rms}$', size=16)
         p.ylabel('Fraction per bin',size=16)
         p.text(3,.01,r'$\sigma_{fit}=1.18$',size=18)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  reobs_errors.pdf')
         p.clf()
 
 
     def plate_splits_function(self, plate, mjd, nbins=25, fit=True):
-        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split1', '%s' % plate, 'v5_8_guy_split1', 'redmonster-%s-%s.fits' % (plate,mjd)))
-        hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'test/bautista/v5_8_guy_split2', '%s' % plate, 'v5_8_guy_split2', 'redmonster-%s-%s.fits' % (plate,mjd)))
-        hdu3 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd)))
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                              'test/bautista/v5_8_guy_split1', '%s' % plate,
+                              'v5_8_guy_split1',
+                              'redmonster-%s-%s.fits' % (plate,mjd)))
+        hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'],
+                              'test/bautista/v5_8_guy_split2', '%s' % plate,
+                              'v5_8_guy_split2',
+                              'redmonster-%s-%s.fits' % (plate,mjd)))
+        hdu3 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'],
+                              '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd)))
         for i,ebt1 in enumerate(hdu3[5].data.EBOSS_TARGET1):
             if ebt1 & 2 > 0:
-                if True: #(hdu1[1].data.ZWARNING[i] == 0) and (hdu2[1].data.ZWARNING[i] == 0):
+                if True: #(hdu1[1].data.ZWARNING[i] == 0) and \
+                                (hdu2[1].data.ZWARNING[i] == 0):
                     self.z1.append(hdu1[1].data.Z1[i])
                     self.zerr1.append(hdu1[1].data.Z_ERR1[i])
                     self.z2.append(hdu2[1].data.Z1[i])
@@ -1610,7 +1760,8 @@ class verify_rm:
         self.zerr1 = []
         self.zerr2 = []
         for i,plate in enumerate(plates):
-            self.plate_splits_function(plate=plate, mjd=mjds[i], nbins=nbins, fit=fit)
+            self.plate_splits_function(plate=plate, mjd=mjds[i],
+                                       nbins=nbins, fit=fit)
         self.z1 = n.array(self.z1)
         self.z2 = n.array(self.z2)
         self.zerr1 = n.array(self.zerr1)
@@ -1648,7 +1799,8 @@ class verify_rm:
 
         p.xlabel(r'$(z_2-z_1)/ (\delta z_1^2+$ $\delta z_2^2)^{1/2}$', size=16)
         p.ylabel('Fraction per bin', size=16)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  reobs_errors.pdf')
         p.clf()
 
 
@@ -1665,34 +1817,48 @@ class verify_rm:
             for path in iglob(globpath1):
                 plate = basename(path)
                 if len(plate) == 4:
-                    globpath2 = join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-*.fits' % plate)
+                    globpath2 = join(environ['BOSS_SPECTRO_REDUX'],
+                                     '%s' % self.version, '%s' % plate,
+                                     'spPlate-%s-*.fits' % plate)
                     for file in iglob(globpath2):
                         if len(basename(file)) == 23:
                             mjd = basename(file)[13:18]
                             hduplate = fits.open(file)
-                            hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate,mjd)))
-                            hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
-                            #for i,ebt0 in enumerate(hduplate[5].data.EBOSS_TARGET0):
-                                #if ebt0 == 0:
+                            hduidl=fits.open(join(environ['BOSS_SPECTRO_REDUX'],
+                                                  '%s' % self.version,
+                                                  '%s' % plate,
+                                                  '%s' % self.version,
+                                                  'spZbest-%s-%s.fits' %
+                                                  (plate,mjd)))
+                            hdurm = fits.open(
+                                    join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                         '%s' % self.version, '%s' % plate,
+                                         '%s' % self.version,
+                                         'redmonster-%s-%s.fits' % (plate,mjd)))
                             for i,zwarn in enumerate(hdurm[1].data.ZWARNING):
                                 if zwarn & 1 > 0:
                                     total += 1.
-                                    if hduidl[1].data.RCHI2DIFF[i] > chi2max: countidl += 1.
-                                    if hdurm[1].data.RCHI2DIFF[i] > chi2max: countrm += 1.
+                                    if hduidl[1].data.RCHI2DIFF[i] > chi2max:
+                                        countidl += 1.
+                                    if hdurm[1].data.RCHI2DIFF[i] > chi2max:
+                                        countrm += 1.
             rm_ydata.append(countrm/total)
             idl_ydata.append(countidl/total)
 
         f = p.figure()
         ax = f.add_subplot(1,1,1)
-        p.plot(xdata, rm_ydata, drawstyle='steps-mid', color='red', label='redmonster')
-        p.plot(xdata, idl_ydata, drawstyle='steps-mid', color='blue', label='idlspec1d')
+        p.plot(xdata, rm_ydata, drawstyle='steps-mid', color='red',
+               label='redmonster')
+        p.plot(xdata, idl_ydata, drawstyle='steps-mid', color='blue',
+               label='idlspec1d')
         p.xlabel(r'$\Delta\chi_r^2$', size=16)
         p.ylabel(r'Cumulative fraction above threshold', size=16)
         ax.set_yscale('log')
         p.grid(b=True, which='major', color='black', linestyle='-')
         p.grid(b=True, which='minor', color='black', linestyle='--')
         p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/sky_failure_vs_drchi2.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  sky_failure_vs_drchi2.pdf')
         p.clf()
 
 
@@ -1730,12 +1896,18 @@ class verify_rm:
                     if self.rm_type2[ind][:3] == 'ssp': galstar += 1
                     if self.rm_type2[ind][:3] == 'QSO': starqso += 1
                     if self.rm_type2[ind][:3] == 'CAP': starstar += 1
-        print '%s galaxy-galaxy confusions of %s, which is %s' % (galgal,total,(galgal/total)*100)
-        print '%s galaxy-star confusions of %s, which is %s' % (galstar,total,(galstar/total)*100)
-        print '%s galaxy-QSO confusions of %s, which is %s' % (galqso,total,(galqso/total)*100)
-        print '%s star-star confusions of %s, which is %s' % (starstar,total,(starstar/total)*100)
-        print '%s star-QSO confusions of %s, which is %s' % (starqso,total,(starqso/total)*100)
-        print '%s QSO-QSO confusions of %s, which is %s' % (qsoqso,total,(qsoqso/total)*100)
+        print '%s galaxy-galaxy confusions of %s, which is %s' % \
+                (galgal,total,(galgal/total)*100)
+        print '%s galaxy-star confusions of %s, which is %s' % \
+                (galstar,total,(galstar/total)*100)
+        print '%s galaxy-QSO confusions of %s, which is %s' % \
+                (galqso,total,(galqso/total)*100)
+        print '%s star-star confusions of %s, which is %s' % \
+                (starstar,total,(starstar/total)*100)
+        print '%s star-QSO confusions of %s, which is %s' % \
+                (starqso,total,(starqso/total)*100)
+        print '%s QSO-QSO confusions of %s, which is %s' % \
+                (qsoqso,total,(qsoqso/total)*100)
 
 
     def rchi2_null_histos(self, nbins=35, reduced=True, normed=True):
@@ -1763,10 +1935,12 @@ class verify_rm:
             p.yabel('Number per bin')
         if reduced:
             p.xlabel(r'$\chi_{null,red}^2$',size=16)
-            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_histo.pdf')
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                      rchi2_null_histo.pdf')
         else:
             p.xlabel(r'$\chi_{null}^2$',size=16)
-            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_histo.pdf')
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                      chi2_null_histo.pdf')
         p.clf()
         # Plot cumulative histogram
         ydata = []
@@ -1782,10 +1956,12 @@ class verify_rm:
         if reduced:
             p.xlabel(r'$\chi_{null,red}^2$',size=16)
             p.axis([.6,1.8,0,1])
-            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_cumul_histo.pdf')
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                      rchi2_null_cumul_histo.pdf')
         else:
             p.xlabel(r'$\chi_{null}^2$',size=16)
-            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_cumul_histo.pdf')
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                      chi2_null_cumul_histo.pdf')
         p.clf()
 
 
@@ -1814,14 +1990,20 @@ class verify_rm:
             bins2[i] = (binedges2[i+1] + binedges2[i]) / 2.
             bins3[i] = (binedges3[i+1] + binedges3[i]) / 2.
         if normed:
-            p.plot(bins, normhist, drawstyle='steps-mid', color='magenta', label=r'$\chi_{\mathrm{null}}^2$')
-            p.plot(bins2, normhist2, drawstyle='steps-mid', color='mediumpurple', label=r'$\chi_{\mathrm{fit2}}^2$')
-            p.plot(bins3, normhist3, drawstyle='steps-mid', color='cyan', label=r'$\chi_{0}^2$')
+            p.plot(bins, normhist, drawstyle='steps-mid', color='magenta',
+                   label=r'$\chi_{\mathrm{null}}^2$')
+            p.plot(bins2, normhist2, drawstyle='steps-mid',
+                   color='mediumpurple', label=r'$\chi_{\mathrm{fit2}}^2$')
+            p.plot(bins3, normhist3, drawstyle='steps-mid', color='cyan',
+                   label=r'$\chi_{0}^2$')
             p.ylabel('Fraction per bin')
         else:
-            p.plot(bins, hist, drawstyle='steps-mid', color='magenta', label=r'$\chi_{\mathrm{null}}^2$')
-            p.plot(bins2, hist2, drawstyle='steps-mid', color='mediumpurple', label=r'$\chi_{\mathrm{fit2}}^2$')
-            p.plot(bins3, hist3, drawstyle='steps-mid', color='cyan', label=r'$\chi_{0}^2$')
+            p.plot(bins, hist, drawstyle='steps-mid', color='magenta',
+                   label=r'$\chi_{\mathrm{null}}^2$')
+            p.plot(bins2, hist2, drawstyle='steps-mid', color='mediumpurple',
+                   label=r'$\chi_{\mathrm{fit2}}^2$')
+            p.plot(bins3, hist3, drawstyle='steps-mid', color='cyan',
+                   label=r'$\chi_{0}^2$')
             p.ylabel('Number per bin')
         if bins[0] < bins2[0]:
             if bins[-1] > bins2[-1]: p.axis([bins[0],bins[-1],0,.25])
@@ -1831,9 +2013,11 @@ class verify_rm:
             else: p.axis([bins2[0],bins2[-1],0,.25])
         p.xlabel(r'$\chi^2-\chi_{\mathrm{min}}^2$', size=16)
         p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_less_chi2_min_histo.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  chi2_null_less_chi2_min_histo.pdf')
         p.clf()
-        print bins[0:3], normhist[0:3], bins2[0:3], normhist2[0:3], bins3[0:3], normhist3[0:3],
+        print bins[0:3], normhist[0:3], bins2[0:3], normhist2[0:3], bins3[0:3],\
+                normhist3[0:3],
 
 
     def sequels_stack_spectra(self):
@@ -1841,7 +2025,8 @@ class verify_rm:
 
 
     def sequels_example_chi2s(self, plates, mjds, fibers):
-        # Create stacked plots of three chi2 vs z curves for three fibers.  plates, mjds, and fibers are lists
+        # Create stacked plots of three chi2 vs z curves for three
+        # fibers.  plates, mjds, and fibers are lists
         # of plate, mjd, fiberid sets to have chi2 curve plotted
         # 7397 57129 784
         # 7311 57038 465
@@ -1850,55 +2035,69 @@ class verify_rm:
         f = p.figure()
         ax1 = f.add_subplot(311)
         specs = spec.Spec(plate=plates[0], mjd=mjds[0], fiberid=[fibers[0]])
-        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
+        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits',
+                                npoly=4, zmin=-0.01, zmax=1.2)
         zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
-        p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--', color='mediumpurple')
-        #p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--', color='mediumaquamarine')
+        p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--',
+               color='mediumpurple')
+        #p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--',
+        #       color='mediumaquamarine')
         #print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
         p.text(0.1,3970,'7397-57129-785', fontsize=12)
-        p.text(0.89, 3970, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
+        p.text(0.89, 3970, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0],
+               fontsize=12)
         p.axis([0,1.2,3955,4110])
         ax1.set_yticks([3960,3990,4020,4050,4080,4110])
         ax1.set_xticks([0,0.2,0.4,0.6,0.8,1.0,1.2])
         ax2 = f.add_subplot(312)
         specs = spec.Spec(plate=plates[1], mjd=mjds[1], fiberid=[fibers[1]])
-        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
+        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits',
+                                npoly=4, zmin=-0.01, zmax=1.2)
         zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
-        p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--', color='mediumpurple')
-        #p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--', color='mediumaquamarine')
+        p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--',
+               color='mediumpurple')
+        #p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--',
+                #color='mediumaquamarine')
         #print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
         p.text(0.1,4865.80645,'7311-57038-466', fontsize=12)
-        p.text(0.89, 4865.80645, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
+        p.text(0.89, 4865.80645, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0],
+               fontsize=12)
         p.axis([0,1.2,4860,4920])
         ax2.set_yticks([4860,4875,4890,4905,4920])
         ax2.set_xticks([0,0.2,0.4,0.6,0.8,1.0,1.2])
         p.ylabel(r'$\chi^2$', size=16)
         ax3 = f.add_subplot(313)
         specs = spec.Spec(plate=plates[2], mjd=mjds[2], fiberid=[fibers[2]])
-        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
+        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits',
+                                npoly=4, zmin=-0.01, zmax=1.2)
         zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
-        p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--', color='mediumpurple')
-        #p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--', color='mediumaquamarine')
+        p.plot(zssp1.zbase, [max(bestzvec)]*zssp1.zbase.shape[0], '--',
+               color='mediumpurple')
+        #p.plot(zssp1.zbase, [zssp1.sn2_data[0]]*zssp1.zbase.shape[0], '--',
+                #color='mediumaquamarine')
         #print zssp1.sn2_data[0]
         p.plot(zssp1.zbase, bestzvec, color='black')
         p.text(0.1,4001.6451612,'7305-56991-693', fontsize=12)
-        p.text(0.89, 4001.6451612, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0], fontsize=12)
+        p.text(0.89, 4001.6451612, r'$\chi_0^2 = $ %.1f' % zssp1.sn2_data[0],
+               fontsize=12)
         p.axis([0,1.2,4000,4017])
         ax3.set_yticks([4000,4004,4008,4012,4016])
         ax3.set_xticks([0,0.2,0.4,0.6,0.8,1.0,1.2])
         p.xlabel(r'$z$', size=16)
         p.subplots_adjust(wspace = .3, hspace = .3)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/example_chi2_vs_z.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
+                  example_chi2_vs_z.pdf')
         p.clf()
 
 
-# ----------------------------------------------------------------------------------------------------------------------------------
-# modified version of zfitter.z_refine2() to create chi2 vs z curves for self.sequels_example_chi2s()
+# ------------------------------------------------------------------------------
+# modified version of zfitter.z_refine2() to create chi2 vs z curves
+# for self.sequels_example_chi2s()
 
     def chi2_curves_helper(self, zchi2, zbase, threshold=23.3, width=15):
         self.zchi2 = zchi2
@@ -1910,13 +2109,15 @@ class verify_rm:
         self.threshold = threshold
         self.width = width
         for ifiber in xrange(self.zchi2.shape[0]):
-            self.minvector.append( (ifiber,) + n.unravel_index(self.zchi2[ifiber].argmin(),self.zchi2[ifiber].shape))
+            self.minvector.append( (ifiber,) + \
+                    n.unravel_index(self.zchi2[ifiber].argmin(),
+                                    self.zchi2[ifiber].shape))
             bestzvec = n.zeros( self.zchi2.shape[-1])
             for iz in xrange(self.zchi2.shape[-1]):
                 bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
         return bestzvec
 
-# ----------------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 
@@ -1929,12 +2130,16 @@ class verify_rm:
 
 
 
-# S/N per fiber is located in spZbest files in hdu[1].data.SN_MEDIAN .  You can get just r,i,z bands with x = hdu[1].data.SN_MEDIAN[:,2:] .
+# S/N per fiber is located in spZbest files in hdu[1].data.SN_MEDIAN .
+# You can get just r,i,z bands with x = hdu[1].data.SN_MEDIAN[:,2:] .
 
-# Fiber magnitudes are in spZbest files in hdu[1].data.SPECTROFLUX . Units are nanomaggies, convert to magnitudes
+# Fiber magnitudes are in spZbest files in hdu[1].data.SPECTROFLUX .
+# Units are nanomaggies, convert to magnitudes
 # with 22.5 - 2.5 * LOG_10(SPECTROFLUX)
 
-# To see fibers with zwarning != 0, ztype = 'galaxy', and boss_target1 = 'cmass', use >>> print n.where( (x.rm_zwarning != 0) & (x.rm_type == 'ssp_em_galaxy') & (x.boss_target1 & 2 == 2) )[0]+1
+# To see fibers with zwarning != 0, ztype = 'galaxy', and
+# boss_target1 = 'cmass', use >>> print n.where( (x.rm_zwarning != 0) &
+# (x.rm_type == 'ssp_em_galaxy') & (x.boss_target1 & 2 == 2) )[0]+1
 
 # Plate 7338 has 6 MJDs, 7340 has 4
 

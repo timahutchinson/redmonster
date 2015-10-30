@@ -5,14 +5,15 @@
 # Edited to reflect changes made to zfitter and zpicker, July 2015
 # t.hutchinson@utah.edu
 
-import numpy as n
-from astropy.io import fits
+
+import re
 from os import environ, makedirs, getcwd, remove
 from os.path import exists, join, basename
-from astropy.io import fits
 from time import gmtime, strftime
+
+import numpy as n
+from astropy.io import fits
 from glob import iglob
-import re
 
 
 def read_ndArch(fname):
@@ -1068,13 +1069,15 @@ class Merge_Redmonster:
                             self.rchi2diff += hdu[1].data.RCHI2DIFF.tolist()
                             self.chi2_null += hdu[1].data.CHI2NULL.tolist()
                             self.sn2_data += hdu[1].data.SN2DATA.tolist()
-            self.hdr.extend([('SPEC2D',environ['RUN2D'],
+            self.hdr.extend([
+                             ('SPEC2D',environ['RUN2D'],
                               'Version of spec2d reductions used'),
                              ('VERS_RM','v0.1.0','Version of redmonster used'),
                              ('TIME',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),
                               'Time of redmonsterAll creation'),
                              ('NFIBERS', len(self.fiberid), 'Number of fibers'),
-                             ('RCHI2TH',0.005,'Reduced chi**2 threshold used')])
+                             ('RCHI2TH',0.005,'Reduced chi**2 threshold used')
+                             ])
             prihdu = fits.PrimaryHDU(header=self.hdr)
             colslist = []
             colslist.append( fits.Column(name='FIBERID', format='J',

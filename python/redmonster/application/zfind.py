@@ -55,11 +55,18 @@ class Zfind:
             if len(r) == 1:
                 for section in self.option.sections():
                     self.labels.append(section)
-                    if self.option.has_option(section,'template'): self.templates.append(self.option.get(section,'template'))
-                    if self.option.has_option(section,'zmin'): self.zmin.append(self.option.getfloat(section,'zmin'))
-                    if self.option.has_option(section,'zmax'): self.zmax.append(self.option.getfloat(section,'zmax'))
-                    if self.option.has_option(section,'npoly'): self.npoly.append(self.option.getint(section,'npoly'))
-                    if self.option.has_option(section,'npixstep'): self.npixstep.append(self.option.getint(section,'npixstep'))
+                    if self.option.has_option(section,'template'):
+                        self.templates.append(self.option.get(section,
+                                                              'template'))
+                    if self.option.has_option(section,'zmin'):
+                        self.zmin.append(self.option.getfloat(section,'zmin'))
+                    if self.option.has_option(section,'zmax'):
+                        self.zmax.append(self.option.getfloat(section,'zmax'))
+                    if self.option.has_option(section,'npoly'):
+                        self.npoly.append(self.option.getint(section,'npoly'))
+                    if self.option.has_option(section,'npixstep'):
+                        self.npixstep.append(self.option.getint(section,
+                                                                'npixstep'))
             else: print "Cannot parse ini file %r" % self.inifile
             
             if not self.labels: self.labels = None
@@ -131,7 +138,8 @@ class Zfind:
                     try:
                         self.npoly = self.npoly.tolist()
                     except:
-                        print 'npoly not a list and unable to convert to list - defaulting to npoly=4 for all templates!'
+                        print 'npoly not a list and unable to convert to \
+                                list - defaulting to npoly=4 for all templates!'
                         self.npoly = [4]*len(self.templates)
             else:
                 self.npoly = map(int, self.npoly)
@@ -145,7 +153,9 @@ class Zfind:
                     try:
                         self.npixstep = self.npixstep.tolist()
                     except:
-                        print 'npixstep not a list and unable to convert to list - defaulting to npixstep=1 for all templates!'
+                        print 'npixstep not a list and unable to convert to \
+                                list - defaulting to npixstep=1 for all \
+                                templates!'
                         self.npixstep = [1]*len(self.templates)
             else:
                 self.npixstep = map(int, self.npixstep)
@@ -176,15 +186,28 @@ class Zfind:
         zfitobjs = []
         if (self.zmin is not None) & (self.zmax is not None):
             for i in xrange(len(self.templates)):
-                zfindobjs.append( zfinder.Zfinder(fname=self.templates[i], npoly=self.npoly[i], zmin=self.zmin[i], zmax=self.zmax[i]) )
-                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar, npixstep=self.npixstep[i], plate=plate, mjd=mjd, fiberid=fiberid[0], chi2file=self.chi2file )
-                zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr, zfindobjs[i].zbase) )
+                zfindobjs.append( zfinder.Zfinder(fname=self.templates[i],
+                                                  npoly=self.npoly[i],
+                                                  zmin=self.zmin[i],
+                                                  zmax=self.zmax[i]) )
+                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
+                                   npixstep=self.npixstep[i], plate=plate,
+                                   mjd=mjd, fiberid=fiberid[0],
+                                   chi2file=self.chi2file )
+                zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr,
+                                                 zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine()
         else:
             for i in xrange(len(self.templates)):
-                zfindobjs.append( zfinder.Zfinder(fname=self.templates[i], npoly=self.npoly[i], npixstep=self.npixstep[i]) )
-                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar, npixstep=self.npixstep[i], plate=plate, mjd=mjd, fiberid=fiberid[0], chi2file=self.chi2file )
-                zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr, zfindobjs[i].zbase) )
+                zfindobjs.append( zfinder.Zfinder(fname=self.templates[i],
+                                                  npoly=self.npoly[i],
+                                                  npixstep=self.npixstep[i]) )
+                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
+                                   npixstep=self.npixstep[i], plate=plate,
+                                   mjd=mjd, fiberid=fiberid[0],
+                                   chi2file=self.chi2file )
+                zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr,
+                                                 zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine()
 
         # Flags
@@ -193,7 +216,8 @@ class Zfind:
             flags.append( misc.comb_flags(specs, zfindobjs[i], zfitobjs[i]) )
 
         # Zpicker
-        if len(self.templates) == 1: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0])
+        if len(self.templates) == 1:
+            zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0])
         elif len(self.templates) == 2: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1])
         elif len(self.templates) == 3: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
                                                           zfindobjs[2], zfitobjs[2], flags[2])
