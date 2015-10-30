@@ -2035,7 +2035,7 @@ class VerifyRM:
         f = p.figure()
         ax1 = f.add_subplot(311)
         specs = spec.Spec(plate=plates[0], mjd=mjds[0], fiberid=[fibers[0]])
-        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits',
+        zssp1 = zfinder.ZFinder(fname='ndArch-ssp_galaxy_glob-v000.fits',
                                 npoly=4, zmin=-0.01, zmax=1.2)
         zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
@@ -2053,7 +2053,7 @@ class VerifyRM:
         ax1.set_xticks([0,0.2,0.4,0.6,0.8,1.0,1.2])
         ax2 = f.add_subplot(312)
         specs = spec.Spec(plate=plates[1], mjd=mjds[1], fiberid=[fibers[1]])
-        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits',
+        zssp1 = zfinder.ZFinder(fname='ndArch-ssp_galaxy_glob-v000.fits',
                                 npoly=4, zmin=-0.01, zmax=1.2)
         zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)
@@ -2072,7 +2072,7 @@ class VerifyRM:
         p.ylabel(r'$\chi^2$', size=16)
         ax3 = f.add_subplot(313)
         specs = spec.Spec(plate=plates[2], mjd=mjds[2], fiberid=[fibers[2]])
-        zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_glob-v000.fits',
+        zssp1 = zfinder.ZFinder(fname='ndArch-ssp_galaxy_glob-v000.fits',
                                 npoly=4, zmin=-0.01, zmax=1.2)
         zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
         bestzvec = self.chi2_curves_helper(zssp1.zchi2arr, zssp1.zbase)

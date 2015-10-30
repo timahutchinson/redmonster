@@ -31,7 +31,7 @@ from os.path import exists
 from ConfigParser import SafeConfigParser
 import sys
 
-class Zfind:
+class ZFind:
 
     def __init__(self, num_z=5, inifile=None, dest=None, clobber=True):
         self.num_z = num_z
@@ -181,12 +181,12 @@ class Zfind:
         # Spec
         specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 
-        # Zfinder, Zfitter
+        # ZFinder, ZFitter
         zfindobjs = []
         zfitobjs = []
         if (self.zmin is not None) & (self.zmax is not None):
             for i in xrange(len(self.templates)):
-                zfindobjs.append( zfinder.Zfinder(fname=self.templates[i],
+                zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
                                                   npoly=self.npoly[i],
                                                   zmin=self.zmin[i],
                                                   zmax=self.zmax[i]) )
@@ -194,19 +194,19 @@ class Zfind:
                                    npixstep=self.npixstep[i], plate=plate,
                                    mjd=mjd, fiberid=fiberid[0],
                                    chi2file=self.chi2file )
-                zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr,
+                zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
                                                  zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine()
         else:
             for i in xrange(len(self.templates)):
-                zfindobjs.append( zfinder.Zfinder(fname=self.templates[i],
+                zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
                                                   npoly=self.npoly[i],
                                                   npixstep=self.npixstep[i]) )
                 zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
                                    npixstep=self.npixstep[i], plate=plate,
                                    mjd=mjd, fiberid=fiberid[0],
                                    chi2file=self.chi2file )
-                zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr,
+                zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
                                                  zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine()
 
@@ -215,15 +215,15 @@ class Zfind:
         for i in xrange(len(zfindobjs)):
             flags.append( misc.comb_flags(specs, zfindobjs[i], zfitobjs[i]) )
 
-        # Zpicker
+        # ZPicker
         if len(self.templates) == 1:
-            zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0])
-        elif len(self.templates) == 2: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1])
-        elif len(self.templates) == 3: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
+            zpick = zpicker.ZPicker(specs, zfindobjs[0], zfitobjs[0], flags[0])
+        elif len(self.templates) == 2: zpick = zpicker.ZPicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1])
+        elif len(self.templates) == 3: zpick = zpicker.ZPicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
                                                           zfindobjs[2], zfitobjs[2], flags[2])
-        elif len(self.templates) == 4: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
+        elif len(self.templates) == 4: zpick = zpicker.ZPicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
                                                           zfindobjs[2], zfitobjs[2], flags[2], zfindobjs[3], zfitobjs[3], flags[3])
-        elif len(self.templates) == 5: zpick = zpicker.Zpicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
+        elif len(self.templates) == 5: zpick = zpicker.ZPicker(specs, zfindobjs[0], zfitobjs[0], flags[0], zfindobjs[1], zfitobjs[1], flags[1],
                                                           zfindobjs[2], zfitobjs[2], flags[2], zfindobjs[3], zfitobjs[3], flags[3],
                                                           zfindobjs[4], zfitobjs[4], flags[4])
 

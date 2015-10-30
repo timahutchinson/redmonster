@@ -21,7 +21,7 @@ from redmonster.datamgr.io2 import read_ndArch, write_chi2arr
 
 # Assumes all templates live in $REDMONSTER_DIR/templates/
 
-class Zfinder:
+class ZFinder:
     
     def __init__(self, fname=None, npoly=None, zmin=None, zmax=None):
         self.fname = fname

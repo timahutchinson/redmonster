@@ -1,6 +1,6 @@
 # Use chi2 surfaces from zfinder.py to choose and classify objects on each fiber.  Each zfind
-# argument is the ENTIRE object created by Zfinder for a single template, and each zfit argument
-# is the ENTIRE object created by Zfitter for a single template. Zfiti must correspond with
+# argument is the ENTIRE object created by ZFinder for a single template, and each zfit argument
+# is the ENTIRE object created by ZFitter for a single template. Zfiti must correspond with
 # zfindi.  Each 'flag' argument is the combined flag for a template, combined with
 # redmonster.misc.comb_flags function.  Output is in zpick.type, a list of len()=nfibers where
 # each entry is a string of objclassN.type for the best reduced chi2 amongst all input classes.
@@ -10,7 +10,7 @@
 
 import numpy as n
 
-class Zpicker:
+class ZPicker:
 
     def __init__(self, specobj, zfind1, zfit1, flags1, zfind2=None, zfit2=None, flags2=None, zfind3=None, zfit3=None, flags3=None, zfind4=None, zfit4=None, flags4=None, zfind5=None, zfit5=None, flags5=None):
         self.npixflux = specobj.npix

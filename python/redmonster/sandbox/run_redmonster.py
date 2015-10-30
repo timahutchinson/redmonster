@@ -52,9 +52,9 @@ specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
     cross-correlation.  If left blank, it defaults to 1.
     '''
 
-#zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_cont-v002.fits',
+#zssp1 = zfinder.ZFinder(fname='ndArch-ssp_galaxy_cont-v002.fits',
                          #npoly=4, zmin=-0.01, zmax=1.2)
-zssp1 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_noemit-v000.fits',
+zssp1 = zfinder.ZFinder(fname='ndArch-ssp_galaxy_noemit-v000.fits',
                         npoly=4, zmin=-0.01, zmax=1.2)
 
 ''' Run actual fitting routine on the object created above. zssp.zchi2arr
@@ -68,21 +68,21 @@ zssp1.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
 
 ''' New objects and fitting for different templates.'''
 
-#zssp2 = zfinder.Zfinder(fname='ndArch-ssp_galaxy_emit-v002.fits',
+#zssp2 = zfinder.ZFinder(fname='ndArch-ssp_galaxy_emit-v002.fits',
                          #npoly=4, zmin=-0.01, zmax=1.2)
 #zssp2.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=2)
-zstar = zfinder.Zfinder(fname='ndArch-all-CAP-grids.fits', npoly=4, zmin=-.005,
+zstar = zfinder.ZFinder(fname='ndArch-all-CAP-grids.fits', npoly=4, zmin=-.005,
                         zmax=.005)
 zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
-zqso = zfinder.Zfinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.4, zmax=3.5)
+zqso = zfinder.ZFinder(fname='ndArch-QSO-V003.fits', npoly=4, zmin=.4, zmax=3.5)
 zqso.zchi2(specs.flux, specs.loglambda, specs.ivar, npixstep=4)
 
-''' Instantiate Zfitter to do subgrid fitting.  zchi2_ssp is chi^2 array
+''' Instantiate ZFitter to do subgrid fitting.  zchi2_ssp is chi^2 array
     from zfinder object above, and zssp.zbase is redshift-pixel baseline
     over the range explored by zfinder.
     '''
 
-zfit_ssp1 = zfitter.Zfitter(zssp1.zchi2arr, zssp1.zbase)
+zfit_ssp1 = zfitter.ZFitter(zssp1.zchi2arr, zssp1.zbase)
 
 ''' Do actual subgrid refinement and fitting.  Best-fit and
     second-best-fit redshifts will be in [nfibers,2] shaped array in
@@ -99,11 +99,11 @@ zfit_ssp1.z_refine2()
 
 ''' Same as above for second template.'''
 
-#zfit_ssp2 = zfitter.Zfitter(zssp2.zchi2arr, zssp2.zbase)
+#zfit_ssp2 = zfitter.ZFitter(zssp2.zchi2arr, zssp2.zbase)
 #zfit_ssp2.z_refine2()
-zfit_star = zfitter.Zfitter(zstar.zchi2arr, zstar.zbase)
+zfit_star = zfitter.ZFitter(zstar.zchi2arr, zstar.zbase)
 zfit_star.z_refine2()
-zfit_qso = zfitter.Zfitter(zqso.zchi2arr, zqso.zbase)
+zfit_qso = zfitter.ZFitter(zqso.zchi2arr, zqso.zbase)
 zfit_qso.z_refine2()
 
 ''' Flagging throughout redmonster is done individually by the classes
@@ -119,15 +119,15 @@ qso_flags = misc.comb_flags(specs, zqso, zfit_qso)
 
 ''' Compare chi2 surfaces from each template and classify each object
     accordingly. Arguments are data object (in a format identical to
-    that created by Spec), followed by each object created by Zfinder,
-    Zfitter, and flags, in that order.  This function can currently
+    that created by Spec), followed by each object created by ZFinder,
+    ZFitter, and flags, in that order.  This function can currently
     handle up to five objects from five separate templates. If specs
     is a user created data object rather than one created by
     redmonster.datamgr.spec, it must contain specs.npix, the number of
     pixels in a single spectrum.
     '''
 
-#zpick = zpicker.Zpicker(specs, zssp, zfit_ssp, ssp_flags, zstar, zfit_star,
+#zpick = zpicker.ZPicker(specs, zssp, zfit_ssp, ssp_flags, zstar, zfit_star,
                          #star_flags, zqso, zfit_qso, qso_flags)
 zfindobjs=[]
 zfindobjs.append(zssp1)
@@ -145,7 +145,7 @@ flags.append(ssp1_flags)
 flags.append(star_flags)
 flags.append(qso_flags)
 
-zpick = zpicker2.Zpicker(specs, zfindobjs, zfitobjs, flags)
+zpick = zpicker2.ZPicker(specs, zfindobjs, zfitobjs, flags)
 
 #zpick.plate = 0000
 #zpick.mjd = 00000

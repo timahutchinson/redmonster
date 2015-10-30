@@ -40,7 +40,7 @@ try:
 except:
     pass
 
-zf = zfind2.Zfind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
+zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
 if data_range:
     zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
                         chi2file=False)

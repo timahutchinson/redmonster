@@ -15,7 +15,7 @@ from redmonster.physics.misc import quadfit
 from redmonster.physics import grid_spline as gs
 
 
-class Zfitter:
+class ZFitter:
 
     def __init__(self, zchi2, zbase):
         self.zchi2 = zchi2

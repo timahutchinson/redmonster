@@ -34,7 +34,7 @@ from redmonster.physics import zfinder, zfitter, zpicker, zpicker2
 from redmonster.physics import misc
 
 
-class Zfind:
+class ZFind:
 
     def __init__(self, num_z=5, inifile=None, dest=None, clobber=True):
         self.num_z = num_z
@@ -191,12 +191,12 @@ class Zfind:
         # Spec
         specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
 
-        # Zfinder, Zfitter
+        # ZFinder, ZFitter
         zfindobjs = []
         zfitobjs = []
         if (self.zmin is not None) & (self.zmax is not None):
             for i in xrange(len(self.templates)):
-                zfindobjs.append( zfinder.Zfinder(fname=self.templates[i],
+                zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
                                                   npoly=self.npoly[i],
                                                   zmin=self.zmin[i],
                                                   zmax=self.zmax[i]) )
@@ -204,19 +204,19 @@ class Zfind:
                                    npixstep=self.npixstep[i], plate=plate,
                                    mjd=mjd, fiberid=fiberid[0],
                                    chi2file=self.chi2file )
-                zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr,
+                zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
                                                  zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine2()
         else:
             for i in xrange(len(self.templates)):
-                zfindobjs.append( zfinder.Zfinder(fname=self.templates[i],
+                zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
                                                   npoly=self.npoly[i],
                                                   npixstep=self.npixstep[i]) )
                 zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
                                    npixstep=self.npixstep[i], plate=plate,
                                    mjd=mjd, fiberid=fiberid[0],
                                    chi2file=self.chi2file )
-                zfitobjs.append( zfitter.Zfitter(zfindobjs[i].zchi2arr,
+                zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
                                                  zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine2()
 
@@ -225,8 +225,8 @@ class Zfind:
         for i in xrange(len(zfindobjs)):
             flags.append( misc.comb_flags(specs, zfindobjs[i], zfitobjs[i]) )
 
-        # Zpicker
-        zpick = zpicker2.Zpicker(specs, zfindobjs, zfitobjs, flags)
+        # ZPicker
+        zpick = zpicker2.ZPicker(specs, zfindobjs, zfitobjs, flags)
 
 
 

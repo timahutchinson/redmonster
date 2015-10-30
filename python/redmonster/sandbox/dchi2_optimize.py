@@ -177,10 +177,10 @@ def find_comp_purity(this_thresh, args):
         starchi2arr = hdu[0].data
         zbasestar = hdu[1].data.ZBASE
         
-        zfit_ssp = zfitter.Zfitter(sspchi2arr, zbasessp)
+        zfit_ssp = zfitter.ZFitter(sspchi2arr, zbasessp)
         zfit_ssp.z_refine(threshold=this_thresh)
         
-        zfit_star = zfitter.Zfitter(starchi2arr, zbasestar)
+        zfit_star = zfitter.ZFitter(starchi2arr, zbasestar)
         zfit_star.z_refine(threshold=this_thresh)
         
         ssp_flags = misc.comb_flags_2(specs, zfit_ssp.zwarning)

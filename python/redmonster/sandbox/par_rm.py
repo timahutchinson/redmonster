@@ -18,7 +18,7 @@ from redmonster.physics import zfinder, zfitter, zpicker
 
 def parallel_rm( (plate,mjd,fiberid) ):
     specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
-    zssp = zfinder.Zfinder(fname='ndArch-ssp_em_galaxy-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
+    zssp = zfinder.ZFinder(fname='ndArch-ssp_em_galaxy-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
     zssp.zchi2(specs.flux, specs.loglambda, specs.ivar)
     # Write chi2 file with zbase
     prihdu = fits.PrimaryHDU(zssp.zchi2arr)
@@ -28,13 +28,13 @@ def parallel_rm( (plate,mjd,fiberid) ):
     thdulist = fits.HDUList([prihdu,tbhdu])
     thdulist.writeto('chi2arr-%s-%s.fits' % (plate, zssp.type), clobber=True)
     # ----
-    #zstar = zfinder.Zfinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
+    #zstar = zfinder.ZFinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
     #zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
-    #zfit_ssp = zfitter.Zfitter(zssp.zchi2arr, zssp.zbase)
+    #zfit_ssp = zfitter.ZFitter(zssp.zchi2arr, zssp.zbase)
     #zfit_ssp.z_refine(threshold=this_thresh)
-    #zfit_star = zfitter.Zfitter(zstar.zchi2arr, zstar.zbase)
+    #zfit_star = zfitter.ZFitter(zstar.zchi2arr, zstar.zbase)
     #zfit_star.z_refine(threshold=this_thresh)
-    #zpick = zpicker.Zpicker(specs, zssp, zfit_ssp, zstar, zfit_star)
+    #zpick = zpicker.ZPicker(specs, zssp, zfit_ssp, zstar, zfit_star)
     #ssp_flags = n.zeros(len(fiberid))
     #star_flags = n.zeros(len(fiberid))
     #for ifiber in xrange(len(fiberid)):
