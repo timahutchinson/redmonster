@@ -23,7 +23,7 @@ from astropy.convolution import convolve, Box1DKernel
 from redmonster.physics.misc import poly_array
 
 
-class Plot_Fit(Frame):
+class PlotFit(Frame):
     def __init__ (self):
         self.root = Tk()
         self.ablinelist = [
@@ -361,6 +361,6 @@ class Plot_Fit(Frame):
 
 
 
-app = Plot_Fit()
+app = PlotFit()
 
 

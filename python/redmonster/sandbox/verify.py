@@ -11,7 +11,7 @@ from math import isnan
 from astropy.convolution import convolve, Box1DKernel
 from scipy.optimize import curve_fit
 
-class verify_rm:
+class VerifyRM:
     
     def __init__(self,version='v5_7_0',plates=[3686,3687,3804,3805,3853,3855,3856,3860],mjds={3686:55268,3687:55269,3804:55267,3805:55269,3853:55268,3855:55268,3856:55269,3860:55269}):
         self.version = version

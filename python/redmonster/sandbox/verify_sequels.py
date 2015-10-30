@@ -15,7 +15,7 @@ from redmonster.sandbox import yanny as y
 from redmonster.datamgr import spec
 from redmonster.physics import zfinder
 
-class verify_rm:
+class VerifyRM:
     
     def __init__(self,version='v5_8_0',
                  plates=[3686,3687,3804,3805,3853,3855,3856,3860],

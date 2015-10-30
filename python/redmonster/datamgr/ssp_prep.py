@@ -19,7 +19,7 @@ from redmonster.physics.misc import cen2bound, bound2cen
 
 # Assumes SSPs are a fits file located in $IDLSPEC2D_DIR/templates/SSPs/
 
-class SSP_Prep:
+class SSPPrep:
     
     def __init__(self, coeff1 = .0001, velmin=None, velstep=None, nvel=None,
                  ssp_file = 'SSP_Padova_RRLIB_Kroupa_Z0.0190.fits'):

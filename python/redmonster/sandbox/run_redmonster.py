@@ -155,15 +155,15 @@ zpick = zpicker2.Zpicker(specs, zfindobjs, zfitobjs, flags)
     optionally dest and clobber, the path in which to write to file
     and whether or not to clobber old files with the same name,
     respectively.  See class documentation for more detail on
-    Write_Redmonster behavior.'''
+    WriteRedmonster behavior.'''
 
-output = io2.Write_Redmonster(zpick)
+output = io2.WriteRedmonster(zpick)
 output.write_fiber()
 
 # Things left to do
 #
 # DONE 1. Incorporate flags into, probably, zpicker and
-#         subseqently Write_Redmonster
+#         subseqently WriteRedmonster
 # 2. Incorporate Adam's spCFrame fittings somewhere
 # 3. Function to turn variable resolution data into coadded log(lambda) data?
 # DONE 4. Quasar templates?

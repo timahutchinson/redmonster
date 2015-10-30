@@ -231,17 +231,17 @@ class Zfind:
 
         # Write output
         if self.dest is None:
-            output = io.Write_Redmonster(zpick, clobber=self.clobber)
+            output = io.WriteRedmonster(zpick, clobber=self.clobber)
         else:
             if type(self.dest) is str:
-                output = io.Write_Redmonster(zpick, dest=self.dest, clobber=self.clobber)
+                output = io.WriteRedmonster(zpick, dest=self.dest, clobber=self.clobber)
             else:
                 try:
                     self.dest = str(self.dest)
-                    output = io.Write_Redmonster(zpick, dest=self.dest, clobber=self.clobber)
+                    output = io.WriteRedmonster(zpick, dest=self.dest, clobber=self.clobber)
                 except:
                     print 'Could not convert dest to string - writing to default directory and NOT clobbering old files!'
-                    output = io.Write_Redmonster(zpick, clobber=True)
+                    output = io.WriteRedmonster(zpick, clobber=True)
 
         if output:
             if len(zpick.fiberid) == 1: output.write_fiberid()

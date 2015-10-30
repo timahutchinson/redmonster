@@ -15,7 +15,7 @@ from scipy.optimize import nnls
 import matplotlib as m
 from matplotlib import pyplot as p
 
-from redmonster.datamgr.ssp_prep import SSP_Prep
+from redmonster.datamgr.ssp_prep import SSPPrep
 from redmonster.physics.misc import poly_array, two_pad
 from redmonster.datamgr.io2 import read_ndArch, write_chi2arr
 

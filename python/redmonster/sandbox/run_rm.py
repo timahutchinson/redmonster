@@ -44,7 +44,7 @@ def parallel_rm( (plate,mjd,fiberid) ):
     prihdu = fits.PrimaryHDU(zpick.zwarning)
     thdulist = fits.HDUList([prihdu])
     thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/flags-%s.fits' % plate, clobber=True)
-    output = io.Write_Redmonster(zpick, dest='/uufs/astro.utah.edu/common/home/u0814744/scratch/screens', clobber=True)
+    output = io.WriteRedmonster(zpick, dest='/uufs/astro.utah.edu/common/home/u0814744/scratch/screens', clobber=True)
 
 # Read yanny file
 x = y.yanny(filename='spInspect_alltest_bolton.par.txt', np=True)

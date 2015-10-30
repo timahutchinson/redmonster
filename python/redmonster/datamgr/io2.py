@@ -216,7 +216,7 @@ def write_ndArch(data, baselines, infodict):
     hdu.writeto(infodict['filename'], clobber=True)
 
 
-class Write_Redmonster:
+class WriteRedmonster:
     '''
         Class to write output file at the end of running redmonster.
         
@@ -499,7 +499,7 @@ instantiate with no plate, mjd and call methond merge_plates()
 # t.hutchinson@utah.edu
 
 
-class Merge_Redmonster:
+class MergeRedmonster:
     
     def __init__(self, plate=None, mjd=None, temp=None):
         self.plate = plate
@@ -582,7 +582,7 @@ class Merge_Redmonster:
                 self.models[i] = hdu[2].data[0]
                 #remove(path)
                                
-            output = Write_Redmonster(self, clobber=True)
+            output = WriteRedmonster(self, clobber=True)
             output.write_plate()
 
     def merge_plates(self):
@@ -657,7 +657,7 @@ class Merge_Redmonster:
         self.z_err[:,0] = self.z_err1
         self.z_err[:,1] = self.z_err2
         
-        output = Write_Redmonster(self)
+        output = WriteRedmonster(self)
         output.create_hdulist()
         output.thdulist.writeto( join( topdir, run2d, 'redmonsterAll-%s.fits' %
                                       run2d), clobber=True)

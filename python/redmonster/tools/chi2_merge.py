@@ -51,5 +51,5 @@ if platedir:
             for temp in temps:
                 print 'Merging chi2 files for plate %s, mjd %s, template %s' % \
                         (plate, mjd, temp)
-                x = io.Merge_Redmonster(plate, mjd, temp)
+                x = io.MergeRedmonster(plate, mjd, temp)
                 x.merge_chi2()
