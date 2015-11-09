@@ -215,7 +215,7 @@ class Hacked_zpicker:
         self.zwarning = []
         self.z = n.zeros( (zchi2arr1.shape[0],2) )
         self.z_err = n.zeros( (zchi2arr1.shape[0],2) )
-        if zchi2arr2 == None: self.nclass = 1
+        if zchi2arr2 is None: self.nclass = 1
         else: self.nclass = 2
         self.minrchi2 = n.zeros( (zchi2arr1.shape[0], self.nclass) )
         self.classify_obj(zchi2arr1, zfit1, flags1, zchi2arr2, zfit2, flags2)
