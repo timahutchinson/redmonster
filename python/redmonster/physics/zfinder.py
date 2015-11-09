@@ -142,7 +142,7 @@ class ZFinder:
                 self.f_nulls.append( f_null )
                 self.chi2_null.append( self.sn2_data[i] -
                                       n.dot(n.dot(f_null,pmat[1:,1:,0]),f_null))
-                print self.chi2_null[i]
+                print 'Chi^2_null value is %s' % self.chi2_null[i]
                 # Loop over templates
                 for j in xrange(self.templates_flat.shape[0]):
                     pmat[0,0] = n.fft.ifft(self.t2_fft[j] *
