@@ -245,8 +245,9 @@ class WriteRedmonster:
                 try:
                     makedirs(dest)
                     self.dest = dest
-                except:
+                except Exception as e:
                     self.dest = None
+                    print "Exception: %r" % e
         else:
             bsr = environ['REDMONSTER_SPECTRO_REDUX']
             run2d = environ['RUN2D']
@@ -259,16 +260,21 @@ class WriteRedmonster:
                     try:
                         makedirs(testpath)
                         self.dest = testpath
-                    except:
+                    except Exception as e:
                         self.dest = None
+                        print "Exception: %r" % e
             else: self.dest = None
 
     def create_hdulist(self):
         # Get old header, append new stuff
-        try: hdr = self.zpick.hdr
-        except: hdr = fits.Header()
-        try: hdr.remove('HUMIDITY')
-        except: pass
+        try:
+            hdr = self.zpick.hdr
+        except AttributeError:
+            hdr = fits.Header()
+        try:
+            hdr.remove('HUMIDITY')
+        except AttributeError:
+            pass
         hdr.extend([('SPEC2D',environ['RUN2D'],
                      'Version of spec2d reductions used'),
                     ('VERS_RM','v0.1.0','Version of redmonster used'),
@@ -524,12 +530,22 @@ class MergeRedmonster:
         self.sn2_data = []
         self.models = None
         self.hdr = None
-        try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
-        except: topdir = None
-        try: run2d = environ['RUN2D']
-        except: run2d = None
-        try: run1d = environ['RUN1D']
-        except: run1d = None
+        try:
+            topdir = environ['REDMONSTER_SPECTRO_REDUX']
+        except KeyError as e:
+            topdir = None
+            print "Enviromental variable 'REDMONSTER_SPECTRO_REDUX' not set: \
+                    %r" % e
+        try:
+            run2d = environ['RUN2D']
+        except KeyError as e:
+            run2d = None
+            print "Enviromental variable 'RUN2D' not set: %r" % e
+        try:
+            run1d = environ['RUN1D']
+        except KeyError as e:
+            run1d = None
+            print "Enviromental variable 'RUN1D' not set: %r" % e
         fiberdir = join(topdir, run2d, '%s' % self.plate, run1d,
                         'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if \
                                topdir and run2d and run1d else None
@@ -544,7 +560,9 @@ class MergeRedmonster:
                                             environ['RUN2D'], '%s' % self.plate,
                                             'spPlate-%s-%s.fits' %
                                             (self.plate,self.mjd) ) )[0].header
-            except: self.hdr = fits.Header()
+            except Exception as e:
+                self.hdr = fits.Header()
+                print "Exception: %r" % e
             npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'],
                                    environ['RUN2D'], '%s' % self.plate,
                                    'spPlate-%s-%s.fits' %
@@ -569,15 +587,15 @@ class MergeRedmonster:
                 self.chi2diff.append(hdu[1].data.RCHI2DIFF[0])
                 try:
                     self.boss_target1.append(hdu[1].data.BOSS_TARGET1[0])
-                except:
+                except AttributeError:
                     pass
                 try:
                     self.eboss_target0.append(hdu[1].data.EBOSS_TARGET0[0])
-                except:
+                except AttributeError:
                     pass
                 try:
                     self.eboss_target1.append(hdu[1].data.EBOSS_TARGET1[0])
-                except:
+                except AttributeError:
                     pass
                 self.models[i] = hdu[2].data[0]
                 #remove(path)
@@ -602,12 +620,21 @@ class MergeRedmonster:
         self.plates = []
         self.models = n.zeros((1,1))
         self.hdr = fits.Header()
-        try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
-        except: topdir = None
+        try:
+            topdir = environ['REDMONSTER_SPECTRO_REDUX']
+        except KeyError as e:
+            topdir = None
+            print "Environ variable 'REDMONSTER_SPECTRO_REDUX is not set: %r" %\
+                    e
         try: run2d = environ['RUN2D']
-        except: run2d = None
-        try: run1d = environ['RUN1D']
-        except: run1d = None
+        except KeyError:
+            run2d = None
+            print "Environmental variable 'RUN2D' is not set: %r" % e
+        try:
+            run1d = environ['RUN1D']
+        except KeyError:
+            run1d = None
+            print "Environmental variable 'RUN1D' is not set: %r" % e
         platedir = join( topdir, run2d, '*') if topdir and run2d else None
         if platedir:
             for path in iglob(platedir):
@@ -624,7 +651,9 @@ class MergeRedmonster:
                                          'redmonster-%s-*.fits' % plate) ):
                         if basename(x)[16:21] not in mjds:
                             mjds.append(basename(x)[16:21])
-                except: mjds = None
+                except Exception as e:
+                    print "Exception: %r" % e
+                    mjds = None
                 if mjds is not [] and mjds is not None:
                     for mjd in mjds:
                         filepath = join( topdir, run2d, str(plate), run1d,
@@ -640,16 +669,24 @@ class MergeRedmonster:
                             self.fname += hdu[1].data.FNAME.tolist()
                             self.npixstep += hdu[1].data.NPIXSTEP.tolist()
                             self.chi2diff += hdu[1].data.CHI2DIFF.tolist()
-                            try: self.z1 = n.append(self.z1, hdu[1].data.Z1)
-                            except: self.z1 = hdu[1].data.Z1
-                            try: self.z_err1 = n.append(self.z_err1,
+                            try:
+                                self.z1 = n.append(self.z1, hdu[1].data.Z1)
+                            except NameError:
+                                self.z1 = hdu[1].data.Z1
+                            try:
+                                self.z_err1 = n.append(self.z_err1,
                                                         hdu[1].data.Z_ERR1)
-                            except: self.z_err1 = hdu[1].data.Z_ERR1
-                            try: self.z2 = n.append(self.z2, hdu[1].data.Z2)
-                            except: self.z2 = hdu[1].data.Z2
-                            try: self.z_err2 = n.append(self.z_err2,
+                            except NameError:
+                                self.z_err1 = hdu[1].data.Z_ERR1
+                            try:
+                                self.z2 = n.append(self.z2, hdu[1].data.Z2)
+                            except NameError:
+                                self.z2 = hdu[1].data.Z2
+                            try:
+                                self.z_err2 = n.append(self.z_err2,
                                                         hdu[1].data.Z_ERR2)
-                            except: self.z_err2 = hdu[1].data.Z_ERR2
+                            except NameError:
+                                self.z_err2 = hdu[1].data.Z_ERR2
         self.z = n.zeros( (self.z1.shape[0],2) )
         self.z_err = n.zeros( self.z.shape )
         self.z[:,0] = self.z1
@@ -724,12 +761,22 @@ class MergeRedmonster:
         self.rchi2diff = []
         self.chi2_null = []
         self.sn2_data = []
-        try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
-        except: topdir = None
-        try: run2d = environ['RUN2D']
-        except: run2d = None
-        try: run1d = environ['RUN1D']
-        except: run1d = None
+        try:
+            topdir = environ['REDMONSTER_SPECTRO_REDUX']
+        except KeyError:
+            topdir = None
+            print "Environmental variable 'REDMONSTER_SPECTRO_REDUX' is \
+            not set: %r" % e
+        try:
+            run2d = environ['RUN2D']
+        except KeyError:
+            run2d = None
+            print "Environmental variable 'RUN2D' is not set: %r" % e
+        try:
+            run1d = environ['RUN1D']
+        except KeyError:
+            run1d = None
+            print "Environmental variable 'RUN1D' is not set: %r" % e
         fiberdir = join(topdir, run2d, '%s' % self.plate, run1d,
                         'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if \
                                topdir and run2d and run1d else None
@@ -744,7 +791,7 @@ class MergeRedmonster:
                                            environ['RUN2D'], '%s' % self.plate,
                                            'spPlate-%s-%s.fits' %
                                            (self.plate,self.mjd) ) )[0].header
-            except:
+            except AttributeError:
                 self.hdr = fits.Header()
             npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'],
                                    environ['RUN2D'], '%s' % self.plate,
@@ -816,15 +863,15 @@ class MergeRedmonster:
                 self.sn2_data.append(hdu[1].data.SN2DATA[0])
                 try:
                     self.boss_target1.append(hdu[1].data.BOSS_TARGET1[0])
-                except:
+                except (NameError, AttributeError):
                     pass
                 try:
                     self.eboss_target0.append(hdu[1].data.EBOSS_TARGET0[0])
-                except:
+                except (NameError, AttributeError):
                     pass
                 try:
                     self.eboss_target1.append(hdu[1].data.EBOSS_TARGET1[0])
-                except:
+                except (NameError, AttributeError):
                     pass
                 self.models[i] = hdu[2].data[0]
                 #remove(path)
@@ -837,13 +884,13 @@ class MergeRedmonster:
                                          array=self.dof) )
             try: colslist.append( fits.Column(name='BOSS_TARGET1', format='J',
                                               array=self.boss_target1) )
-            except: pass
+            except (NameError, AttributeError): pass
             try: colslist.append( fits.Column(name='EBOSS_TARGET0', format='J',
                                               array=self.eboss_target0) )
-            except: pass
+            except (NameError, AttributeError): pass
             try: colslist.append( fits.Column(name='EBOSS_TARGET1', format='J',
                                               array=self.eboss_target1) )
-            except: pass
+            except (NameError, AttributeError): pass
             colslist.append( fits.Column(name='Z1', format='E', array=self.z1) )
             colslist.append( fits.Column(name='Z_ERR1', format='E',
                                          array=self.z_err1) )
@@ -1006,12 +1053,22 @@ class MergeRedmonster:
         self.sn2_data = []
         self.plates = []
         self.hdr = fits.Header()
-        try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
-        except: topdir = None
-        try: run2d = environ['RUN2D']
-        except: run2d = None
-        try: run1d = environ['RUN1D']
-        except: run1d = None
+        try:
+            topdir = environ['REDMONSTER_SPECTRO_REDUX']
+        except KeyError:
+            topdir = None
+            print "Environmental variable 'REDMONSTER_SPECTRO_REDUX' is not \
+            set: %r" % e
+        try:
+            run2d = environ['RUN2D']
+        except KeyError:
+            run2d = None
+            print "Environmental variable 'RUN2D' is not set: %r" % e
+        try:
+            run1d = environ['RUN1D']
+        except KeyError:
+            run1d = None
+            print "Environmental variable 'RUN1D' is not set: %r" % e
         platedir = join( topdir, run2d, '*') if topdir and run2d else None
         if platedir:
             for path in iglob(platedir):
@@ -1028,7 +1085,9 @@ class MergeRedmonster:
                                          'redmonster-%s-*.fits' % plate) ):
                         if basename(x)[16:21] not in mjds:
                             mjds.append(basename(x)[16:21])
-                except: mjds = None
+                except Exception as e:
+                    mjds = None
+                    print "Exception: %r" % e
                 if mjds is not [] and mjds is not None:
                     for mjd in mjds:
                         filepath = join( topdir, run2d, '%s' % plate, run1d,
@@ -1043,17 +1102,17 @@ class MergeRedmonster:
                             self.dof += hdu[1].data.DOF.tolist()
                             try: self.boss_target1 += \
                                         hdu[1].data.BOSS_TARGET1.tolist()
-                            except:
+                            except (NameError, AttributeError):
                                 pass
                             try:
                                 self.eboss_target0 += \
                                         hdu[1].data.EBOSS_TARGET0.tolist()
-                            except:
+                            except (NameError, AttributeError):
                                 pass
                             try:
                                 self.eboss_target1 += \
                                         hdu[1].data.EBOSS_TARGET1.tolist()
-                            except:
+                            except (NameError, AttributeError):
                                 pass
                             self.z += hdu[1].data.Z1.tolist()
                             self.z_err += hdu[1].data.Z_ERR1.tolist()
@@ -1091,17 +1150,17 @@ class MergeRedmonster:
             try:
                 colslist.append( fits.Column(name='BOSS_TARGET1', format='J',
                                               array=self.boss_target1) )
-            except:
+            except (NameError, AttributeError):
                 pass
             try:
                 colslist.append( fits.Column(name='EBOSS_TARGET0', format='J',
                                               array=self.eboss_target0) )
-            except:
+            except (NameError, AttributeError):
                 pass
             try:
                 colslist.append( fits.Column(name='EBOSS_TARGET1', format='J',
                                              array=self.eboss_target1) )
-            except:
+            except (NameError, AttributeError):
                 pass
             colslist.append( fits.Column(name='Z', format='E', array=self.z) )
             colslist.append( fits.Column(name='Z_ERR', format='E',
@@ -1144,12 +1203,21 @@ class MergeRedmonster:
             thdulist.writeto( dest, clobber=True )
 
     def merge_chi2(self):
-        try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
-        except: topdir = None
-        try: run2d = environ['RUN2D']
-        except: run2d = None
-        try: run1d = environ['RUN1D']
-        except: run1d = None
+        try:
+            topdir = environ['REDMONSTER_SPECTRO_REDUX']
+        except KeyError:
+            topdir = None
+            print "'REDMONSTER_SPECTRO_REDUX' env variable not set."
+        try:
+            run2d = environ['RUN2D']
+        except KeyError:
+            run2d = None
+            print "'RUN1D' env variable not set."
+        try:
+            run1d = environ['RUN1D']
+        except KeyError:
+            run1d = None
+            print "'RUN1D' env variable not set."
         chi2path = join( topdir, run2d, '%s' % self.plate, run1d,
                         'chi2arr-%s-%s-%s-*.fits' %
                         (self.temp, self.plate, self.mjd) ) if topdir and \
@@ -1208,9 +1276,11 @@ def write_chi2arr(plate, mjd, fiberid, zchi2arr):
                 try:
                     makedirs(testpath)
                     dest = testpath
-                except:
+                except Exception as e:
+                    print "Exception: %r" % e
                     dest = None
-    except:
+    except Exception as e:
+        print "Exception: %r" % e
         dest = None
         if dest is not None:
             try:
@@ -1220,9 +1290,9 @@ def write_chi2arr(plate, mjd, fiberid, zchi2arr):
                 print 'Writing chi2 file to %s' % \
                         join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits' %
                              (self.type, plate, mjd, fiberid))
-            except:
+            except Exception as e:
                 print 'Environment variables not set or path does not exist - \
-                        not writing chi2 file!'
+                        not writing chi2 file! %r' % e
     else:
         print 'Environment variables not set or path does not exist - not \
                 writing chi2 file!'
