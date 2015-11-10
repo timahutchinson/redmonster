@@ -524,12 +524,22 @@ class MergeRedmonster:
         self.sn2_data = []
         self.models = None
         self.hdr = None
-        try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
-        except: topdir = None
-        try: run2d = environ['RUN2D']
-        except: run2d = None
-        try: run1d = environ['RUN1D']
-        except: run1d = None
+        try:
+            topdir = environ['REDMONSTER_SPECTRO_REDUX']
+        except KeyError as e:
+            topdir = None
+            print "Enviromental variable 'REDMONSTER_SPECTRO_REDUX' not set: \
+                    %r" % e
+        try:
+            run2d = environ['RUN2D']
+        except KeyError as e:
+            run2d = None
+            print "Enviromental variable 'RUN2D' not set: %r" % e
+        try:
+            run1d = environ['RUN1D']
+        except KeyError as e:
+            run1d = None
+            print "Enviromental variable 'RUN1D' not set: %r" % e
         fiberdir = join(topdir, run2d, '%s' % self.plate, run1d,
                         'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if \
                                topdir and run2d and run1d else None

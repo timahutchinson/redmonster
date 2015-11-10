@@ -19,10 +19,6 @@ from redmonster.datamgr.io import remove_log, write_to_log
 class Spec:
 
     def __init__(self, plate=None, mjd=None, fiberid=None, data_range=None):
-        '''
-        try: remove_log(plate,mjd) # Added by TH, 21 July 2015
-        except: pass
-        '''
         print 'plate %s mjd %s fiberid %s' % (plate, mjd, fiberid)
         self.hdr = None
         self.flux = None
@@ -37,10 +33,16 @@ class Spec:
         self.coeff0 = None
         self.coeff1 = None
         self.dof = None
-        try: self.topdir = environ['BOSS_SPECTRO_REDUX']
-        except: self.topdir = None
-        try: self.run2d = environ['RUN2D']
-        except: self.run2d = None
+        try:
+            self.topdir = environ['BOSS_SPECTRO_REDUX']
+        except KeyError as e:
+            self.topdir = None
+            print "Enviromental variable 'BOSS_SPECTRO_REDUX' not set: %r" % e
+        try:
+            self.run2d = environ['RUN2D']
+        except KeyError:
+            self.run2d = None
+            print "Enviromental variable 'RUN2D' not set: %r" % e
         self.set_plate_mjd(plate=plate, mjd=mjd, fiberid=fiberid,
                            data_range=data_range)
         #for i in xrange(self.flux.shape[0]):
@@ -87,15 +89,15 @@ class Spec:
             self.plugmap = hdu[5].data
             try:
                 self.boss_target1 = hdu[5].data.BOSS_TARGET1
-            except Exception as e:
+            except AttributeError:
                 pass
             try:
                 self.eboss_target0 = hdu[5].data.EBOSS_TARGET0
-            except Exception as e:
+            except AttributeError:
                 pass
             try:
                 self.eboss_target1 = hdu[5].data.EBOSS_TARGET1
-            except Exception as e:
+            except AttributeError:
                 pass
             self.skyflux = hdu[6].data
             # For plate files before Spectro-2D v5, there are no sky vectors and
@@ -138,15 +140,15 @@ class Spec:
             self.plugmap = self.plugmap[fiberid]
             try:
                 self.boss_target1 = self.boss_target1[fiberid]
-            except:
+            except NameError:
                 pass
             try:
                 self.eboss_target0 = self.eboss_target0[fiberid]
-            except:
+            except NameError:
                 pass
             try:
                 self.eboss_target1 = self.eboss_target1[fiberid]
-            except:
+            except NameError:
                 pass
             self.nobj = len(fiberid)
             if self.skyflux.shape[0] != 1: self.skyflux = self.skyflux[fiberid]

@@ -35,8 +35,11 @@ class SSPPrep:
         self.velstep = float(velstep) if velstep else None
         nvel = nvel
         ssp_file = ssp_file
-        try: self.specdir = environ['IDLSPEC2D_DIR']
-        except: self.specdir = None
+        try:
+            self.specdir = environ['IDLSPEC2D_DIR']
+        except KeyError as e:
+            self.specdir = None
+            print "Enviromental variable 'IDSPEC2D_DIR' not set: %r" % e
         if self.specdir:
             self.ssp_path = join(self.specdir,"%s" % "templates","%s" % "SSPs",
                                  "%s" % ssp_file)

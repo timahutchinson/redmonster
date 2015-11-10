@@ -30,8 +30,12 @@ class ZFinder:
         self.zmax = float(zmax)
         self.pixoffset = None
         self.zchi2arr = None
-        try: self.templatesdir = environ['REDMONSTER_TEMPLATES_DIR']
-        except: self.templatesdir = None
+        try:
+            self.templatesdir = environ['REDMONSTER_TEMPLATES_DIR']
+        except KeyError as e:
+            self.templatesdir = None
+            print "Enviromental variable 'REDMONSTER_TEMPLATES_DIR' not set: \
+                    %r" % e
         self.read_template()
         self.npars = len(self.templates.shape) - 1
         self.templates_flat = n.reshape(self.templates, (-1,self.fftnaxis1))
