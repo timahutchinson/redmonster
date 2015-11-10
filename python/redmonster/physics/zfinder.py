@@ -263,8 +263,9 @@ class ZFinder:
                          n.dot( n.dot(n.transpose(pmat),ninv),specs[i]) );\
                                 f = n.array(f)[0]
                 self.models[i] = n.dot(pmat, f)
-            except:
+            except Exception as e:
                 self.models[i] = n.zeros(specs.shape[-1])
+                print "Exception: %r" % r
 
 
     def write_chi2arr(self, plate, mjd, fiberid):

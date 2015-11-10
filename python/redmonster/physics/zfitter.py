@@ -196,7 +196,8 @@ class ZFitter:
                                         zminvals[thisminloc+k] = n.max(bestzvec)
                                     else:
                                         break
-                                except:
+                                except Exception as e:
+                                    print "Exception: %r" % e
                                     break
                             z_ind += 1
                         # If it's not the first, and if it's on the
@@ -212,7 +213,8 @@ class ZFitter:
                                         zminvals[thisminloc-k] = n.max(bestzvec)
                                     else:
                                         break
-                                except:
+                                except Exception as e:
+                                    print "Exception: %r" % e
                                     break
                             z_ind += 1
                     # Fit with quadratic and find minimum and error
@@ -248,7 +250,8 @@ class ZFitter:
                                     zminvals[thisminloc+k] = n.max(bestzvec)
                                 else:
                                     break
-                            except:
+                            except Exception as e:
+                                print "Exception: %r" % e
                                 break
                         k = 0
                         while True:
@@ -259,7 +262,8 @@ class ZFitter:
                                     zminvals[thisminloc-k] = n.max(bestzvec)
                                 else:
                                     break
-                            except:
+                            except Exception as e:
+                                print "Exception: %r" % e
                                 break
                         z_ind += 1
             self.minvectors.append( bestminvectors )

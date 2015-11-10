@@ -14,12 +14,21 @@ from glob import iglob
 
 from redmonster.datamgr import io2
 
-try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
-except: topdir = None
-try: run2d = environ['RUN2D']
-except: run2d = None
-try: run1d = environ['RUN1D']
-except: run1d = None
+try:
+    topdir = environ['REDMONSTER_SPECTRO_REDUX']
+except KeyError as e:
+    topdir = None
+    print "Environmental variable 'REDMONSTER_SPECTRO_REDUX' is not set: %r" % e
+try:
+    run2d = environ['RUN2D']
+except KeyError as e:
+    run2d = None
+    print "Environmental variable 'RUN2D' is not set: %r" % e
+try:
+    run1d = environ['RUN1D']
+except KeyError as e:
+    run1d = None
+    print "Environmental variable 'RUN1D' is not set: %r" % e
 platedir = join( topdir, run2d, '*') if topdir and run2d else None
 
 plates = []
@@ -45,7 +54,9 @@ if platedir:
                     '''
                 if basename(file)[16:21] not in mjds:
                     mjds.append( basename(file)[16:21] )
-        except: mjds = None
+        except Exception as e:
+            mjds = None
+            print "Exception: %r" % e
         if mjds is not []:
             for mjd in mjds:
                 print 'Merging fibers for plate %s, mjd %s' % (plate, mjd)
