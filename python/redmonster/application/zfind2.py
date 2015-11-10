@@ -93,8 +93,9 @@ class ZFind:
         
         if type(self.templates) is str:
             try: self.templates = [self.templates]
-            except:
-                print 'Templates not a list and unable to convert to list!'
+            except Exception as e:
+                print 'Templates not a list and unable to convert to list! \
+                Exception: %r' % e
                 sys.exit(1)
         if type(self.templates) is list:
                 self.templates = map(str, self.templates)
@@ -105,9 +106,9 @@ class ZFind:
                 except:
                     try:
                         self.zmin = self.zmin.tolist()
-                    except:
+                    except Exception as e:
                         print 'Can\'t convert zmin to list - defaulting to \
-                                full zrange!'
+                                full zrange! Exception: %r' % e
                         self.zmin = None
                         self.zmax = None
             if type(self.zmin) is list:
@@ -126,9 +127,10 @@ class ZFind:
                         except:
                             try:
                                 self.zmax = self.zmax.tolist()
-                            except:
+                            except Exception as e:
                                 print 'Can\'t convert zmax to list - \
-                                        defaulting to full zrange!'
+                                        defaulting to full zrange! \
+                                        Exception: %r' % e
                                 self.zmin = None
                                 self.zmax = None
                     if len(self.zmin) != len(self.zmax):
@@ -146,9 +148,10 @@ class ZFind:
                 except:
                     try:
                         self.npoly = self.npoly.tolist()
-                    except:
+                    except Exception as e:
                         print 'npoly not a list and unable to convert to \
-                                list - defaulting to npoly=4 for all templates!'
+                                list - defaulting to npoly=4 for all \
+                                templates! Exception: %r' % e
                         self.npoly = [4]*len(self.templates)
             else:
                 self.npoly = map(int, self.npoly)
@@ -161,10 +164,10 @@ class ZFind:
                 except:
                     try:
                         self.npixstep = self.npixstep.tolist()
-                    except:
+                    except Exception as e:
                         print 'npixstep not a list and unable to convert to \
                                 list - defaulting to npixstep=1 for all \
-                                templates!'
+                                templates! Exception: %r' % e
                         self.npixstep = [1]*len(self.templates)
             else:
                 self.npixstep = map(int, self.npixstep)
@@ -179,11 +182,11 @@ class ZFind:
                 try:
                     fiberid = [fiberid]
                     fiberid = map(int, fiberid)
-                except:
+                except ValueError:
                     try:
                         fiberid = fiberid.tolist()
                         fiberid = map(int, fiberid)
-                    except:
+                    except ValueError:
                         print 'fiberid not set properly - running full plate!'
                         fiberid = [i for i in xrange(1000)]
             else: fiberid = map(int, fiberid)
@@ -244,9 +247,10 @@ class ZFind:
                     self.dest = str(self.dest)
                     output = io2.WriteRedmonster(zpick, dest=self.dest,
                                                   clobber=True)
-                except:
+                except Exception as e:
                     print 'Could not convert dest to string - writing to \
-                            default directory and NOT clobbering old files!'
+                            default directory and NOT clobbering old files! \
+                            Exception: %r' % e
                     output = io2.WriteRedmonster(zpick, clobber=True)
 
         if output:

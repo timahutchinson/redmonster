@@ -283,9 +283,11 @@ class ZFinder:
                     try:
                         makedirs(testpath)
                         dest = testpath
-                    except:
+                    except Exception as e:
+                        print "Exception: %r" % e
                         dest = None
-        except:
+        except Exception as e:
+            print "Exception: %r" % e
             dest = None
         if dest is not None:
             try:
@@ -295,7 +297,8 @@ class ZFinder:
                 print 'Writing chi2 file to %s' % \
                         join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits' %
                              (self.type, plate, mjd, fiberid))
-            except:
+            except Exception as e:
+                print "Exception: %r" % e
                 print 'Environment variables not set or path does not exist - \
                         not writing chi2 file!'
         else:
