@@ -33,7 +33,7 @@ try: run2d = environ['RUN2D']
 except: run2d = None
 spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
-data_range = [4000,9000]
+#data_range = [4000,9000]
 
 if spallpath:
     cjob = 0
