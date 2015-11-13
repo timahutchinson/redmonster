@@ -1,0 +1,57 @@
+#!/usr/bin/env python                                                                                                   
+from os import environ
+from os.path import join, basename
+from glob import iglob
+
+import numpy as n
+
+from pbs import queue
+
+q = queue()
+q.verbose = True
+nodes = 12
+walltime = '36:00:00'
+ncycles = 250
+
+try: uufscell = environ['UUFSCELL']
+except: uufscell = None
+if 'kingspeak' in uufscell:
+    alloc = 'sdss-kp'
+    ppn=16
+elif 'ember' in uufscell:
+    alloc = 'bolton-em'
+    ppn=12
+else:
+    alloc = None
+    ppn=None
+
+try: topdir = environ['BOSS_SPECTRO_REDUX']
+except: topdir = None
+try: run2d = environ['RUN2D']
+except: run2d = None
+platedir = join(topdir,run2d,'*','spPlate-*.fits') if topdir and run2d else None
+
+data = n.load('/uufs/astro.utah.edu/common/home/u0814744/VisualInspectionLRGs.npy')
+plates = []
+mjds = []
+fibers = []
+for i in xrange(len(data)):
+    plates.append(data[i][0])
+    mjds.append(data[i][1])
+    fibers.append(data[i][2])
+
+cjob = 0
+q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,
+         walltime=walltime)
+blocksize = nodes*ppn*ncycles
+for i,plate in enumerate(plates):
+    q.append("zfind -p %i -m %i -f %i" % (plate,mjds[i],fibers[i]))
+    if q.task_number >= blocksize:
+        cjob += 1
+        q.commit(hard=True, submit=True)
+        q = queue()
+        q.verbose = True
+        q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,
+                     walltime=walltime)
+if not q.client.committed:
+    q.commit(hard=True, submit=True)
