@@ -104,70 +104,86 @@ class ZPicker:
             npolytuple = ()
             npixsteptuple = ()
             fstuple = ()
-            # Build temporary array of num_z lowest minima for each template
-            for itemp in xrange(self.nclass):
-                for imin in xrange(self.num_z):
-                    try:
-                        # Add num_z best chi2s found in zfitter divided by
-                        # (number of pixels - number of poly terms) to
-                        # convert to rchi2
-                        fibermins.append(zfitobjs[itemp].chi2vals[ifiber][imin]\
-                                         / (self.dof[ifiber] -
-                                            zfindobjs[itemp].npoly) )
-                        # Add num_z vectors for location of each chi2 in
-                        # the above step
-                        fiberminvecs.append( \
+            # Catch spectra that are all 0's and return null result
+            if len(n.where(specs.flux[0] != 0)[0]) == 0:
+                ztuple = (-1,)*self.num_z
+                z_err = (-1,)*self.num_z
+                fnametuple = ('noSpectrum',)*self.num_z
+                typetuple = ('noSpectrum',)*self.num_z
+                subtypetuple = ('noSpectrum',)*self.num_z
+                minchi2tuple = (-1,)*self.num_z
+                vectortuple = (-1,)*self.num_z
+                npolytuple = (-1,)*self.num_z
+                npixsteptuple = (-1,)*self.num_z
+                fstuple = (-1,)*self.num_z
+                self.flag_small_dchi2(ifiber)
+            else:
+                # Build temporary array of num_z lowest minima for each template
+                for itemp in xrange(self.nclass):
+                    for imin in xrange(self.num_z):
+                        try:
+                            # Add num_z best chi2s found in zfitter divided by
+                            # (number of pixels - number of poly terms) to
+                            # convert to rchi2
+                            fibermins.append(
+                                    zfitobjs[itemp].chi2vals[ifiber][imin] /
+                                             (self.dof[ifiber] -
+                                              zfindobjs[itemp].npoly) )
+                            # Add num_z vectors for location of each chi2 in
+                            # the above step
+                            fiberminvecs.append(
                                     zfitobjs[itemp].minvectors[ifiber][imin])
-                    except Exception as e:
-                        print "%r" % e
-                        fibermins.append( \
-                                n.max(zfitobjs[itemp].chi2vals[ifiber]) / \
-                                (self.dof[ifiber] - zfindobjs[itemp].npoly) )
-                        fiberminvecs.append( (-1,) )
-            # Build tuples of num_z best redshifts and classifications
-            # for this fiber
-            #for iz in xrange(self.num_z):
-            iz = 0
-            while iz < self.num_z:
-                # Location of this best redshfit in fibermins array - to
-                # be fed into tempdict to find template
-                zpos = n.asarray(fibermins).argmin()
-                # Location in lists of template objects of this redshift
-                # classification
-                tempnum = tempdict[zpos]
-                # Location in zfitobj[tempnum] of this z
-                znum = poslist[zpos]
-                # Check for repeat z
-                if fiberminvecs[zpos] != (-1,):
-                    ztuple += (zfitobjs[tempnum].z[ifiber][znum],)
-                    zerrtuple += (zfitobjs[tempnum].z_err[ifiber][znum],)
-                    fnametuple += (zfindobjs[tempnum].fname,)
-                    typetuple += (zfindobjs[tempnum].type,)
-                    vectortuple += (fiberminvecs[zpos],)
-                    d = {} # Dictionary for subtype
-                    for j in xrange( len(vectortuple[-1][:-1]) ):
-                        d[zfindobjs[tempnum].infodict['par_names'][j]] = \
-                            zfindobjs[tempnum].baselines[j][vectortuple[-1][j]]
-                    subtypetuple += (d,)
-                    minchi2tuple += (fibermins[zpos],)
-                    npolytuple += (zfindobjs[tempnum].npoly,)
-                    npixsteptuple += (zfindobjs[tempnum].npixstep,)
-                    if iz == 0: # Only the first flag is kept
-                        #self.models[ifiber] = zfindobjs[tempnum].models[ifiber]
-                        self.zwarning.append( flags[tempnum][ifiber] )
-                        self.chi2_null.append(
-                                zfindobjs[tempnum].chi2_null[ifiber])
-                        self.sn2_data.append(
-                                zfindobjs[tempnum].sn2_data[ifiber])
-                    fibermins[zpos] = 1e9
-                    self.models[ifiber,iz], f = self.create_model(
-                            fnametuple[iz], npolytuple[iz], npixsteptuple[iz],
-                            vectortuple[iz], zfindobjs[tempnum],
-                            self.flux[ifiber],self.ivar[ifiber])
-                    fstuple += (f,)
-                    iz += 1
-                else:
-                    fibermins[zpos] = 1e9
+                        except Exception as e:
+                            print "%r" % e
+                            fibermins.append( \
+                                    n.max(zfitobjs[itemp].chi2vals[ifiber]) / \
+                                    (self.dof[ifiber] - zfindobjs[itemp].npoly))
+                            fiberminvecs.append( (-1,) )
+                # Build tuples of num_z best redshifts and classifications
+                # for this fiber
+                #for iz in xrange(self.num_z):
+                iz = 0
+                while iz < self.num_z:
+                    # Location of this best redshfit in fibermins array - to
+                    # be fed into tempdict to find template
+                    zpos = n.asarray(fibermins).argmin()
+                    # Location in lists of template objects of this redshift
+                    # classification
+                    tempnum = tempdict[zpos]
+                    # Location in zfitobj[tempnum] of this z
+                    znum = poslist[zpos]
+                    # Check for repeat z
+                    if fiberminvecs[zpos] != (-1,):
+                        ztuple += (zfitobjs[tempnum].z[ifiber][znum],)
+                        zerrtuple += (zfitobjs[tempnum].z_err[ifiber][znum],)
+                        fnametuple += (zfindobjs[tempnum].fname,)
+                        typetuple += (zfindobjs[tempnum].type,)
+                        vectortuple += (fiberminvecs[zpos],)
+                        d = {} # Dictionary for subtype
+                        for j in xrange( len(vectortuple[-1][:-1]) ):
+                            d[zfindobjs[tempnum].infodict['par_names'][j]] = \
+                                    zfindobjs[tempnum].baselines[j] \
+                                            [vectortuple[-1][j]]
+                        subtypetuple += (d,)
+                        minchi2tuple += (fibermins[zpos],)
+                        npolytuple += (zfindobjs[tempnum].npoly,)
+                        npixsteptuple += (zfindobjs[tempnum].npixstep,)
+                        if iz == 0: # Only the first flag is kept
+                            self.zwarning.append( flags[tempnum][ifiber] )
+                            self.chi2_null.append(
+                                    zfindobjs[tempnum].chi2_null[ifiber])
+                            self.sn2_data.append(
+                                    zfindobjs[tempnum].sn2_data[ifiber])
+                        fibermins[zpos] = 1e9
+                        self.models[ifiber,iz], f = self.create_model(
+                                fnametuple[iz], npolytuple[iz],
+                                npixsteptuple[iz], vectortuple[iz],
+                                zfindobjs[tempnum], self.flux[ifiber],
+                                self.ivar[ifiber])
+                        fstuple += (f,)
+                        iz += 1
+                    else:
+                        fibermins[zpos] = 1e9
                 
             self.z.append(ztuple)
             self.z_err.append(zerrtuple)
