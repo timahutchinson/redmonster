@@ -41,7 +41,7 @@ for i in xrange(len(data)):
     fibers.append(data[i][2])
 
 cjob = 0
-q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,
+q.create(label='zfind_vi_plates_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,
          walltime=walltime)
 blocksize = nodes*ppn*ncycles
 for i,plate in enumerate(plates):
