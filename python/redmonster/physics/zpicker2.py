@@ -107,7 +107,7 @@ class ZPicker:
             # Catch spectra that are all 0's and return null result
             if len(n.where(self.flux[0] != 0)[0]) == 0:
                 ztuple = (-1,)*self.num_z
-                z_errtuple = (-1,)*self.num_z
+                zerrtuple = (-1,)*self.num_z
                 fnametuple = ('noSpectrum',)*self.num_z
                 typetuple = ('noSpectrum',)*self.num_z
                 subtypetuple = ('noSpectrum',)*self.num_z
