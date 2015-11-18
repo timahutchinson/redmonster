@@ -116,6 +116,7 @@ class ZPicker:
                 npolytuple = (-1,)*self.num_z
                 npixsteptuple = (-1,)*self.num_z
                 fstuple = (-1,)*self.num_z
+                self.zwarning.append(int(flags[0][0]))
                 self.flag_small_dchi2(ifiber)
             else:
                 # Build temporary array of num_z lowest minima for each template
