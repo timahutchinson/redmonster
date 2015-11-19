@@ -134,7 +134,7 @@ class ZPicker:
                             # the above step
                             fiberminvecs.append(
                                     zfitobjs[itemp].minvectors[ifiber][imin])
-                        except Exception as e:
+                        except IndexError as e:
                             print "%r" % e
                             fibermins.append( \
                                     n.max(zfitobjs[itemp].chi2vals[ifiber]) / \
