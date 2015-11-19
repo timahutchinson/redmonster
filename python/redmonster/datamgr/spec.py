@@ -140,15 +140,15 @@ class Spec:
             self.plugmap = self.plugmap[fiberid]
             try:
                 self.boss_target1 = self.boss_target1[fiberid]
-            except NameError:
+            except AttributeError:
                 pass
             try:
                 self.eboss_target0 = self.eboss_target0[fiberid]
-            except NameError:
+            except AttributeError:
                 pass
             try:
                 self.eboss_target1 = self.eboss_target1[fiberid]
-            except NameError:
+            except AttributeError:
                 pass
             self.nobj = len(fiberid)
             if self.skyflux.shape[0] != 1: self.skyflux = self.skyflux[fiberid]
