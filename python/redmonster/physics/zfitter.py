@@ -180,8 +180,8 @@ class ZFitter:
                             self.flag_z_fitlimit(ifiber)
                             self.z[ifiber] = -1.
                             self.z_err[ifiber] = -1.
-                            self.minvectors.append( [(-1,)]*num_z )
-                            self.chi2vals.append( [n.max(bestzvec)]*num_z)
+                            bestminvectors = [(-1,)]*num_z
+                            bestchi2vals = [n.max(bestzvec)]*num_z
                             stop = True
                         # If it's not the first, and if it's on the
                         # left edge, set the 15 pixels to the right to
