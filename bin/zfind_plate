@@ -31,21 +31,6 @@ platedir = join(topdir,run2d,'*','spPlate-*.fits') if topdir and run2d else None
 
 plates=[7834,7839]
 mjds=[56979,56900]
-#if platedir:
-#    for path in iglob(platedir):
-#        spfile = basename(path)
-#        try:
-#            plate = int(spfile[8:12])
-#            mjd = int(spfile[13:18])
-#        except:
-#           plate = None
-#            mjd = None
-#        if plate and mjd:
-#            plates.append(plate)
-#            mjds.append(mjd)
-
-
-
 
 q.create(label='zfind',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
 for i,plate in enumerate(plates):
