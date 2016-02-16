@@ -1428,8 +1428,7 @@ class VerifyRM:
         p.axis([.5,2.5,0,.35])
         p.legend(prop={'size':6})
         p.subplots_adjust(hspace = .5)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  dv_vs_sn_histos.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
         p.clf()
         print count1
         print count2
