@@ -53,7 +53,7 @@ class Find_Lens:
         # For each fiber in checklocs, refit a linear combination of templates at best and second best z, separated from global min by width
         ind = 0
         for loc in self.checklocs:
-            if type[loc] == 'ssp_em_galaxy':
+            if type[loc] == 'ssp_galaxy_glob':
                 #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
                 print 'THIS INDEX NUMBER IS ' + str(ind) + '!!!!!!!!!!!!!!!!!!!!!!!!!'
                 chi2s[ind] = self.fit_linear_combo(loc)

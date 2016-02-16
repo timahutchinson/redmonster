@@ -167,8 +167,8 @@ def find_comp_purity(this_thresh, args):
         usezperson = n.delete(n.asarray(zperson),badfibs).tolist()
 
         specs = spec.Spec(plate=plate, mjd=mjd, fiberid=usefiberid)
-        hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-ssp_em_galaxy.fits' % plate)
-        #hdu = fits.open('/Users/boltonlab3/scratch/chi2arr-%s-ssp_em_galaxy.fits' % plate)
+        hdu = fits.open('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-ssp_galaxy_glob.fits' % plate)
+        #hdu = fits.open('/Users/boltonlab3/scratch/chi2arr-%s-ssp_galaxy_glob.fits' % plate)
         sspchi2arr = hdu[0].data
         zbasessp = hdu[1].data.ZBASE
         

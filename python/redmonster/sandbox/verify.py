@@ -299,7 +299,7 @@ class VerifyRM:
 
 
     def cmass_galaxy_completeness(self):
-        # Prints percent of all CMASS targets that have rm_warning == 0 and were classified as 'ssp_em_galaxy'
+        # Prints percent of all CMASS targets that have rm_warning == 0 and were classified as 'ssp_galaxy_glob'
         #vals = []
         count = 0
         total = 0
@@ -309,12 +309,12 @@ class VerifyRM:
             self.read_spZbest(plate)
             fibers = self.get_cmass()
             for fiber in fibers:
-                if self.rm_type[fiber] == 'ssp_em_galaxy':
+                if self.rm_type[fiber] == 'ssp_galaxy_glob':
                     total += 1
                     if self.rm_zwarning[fiber] == 0:
                         count += 1
-            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
-            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(fibers)) )
+            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_galaxy_glob'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_galaxy_glob')[0].tolist())) )
+            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_galaxy_glob'))[0].tolist())) / float(len(fibers)) )
         #avg = n.sum(vals) / float(len(vals))
         avg = float(count) / float(total)
         print count
@@ -323,7 +323,7 @@ class VerifyRM:
 
 
     def lowz_galaxy_completeness(self):
-        # Prints percent of all LOWZ targets that have rm_zwarning == 0 and were classified as 'ssp_em_galaxy'
+        # Prints percent of all LOWZ targets that have rm_zwarning == 0 and were classified as 'ssp_galaxy_glob'
         #vals = []
         for plate in self.plates:
             self.read_redmonster(plate)
@@ -331,12 +331,12 @@ class VerifyRM:
             self.read_spZbest(plate)
             fibers = self.get_lowz()
             for fiber in fibers:
-                if self.rm_type[fiber] == 'ssp_em_galaxy':
+                if self.rm_type[fiber] == 'ssp_galaxy_glob':
                     total += 1
                     if self.rm_zwarning[fiber] == 0:
                         count += 1
-            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist())) )
-            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_em_galaxy'))[0].tolist())) / float(len(fibers)) )
+            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_galaxy_glob'))[0].tolist())) / float(len(n.where(self.rm_type[fibers] == 'ssp_galaxy_glob')[0].tolist())) )
+            #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_galaxy_glob'))[0].tolist())) / float(len(fibers)) )
         #avg = n.sum(vals) / float(len(vals))
         avg = float(count) / float(total)
         print count
@@ -381,7 +381,7 @@ class VerifyRM:
             self.read_spZbest(plate)
             fibers = self.get_okay_cmass()
             total += len(fibers)
-            count += len( n.where( self.rm_type[fibers] == 'ssp_em_galaxy')[0].tolist() )
+            count += len( n.where( self.rm_type[fibers] == 'ssp_galaxy_glob')[0].tolist() )
         print '%s out of %s' % (count,total)
         print float(count) / float(total)
 
@@ -488,7 +488,7 @@ class VerifyRM:
                     total += 1
                     vi_index = n.where( n.asarray(self.vifibers) == (fiber+1) )[0][0]
                     if self.rm_zwarning[fiber] == 0:
-                        if self.rm_type[fiber] == 'ssp_em_galaxy':
+                        if self.rm_type[fiber] == 'ssp_galaxy_glob':
                             if n.abs(self.rm_z1[fiber] - self.zperson[vi_index]) >= 0.005:
                                 self.bad_plates.append(plate)
                                 self.bad_fibers.append(fiber)
@@ -526,7 +526,7 @@ class VerifyRM:
                 if (fiber+1) in self.vifibers: # +1 to go from python indexing to boss fiber conventions
                     total += 1
                     vi_index = n.where( n.asarray(self.vifibers) == (fiber+1) )[0][0]
-                    if (self.rm_zwarning[fiber] != 0) | (self.rm_type[fiber] != 'ssp_em_galaxy'):
+                    if (self.rm_zwarning[fiber] != 0) | (self.rm_type[fiber] != 'ssp_galaxy_glob'):
                         if (self.zperson[vi_index] != -9) & (self.vitype[vi_index] == 4):
                             self.recoverable_fibers.append(fiber)
                             self.recoverable_plates.append(plate)
@@ -737,7 +737,7 @@ class VerifyRM:
 
 
     def cmass_galaxy_completeness_all(self):
-        # Prints percent of all DR10 CMASS targets that have rm_warning == 0 and were classified as 'ssp_em_galaxy'
+        # Prints percent of all DR10 CMASS targets that have rm_warning == 0 and were classified as 'ssp_galaxy_glob'
         count = 0
         total = 0
         #globpath = join( self.redmonster_spectro_redux, '*')
@@ -748,14 +748,14 @@ class VerifyRM:
         #    fibers = self.get_cmass()
         #    for fiber in fibers:
         #        total += 1
-        #        if (self.rm_zwarning[fiber] == 0) & (self.rm_type[fiber] == 'ssp_em_galaxy'):
+        #        if (self.rm_zwarning[fiber] == 0) & (self.rm_type[fiber] == 'ssp_galaxy_glob'):
         #            count += 1
         self.read_redmonster_summary_file()
         for i,zwarn in enumerate(self.rm_zwarning):
             #if zwarn == 0:
             if (zwarn & 4) == 0:
                 total += 1
-                if self.rm_type[i] == 'ssp_em_galaxy':
+                if self.rm_type[i] == 'ssp_galaxy_glob':
                     count += 1
         avg = float(count) / float(total)
         print count
@@ -820,7 +820,7 @@ class VerifyRM:
             self.read_redmonster_summary_file()
             for i,z in enumerate(self.rm_z1):
                 if (z >= zmin) & (z <= zmax):
-                    if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
+                    if (self.rm_type[i] == 'ssp_galaxy_glob') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
                         count += 1
                         errors = n.append(errors,self.rm_zerr1[i])
                         zs = n.append(zs,z)
@@ -955,7 +955,7 @@ class VerifyRM:
                 for i,sn_min in enumerate(n.linspace(1,6,6)):
                     sn_max = sn_min + 1
                     for i,fiber in enumerate(self.rm_fibers):
-                        if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
+                        if (self.rm_type[i] == 'ssp_galaxy_glob') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
                             if (self.sn_median[fiber][0] >= sn_min) & (self.sn_median[fiber][0] <= sn_max):
                                 #count += 1
                                 if i == 1:
@@ -1054,7 +1054,7 @@ class VerifyRM:
                 for i,sn_min in enumerate(n.linspace(1,6,6)):
                     sn_max = sn_min + 1
                     for i,fiber in enumerate(self.rm_fibers):
-                        if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
+                        if (self.rm_type[i] == 'ssp_galaxy_glob') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
                             if (self.sn_median[fiber][1] >= sn_min) & (self.sn_median[fiber][1] <= sn_max):
                                 if i == 1:
                                     errors1 = n.append(errors1,self.rm_zerr1[i])
@@ -1152,7 +1152,7 @@ class VerifyRM:
                 for i,sn_min in enumerate(n.linspace(1,6,6)):
                     sn_max = sn_min + 1
                     for i,fiber in enumerate(self.rm_fibers):
-                        if (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
+                        if (self.rm_type[i] == 'ssp_galaxy_glob') & (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
                             if (self.sn_median[fiber][2] >= sn_min) & (self.sn_median[fiber][2] <= sn_max):
                                 if i == 1:
                                     errors1 = n.append(errors1,self.rm_zerr1[i])
@@ -1289,7 +1289,7 @@ class VerifyRM:
         errors = []
         zs = []
         for i in xrange(nobjs):
-            if (self.rm_zwarning[i] == 0) & (self.rm_type[i] == 'ssp_em_galaxy') & (self.rm_zerr1[i] != -1):
+            if (self.rm_zwarning[i] == 0) & (self.rm_type[i] == 'ssp_galaxy_glob') & (self.rm_zerr1[i] != -1):
                 errors.append(self.rm_zerr1[i])
                 zs.append(self.rm_z1[i])
         errors = self.dz_to_dv(n.asarray(errors))
@@ -1322,7 +1322,7 @@ class VerifyRM:
                     hdu1 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[0]) ) )
                     hdu2 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[1]) ) )
                     for i,z in enumerate(hdu1[1].data.Z1):
-                        if (hdu1[1].data.ZWARNING[i] == 0) & (hdu1[1].data.CLASS[i] == 'ssp_em_galaxy') & (hdu2[1].data.ZWARNING[i] == 0) & (hdu2[1].data.CLASS[i] == 'ssp_em_galaxy'):
+                        if (hdu1[1].data.ZWARNING[i] == 0) & (hdu1[1].data.CLASS[i] == 'ssp_galaxy_glob') & (hdu2[1].data.ZWARNING[i] == 0) & (hdu2[1].data.CLASS[i] == 'ssp_galaxy_glob'):
                             z1.append(z)
                             z2.append(hdu2[1].data.Z1[i])
                             zerr1.append(hdu1[1].data.Z_ERR1[i])
@@ -1373,7 +1373,7 @@ class VerifyRM:
 # Fiber magnitudes are in spZbest files in hdu[1].data.SPECTROFLUX . Units are nanomaggies, convert to magnitudes
 # with 22.5 - 2.5 * LOG_10(SPECTROFLUX)
 
-# To see fibers with zwarning != 0, ztype = 'galaxy', and boss_target1 = 'cmass', use >>> print n.where( (x.rm_zwarning != 0) & (x.rm_type == 'ssp_em_galaxy') & (x.boss_target1 & 2 == 2) )[0]+1
+# To see fibers with zwarning != 0, ztype = 'galaxy', and boss_target1 = 'cmass', use >>> print n.where( (x.rm_zwarning != 0) & (x.rm_type == 'ssp_galaxy_glob') & (x.boss_target1 & 2 == 2) )[0]+1
 
 # Plate 7338 has 6 MJDs, 7340 has 4
 
