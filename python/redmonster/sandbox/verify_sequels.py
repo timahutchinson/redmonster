@@ -1056,7 +1056,7 @@ class VerifyRM:
             for i,fiber in enumerate(self.rm_fibers_summary):
                 plate = self.rm_plates_summary[i]
                 mjd = self.rm_mjds_summary[i]
-                print '%s-%s-%s' % (plate,fiber,mjd)
+                #print '%s-%s-%s' % (plate,fiber,mjd)
                 if (openplate != plate) and (openmjd != mjd):
                     self.read_spZbest_all(plate,mjd)
                     self.read_spPlate_all(plate,mjd)
@@ -1192,7 +1192,7 @@ class VerifyRM:
             for i,fiber in enumerate(self.rm_fibers_summary):
                 plate = self.rm_plates_summary[i]
                 mjd = self.rm_mjds_summary[i]
-                print '%s-%s-%s' % (plate,fiber,mjd)
+                #print '%s-%s-%s' % (plate,fiber,mjd)
                 if (openplate != plate) and (openmjd != mjd):
                     self.read_spZbest_all(plate,mjd)
                     self.read_spPlate_all(plate,mjd)
@@ -1328,7 +1328,7 @@ class VerifyRM:
             for i,fiber in enumerate(self.rm_fibers_summary):
                 plate = self.rm_plates_summary[i]
                 mjd = self.rm_mjds_summary[i]
-                print '%s-%s-%s' % (plate,fiber,mjd)
+                #print '%s-%s-%s' % (plate,fiber,mjd)
                 if (openplate != plate) and (openmjd != mjd):
                     self.read_spZbest_all(plate,mjd)
                     self.read_spPlate_all(plate,mjd)
