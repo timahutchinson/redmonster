@@ -892,7 +892,7 @@ class VerifyRM:
             self.read_redmonster_summary_file()
             for i,z in enumerate(self.rm_z1):
                 if (z >= zmin) & (z <= zmax):
-                    if (self.rm_type[i] == 'ssp_em_galaxy') & \
+                    if (self.rm_type[i] == 'ssp_galaxy_glob') & \
                             (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
                         count += 1
                         errors = n.append(errors,self.rm_zerr1[i])
@@ -915,8 +915,7 @@ class VerifyRM:
         p.axis([.5,3.0,0,.3])
         p.legend()
         p.subplots_adjust(wspace = .35)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  dv_vs_z_histos.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
         p.clf()
 
 
@@ -1621,7 +1620,7 @@ class VerifyRM:
                 openplate = plate
                 openmjd = mjd
             #if (self.rm_rchi2diff[i] < drchi2max) and \
-                    (self.idl_rchi2diff[fiber] < drchi2max):
+                    #(self.idl_rchi2diff[fiber] < drchi2max):
             total += 1
             if self.rm_rchi2diff[i] < diff: rm_failures += 1.
             if self.idl_rchi2diff[fiber] < diff: idl_failures += 1.
@@ -1736,7 +1735,7 @@ class VerifyRM:
         for i,ebt1 in enumerate(hdu3[5].data.EBOSS_TARGET1):
             if ebt1 & 2 > 0:
                 if True: #(hdu1[1].data.ZWARNING[i] == 0) and \
-                                (hdu2[1].data.ZWARNING[i] == 0):
+                                #(hdu2[1].data.ZWARNING[i] == 0):
                     self.z1.append(hdu1[1].data.Z1[i])
                     self.zerr1.append(hdu1[1].data.Z_ERR1[i])
                     self.z2.append(hdu2[1].data.Z1[i])
