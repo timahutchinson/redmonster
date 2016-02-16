@@ -1714,7 +1714,6 @@ class VerifyRM:
         bins = n.zeros(nbins)
         for i in xrange(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
-        import pdb; pdb.set_trace()
         p.plot(bins, hist, drawstyle='steps-mid', color='black')
         
         def fit_func(x,a,sigma,mu):
@@ -1944,8 +1943,7 @@ class VerifyRM:
             p.yabel('Number per bin')
         if reduced:
             p.xlabel(r'$\chi_{null,red}^2$',size=16)
-            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                      rchi2_null_histo.pdf')
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_histo.pdf')
         else:
             p.xlabel(r'$\chi_{null}^2$',size=16)
             p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_histo.pdf')
@@ -1964,8 +1962,7 @@ class VerifyRM:
         if reduced:
             p.xlabel(r'$\chi_{null,red}^2$',size=16)
             p.axis([.6,1.8,0,1])
-            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                      rchi2_null_cumul_histo.pdf')
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_null_cumul_histo.pdf')
         else:
             p.xlabel(r'$\chi_{null}^2$',size=16)
             p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_cumul_histo.pdf')
