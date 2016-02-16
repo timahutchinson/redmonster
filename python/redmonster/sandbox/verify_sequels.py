@@ -899,7 +899,7 @@ class VerifyRM:
                         zs = n.append(zs,z)
             #errors.append(self.rm_zerr1[fibers].tolist())
             errors = self.dz_to_dv(zs, errors)
-            print zmin, zmax, n.mean(errors)
+            print zmin, zmax, n.mean(errors), n.std(errors)
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
             bins = n.zeros(nbins)
