@@ -1011,8 +1011,7 @@ class VerifyRM:
         print imax
         print zmax
         p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  failure_vs_sn.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
         p.clf()
 
 
@@ -1489,12 +1488,11 @@ class VerifyRM:
         #print rhist
         #print rtotal
         #p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  failure_vs_imag.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_imag.pdf')
         p.clf()
 
 
-    def cmass_logdv_vs_z_scatter_all(self,nobjs=100000):
+    def sequels_logdv_vs_z_scatter_all(self,nobjs=100000):
     # Makes a scatterplot nobjs CMASS targets of redshift vs log(dv)
         self.read_redmonster_summary_file()
         errors = []
@@ -1562,8 +1560,7 @@ class VerifyRM:
         p.xlabel(r'$\chi_r^2$', size=16)
         p.ylabel(r'Fraction per bin', size=16)
         p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  rchi2_histos.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/rchi2_histos.pdf')
         p.clf()
 
 
@@ -1614,8 +1611,7 @@ class VerifyRM:
         p.xlabel(r'$\Delta\chi_r^2$', size=16)
         p.ylabel(r'Fraction per bin', size=16)
         p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  drchi2_histos.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_histos.pdf')
         p.clf()
 
 
@@ -1662,8 +1658,7 @@ class VerifyRM:
         p.grid(b=True, which='major', color='black', linestyle='--')
         p.legend(loc=2)
         p.axis([0,.02,0,.7])
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  drchi2_vs_failure.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
         p.clf()
 
 
@@ -1733,8 +1728,7 @@ class VerifyRM:
         p.xlabel(r'$(z_2-z_1)/ \delta z_{rms}$', size=16)
         p.ylabel('Fraction per bin',size=16)
         p.text(3,.01,r'$\sigma_{fit}=1.18$',size=18)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  reobs_errors.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
         p.clf()
 
 
@@ -1816,8 +1810,7 @@ class VerifyRM:
 
         p.xlabel(r'$(z_2-z_1)/ (\delta z_1^2+$ $\delta z_2^2)^{1/2}$', size=16)
         p.ylabel('Fraction per bin', size=16)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  reobs_errors.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
         p.clf()
 
 
@@ -1874,8 +1867,7 @@ class VerifyRM:
         p.grid(b=True, which='major', color='black', linestyle='-')
         p.grid(b=True, which='minor', color='black', linestyle='--')
         p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  sky_failure_vs_drchi2.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/sky_failure_vs_drchi2.pdf')
         p.clf()
 
 
@@ -1956,8 +1948,7 @@ class VerifyRM:
                       rchi2_null_histo.pdf')
         else:
             p.xlabel(r'$\chi_{null}^2$',size=16)
-            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                      chi2_null_histo.pdf')
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_histo.pdf')
         p.clf()
         # Plot cumulative histogram
         ydata = []
@@ -1977,8 +1968,7 @@ class VerifyRM:
                       rchi2_null_cumul_histo.pdf')
         else:
             p.xlabel(r'$\chi_{null}^2$',size=16)
-            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                      chi2_null_cumul_histo.pdf')
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_cumul_histo.pdf')
         p.clf()
 
 
@@ -2030,8 +2020,7 @@ class VerifyRM:
             else: p.axis([bins2[0],bins2[-1],0,.25])
         p.xlabel(r'$\chi^2-\chi_{\mathrm{min}}^2$', size=16)
         p.legend()
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  chi2_null_less_chi2_min_histo.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_less_chi2_min_histo.pdf')
         p.clf()
         print bins[0:3], normhist[0:3], bins2[0:3], normhist2[0:3], bins3[0:3],\
                 normhist3[0:3],
@@ -2107,8 +2096,7 @@ class VerifyRM:
         ax3.set_xticks([0,0.2,0.4,0.6,0.8,1.0,1.2])
         p.xlabel(r'$z$', size=16)
         p.subplots_adjust(wspace = .3, hspace = .3)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/\
-                  example_chi2_vs_z.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/example_chi2_vs_z.pdf')
         p.clf()
 
 
