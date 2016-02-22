@@ -1817,7 +1817,7 @@ class VerifyRM:
         xdata = n.linspace(0,.01,40)
         rm_ydata = []
         idl_ydata = []
-        globpath1 = join(environ['REDMONSTER_SPECTRO_REDUX'],'v5_8_0_bad', '*')
+        globpath1 = join(environ['REDMONSTER_SPECTRO_REDUX'],self.version, '*')
         for chi2max in xdata:
             print chi2max
             total = 0.
