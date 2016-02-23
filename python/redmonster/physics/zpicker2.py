@@ -203,8 +203,9 @@ class ZPicker:
                 #if (n.abs(self.z[ifiber][0] - self.z[ifiber][1]) /
                     #n.sqrt(self.z_err[ifiber][0]**2 +
                             #self.z_err[ifiber][1]**2)) > 1:
-                if (c_kms*n.abs(self.z[ifiber][0] - self.z[ifiber][1])) / \
-                        (1 + self.z[ifiber][0]) > 1000:
+                if self.z[ifiber][0] != -1:
+                    if (c_kms*n.abs(self.z[ifiber][0] - self.z[ifiber][1])) / \
+                            (1 + self.z[ifiber][0]) > 1000:
                     self.flag_small_dchi2(ifiber)
                 self.flag_small_dchi2(ifiber)
             if n.isnan(self.rchi2diff[ifiber]):
