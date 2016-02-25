@@ -781,7 +781,7 @@ class VerifyRM:
             # In i-band, note conversion from nanomaggies to magnitudes
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX)
             self.idl_dof = hdu[1].data.DOF
-            self.idl_rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO
+            self.idl_rchi2diff = hdu[1].data.RCHI2DIFF
             #self.modelmag = hdu[1].data.MODELMAG[:,2:]
             #eself.extinction = hdu[1].data.EXTINCTION[:,2:]
 
