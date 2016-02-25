@@ -2099,9 +2099,9 @@ class VerifyRM:
 
     def sequels_1poly_vs_4poly_scatters(self):
         hdu1poly = fits.open( join(self.redmonster_spectro_redux + '_poly1',
-                                   'redmonsterAll-%s' % self.version) )
+                                   'redmonsterAll-%s.fits' % self.version) )
         hdu4poly = fits.open( join(self.redmonster_spectro_redux + '_poly4',
-                                   'redmonsterAll-%s' % self.version) )
+                                   'redmonsterAll-%s.fits' % self.version) )
         yes1yes4 = []
         yes1no4 = []
         no1yes4 = []
