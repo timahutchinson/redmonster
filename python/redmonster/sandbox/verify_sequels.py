@@ -2097,6 +2097,48 @@ class VerifyRM:
         p.clf()
 
 
+    def sequels_1poly_vs_4poly_scatters(self):
+        hdu1poly = fits.open( join(self.redmonster_spectro_redux, '%s_poly1' %
+                                   self.version, 'redmonsterAll-%s' %
+                                   self.version) )
+        hdu4poly = fits.open( join(self.redmonster_spectro_redux, '%s_poly4' %
+                                   self.version, 'redmonsterAll-%s' %
+                                   self.version) )
+        yes1yes4 = []
+        yes1no4 = []
+        no1yes4 = []
+        no1no4 = []
+        for i,zwarn in enumerate(hdu1poly[1].data.ZWARNING):
+            thesechi2 = (hdu1poly[1].data.CHI2NULL[i],
+                         hdu4poly[1].data.CHI2NULL[i])
+            if not zwarn & 4:
+                if not hdu4poly[1].data.ZWARNING[i] & 4:
+                    yes1yes4.append(thesechi2)
+                else:
+                    yes1no4.append(thesechi2)
+            else:
+                if not hdu4poly[1].data.ZWARNING[i] & 4:
+                    no1yes4.append(thesechi2)
+                else:
+                    no1no4.append(thesechi2)
+        f = p.figure()
+        f.add_subplot(1,1,1)
+        colors = ['black', 'red', 'green', 'blue']
+        chi2list = [yes1yes4, yes1no4, no1yes4, no1no4]
+        for i in xrange(4):
+            x = []
+            y = []
+            for j in xrange(len(chi2list[i])):
+                x.append(chi2list[i][0])
+                y.append(chi2list[i][1])
+            p.plot(x, y, color=colors[i])
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/1poly_4poly_scatters.png')
+        p.clf()
+
+
+
+
+
 # ------------------------------------------------------------------------------
 # modified version of zfitter.z_refine2() to create chi2 vs z curves
 # for self.sequels_example_chi2s()
