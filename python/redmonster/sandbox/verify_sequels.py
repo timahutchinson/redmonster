@@ -781,7 +781,7 @@ class VerifyRM:
             # In i-band, note conversion from nanomaggies to magnitudes
             self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX)
             self.idl_dof = hdu[1].data.DOF
-            self.idl_rchi2diff = hdu[1].data.RCHI2DIFF_NOQSO
+            self.idl_rchi2diff = hdu[1].data.RCHI2DIFF
             #self.modelmag = hdu[1].data.MODELMAG[:,2:]
             #eself.extinction = hdu[1].data.EXTINCTION[:,2:]
 
@@ -2095,6 +2095,48 @@ class VerifyRM:
         p.subplots_adjust(wspace = .3, hspace = .3)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/example_chi2_vs_z.pdf')
         p.clf()
+
+
+    def sequels_1poly_vs_4poly_scatters(self):
+        hdu1poly = fits.open( join(self.redmonster_spectro_redux, '%s_poly1' %
+                                   self.version, 'redmonsterAll-%s' %
+                                   self.version) )
+        hdu4poly = fits.open( join(self.redmonster_spectro_redux, '%s_poly4' %
+                                   self.version, 'redmonsterAll-%s' %
+                                   self.version) )
+        yes1yes4 = []
+        yes1no4 = []
+        no1yes4 = []
+        no1no4 = []
+        for i,zwarn in enumerate(hdu1poly[1].data.ZWARNING):
+            thesechi2 = (hdu1poly[1].data.CHI2NULL[i],
+                         hdu4poly[1].data.CHI2NULL[i])
+            if not zwarn & 4:
+                if not hdu4poly[1].data.ZWARNING[i] & 4:
+                    yes1yes4.append(thesechi2)
+                else:
+                    yes1no4.append(thesechi2)
+            else:
+                if not hdu4poly[1].data.ZWARNING[i] & 4:
+                    no1yes4.append(thesechi2)
+                else:
+                    no1no4.append(thesechi2)
+        f = p.figure()
+        f.add_subplot(1,1,1)
+        colors = ['black', 'red', 'green', 'blue']
+        chi2list = [yes1yes4, yes1no4, no1yes4, no1no4]
+        for i in xrange(4):
+            x = []
+            y = []
+            for j in xrange(len(chi2list[i])):
+                x.append(chi2list[i][0])
+                y.append(chi2list[i][1])
+            p.plot(x, y, color=colors[i])
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/1poly_4poly_scatters.png')
+        p.clf()
+
+
+
 
 
 # ------------------------------------------------------------------------------
