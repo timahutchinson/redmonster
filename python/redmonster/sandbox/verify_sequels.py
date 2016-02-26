@@ -2102,6 +2102,7 @@ class VerifyRM:
                                    'redmonsterAll-%s.fits' % self.version) )
         hdu4poly = fits.open( join(self.redmonster_spectro_redux + '_poly4',
                                    'redmonsterAll-%s.fits' % self.version) )
+        # Chi2null
         yes1yes4 = []
         yes1no4 = []
         no1yes4 = []
@@ -2120,19 +2121,108 @@ class VerifyRM:
                 else:
                     no1no4.append(thesechi2)
         f = p.figure()
-        f.add_subplot(1,1,1)
-        colors = ['black', 'red', 'green', 'blue']
+        ax1 = f.add_subplot(311)
+        colors = ['black', 'tomato', 'darkturquoise', 'green']
+        labels = ['Both', '1 poly', '4 poly', 'Neither']
         chi2list = [yes1yes4, yes1no4, no1yes4, no1no4]
-        for i in xrange(4):
+        for i in xrange(3):
             x = []
             y = []
             for j in xrange(len(chi2list[i])):
-                x.append(chi2list[i][0])
-                y.append(chi2list[i][1])
-            p.plot(x, y, color=colors[i])
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/1poly_4poly_scatters.png')
-        p.clf()
+                x.append(chi2list[i][j][0])
+                y.append(chi2list[i][j][1])
+            if i == 0: p.scatter(x, y, s=1, color=colors[i], label=labels[i], alpha=0.6) # lower alpha for grey points
+            else: p.scatter(x, y, s=1, color=colors[i], label=labels[i], alpha=1)
+        p.legend(loc=2, prop={'size':8})
+        p.plot(n.linspace(0,10000,10000), n.linspace(0,10000,10000), color='black', linestyle='--')
+        p.axis([2800,20000,3000,7000])
+        ax1.set_yticks([3000,4000,5000,6000,7000])
+        p.xlabel(r'$\chi_{\mathrm{null},1}^2$', size=14)
+        p.ylabel(r'$\chi_{\mathrm{null},4}^2$', size=14)
 
+        # minrchi2
+        yes1yes4 = []
+        yes1no4 = []
+        no1yes4 = []
+        no1no4 = []
+        for i,zwarn in enumerate(hdu1poly[1].data.ZWARNING):
+            thesechi2 = (hdu1poly[1].data.MINRCHI2[i],
+                         hdu4poly[1].data.MINRCHI2[i])
+            if not zwarn & 4:
+                if not hdu4poly[1].data.ZWARNING[i] & 4:
+                    yes1yes4.append(thesechi2)
+                else:
+                    yes1no4.append(thesechi2)
+            else:
+                if not hdu4poly[1].data.ZWARNING[i] & 4:
+                    no1yes4.append(thesechi2)
+                else:
+                    no1no4.append(thesechi2)
+        f.add_subplot(312) 
+        colors = ['black', 'tomato', 'darkturquoise', 'green']
+        labels = ['Both', '1 poly', '4 poly', 'Neither']
+        chi2list = [yes1yes4, yes1no4, no1yes4, no1no4]
+        for i in xrange(3):
+            x = []
+            y = []
+            for j in xrange(len(chi2list[i])):
+                x.append(chi2list[i][j][0])
+                y.append(chi2list[i][j][1])
+            if i == 0: p.scatter(x, y, s=1, color=colors[i], label=labels[i], alpha=0.6)
+            else: p.scatter(x, y, s=1, color=colors[i], label=labels[i], alpha=1)
+            p.legend(loc=2, prop={'size':8})
+        p.plot(n.linspace(0,2,10000), n.linspace(0,2,10000), color='black', linestyle='--')
+        p.axis([0.75,1.4,0.7,1.4])
+        p.xlabel(r'$\chi_{\mathrm{r,min},1}^2$',size=14)
+        p.ylabel(r'$\chi_{\mathrm{r,min},4}^2$',size=14)
+
+        # rchi2diff                                                       
+        yes1yes4 = []
+        yes1no4 = []
+        no1yes4 = []
+        no1no4 = []
+        for i,zwarn in enumerate(hdu1poly[1].data.ZWARNING):
+            thesechi2 = (hdu1poly[1].data.RCHI2DIFF[i],
+                         hdu4poly[1].data.RCHI2DIFF[i])
+            if not zwarn & 4:
+                if not hdu4poly[1].data.ZWARNING[i] & 4:
+                    yes1yes4.append(thesechi2)
+                else:
+                    print '1:  %s %s %s' % (hdu1poly[1].data.PLATE[i],hdu1poly[1].data.MJD[i],hdu1poly[1].data.FIBERID[i])
+                    yes1no4.append(thesechi2)
+            else:
+                if not hdu4poly[1].data.ZWARNING[i] & 4:
+                    no1yes4.append(thesechi2)
+                    print '4:  %s %s %s' % (hdu1poly[1].data.PLATE[i],hdu1poly[1].data.MJD[i],hdu1poly[1].data.FIBERID[i])
+                else:
+                    no1no4.append(thesechi2)
+        f.add_subplot(313)
+        colors = ['black', 'tomato', 'darkturquoise', 'green']
+        labels = ['Both', '1 poly', '4 poly', 'Neither']
+        chi2list = [yes1yes4, yes1no4, no1yes4, no1no4]
+        for i in xrange(3):
+            x = []
+            y = []
+            for j in xrange(len(chi2list[i])):
+                x.append(chi2list[i][j][0])
+                y.append(chi2list[i][j][1])
+            if i == 0: p.scatter(x, y, s=1, color=colors[i], label=labels[i], alpha=0.6)
+            else: p.scatter(x, y, s=1, color=colors[i], label=labels[i], alpha=1)
+            p.legend(loc=2, prop={'size':8})
+        p.axis([-0.008,0.05,-0.003,0.05])
+        p.xlabel(r'$\Delta\chi_{\mathrm{r},1}^2$',size=14)
+        p.ylabel(r'$\Delta\chi_{\mathrm{r},4}^2$',size=14)
+        p.plot(n.linspace(-0.1,.1,10000), n.linspace(-0.1,.1,10000), color='black', linestyle='--')
+
+        p.subplots_adjust(hspace = .5)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/1poly_4poly_scatters.pdf')
+        p.clf()
+        
+        '''
+        import seaborn as sns
+        g = (sns.jointplot(x, y, kind='reg').set_axis_labels('x', 'y'))
+        g.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/test.pdf')
+        '''
 
 
 
