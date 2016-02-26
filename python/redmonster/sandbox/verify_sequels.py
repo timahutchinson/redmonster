@@ -2220,7 +2220,7 @@ class VerifyRM:
         
         '''
         import seaborn as sns
-        g = (sns.jointplot(x, y, kind='reg').set_axis_labels('x', 'y'))
+        g = (sns.jointplot(n.asarray(x), n.asarray(y), kind='reg').set_axis_labels('x', 'y'))
         g.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/test.pdf')
         '''
 
