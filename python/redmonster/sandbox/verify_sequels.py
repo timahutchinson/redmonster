@@ -919,13 +919,14 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
         p.clf()
 
-def sequels_logdv_vs_z_histos_all(self, nbins=12):
+    def sequels_logdv_vs_z_histos_all_sns(self, nbins=12):
     # Make histograms of log10(dv) in redshift bins for
     # LOWZ and CMASS galaxies
-    colors = [
-              'tomato','sage','cornflowerblue','sandybrown',
-              'mediumpurple','grey'
-              ]
+        colors = [
+                  'tomato','sage','cornflowerblue','sandybrown',
+                  'mediumpurple','grey'
+                  ]
+        current_palette = sns.color_palette('colorblind')
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
         f = p.figure()
         '''
@@ -995,8 +996,7 @@ def sequels_logdv_vs_z_histos_all(self, nbins=12):
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
-            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j],
-                   label=labels[j])
+            p.plot(bins, normhist, drawstyle='steps-mid', label=labels[j])
         p.minorticks_on()
         p.xlabel(r'$\log_{10} \delta v$ (km s$^{-1}$)', size=16)
         p.ylabel(r'Fraction per bin in $\log_{10} \delta v$', size=16)
@@ -1008,7 +1008,7 @@ def sequels_logdv_vs_z_histos_all(self, nbins=12):
         p.clf()
 
 
-    def sequels_failure_vs_sn_all_sns(self,sn_max=4.5,nbins=18):
+    def sequels_failure_vs_sn_all(self,sn_max=4.5,nbins=18):
         # Makes plot of SEQUELS LRG target failure rate (zwarning > 0)
         # vs median S/N in r-, i-, and z-bands
         f = p.figure()
@@ -1087,13 +1087,9 @@ def sequels_logdv_vs_z_histos_all(self, nbins=12):
                     except:
                         zhist[i] = 0
         
-        '''p.plot(rbins,rhist,color='purple',label='r-band', drawstyle='steps-mid')
+        p.plot(rbins,rhist,color='purple',label='r-band', drawstyle='steps-mid')
         p.plot(ibins,ihist,color='blue',label='i-band', drawstyle='steps-mid')
-        p.plot(zbins,zhist,color='cyan',label='z-band', drawstyle='steps-mid')'''
-        current_palette = sns.color_palette('colorblind')
-        p.plot(rbins,rhist,label='r-band', drawstyle='steps-mid')
-        p.plot(ibins,ihist,label='i-band', drawstyle='steps-mid')
-        p.plot(zbins,zhist,label='z-band', drawstyle='steps-mid')
+        p.plot(zbins,zhist,color='cyan',label='z-band', drawstyle='steps-mid')
         ax.set_yscale('log')
         p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=14)
         p.ylabel(r'SEQUELS LRG target failure rate', size=14)
