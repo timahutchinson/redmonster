@@ -927,6 +927,8 @@ class VerifyRM:
                   'mediumpurple','grey'
                   ]
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
+        sns.set_style('whitegrid')
+        sns.set_palette('pastel')
         f = p.figure()
         '''
             ax1 = f.add_subplot(1,2,1)
@@ -995,8 +997,6 @@ class VerifyRM:
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
-            sns.set_style('whitegrid')
-            current_palette = sns.color_palette('pastel')
             p.plot(bins, normhist, drawstyle='steps-mid', label=labels[j])
         p.minorticks_on()
         p.xlabel(r'$\log_{10} \delta v$ (km s$^{-1}$)', size=16)
