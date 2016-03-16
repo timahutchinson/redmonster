@@ -995,8 +995,8 @@ class VerifyRM:
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
-            current_palette = sns.color_palette('pastel')
             sns.set_style('whitegrid')
+            current_palette = sns.color_palette('pastel')
             p.plot(bins, normhist, drawstyle='steps-mid', label=labels[j])
         p.minorticks_on()
         p.xlabel(r'$\log_{10} \delta v$ (km s$^{-1}$)', size=16)
