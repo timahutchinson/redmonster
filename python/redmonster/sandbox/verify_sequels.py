@@ -959,8 +959,6 @@ class VerifyRM:
             p.axis([.55,2,0,.4])
             '''
         ax2 = f.add_subplot(1,1,1)
-        current_palette = sns.color_palette('GnBu_d')
-        sns.set_style('whitegrid')
         labels = ['0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0']
         nbins = 25
         for j,zmin in enumerate(n.linspace(.6,.9,4)):
@@ -997,6 +995,8 @@ class VerifyRM:
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
+            current_palette = sns.color_palette('GnBu_d')
+            sns.set_style('whitegrid')
             p.plot(bins, normhist, drawstyle='steps-mid', label=labels[j])
         p.minorticks_on()
         p.xlabel(r'$\log_{10} \delta v$ (km s$^{-1}$)', size=16)
