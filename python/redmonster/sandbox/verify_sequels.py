@@ -919,7 +919,7 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
         p.clf()
 
-    def sequels_logdv_vs_z_histos_all_sns(self, nbins=12):
+    def sequels_logdv_vs_z_histos_all_sns(self, nbins=12, sns_pal='deep'):
     # Make histograms of log10(dv) in redshift bins for
     # LOWZ and CMASS galaxies
         colors = [
@@ -928,7 +928,7 @@ class VerifyRM:
                   ]
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
         sns.set_style('darkgrid')
-        sns.set_palette('muted')
+        sns.set_palette(sns_pal)
         f = p.figure()
         '''
             ax1 = f.add_subplot(1,2,1)
