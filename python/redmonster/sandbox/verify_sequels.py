@@ -2395,7 +2395,7 @@ class VerifyRM:
         p.plot(diffs, idl_data, color=sns.color_palette("RdBu_r", 7)[0], label='spectro1d')
         p.xlabel(r'$\Delta\chi_{r}^2$ threshold', size=16)
         p.ylabel(r'Cumulative fraction below threshold', size=16)
-        p.grid(b=True, which='major', color='black', linestyle='--')
+        #p.grid(b=True, which='major', color='black', linestyle='--')
         p.legend(loc=2)
         p.axis([0,.02,0,.7])
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
