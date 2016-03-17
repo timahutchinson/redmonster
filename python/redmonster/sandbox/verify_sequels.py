@@ -1825,34 +1825,36 @@ class VerifyRM:
             total = 0.
             countidl = 0.
             countrm = 0.
-            for path in iglob(globpath1):
-                plate = basename(path)
-                if len(plate) == 4:
-                    globpath2 = join(environ['BOSS_SPECTRO_REDUX'],
-                                     '%s' % self.version, '%s' % plate,
-                                     'spPlate-%s-*.fits' % plate)
-                    for file in iglob(globpath2):
-                        if len(basename(file)) == 23:
-                            mjd = basename(file)[13:18]
-                            hduplate = fits.open(file)
-                            hduidl=fits.open(join(environ['BOSS_SPECTRO_REDUX'],
-                                                  '%s' % self.version,
-                                                  '%s' % plate,
-                                                  '%s' % self.version,
-                                                  'spZbest-%s-%s.fits' %
-                                                  (plate,mjd)))
-                            hdurm = fits.open(
-                                    join(environ['REDMONSTER_SPECTRO_REDUX'],
+            try:
+                for path in iglob(globpath1):
+                    plate = basename(path)
+                    if len(plate) == 4:
+                        globpath2 = join(environ['BOSS_SPECTRO_REDUX'],
                                          '%s' % self.version, '%s' % plate,
-                                         '%s' % self.version,
-                                         'redmonster-%s-%s.fits' % (plate,mjd)))
-                            for i,zwarn in enumerate(hdurm[1].data.ZWARNING):
-                                if zwarn & 1 > 0:
-                                    total += 1.
-                                    if hduidl[1].data.RCHI2DIFF[i] > chi2max:
-                                        countidl += 1.
-                                    if hdurm[1].data.RCHI2DIFF[i] > chi2max:
-                                        countrm += 1.
+                                         'spPlate-%s-*.fits' % plate)
+                        for file in iglob(globpath2):
+                            if len(basename(file)) == 23:
+                                mjd = basename(file)[13:18]
+                                hduplate = fits.open(file)
+                                hduidl=fits.open(join(environ['BOSS_SPECTRO_REDUX'],
+                                                      '%s' % self.version,
+                                                      '%s' % plate,
+                                                      '%s' % self.version,
+                                                      'spZbest-%s-%s.fits' %
+                                                      (plate,mjd)))
+                                hdurm = fits.open(
+                                        join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                             '%s' % self.version, '%s' % plate,
+                                             '%s' % self.version,
+                                             'redmonster-%s-%s.fits' % (plate,mjd)))
+                                for i,zwarn in enumerate(hdurm[1].data.ZWARNING):
+                                    if zwarn & 1 > 0:
+                                        total += 1.
+                                        if hduidl[1].data.RCHI2DIFF[i] > chi2max:
+                                            countidl += 1.
+                                        if hdurm[1].data.RCHI2DIFF[i] > chi2max:
+                                            countrm += 1.
+            except: pass
             rm_ydata.append(countrm/total)
             idl_ydata.append(countidl/total)
 
