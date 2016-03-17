@@ -2404,7 +2404,7 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
         p.clf()
 
-    def plate_splits_errors_sns(self, nbins=25, fit=True, normed=True,sns_pal='muted')):
+    def plate_splits_errors_sns(self, nbins=25, fit=True, normed=True,sns_pal='muted'):
         sns.set_style('whitegrid')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
