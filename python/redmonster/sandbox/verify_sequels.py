@@ -2380,7 +2380,7 @@ class VerifyRM:
         p.clf()
 
 
-    def sequels_failure_vs_dchi2_sns(self, drchi2max=.02, npoints=150, sns_pal='deep'):
+    def sequels_failure_vs_dchi2_sns(self, drchi2max=.02, npoints=150, sns_pal='muted'):
     # Makes a plot of SEQUELS LRG failure rate as a function of
     # dchi2 threshold for redmonster and idlspec1d
         sns.set_style('whitegrid')
@@ -2402,6 +2402,59 @@ class VerifyRM:
         p.legend(loc=2)
         p.axis([0,.02,0,.7])
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
+        p.clf()
+
+    def plate_splits_errors_sns(self, nbins=25, fit=True, normed=True,sns_pal='muted')):
+        sns.set_style('whitegrid')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+        plates = [7834,7839,7848]
+        mjds = [56979,56900,56959]
+        self.z1 = []
+        self.z2 = []
+        self.zerr1 = []
+        self.zerr2 = []
+        for i,plate in enumerate(plates):
+            self.plate_splits_function(plate=plate, mjd=mjds[i],
+                                       nbins=nbins, fit=fit)
+        self.z1 = n.array(self.z1)
+        self.z2 = n.array(self.z2)
+        self.zerr1 = n.array(self.zerr1)
+        self.zerr2 = n.array(self.zerr2)
+        z_diff = self.z2-self.z1
+        zerr_rms = n.sqrt( (self.zerr1**2 + self.zerr2**2) )
+        scaled_diff = z_diff / zerr_rms
+        while True:
+            if n.abs(scaled_diff[n.abs(scaled_diff).argmax()]) > 5:
+                scaled_diff = n.delete(scaled_diff, n.abs(scaled_diff).argmax())
+            else:
+                break
+        print n.max(n.abs(scaled_diff))
+        print scaled_diff.shape
+        hist,binedges = n.histogram(scaled_diff, bins = nbins)
+        if normed:
+            normhist = hist / float(self.z1.shape[0])
+        else:
+            normhist = hist
+        bins = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins[i] = (binedges[i+1]+binedges[i])/2.
+        p.plot(bins, normhist, drawstyle='steps-mid', color='black')
+
+        def fit_func(x, a, sigma, mu): # Gaussian function to fit to histogram
+            return a * n.exp( -((x-mu)**2)/(2.*sigma**2) )
+        
+        if fit:
+            popt, pcov = curve_fit(fit_func, bins, normhist)
+            xfit = n.linspace(-4,4,1000)
+            yfit = fit_func(xfit, popt[0], popt[1], popt[2])
+            p.plot(xfit, yfit, color='mediumpurple')
+            p.text(.78*(xfit[-1]-xfit[0])+xfit[0], .78*(yfit[-1]-yfit[0])+yfit[0], r'$\sigma_{\mathrm{fit}}=$%.2f' % popt[1], size=16)
+            p.text(.78*(xfit[-1]-xfit[0])+xfit[0], .72*(yfit[-1]-yfit[0])+yfit[0], r'$\mu_{\mathrm{fit}}=$%.2f' % popt[2], size=16)
+
+        p.xlabel(r'$(z_2-z_1)/ (\delta z_1^2+$ $\delta z_2^2)^{1/2}$', size=16)
+        p.ylabel('Fraction per bin', size=16)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
         p.clf()
 
 
