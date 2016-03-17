@@ -1825,14 +1825,14 @@ class VerifyRM:
             total = 0.
             countidl = 0.
             countrm = 0.
-            try:
-                for path in iglob(globpath1):
-                    plate = basename(path)
-                    if len(plate) == 4:
-                        globpath2 = join(environ['BOSS_SPECTRO_REDUX'],
-                                         '%s' % self.version, '%s' % plate,
-                                         'spPlate-%s-*.fits' % plate)
-                        for file in iglob(globpath2):
+            for path in iglob(globpath1):
+                plate = basename(path)
+                if len(plate) == 4:
+                    globpath2 = join(environ['BOSS_SPECTRO_REDUX'],
+                                     '%s' % self.version, '%s' % plate,
+                                     'spPlate-%s-*.fits' % plate)
+                    for file in iglob(globpath2):
+                        try:
                             if len(basename(file)) == 23:
                                 mjd = basename(file)[13:18]
                                 hduplate = fits.open(file)
@@ -1854,7 +1854,7 @@ class VerifyRM:
                                             countidl += 1.
                                         if hdurm[1].data.RCHI2DIFF[i] > chi2max:
                                             countrm += 1.
-            except: pass
+                        except: pass
             rm_ydata.append(countrm/total)
             idl_ydata.append(countidl/total)
 
