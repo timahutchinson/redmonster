@@ -2383,6 +2383,7 @@ class VerifyRM:
     # dchi2 threshold for redmonster and idlspec1d
         sns.set_style('whitegrid')
         sns.set_palette(sns_pal)
+        sns.set_context('paper')
         rm_data = []
         idl_data = []
         diffs = n.linspace(0,drchi2max,npoints)
@@ -2393,8 +2394,8 @@ class VerifyRM:
             idl_data.append(idl_point)
         p.plot(diffs, rm_data, color=sns.color_palette("RdBu_r", 7)[-1], label='redmonster')
         p.plot(diffs, idl_data, color=sns.color_palette("RdBu_r", 7)[0], label='spectro1d')
-        p.xlabel(r'$\Delta\chi_{r}^2$ threshold', size=16)
-        p.ylabel(r'Cumulative fraction below threshold', size=16)
+        p.xlabel(r'$\Delta\chi_{r}^2$ threshold')
+        p.ylabel(r'Cumulative fraction below threshold')
         #p.grid(b=True, which='major', color='black', linestyle='--')
         p.legend(loc=2)
         p.axis([0,.02,0,.7])
