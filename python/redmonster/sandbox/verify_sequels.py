@@ -919,96 +919,6 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
         p.clf()
 
-    def sequels_logdv_vs_z_histos_all_sns(self, nbins=12, sns_pal='deep'):
-    # Make histograms of log10(dv) in redshift bins for
-    # LOWZ and CMASS galaxies
-        colors = [
-                  'tomato','sage','cornflowerblue','sandybrown',
-                  'mediumpurple','grey'
-                  ]
-        labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
-        sns.set_style('darkgrid')
-        sns.set_palette(sns_pal)
-        sns.set_context('paper')
-        f = p.figure()
-        '''
-            ax1 = f.add_subplot(1,2,1)
-            for j,zmin in enumerate(n.linspace(.1,.4,4)):
-            zmax = zmin + .1
-            errors = n.array([])
-            count = 0
-            for plate in self.plates:
-            self.read_redmonster(plate)
-            self.read_spPlate(plate)
-            self.read_spZbest(plate)
-            self.get_all_yanny(plate)
-            fibers = self.get_okay_lowz()
-            fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
-            count += len(fibers)
-            errors = n.append(errors, self.rm_zerr1[fibers])
-            errors = self.dz_to_dv(errors)
-            errors = n.log10(errors)
-            hist,binedges = n.histogram(errors, bins=nbins)
-            bins = n.zeros(nbins)
-            for i in xrange(nbins):
-            bins[i] = (binedges[i+1]+binedges[i])/2.
-            normhist = hist / float(count)
-            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j],
-            label=labels[j])
-            p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
-            p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
-            p.title('LOWZ Sample', size=18)
-            p.legend()
-            p.axis([.55,2,0,.4])
-            '''
-        ax2 = f.add_subplot(1,1,1)
-        labels = ['0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0']
-        nbins = 25
-        for j,zmin in enumerate(n.linspace(.6,.9,4)):
-            #import pdb; pdb.set_trace()
-            zmax = zmin + .1
-            errors = n.array([])
-            zs = n.array([])
-            count = 0
-            '''
-                for plate in self.plates:
-                self.read_redmonster(plate)
-                #self.read_spPlate(plate)
-                #self.read_spZbest(plate)
-                #self.get_all_yanny(plate)
-                fibers = self.get_okay_cmass()
-                fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
-                count += len(fibers)
-                errors = n.append(errors,self.rm_zerr1[fibers])
-                '''
-            self.read_redmonster_summary_file()
-            for i,z in enumerate(self.rm_z1):
-                if (z >= zmin) & (z <= zmax):
-                    if (self.rm_type[i] == 'ssp_galaxy_glob') & \
-                        (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
-                        count += 1
-                        errors = n.append(errors,self.rm_zerr1[i])
-                        zs = n.append(zs,z)
-            #errors.append(self.rm_zerr1[fibers].tolist())
-            errors = self.dz_to_dv(zs, errors)
-            print zmin, zmax, n.mean(errors), n.std(errors)
-            errors = n.log10(errors)
-            hist,binedges = n.histogram(errors, bins=nbins)
-            bins = n.zeros(nbins)
-            for i in xrange(nbins):
-                bins[i] = (binedges[i+1]+binedges[i])/2.
-            normhist = hist / float(count)
-            p.plot(bins, normhist, drawstyle='steps-mid', label=labels[j])
-        p.minorticks_on()
-        p.xlabel(r'$\log_{10} \delta v$ (km s$^{-1}$)')
-        p.ylabel(r'Fraction per bin in $\log_{10} \delta v$')
-        p.title('SEQUELS LRGs')
-        p.axis([.5,2.5,0,.25])
-        p.legend()
-        p.subplots_adjust(wspace = .35)
-        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
-        p.clf()
-
 
     def sequels_failure_vs_sn_all(self,sn_max=4.5,nbins=18):
         # Makes plot of SEQUELS LRG target failure rate (zwarning > 0)
@@ -2366,6 +2276,132 @@ class VerifyRM:
 # (x.rm_type == 'ssp_galaxy_glob') & (x.boss_target1 & 2 == 2) )[0]+1
 
 # Plate 7338 has 6 MJDs, 7340 has 4
+
+
+
+
+# ------------------------------------------------------------------------------
+
+
+# Below here are re-writes of plotting functions using seaborn
+
+
+
+    def sequels_logdv_vs_z_histos_all_sns(self, nbins=12, sns_pal='deep'):
+    # Make histograms of log10(dv) in redshift bins for
+    # LOWZ and CMASS galaxies
+        colors = [
+              'tomato','sage','cornflowerblue','sandybrown',
+              'mediumpurple','grey'
+              ]
+        labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
+        sns.set_style('darkgrid')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+        f = p.figure()
+        '''
+            ax1 = f.add_subplot(1,2,1)
+            for j,zmin in enumerate(n.linspace(.1,.4,4)):
+            zmax = zmin + .1
+            errors = n.array([])
+            count = 0
+            for plate in self.plates:
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            self.read_spZbest(plate)
+            self.get_all_yanny(plate)
+            fibers = self.get_okay_lowz()
+            fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
+            count += len(fibers)
+            errors = n.append(errors, self.rm_zerr1[fibers])
+            errors = self.dz_to_dv(errors)
+            errors = n.log10(errors)
+            hist,binedges = n.histogram(errors, bins=nbins)
+            bins = n.zeros(nbins)
+            for i in xrange(nbins):
+            bins[i] = (binedges[i+1]+binedges[i])/2.
+            normhist = hist / float(count)
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j],
+            label=labels[j])
+            p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
+            p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
+            p.title('LOWZ Sample', size=18)
+            p.legend()
+            p.axis([.55,2,0,.4])
+            '''
+        ax2 = f.add_subplot(1,1,1)
+        labels = ['0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0']
+        nbins = 25
+        for j,zmin in enumerate(n.linspace(.6,.9,4)):
+            #import pdb; pdb.set_trace()
+            zmax = zmin + .1
+            errors = n.array([])
+            zs = n.array([])
+            count = 0
+            '''
+                for plate in self.plates:
+                self.read_redmonster(plate)
+                #self.read_spPlate(plate)
+                #self.read_spZbest(plate)
+                #self.get_all_yanny(plate)
+                fibers = self.get_okay_cmass()
+                fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
+                count += len(fibers)
+                errors = n.append(errors,self.rm_zerr1[fibers])
+                '''
+            self.read_redmonster_summary_file()
+            for i,z in enumerate(self.rm_z1):
+                if (z >= zmin) & (z <= zmax):
+                    if (self.rm_type[i] == 'ssp_galaxy_glob') & \
+                        (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
+                        count += 1
+                        errors = n.append(errors,self.rm_zerr1[i])
+                        zs = n.append(zs,z)
+            #errors.append(self.rm_zerr1[fibers].tolist())
+            errors = self.dz_to_dv(zs, errors)
+            print zmin, zmax, n.mean(errors), n.std(errors)
+            errors = n.log10(errors)
+            hist,binedges = n.histogram(errors, bins=nbins)
+            bins = n.zeros(nbins)
+            for i in xrange(nbins):
+                bins[i] = (binedges[i+1]+binedges[i])/2.
+            normhist = hist / float(count)
+            p.plot(bins, normhist, drawstyle='steps-mid', label=labels[j])
+        p.minorticks_on()
+        p.xlabel(r'$\log_{10} \delta v$ (km s$^{-1}$)')
+        p.ylabel(r'Fraction per bin in $\log_{10} \delta v$')
+        p.title('SEQUELS LRGs')
+        p.axis([.5,2.5,0,.25])
+        p.legend()
+        p.subplots_adjust(wspace = .35)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
+        p.clf()
+
+
+    def sequels_failure_vs_dchi2_sns(self, drchi2max=.02, npoints=150, sns_pal='deep'):
+    # Makes a plot of SEQUELS LRG failure rate as a function of
+    # dchi2 threshold for redmonster and idlspec1d
+        sns.set_style('whitegrid')
+        sns.set_palette(sns_pal)
+        rm_data = []
+        idl_data = []
+        diffs = n.linspace(0,drchi2max,npoints)
+        for i,diff in enumerate(diffs):
+            print '%s of %s' % (i+1,npoints)
+            rm_point, idl_point = self.dchi2_failure_diff_function(diff)
+            rm_data.append(rm_point)
+            idl_data.append(idl_point)
+        p.plot(diffs, rm_data, 'red', label='redmonster')
+        p.plot(diffs, idl_data, 'blue', label='idlspec1d')
+        p.xlabel(r'$\Delta\chi_{r}^2$ threshold', size=16)
+        p.ylabel(r'Cumulative fraction below threshold', size=16)
+        p.grid(b=True, which='major', color='black', linestyle='--')
+        p.legend(loc=2)
+        p.axis([0,.02,0,.7])
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
+        p.clf()
+
+
 
 
 
