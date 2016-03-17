@@ -1854,7 +1854,7 @@ class VerifyRM:
                                             countidl += 1.
                                         if hdurm[1].data.RCHI2DIFF[i] > chi2max:
                                             countrm += 1.
-                        except: pass
+                        except IOError: pass
             rm_ydata.append(countrm/total)
             idl_ydata.append(countidl/total)
 
