@@ -2405,7 +2405,7 @@ class VerifyRM:
             p.plot(n.linspace(0,0.01,1000), [rmcoords01[1]]*1000, color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
             p.plot([0.01]*1000, n.linspace(0,rmcoords01[1],1000), color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
         else:
-            p.p.plot(n.linspace(0,0.005,1000), [rmcoords005[1]]*1000, color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
+            p.plot(n.linspace(0,0.005,1000), [rmcoords005[1]]*1000, color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
             p.plot([0.005]*1000, n.linspace(0,rmcoords005[1],1000), color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
         p.xlabel(r'$\Delta\chi_{r}^2$ threshold')
         p.ylabel(r'Cumulative fraction below threshold')
