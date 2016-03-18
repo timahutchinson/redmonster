@@ -2297,7 +2297,7 @@ class VerifyRM:
               'mediumpurple','grey'
               ]
         labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
-        sns.set_style('whitegrid')
+        sns.set_style('white')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
         f = p.figure()
