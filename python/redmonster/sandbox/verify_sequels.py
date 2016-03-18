@@ -2380,7 +2380,7 @@ class VerifyRM:
         p.clf()
 
 
-    def sequels_failure_vs_dchi2_sns(self, drchi2max=.02, npoints=150, sns_pal='muted'):
+    def sequels_failure_vs_dchi2_sns(self, drchi2max=.02, npoints=150, sns_pal='muted', rm_line_x=0.01):
     # Makes a plot of SEQUELS LRG failure rate as a function of
     # dchi2 threshold for redmonster and idlspec1d
         sns.set_style('whitegrid')
@@ -2396,6 +2396,14 @@ class VerifyRM:
             idl_data.append(idl_point)
         p.plot(diffs, rm_data, color=sns.color_palette("RdBu_r", 7)[-1], label='redmonster')
         p.plot(diffs, idl_data, color=sns.color_palette("RdBu_r", 7)[0], label='spectro1d')
+        rmcoords01 = (0.01, rm_data[n.abs(n.array(diffs)-0.01).argmin()])
+        rmcoords005 = (0.005, rm_data[n.abs(n.array(diffs)-0.005).argmin()])
+        idlcoords01 = (0.01, idl_data[n.abs(n.array(diffs)-0.01).argmin()])
+        p.axhline(y=idlcoords01[1], xmin=0, xmax=idlcoords01[0], color=sns.color_palette("RdBu_r", 7)[0], drawstyle='--')
+        if rm_line_x == 0.01:
+            p.axhline(y=rmcoords01[1], xmin=0, xmax=rmcoords01[0], color=sns.color_palette("RdBu_r", 7)[-1], drawstyle='--')
+        else:
+            p.axhline(y=rmcoords005[1], xmin=0, xmax=rmcoords005[0], color=sns.color_palette("RdBu_r", 7)[-1], drawstyle='--')
         p.xlabel(r'$\Delta\chi_{r}^2$ threshold')
         p.ylabel(r'Cumulative fraction below threshold')
         #p.grid(b=True, which='major', color='black', linestyle='--')
