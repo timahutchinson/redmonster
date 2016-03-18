@@ -2399,11 +2399,13 @@ class VerifyRM:
         rmcoords01 = (0.01, rm_data[n.abs(n.array(diffs)-0.01).argmin()])
         rmcoords005 = (0.005, rm_data[n.abs(n.array(diffs)-0.005).argmin()])
         idlcoords01 = (0.01, idl_data[n.abs(n.array(diffs)-0.01).argmin()])
-        p.axhline(y=idlcoords01[1], xmin=0, xmax=idlcoords01[0], color=sns.color_palette("RdBu_r", 7)[0], drawstyle='--')
+        p.plot(n.linspace(0,0.01,1000),[idlcoords01[1]]*1000, color=sns.color_palette("RdBu_r", 7)[0], drawstyle='--')
         if rm_line_x == 0.01:
-            p.axhline(y=rmcoords01[1], xmin=0, xmax=rmcoords01[0], color=sns.color_palette("RdBu_r", 7)[-1], drawstyle='--')
+            p.plot(n.linspace(0,0.01,1000), [rmcoords01[1]]*1000, color=sns.color_palette("RdBu_r", 7)[-1], drawstyle='--')
+            p.plot([0.01]*1000, n.linspace(0,rmcoords01[1],1000), color=sns.color_palette("RdBu_r", 7)[-1], drawstyle='--')
         else:
-            p.axhline(y=rmcoords005[1], xmin=0, xmax=rmcoords005[0], color=sns.color_palette("RdBu_r", 7)[-1], drawstyle='--')
+            p.p.plot(n.linspace(0,0.005,1000), [rmcoords005[1]]*1000, color=sns.color_palette("RdBu_r", 7)[-1], drawstyle='--')
+            p.plot([0.005]*1000, n.linspace(0,rmcoords005[1],1000), color=sns.color_palette("RdBu_r", 7)[-1], drawstyle='--')
         p.xlabel(r'$\Delta\chi_{r}^2$ threshold')
         p.ylabel(r'Cumulative fraction below threshold')
         #p.grid(b=True, which='major', color='black', linestyle='--')
