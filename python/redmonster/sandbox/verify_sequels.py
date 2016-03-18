@@ -2458,7 +2458,7 @@ class VerifyRM:
             yfit = fit_func(xfit, popt[0], popt[1], popt[2])
             p.plot(xfit, yfit, color='mediumpurple')
             p.text(.78*(xfit[-1]-xfit[0])+xfit[0], .78*(1.1*max([max(yfit),max(normhist)])), r'$\sigma_{\mathrm{fit}}=$%.2f' % popt[1])
-            p.text(.78*(xfit[-1]-xfit[0])+xfit[0], .72*(1.1*max([max(yfit),max(normhist)]))f, r'$\mu_{\mathrm{fit}}=$%.2f' % popt[2])
+            p.text(.78*(xfit[-1]-xfit[0])+xfit[0], .72*(1.1*max([max(yfit),max(normhist)])), r'$\mu_{\mathrm{fit}}=$%.2f' % popt[2])
 
         p.xlabel(r'$(z_2-z_1)/ (\delta z_1^2+$ $\delta z_2^2)^{1/2}$')
         p.ylabel('Fraction per bin')
