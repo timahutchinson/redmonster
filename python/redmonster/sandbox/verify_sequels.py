@@ -2400,7 +2400,7 @@ class VerifyRM:
         rmcoords005 = (0.005, rm_data[n.abs(n.array(diffs)-0.005).argmin()])
         idlcoords01 = (0.01, idl_data[n.abs(n.array(diffs)-0.01).argmin()])
         p.plot(n.linspace(0,0.01,1000),[idlcoords01[1]]*1000, color=sns.color_palette("RdBu_r", 7)[0], linestyle='--')
-        p.plot([0.01]*1000, n.linspace(0,idlcoords01[1],1000), color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
+        p.plot([0.01]*1000, n.linspace(0,idlcoords01[1],1000), color=sns.color_palette("RdBu_r", 7)[0], linestyle='--')
         if rm_line_x == 0.01:
             p.plot(n.linspace(0,0.01,1000), [rmcoords01[1]]*1000, color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
             p.plot([0.01]*1000, n.linspace(0,rmcoords01[1],1000), color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
