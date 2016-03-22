@@ -2469,8 +2469,103 @@ class VerifyRM:
         p.clf()
 
 
+    def logdrchi2_poly_histos_sns(self, nbins=50, sns_pal='muted'):
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly2' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu3 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly3' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdulist = [hdu1, hdu2, hdu3, hdu4]
+        labels = ['1poly', '2poly', '3poly', '4poly']
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+        f = p.figure()
+        ax = f.add_subplot(111)
+        for j,hdu in enumerate(hdulist):
+            hist,binedges = n.histogram(n.log10(hdu[1].data.RCHI2DIFF), bins=nbins, normed=True)
+            bins = n.zeros(nbins)
+            for i in xrange(nbins):
+                bins[i] = (binedges[i+1]+binedges[i])/2.
+            p.plot(bins, hist, drawstyle='steps-mid', label=labels[j])
+        p.plot([n.log10(0.005)]*1000, n.linspace(0,1.2,1000),linestyle='--')
+        p.axis([-4,0,0,1.2])
+        p.legend()
+        p.xlabel(r'$\log_{10} \Delta \chi^2 / \mathrm{dof}$')
+        p.ylabel('Distribution')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_poly_histos.pdf')
 
 
+    def fiber_poly_differences(self, sns_pal = sns.color_palette("hls", 8)):
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        yes1no4 = []
+        no1yes4 = []
+        for i,zwarn1 in enumerate(hdu1[1].data.ZWARNING):
+            if not zwarn1 & 4:
+                if hdu4[1].data.ZWARNING[i] & 4 == 4:
+                    fiber = (hdu1[1].data.PLATE[i], hdu1[1].data.MJD[i], hdu1[1].data.FIBERID[i])
+                    yes1no4.append(fiber)
+                    print "1poly success, 4poly failure: plate %s mjd %s fiber %s" % fiber
+            else:
+                if not hdu4[1].data.ZWARNING[i]:
+                    fiber = (hdu1[1].data.PLATE[i], hdu1[1].data.MJD[i], hdu1[1].data.FIBERID[i])
+                    no1yes4.append(fiber)
+                    print "4poly success, 1poly failure: plate %s mjd %s fiber %s" % fiber
+        for i in xrange(20):
+            objid = yes1no4[i]
+            hduidl = fits.open( join( environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % objid[0], 'spPlate-%s-%s.fits' % (objid[0],objid[1]) ) )
+            hdurm1 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % objid[0], self.version, 'redmonster-%s-%s.fits' % (objid[0],objid[1]) ) )
+            hdurm4 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % objid[0], self.version,'redmonster-%s-%s.fits'% (objid[0], objid[1]) ) )
+            sns.set_style('white')
+            sns.set_palette(sns_pal)
+            sns.set_context('paper')
+            f = p.figure()
+            ax = f.add_subplot(211)
+            wave = 10**(hduidl[0].header['COEFF0'] + n.arange(hduidl[0].header['NAXIS1'])*hduidl[0].header['COEFF1'])
+            p.plot(wave, convolve(hduidl[0].data[objid[2]], Box1DKernel(5)), color='black', label='Data')
+            p.plot(wave, hdurm1[2].data[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]][0], color=sns_pal[0], label='1 polynomial model')
+            p.xlim(wave[0], wave[-1])
+            p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
+                   n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
+            p.legend()
+            ax = f.add_subplot(212)
+            p.plot(wave, convolve(hduidl[0].data[objid[2]], Box1DKernel(5)), color='black', label='Data')
+            p.plot(wave, hdurm4[2].data[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]][0], color=sns_pal[0], label='4 polynomial model')
+            p.xlim(wave[0], wave[-1])
+            p.xlim(wave[0], wave[-1])
+            p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
+                   n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
+            p.legend()
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/yes1no4_%s.pdf' % i)
+            p.close()
+
+        for i in xrange(20):
+            objid = no1yes4[i]
+            hduidl = fits.open( join( environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % objid[0], 'spPlate-%s-%s.fits' % (objid[0],objid[1]) ) )
+            hdurm1 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % objid[0], self.version, 'redmonster-%s-%s.fits' % (objid[0],objid[1]) ) )
+            hdurm4 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % objid[0], self.version,'redmonster-%s-%s.fits'% (objid[0], objid[1]) ) )
+            sns.set_style('white')
+            sns.set_palette(sns_pal)
+            sns.set_context('paper')
+            f = p.figure()
+            ax = f.add_subplot(211)
+            wave = 10**(hduidl[0].header['COEFF0'] + n.arange(hduidl[0].header['NAXIS1'])*hduidl[0].header['COEFF1'])
+            p.plot(wave, convolve(hduidl[0].data[objid[2]], Box1DKernel(5)), color='black', label='Data')
+            p.plot(wave, hdurm1[2].data[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]][0], color=sns_pal[0], label='1 polynomial model')
+            p.xlim(wave[0], wave[-1])
+            p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
+                   n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
+            p.legend()
+            ax = f.add_subplot(212)
+            p.plot(wave, convolve(hduidl[0].data[objid[2]], Box1DKernel(5)), color='black', label='Data')
+            p.plot(wave, hdurm4[2].data[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]][0], color=sns_pal[0], label='4 polynomial model')
+            p.xlim(wave[0], wave[-1])
+            p.xlim(wave[0], wave[-1])
+            p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
+                   n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
+            p.legend()
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/no1yes4_%s.pdf' % i)
+            p.close()
 
 
 
