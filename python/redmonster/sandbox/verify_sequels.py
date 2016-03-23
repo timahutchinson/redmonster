@@ -2416,6 +2416,7 @@ class VerifyRM:
         p.clf()
 
     def plate_splits_errors_sns(self, nbins=25, fit=True, normed=True,sns_pal='muted'):
+        # redshift pdf from splits of extra-deep plates
         sns.set_style('whitegrid')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
@@ -2470,6 +2471,7 @@ class VerifyRM:
 
 
     def logdrchi2_poly_histos_sns(self, nbins=50, sns_pal='muted'):
+        # Histograms of log10 delta rchi2 for 1,2,3,4 poly runs
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly2' % self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu3 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly3' % self.version, 'redmonsterAll-%s.fits' % self.version))
@@ -2496,6 +2498,7 @@ class VerifyRM:
 
 
     def fiber_poly_differences(self, sns_pal = sns.color_palette("hls", 8)):
+        # Find fibers that are successful with 1 poly but not 4 and vice versa, then plot some examples of each
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
         yes1no4 = []
@@ -2568,9 +2571,104 @@ class VerifyRM:
             p.close()
 
 
+    def chi2_compare_poly_sns(self, sns_pal='deep'):
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        chi201 = n.array([])
+        chi201_yes1no4 = n.array([])
+        chi201_no1yes4 = n.array([])
+        chi204 = n.array([])
+        chi204_yes1no4 = n.array([])
+        chi204_no1yes4 = n.array([])
+        chi2null1 = n.array([])
+        chi2null1_yes1no4 = n.array([])
+        chi2null1_no1yes4 = n.array([])
+        chi2null4 = n.array([])
+        chi2null4_yes1no4 = n.array([])
+        chi2null4_no1yes4 = n.array([])
+        for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
+            if not zwarn & 4:
+                if not hdu4[1].data.ZWARNING[i]:
+                    chi201 = n.append(chi201, hdu1[1].data.SN2DATA[i])
+                    chi204 = n.append(chi204, hdu4[1].data.SN2DATA[i])
+                    chi2null1 = n.append(chi2null1, hdu1[1].data.CHI2NULL[i])
+                    chi2null4 = n.append(chi2null4, hdu4[1].data.CHI2NULL[i])
+                else:
+                    chi201_yes1no4 = n.append(chi201_yes1no4, hdu1[1].data.SN2DATA[i])
+                    chi204_yes1no4 = n.append(chi204_yes1no4, hdu4[1].data.SN2DATA[i])
+                    chi2null1_yes1no4 = n.append(chi2null1_yes1no4, hdu1[1].data.CHI2NULL[i])
+                    chi2null4_yes1no4 = n.append(chi2null4_yes1no4, hdu4[1].data.CHI2NULL[i])
+            else:
+                if not hdu4[1].data.ZWARNING[i]:
+                    chi201_no1yes4 = n.append(chi201_no1yes4, hdu1[1].data.SN2DATA[i])
+                    chi204_no1yes4 = n.append(chi204_no1yes4, hdu4[1].data.SN2DATA[i])
+                    chi2null1_no1yes4 = n.append(chi2null1_no1yes4, hdu1[1].data.CHI2NULL[i])
+                    chi2null4_no1yes4 = n.append(chi2null4_no1yes4, hdu4[1].data.CHI2NULL[i])
+        
+        f = p.figure()
+        ax = f.add_subplot(211)
+        p.plot(n.linspace(0,50000,1000),n.linspace(0,50000,1000), color='black', linestyle='--')
+        p.scatter( (chi201-chi2null1), (chi204-chi2null4), s=1, color='black', label='Both', alpha=0.6)
+        p.scatter( (chi201_yes1no4-chi2null1_yes1no4), (chi204_yes1no4-chi2null4_yes1no4), s=1, color='tomato', label='1 poly')
+        p.scatter( (chi201_no1yes4-chi2null1_no1yes4), (chi204_no1yes4-chi2null4_no1yes4), s=1, color='darkturquoise',label='4 poly')
+        p.axis([0,50000,0,50000])
+        p.legend(loc=4)
+        p.xlabel(r'$\chi_{0}^2-\chi_{\mathrm{null},1}^2$')
+        p.ylabel(r'$\chi_{0}^2-\chi_{\mathrm{null},4}^2$')
 
+        ax = f.add_subplot(212)
+        p.plot(n.linspace(0,1,1000),n.linspace(0,1,1000), color='black', linestyle='--')
+        p.scatter( (chi201-chi2null1)/chi201, (chi204-chi2null4)/chi204, s=1, color='black', label='Both', alpha=0.6)
+        p.scatter( (chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4, s=1, color='tomato', label='1 poly')
+        p.scatter( (chi201_no1yes4-chi2null1_no1yes4)/chi201_no1yes4, (chi204_no1yes4-chi2null4_no1yes4)/chi204_no1yes4, s=1, color='darkturquoise',label='4 poly')
+        p.axis([0,1,0,1])
+        p.legend(loc=4)
+        p.xlabel(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$')
+        p.ylabel(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
 
+        p.subplots_adjust(hspace = .4)
+        p.gcf().subplots_adjust(bottom=.15)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_compare.pdf')
+        p.close()
 
+        # SNS jointplot test
+        '''
+        f = p.figure()
+        ax = f.add_subplot(111)
+        sns.jointplot((chi201-chi2null1)/chi201, (chi204-chi2null4)/chi204, kind='reg')
+        sns.jointplot((chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4, kind='reg')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot.pdf')
+        '''
+        sns.set()
+
+        f = p.figure()
+        ax = f.add_subplot(111)
+        #g = sns.jointplot((chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4, kind="kde", color="k")
+        g = sns.JointGrid((chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4)
+        g.plot_joint(sns.kdeplot, shade=True, color=sns.color_palette("Greys"))
+        g.plot_joint(p.scatter, color='#e74c3c', s=1.5)
+        g.ax_joint.collections[0].set_alpha(0)
+        g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
+        p.gcf().subplots_adjust(bottom=.15)
+        p.gcf().subplots_adjust(left=.15)
+        p.axis([0,1,0,1])
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot1.pdf')
+        p.close()
+        
+        f = p.figure()
+        ax = f.add_subplot(111)
+        h = sns.jointplot((chi201_no1yes4-chi2null1_no1yes4)/chi201_no1yes4, (chi204_no1yes4-chi2null4_no1yes4)/chi204_no1yes4, kind="kde", color="k")
+        h.plot_joint(p.scatter, color='#e74c3c', s=1.5) #color="#e74c3c" or color=sns.color_palette("hls", 8)[-2]
+        h.ax_joint.collections[0].set_alpha(0)
+        h.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
+        p.gcf().subplots_adjust(bottom=.15)
+        p.gcf().subplots_adjust(left=.15)
+        p.axis([0,1,0,1])
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot2.pdf')
+        p.close()
 
 
 
