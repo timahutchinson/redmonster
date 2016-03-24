@@ -3,6 +3,7 @@ from os import environ
 from math import isnan
 
 import numpy as n
+from scipy.integrate import trapz
 from astropy.io import fits
 import matplotlib
 matplotlib.use('Agg')
@@ -15,6 +16,8 @@ import seaborn as sns
 from redmonster.sandbox import yanny as y
 from redmonster.datamgr import spec
 from redmonster.physics import zfinder
+from redmonster.datamgr.io import read_ndArch
+from redmonster.physics.misc import poly_array
 
 class VerifyRM:
     
@@ -2647,34 +2650,120 @@ class VerifyRM:
         f = p.figure()
         ax = f.add_subplot(111)
         #g = sns.jointplot((chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4, kind="kde", color="k")
-        g = sns.JointGrid((chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4)
-        g.plot_joint(sns.kdeplot, shade=True, color=sns.color_palette("Greys"))
+        g = sns.JointGrid((chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4, xlim=(0,1), ylim=(0,1))
+        g.plot_joint(sns.kdeplot, shade=True, cmap="Greys", n_levels=7)
         g.plot_joint(p.scatter, color='#e74c3c', s=1.5)
+        g.plot_marginals(sns.kdeplot, color="black", shade=True)
         g.ax_joint.collections[0].set_alpha(0)
         g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
         p.gcf().subplots_adjust(bottom=.15)
         p.gcf().subplots_adjust(left=.15)
-        p.axis([0,1,0,1])
+        g.fig.suptitle('1 success, 4 failure')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot1.pdf')
         p.close()
         
         f = p.figure()
         ax = f.add_subplot(111)
-        h = sns.jointplot((chi201_no1yes4-chi2null1_no1yes4)/chi201_no1yes4, (chi204_no1yes4-chi2null4_no1yes4)/chi204_no1yes4, kind="kde", color="k")
-        h.plot_joint(p.scatter, color='#e74c3c', s=1.5) #color="#e74c3c" or color=sns.color_palette("hls", 8)[-2]
-        h.ax_joint.collections[0].set_alpha(0)
-        h.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
+        g = sns.JointGrid((chi201_no1yes4-chi2null1_no1yes4)/chi201_no1yes4, (chi204_no1yes4-chi2null4_no1yes4)/chi204_no1yes4, xlim=(0,1), ylim=(0,1))
+        g.plot_joint(sns.kdeplot, shade=True, cmap="Greys", n_levels=10)
+        g.plot_joint(p.scatter, color='#e74c3c', s=1.5)
+        g.plot_marginals(sns.kdeplot, color="black", shade=True)
+        g.ax_joint.collections[0].set_alpha(0)
+        g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
         p.gcf().subplots_adjust(bottom=.15)
         p.gcf().subplots_adjust(left=.15)
-        p.axis([0,1,0,1])
+        g.fig.suptitle('1 failure, 4 success')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot2.pdf')
         p.close()
 
 
+    def polynomial_and_template_contribution_sns(self, sns_pal='muted'):
+        sns.set_style('whitegrid')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
 
+        intmodel1 = [[],[]]
+        intpoly1 = [[],[]]
+        inttemp1 = [[],[]]
+        intmodel4 = [[],[]]
+        intpoly4 = [[],[]]
+        inttemp4 = [[],[]]
+        for path in iglob(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, '*')):
+             if len(basename(path)) == 4:
+                 plate = basename(path)
+                 print plate
+                 for filepath in iglob(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % plate,
+                                            self.version, '*')):
+                     if len(basename(filepath)) == 26:
+                         hduplate = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate,
+                                                   'spPlate-%s-%s.fits' % (plate, basename(filepath)[16:21])))
+                         hdu1 = fits.open(filepath)
+                         hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version,
+                                               '%s' % plate, self.version, basename(filepath)))
+                         wave = 10**(hduplate[0].header['COEFF0'] + n.arange(hduplate[0].header['NAXIS1']) * 
+                                     hduplate[0].header['COEFF1'])
+                         for i in xrange(hdu1[2].data.shape[0]):
+                             if not hdu1[1].data.ZWARNING[i] & 4:
+                                 intmodel1[0].append( trapz(hdu1[2].data[i,0], wave) )
+                                 temps = read_ndArch(join(environ['REDMONSTER_TEMPLATES_DIR'],
+                                                          hdu1[1].data.FNAME1[i]))[0]
+                                 this_temp = temps[eval(hdu1[1].data.MINVECTOR1[i])[:-1]][eval(hdu1[1].data.MINVECTOR1[i])[-1]:eval(hdu1[1].data.MINVECTOR1[i])[-1] + hduplate[0].header['NAXIS1']]
+                                 inttemp1[0].append( trapz(this_temp * eval(hdu1[1].data.THETA1[i])[0],wave) )
+                                 intpoly1[0].append( trapz(poly_array(1, hduplate[0].header['NAXIS1'])[0] *
+                                                        eval(hdu1[1].data.THETA1[i])[1], wave) )
+                             else:
+                                 intmodel1[1].append( trapz(hdu1[2].data[i,0], wave) )
+                                 temps = read_ndArch(join(environ['REDMONSTER_TEMPLATES_DIR'],
+                                                          hdu1[1].data.FNAME1[i]))[0]
+                                 this_temp = temps[eval(hdu1[1].data.MINVECTOR1[i])[:-1]][eval(hdu1[1].data.MINVECTOR1[i])[-1]:eval(hdu1[1].data.MINVECTOR1[i])[-1] + hduplate[0].header['NAXIS1']]
+                                 inttemp1[1].append( trapz(this_temp * eval(hdu1[1].data.THETA1[i])[0],wave) )
+                                 intpoly1[1].append( trapz(poly_array(1, hduplate[0].header['NAXIS1'])[0] *
+                                                        eval(hdu1[1].data.THETA1[i])[1], wave) )
+                             if not hdu4[1].data.ZWARNING[i] & 4:
+                                 intmodel4[0].append( trapz(hdu4[2].data[i,0],wave) )
+                                 temps = read_ndArch(join(environ['REDMONSTER_TEMPLATES_DIR'],
+                                                          hdu4[1].data.FNAME1[i]))[0]
+                                 this_temp = temps[eval(hdu4[1].data.MINVECTOR1[i])[:-1]][eval(hdu4[1].data.MINVECTOR1[i])[-1]:eval(hdu4[1].data.MINVECTOR1[i])[-1] + hduplate[0].header['NAXIS1']]
+                                 inttemp4[0].append( trapz(this_temp * eval(hdu4[1].data.THETA1[i])[0],wave) )
+                                 pmat = n.transpose(poly_array(4, hduplate[0].header['NAXIS1']))
+                                 intpoly4[0].append( trapz(n.dot(pmat,eval(hdu4[1].data.THETA1[i])[1:]),wave) )
+                             else:
+                                 intmodel4[1].append( trapz(hdu4[2].data[i,0],wave) )
+                                 temps = read_ndArch(join(environ['REDMONSTER_TEMPLATES_DIR'],
+                                                          hdu4[1].data.FNAME1[i]))[0]
+                                 this_temp = temps[eval(hdu4[1].data.MINVECTOR1[i])[:-1]][eval(hdu4[1].data.MINVECTOR1[i])[-1]:eval(hdu4[1].data.MINVECTOR1[i])[-1] + hduplate[0].header['NAXIS1']]
+                                 inttemp4[1].append( trapz(this_temp * eval(hdu4[1].data.THETA1[i])[0],wave) )
+                                 pmat = n.transpose(poly_array(4, hduplate[0].header['NAXIS1']))
+                                 intpoly4[1].append( trapz(n.dot(pmat,eval(hdu4[1].data.THETA1[i])[1:]),wave) )
+        
+        import pdb; pdb.set_trace()
+        f = p.figure()
+        ax = f.add_subplot(111)
+        plt.scatter(n.array(inttemp1[0])/n.array(intmodel1[0]),n.array(intpoly1[0])/n.array(intmodel1[0]),color='black',s=1,alpha=.5,label='ZWARNING = 0')
+        plt.scatter(n.array(inttemp1[1])/n.array(intmodel1[1]), n.array(intpoly1[1])/n.array(intmodel1[1]), color='red', s=1, alpha=.5, label='ZWARNING > 0')
+        plt.axis([0,2.5,-3,1])
+        plt.xlabel(r'$\frac{\int_{\lambda}^{} \theta_{\mathrm{t}} \, \mathrm{d}\lambda}{\int_{\lambda}^{} \theta \, \mathrm{d}\lambda}$')
+        plt.ylabel(r'$\frac{\int_{\lambda}^{} \theta_{\mathrm{p}} \, \mathrm{d}\lambda}{\int_{\lambda}^{} \theta \, \mathrm{d}\lambda}$')
+        plt.title('Constant polynomial')
+        plt.gcf().subplots_adjust(bottom=.2)
+        plt.gcf().subplots_adjust(left=.15)
+        plt.legend(loc=3)
+        plt.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/poly1_contributions.pdf')
+        plt.close()
 
-
-
+        f = p.figure()
+        ax = f.add_subplot(111)
+        plt.scatter(n.array(inttemp4[0])/n.array(intmodel4[0]), n.array(intpoly4[0])/n.array(intmodel4[0]), color='black', s=1, alpha=.5, label='ZWARNING = 0')
+        plt.scatter(n.array(inttemp4[1])/n.array(intmodel4[1]), n.array(intpoly4[1])/n.array(intmodel4[1]), color='red', s=1, alpha=.5, label='ZWARNING > 0')
+        plt.axis([0,2.5,-2,1])
+        plt.xlabel(r'$\frac{\int_{\lambda}^{} \theta_{\mathrm{t}} \, \mathrm{d}\lambda}{\int_{\lambda}^{} \theta \, \mathrm{d}\lambda}$')
+        plt.ylabel(r'$\frac{\int_{\lambda}^{} \theta_{\mathrm{p}} \, \mathrm{d}\lambda}{\int_{\lambda}^{} \theta \, \mathrm{d}\lambda}$')
+        plt.title('Cubic polynomial')
+        plt.gcf().subplots_adjust(bottom=.2)
+        plt.gcf().subplots_adjust(left=.15)
+        plt.legend(loc=3)
+        plt.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/poly4_contributions.pdf')
+        plt.close()
 
 
 
