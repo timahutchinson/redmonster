@@ -2523,6 +2523,12 @@ class VerifyRM:
             hduidl = fits.open( join( environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % objid[0], 'spPlate-%s-%s.fits' % (objid[0],objid[1]) ) )
             hdurm1 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % objid[0], self.version, 'redmonster-%s-%s.fits' % (objid[0],objid[1]) ) )
             hdurm4 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % objid[0], self.version,'redmonster-%s-%s.fits'% (objid[0], objid[1]) ) )
+            print '1poly z = %s' % hdurm1[1].data.Z1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]]
+            print '1poly template = %s' % hdurm1[1].data.CLASS1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]]
+            print '1poly template amplitude = %s' % hdurm1[1].data.THETA1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]][0]
+            print '4poly z = %s' % hdurm4[1].data.Z1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
+            print '4poly template = %s' % hdurm4[1].data.CLASS1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
+            print '4poly template amplitude = %s' % hdurm4[1].data.THETA1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]][0]
             sns.set_style('white')
             sns.set_palette(sns_pal)
             sns.set_context('paper')
