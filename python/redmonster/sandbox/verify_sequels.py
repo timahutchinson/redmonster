@@ -2519,6 +2519,7 @@ class VerifyRM:
                     print "4poly success, 1poly failure: plate %s mjd %s fiber %s" % fiber
         for i in xrange(20):
             objid = yes1no4[i]
+            print 'plot %s: plate %s mjd %s fiber %s' % (i, objid[0], objid[1], objid[2])
             hduidl = fits.open( join( environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % objid[0], 'spPlate-%s-%s.fits' % (objid[0],objid[1]) ) )
             hdurm1 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % objid[0], self.version, 'redmonster-%s-%s.fits' % (objid[0],objid[1]) ) )
             hdurm4 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % objid[0], self.version,'redmonster-%s-%s.fits'% (objid[0], objid[1]) ) )
@@ -2547,6 +2548,7 @@ class VerifyRM:
 
         for i in xrange(20):
             objid = no1yes4[i]
+            print 'plot %s: plate %s mjd %s fiber %s' % (i, objid[0], objid[1], objid[2])
             hduidl = fits.open( join( environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % objid[0], 'spPlate-%s-%s.fits' % (objid[0],objid[1]) ) )
             hdurm1 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % objid[0], self.version, 'redmonster-%s-%s.fits' % (objid[0],objid[1]) ) )
             hdurm4 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % objid[0], self.version,'redmonster-%s-%s.fits'% (objid[0], objid[1]) ) )
