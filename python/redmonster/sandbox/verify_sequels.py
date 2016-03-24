@@ -2676,6 +2676,15 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot2.pdf')
         p.close()
 
+        f = p.figure()
+        ax = f.add_subplot(111)
+        g = sns.JointGrid((chi201_no1yes4-chi2null1_no1yes4)/chi201_no1yes4, (chi204_no1yes4-chi2null4_no1yes4)/chi204_no1yes4, xlim=(0,1), ylim=(0,1))
+        h = sns.JointGrid((chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4, xlim=(0,1), ylim=(0,1))
+        g.plot_joint(sns.kdeplot, shade=True, cmap='Blues')
+        h.plot_joint(sns.kdeplot, shade=True, cmap='Greens')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/test.pdf')
+        p.close()
+
 
     def polynomial_and_template_contribution_sns(self, sns_pal='muted'):
         sns.set_style('whitegrid')
