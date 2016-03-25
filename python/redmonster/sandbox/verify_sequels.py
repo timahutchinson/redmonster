@@ -2529,6 +2529,7 @@ class VerifyRM:
             print '4poly z = %s' % hdurm4[1].data.Z1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
             print '4poly template = %s' % hdurm4[1].data.CLASS1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
             print '4poly template amplitude = %s' % eval(hdurm4[1].data.THETA1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])[0]
+            print ''
             sns.set_style('white')
             sns.set_palette(sns_pal)
             sns.set_context('paper')
@@ -2564,6 +2565,7 @@ class VerifyRM:
             print '4poly z = %s' % hdurm4[1].data.Z1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
             print '4poly template = %s' % hdurm4[1].data.CLASS1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
             print '4poly template amplitude = %s' % eval(hdurm4[1].data.THETA1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])[0]
+            print ''
             sns.set_style('white')
             sns.set_palette(sns_pal)
             sns.set_context('paper')
