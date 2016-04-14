@@ -2487,7 +2487,8 @@ class VerifyRM:
         f = p.figure()
         ax = f.add_subplot(111)
         for j,hdu in enumerate(hdulist):
-            hist,binedges = n.histogram(n.log10(hdu[1].data.RCHI2DIFF), bins=nbins, normed=True)
+            x = n.delete(hdu[1].data.RCHI2DIFF, n.where(hdu[1].data.RCHI2DIFF == 0)[0])
+            hist,binedges = n.histogram(n.log10(x), bins=nbins, normed=True)
             bins = n.zeros(nbins)
             for i in xrange(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
