@@ -2694,6 +2694,21 @@ class VerifyRM:
         g.fig.suptitle('1 failure, 4 success')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot2.pdf')
         p.close()
+        
+        f = p.figure()
+        ax = f.add_subplot(111)
+        g = sns.JointGrid((chi201-chi2null1)/chi201, (chi204-chi2null4)/chi204, xlim=(0,1), ylim=(0,1))
+        g.plot_joint(sns.kdeplot, shade=True, cmap="Greys", n_levels=10)
+        g.plot_joint(p.scatter, color='#e74c3c', s=1.5)
+        g.plot_marginals(sns.kdeplot, color="black", shade=True)
+        g.ax_joint.collections[0].set_alpha(0)
+        g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
+        p.gcf().subplots_adjust(bottom=.15)
+        p.gcf().subplots_adjust(left=.15)
+        #g.fig.suptitle('1 failure, 4 success')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot3.pdf')
+        p.close()
+
 
         f = p.figure()
         ax = f.add_subplot(111)
