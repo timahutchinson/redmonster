@@ -35,10 +35,13 @@ data = n.load('/uufs/astro.utah.edu/common/home/u0814744/VisualInspectionLRGs.np
 plates = []
 mjds = []
 fibers = []
+zconf = []
 for i in xrange(len(data)):
-    plates.append(data[i][0])
-    mjds.append(data[i][1])
-    fibers.append(data[i][2])
+    if data[i][11] == 3:
+        plates.append(data[i][0])
+        mjds.append(data[i][1])
+        fibers.append(data[i][2])
+        zconf.append(data[i][11])
 
 cjob = 0
 q.create(label='zfind_vi_plates_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,
