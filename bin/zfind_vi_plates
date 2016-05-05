@@ -30,6 +30,10 @@ except: topdir = None
 try: run2d = environ['RUN2D']
 except: run2d = None
 platedir = join(topdir,run2d,'*','spPlate-*.fits') if topdir and run2d else None
+platelist = []
+for plate in iglob(join(topdir, run2d, '*')):
+    if len(basename(plate)) == 4:
+        platelist.append(plate)
 
 data = n.load('/uufs/astro.utah.edu/common/home/u0814744/VisualInspectionLRGs.npy')
 plates = []
@@ -37,11 +41,12 @@ mjds = []
 fibers = []
 zconf = []
 for i in xrange(len(data)):
-    if data[i][11] == 3:
-        plates.append(data[i][0])
-        mjds.append(data[i][1])
-        fibers.append(data[i][2])
-        zconf.append(data[i][11])
+    if data[i][0] in platelist:
+        if data[i][11] == 3:
+            plates.append(data[i][0])
+            mjds.append(data[i][1])
+            fibers.append(data[i][2])
+            zconf.append(data[i][11])
 
 cjob = 0
 q.create(label='zfind_vi_plates_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn,
