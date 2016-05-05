@@ -33,7 +33,7 @@ platedir = join(topdir,run2d,'*','spPlate-*.fits') if topdir and run2d else None
 platelist = []
 for plate in iglob(join(topdir, run2d, '*')):
     if len(basename(plate)) == 4:
-        platelist.append(plate)
+        platelist.append(basename(plate))
 
 data = n.load('/uufs/astro.utah.edu/common/home/u0814744/VisualInspectionLRGs.npy')
 plates = []
