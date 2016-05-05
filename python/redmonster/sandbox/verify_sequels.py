@@ -2696,18 +2696,69 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot2.pdf')
         p.close()
         
+
+        # Fit power law to data points and plot on top as well
+        def fit_func(x, a, k, b):
+            return a*x**k + b
+        popt, pcov = curve_fit(fit_func, (chi201-chi2null1)/chi201, (chi204-chi2null4)/chi204)
+        print 'power law parameters: a=%s, k=%s, b=%s' % (popt[0], popt[1], popt[2])
+
         f = p.figure()
         ax = f.add_subplot(111)
         g = sns.JointGrid((chi201-chi2null1)/chi201, (chi204-chi2null4)/chi204, xlim=(0,1), ylim=(0,1))
-        g.plot_joint(sns.kdeplot, shade=False, cmap="Purples_d", n_levels=10)
+        g.plot_joint(sns.kdeplot, shade=False, cmap="Purples_d", n_levels=7)
         g.plot_joint(p.scatter, color='black', s=1, alpha=.3)
         g.plot_marginals(sns.kdeplot, color=sns.color_palette('Purples_d')[2], shade=True)
+        g.ax_joint.plot(n.linspace(0,1,1000), fit_func(n.linspace(0,1,1000),popt[0], popt[1], popt[2]), linewidth=1, color='k')
+        g.ax_joint.plot(n.linspace(0,1,1000), n.linspace(0,1,1000), ':k')
         g.ax_joint.collections[0].set_alpha(0)
         g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
         p.gcf().subplots_adjust(bottom=.15)
         p.gcf().subplots_adjust(left=.15)
         #g.fig.suptitle('1 failure, 4 success')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot3.pdf')
+        p.close()
+        print 'median x: %s' % (n.median((chi201-chi2null1)/chi201))
+        print 'median y: %s' % (n.median((chi204-chi2null4)/chi204))
+
+        # compute KDE of the x, y data points
+        from scipy.stats.kde import gaussian_kde
+        kde_x = gaussian_kde((chi201-chi2null1)/chi201)
+        kde_y = gaussian_kde((chi204-chi2null4)/chi204)
+        
+        # Fit a gaussian to each of the KDEs
+        '''
+        def fit_func(x,a,sigma,mu):
+            return a * n.exp( -((x-mu)**2)/(2*sigma**2) )
+        '''
+        import scipy.special as sse
+        def fit_func(x, l, s, m):
+            return 0.5*l*n.exp(0.5*l*(2*m+l*s*s-2*x))*sse.erfc((m+l*s*s-x)/(n.sqrt(2)*s))
+
+        poptx, pcov = curve_fit(fit_func, n.linspace(0,1,100), kde_x(n.linspace(0,1,100)), p0=(2,.5,.1))
+        print kde_y(n.linspace(0,1,100))
+        popty, pcov = curve_fit(fit_func, n.linspace(0,1,1000), kde_y(n.linspace(0,1,1000)))
+        grid = n.zeros((1000,1000))
+        kdex = kde_x(n.linspace(0,1,1000))
+        kdey = kde_y(n.linspace(0,1,1000))
+        for i in xrange(1000):
+            grid[i] = kdex * kdey[i]
+        maxcoords = n.unravel_index(grid.argmax(), (1000,1000))
+        print maxcoords
+        print n.linspace(0,1,1000)[maxcoords[0]], n.linspace(0,1,1000)[maxcoords[1]]
+
+        #plot gaussian fit over histogram of samples from kde, just to check quality of fit
+        sns.set_style('white')
+        f = p.figure()
+        #ax = f.add_subplot(111)
+        #p.plot(n.linspace(0,1,1000), kde_x(n.linspace(0,1,1000)), 'r')
+        #p.plot(n.linspace(0,1,1000), fit_func(n.linspace(0,1,1000), poptx[0], poptx[1], poptx[2]), 'k')
+        #p.hist((chi201-chi2null1)/chi201, normed=1, alpha=.3, bins=25)
+        ax = f.add_subplot(111)
+        p.plot(n.linspace(0,1,100), kde_y(n.linspace(0,1,100)), 'r')
+        p.plot(n.linspace(0,1,1000), fit_func(n.linspace(0,1,1000), popty[0], popty[1], popty[2]), 'k')
+        p.hist((chi204-chi2null4)/chi204, normed=1, alpha=.3, bins=20)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/kde_hist.png')
         p.close()
 
         f = p.figure()
