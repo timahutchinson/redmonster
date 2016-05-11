@@ -2860,6 +2860,86 @@ class VerifyRM:
         plt.close()
 
 
+    def narrow_band_chi2_sns(self, waverange=[3700,4100], sns_pal='muted'):
+        sns.set_style('whitegrid')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        rchi21 = []
+        rchi24 = []
+        rchi21_yes1no4 = []
+        rchi24_yes1no4 = []
+        rchi21_no1yes4 = []
+        rchi24_no1yes4 = []
+        plate = None
+        mjd = None
+        fiber = None
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        nfibers = hdu1[1].data.ZWARNING.shape[0]
+        for i,zwarn in enumerate(hdu[1].data.ZWARNING):
+            print 'Object %s of %s' % (i,nfibers)
+            if not (zwarn & 4 and hdu4[1].data.ZWARNING[i] & 4): # only bother with this fiber if at least one has run has !(zwarn & 4)
+                if plate != hdu1[1].data.PLATE[i] and mjd != hdu1[1].data.MJD[i]:
+                    plate = hdu1[1].data.PLATE[i]
+                    mjd = hdu1[1].data.MJD[i]
+                    hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, plate, 'spPlate-%s-%s.fits' % (plate,mjd)))
+                    wavearr = 10**(hduidl[0].header['COEFF0'] + n.arange(hduidl[0].header['NAXIS1'])*hduidl[0].header['COEFF1'])
+                fiber = hdu1[1].data.FIBERID[i]
+                this_wave = wavearr / (1 + hdu1[1].data.Z1[i])
+                pix_low = n.abs(this_wave - waverange[0]).argmin()
+                pix_high = n.abs(this_wave - waverange[1]).argmin()
+                data_slice = hduidl[0].data[fiber][pix_low:pix_high]
+                ivar_slice = hduidl[1].data[fiber][pix_low:pix_high]
+                model1_slice = hdu1[2].data[i,0][pix_low:pix_high]
+                model4_slice = hdu4[2].data[i,0][pix_low:pix_high]
+                if not zwarn & 4:
+                    if not zwarn & 4:
+                        rchi21.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
+                        rchi24.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
+                    else:
+                        rchi21_yes1no4.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
+                        rchi24_yes1no4.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
+                else:
+                    rchi21_no1yes4.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice))
+                    rchi24_no1yes4.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice))
+        f = p.figure()
+        ax = f.add_subplot(111)
+        plt.scatter(rchi21, rchi24, s=1, color='black', label='Both', alpha=0.6)
+        plt.scatter(rchi21_yes1no4, rchi24_yes1no4, s=1, color='tomato', label='1 poly')
+        plt.scatter(rchi21_no1yes4, rchi24_no1yes4, s=1, color='darkturquoise', label='4 poly1')
+        p.axis([0,2,0,2])
+        p.legend(loc=4)
+        p.xlabel(r'$\chi_{\mathrm{red},1}^2')
+        p.ylabel(r'$\chi_{\mathrm{red},4}^2')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_band_chi2.pdf')
+        p.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
