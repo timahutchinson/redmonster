@@ -3011,6 +3011,85 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_band_dchi2_only_failures.pdf')
 
 
+    def poly_signal_to_noise_histos_sns(self, sns_pal='muted'):
+        sns.set_style('whitegrid')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        yes1no4_r = []
+        no1yes1_r = []
+        yes1no4_i = []
+        no1yes4_i = []
+        yes1no4_z = []
+        no1yes1_z = []
+
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+
+        nfibers = hdu1[1].data.ZWARNING.shape[0]
+        
+        for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
+            print 'Object %s of %s' % (i+1,nfibers)
+            if not (zwarn & 4 and hdu4[1].data.ZWARNING[i] & 4): # only bother with this fiber if at least one has run has !(zwarn & 4)
+                if plate != hdu1[1].data.PLATE[i] or mjd != hdu1[1].data.MJD[i]:
+                    plate = hdu1[1].data.PLATE[i]
+                    mjd = hdu1[1].data.MJD[i]
+                    hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, self.version, 'spZbest-%s-%s.fits' % (plate,mjd)))
+                    sn_median = hdu[1].data.SN_MEDIAN[:,2:]
+
+                fiber = hdu1[1].data.FIBERID[i]
+                if not zwarn & 4:
+                    if hdu4[1].data.ZWARNING[i] & 4:
+                        yes1no4_r.append(sn_median[fiber][0])
+                        yes1no4_i.append(sn_median[fiber][1])
+                        yes1no4_z.append(sn_median[fiber][2])
+                else:
+                    if not hdu4[1].data.ZWARNING[i] & 4:
+                        no1yes4_r.append(sn_median[fiber][0])
+                        no1yes4_i.append(sn_median[fiber][1])
+                        no1yes4_z.append(sn_median[fiber][2])
+
+        f = p.figure()
+        ax = f.add_subplot(311)
+        nbins = 25
+        hist1, binedges1 = n.histogram(yes1no4_r, bins=nbins)
+        hist2, binedges2 = n.histogram(no1yes4_r, bins=nbins)
+        bins1 = n.zeros(nbins)
+        bins2 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins1[i] = (binedges1[i+1]+binedges1[i])/2.
+            bins2[i] = (binedges2[i+1]+binedges2[i])/2.
+        p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
+        p.plot(bins2, hist2, drawstyle='steps-mid', label='4 poly')
+        #p.text()
+        ax = f.add_subplot(312)
+        hist1, binedges1 = n.histogram(yes1no4_i, bins=nbins)
+        hist2, binedges2 = n.histogram(no1yes4_i, bins=nbins)
+        bins1 = n.zeros(nbins)
+        bins2 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins1[i] = (binedges1[i+1]+binedges1[i])/2.
+            bins2[i] = (binedges2[i+1]+binedges2[i])/2.
+        p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
+        p.plot(bins2, hist2, drawstyle='steps-mid', label='4 poly')
+        #p.text()
+        ax = f.add_subplot(313)
+        hist1, binedges1 = n.histogram(yes1no4_z, bins=nbins)
+        hist2, binedges2 = n.histogram(no1yes4_z, bins=nbins)
+        bins1 = n.zeros(nbins)
+        bins2 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins1[i] = (binedges1[i+1]+binedges1[i])/2.
+            bins2[i] = (binedges2[i+1]+binedges2[i])/2.
+        p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
+        p.plot(bins2, hist2, drawstyle='steps-mid', label='4 poly')
+        #p.text()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/poly_sn_histos.pdf')
+        p.close()
+
+
+
+
 
 
 
