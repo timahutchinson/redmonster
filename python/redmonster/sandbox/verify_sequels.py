@@ -3119,7 +3119,9 @@ class VerifyRM:
     def test_merge_poly_runs(self):
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
-
+        
+        total = 0
+        count = 0
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
             total += 1.
             if not zwarn & 4 or not hdu4[1].data.ZWARNING[i] & 4:
