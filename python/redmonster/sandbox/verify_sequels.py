@@ -3017,11 +3017,11 @@ class VerifyRM:
         sns.set_context('paper')
 
         yes1no4_r = []
-        no1yes1_r = []
+        no1yes4_r = []
         yes1no4_i = []
         no1yes4_i = []
         yes1no4_z = []
-        no1yes1_z = []
+        no1yes4_z = []
 
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
@@ -3037,25 +3037,31 @@ class VerifyRM:
                     plate = hdu1[1].data.PLATE[i]
                     mjd = hdu1[1].data.MJD[i]
                     hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, self.version, 'spZbest-%s-%s.fits' % (plate,mjd)))
-                    sn_median = hdu[1].data.SN_MEDIAN[:,2:]
+                    sn_median = hduidl[1].data.SN_MEDIAN[:,2:]
 
                 fiber = hdu1[1].data.FIBERID[i]
                 if not zwarn & 4:
                     if hdu4[1].data.ZWARNING[i] & 4:
-                        yes1no4_r.append(sn_median[fiber][0])
-                        yes1no4_i.append(sn_median[fiber][1])
-                        yes1no4_z.append(sn_median[fiber][2])
+                        if sn_median[fiber][0] > -1 and sn_median[fiber][0] < 4:
+                            yes1no4_r.append(sn_median[fiber][0])
+                        if sn_median[fiber][1] > 0 and sn_median[fiber][1] < 6:
+                            yes1no4_i.append(sn_median[fiber][1])
+                        if sn_median[fiber][2] > 0 and sn_median[fiber][2] < 6:
+                            yes1no4_z.append(sn_median[fiber][2])
                 else:
                     if not hdu4[1].data.ZWARNING[i] & 4:
-                        no1yes4_r.append(sn_median[fiber][0])
-                        no1yes4_i.append(sn_median[fiber][1])
-                        no1yes4_z.append(sn_median[fiber][2])
+                        if sn_median[fiber][0] > -1 and sn_median[fiber][0] < 4:
+                            no1yes4_r.append(sn_median[fiber][0])
+                        if sn_median[fiber][1] > 0 and sn_median[fiber][1] < 6:
+                            no1yes4_i.append(sn_median[fiber][1])
+                        if sn_median[fiber][2] > 0 and sn_median[fiber][2] < 6:
+                            no1yes4_z.append(sn_median[fiber][2])
 
         f = p.figure()
         ax = f.add_subplot(311)
         nbins = 25
-        hist1, binedges1 = n.histogram(yes1no4_r, bins=nbins)
-        hist2, binedges2 = n.histogram(no1yes4_r, bins=nbins)
+        hist1, binedges1 = n.histogram(yes1no4_r, bins=nbins, normed=True)
+        hist2, binedges2 = n.histogram(no1yes4_r, bins=nbins, normed=True)
         bins1 = n.zeros(nbins)
         bins2 = n.zeros(nbins)
         for i in xrange(nbins):
@@ -3063,10 +3069,16 @@ class VerifyRM:
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
         p.plot(bins2, hist2, drawstyle='steps-mid', label='4 poly')
-        #p.text()
+        lowerx = n.floor( n.min([n.min(bins1), n.min(bins2)]) )
+        upperx = n.ceil( n.max([n.max(bins1), n.max(bins2)]) )
+        lowery = 0
+        uppery = n.around(n.max([n.max(hist1), n.max(hist2)])*1.15,1)
+        p.axis([lowerx, upperx, lowery, uppery])
+        p.text( (upperx-lowerx)*.03 + lowerx, uppery*.8, '$r$-band', size=8)
+        p.legend()
         ax = f.add_subplot(312)
-        hist1, binedges1 = n.histogram(yes1no4_i, bins=nbins)
-        hist2, binedges2 = n.histogram(no1yes4_i, bins=nbins)
+        hist1, binedges1 = n.histogram(yes1no4_i, bins=nbins, normed=True)
+        hist2, binedges2 = n.histogram(no1yes4_i, bins=nbins, normed=True)
         bins1 = n.zeros(nbins)
         bins2 = n.zeros(nbins)
         for i in xrange(nbins):
@@ -3074,10 +3086,16 @@ class VerifyRM:
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
         p.plot(bins2, hist2, drawstyle='steps-mid', label='4 poly')
-        #p.text()
+        lowerx = n.floor( n.min([n.min(bins1), n.min(bins2)]) )
+        upperx = n.ceil( n.max([n.max(bins1), n.max(bins2)]) )
+        lowery = 0
+        uppery = n.around(n.max([n.max(hist1), n.max(hist2)])*1.15,1)
+        p.axis([lowerx,upperx,lowery,uppery])
+        p.text((upperx-lowerx)*.03 + lowerx, uppery*.8,'$i$-band', size=8)
+        p.legend()
         ax = f.add_subplot(313)
-        hist1, binedges1 = n.histogram(yes1no4_z, bins=nbins)
-        hist2, binedges2 = n.histogram(no1yes4_z, bins=nbins)
+        hist1, binedges1 = n.histogram(yes1no4_z, bins=nbins, normed=True)
+        hist2, binedges2 = n.histogram(no1yes4_z, bins=nbins, normed=True)
         bins1 = n.zeros(nbins)
         bins2 = n.zeros(nbins)
         for i in xrange(nbins):
@@ -3085,7 +3103,13 @@ class VerifyRM:
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
         p.plot(bins2, hist2, drawstyle='steps-mid', label='4 poly')
-        #p.text()
+        lowerx = n.floor( n.min([n.min(bins1), n.min(bins2)]) )
+        upperx = n.ceil( n.max([n.max(bins1), n.max(bins2)]) )
+        lowery = 0
+        uppery = n.around(n.max([n.max(hist1), n.max(hist2)])*1.15,1)
+        p.axis([lowerx,upperx,lowery,uppery])
+        p.text((upperx-lowerx)*.03 + lowerx, uppery*.8,'$z$-band', size=8)
+        p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/poly_sn_histos.pdf')
         p.close()
 
