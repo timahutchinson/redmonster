@@ -2872,13 +2872,23 @@ class VerifyRM:
         rchi24_yes1no4 = []
         rchi21_no1yes4 = []
         rchi24_no1yes4 = []
+        
+        drchi21 = []
+        drchi24 = []
+        drchi21_yes1no4 = []
+        drchi24_yes1no4 = []
+        drchi21_no1yes4 = []
+        drchi24_no1yes4 = []
+        
         plate = None
         mjd = None
         fiber = None
+        
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
         plotted = False
         nfibers = hdu1[1].data.ZWARNING.shape[0]
+        
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
             print 'Object %s of %s' % (i+1,nfibers)
             if not (zwarn & 4 and hdu4[1].data.ZWARNING[i] & 4): # only bother with this fiber if at least one has run has !(zwarn & 4)
@@ -2899,14 +2909,33 @@ class VerifyRM:
                 data_slice = hduidl[0].data[fiber][pix_low:pix_high]
                 ivar_slice = hduidl[1].data[fiber][pix_low:pix_high]
                 model1_slice = platehdu1[2].data[n.where(platehdu1[1].data.FIBERID == fiber)[0][0],0][pix_low:pix_high]
-                model4_slice = platehdu4[2].data[n.where(platehdu1[1].data.FIBERID == fiber)[0][0],0][pix_low:pix_high]
+                model4_slice = platehdu4[2].data[n.where(platehdu4[1].data.FIBERID == fiber)[0][0],0][pix_low:pix_high]
+                # Repeat for second best model for delta chi2 plot
+                this_wave1 = wavearr / (1 + platehdu1[1].data.Z2[n.where(platehdu1[1].data.FIBERID == fiber)[0][0]])
+                this_wave4 = wavearr / (1 + platehdu4[1].data.Z2[n.where(platehdu4[1].data.FIBERID == fiber)[0][0]])
+                pix_low1 = n.abs(this_wave1 - waverange[0]).argmin()
+                pix_high1 = n.abs(this_wave1 - waverange[1]).argmin()
+                pix_low4 = n.abs(this_wave4 - waverange[0]).argmin()
+                pix_high4 = n.abs(this_wave4 - waverange[1]).argmin()
+                data_slice1 = hduidl[0].data[fiber][pix_low1:pix_high1]
+                ivar_slice1 = hduidl[1].data[fiber][pix_low1:pix_high1]
+                data_slice4 = hduidl[0].data[fiber][pix_low4:pix_high4]
+                ivar_slice4 = hduidl[1].data[fiber][pix_low4:pix_high4]
+                model1_slice2 = platehdu1[2].data[n.where(platehdu1[1].data.FIBERID == fiber)[0][0],1][pix_low1:pix_high1]
+                model4_slice2 = platehdu4[2].data[n.where(platehdu4[1].data.FIBERID == fiber)[0][0],1][pix_low4:pix_high4]
                 if not zwarn & 4:
                     if not hdu4[1].data.ZWARNING[i] & 4:
                         rchi21.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
                         rchi24.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
+                    
+                        drchi21.append(n.sum(((data_slice1 - model1_slice2)**2)*ivar_slice1)/data_slice1.shape[0] - rchi21[-1])
+                        drchi24.append(n.sum(((data_slice4 - model4_slice2)**2)*ivar_slice4)/data_slice4.shape[0] - rchi24[-1])
                     else:
                         rchi21_yes1no4.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
                         rchi24_yes1no4.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
+                        
+                        drchi21_yes1no4.append(n.sum(((data_slice1 - model1_slice2)**2)*ivar_slice1)/data_slice1.shape[0] - rchi21_yes1no4[-1])
+                        drchi24_yes1no4.append(n.sum(((data_slice4 - model4_slice2)**2)*ivar_slice4)/data_slice4.shape[0] - rchi24_yes1no4[-1])
                         if not plotted:
                             if n.random.uniform() < .01:
                                 f = p.figure()
@@ -2926,6 +2955,9 @@ class VerifyRM:
                 else:
                     rchi21_no1yes4.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
                     rchi24_no1yes4.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
+
+                    drchi21_no1yes4.append(n.sum(((data_slice1 - model1_slice2)**2)*ivar_slice1)/data_slice1.shape[0] - rchi21_no1yes4[-1])
+                    drchi24_no1yes4.append(n.sum(((data_slice4 - model4_slice2)**2)*ivar_slice4)/data_slice4.shape[0] - rchi24_no1yes4[-1])
         f = p.figure()
         ax = f.add_subplot(111)
         p.plot(n.linspace(0.4,1.6,1000), n.linspace(0.4,1.6,1000), '--', color='black')
@@ -2938,6 +2970,39 @@ class VerifyRM:
         p.ylabel(r'$\chi_4^2 / \mathrm{dof}$')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_band_chi2.pdf')
         p.close()
+        
+        f = p.figure()
+        ax = f.add_subplot(111)
+        p.plot(n.linspace(0.4,1.6,1000), n.linspace(0.4,1.6,1000), '--', color='black')
+        p.scatter(rchi21_yes1no4, rchi24_yes1no4, s=1, color='tomato', label='1 poly')
+        p.scatter(rchi21_no1yes4, rchi24_no1yes4, s=1, color='darkturquoise', label='4 poly')
+        p.axis([0.4,1.6,0.4,1.6])
+        p.legend(loc=2)
+        p.xlabel(r'$\chi_1^2 / \mathrm{dof}$')
+        p.ylabel(r'$\chi_4^2 / \mathrm{dof}$')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_band_chi2_only_failures.pdf')
+        p.close()
+
+        f = p.figure()
+        ax = f.add_subplot(111)
+        p.scatter(drchi21, drchi24, s=1, color='black', label='Both', alpha=0.6)
+        p.scatter(drchi21_yes1no4, drchi24_yes1no4, s=1, color='tomato', label='1 poly')
+        p.scatter(drchi21_no1yes4, drchi24_no1yes4, s=1, color='darkturquoise', label='4 poly')
+        p.legend(loc=2)
+        p.xlabel(r'$\Delta\chi_1^2 / \mathrm{dof}$')
+        p.ylabel(r'$\Delta\chi_4^2 / \mathrm{dof}$')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_band_dchi2.pdf')
+
+        f = p.figure()
+        ax = f.add_subplot(111)
+        p.scatter(drchi21_yes1no4, drchi24_yes1no4, s=1, color='tomato', label='1 poly')
+        p.scatter(drchi21_no1yes4, drchi24_no1yes4, s=1, color='darkturquoise', label='4 poly')
+        p.legend(loc=2)
+        p.xlabel(r'$\Delta\chi_1^2 / \mathrm{dof}$')
+        p.ylabel(r'$\Delta\chi_4^2 / \mathrm{dof}$')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_band_dchi2_only_failures.pdf')
+
+
 
 
 
