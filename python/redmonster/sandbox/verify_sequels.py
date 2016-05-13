@@ -1,6 +1,7 @@
 from os.path import join, basename
 from os import environ
 from math import isnan
+import time
 
 import numpy as n
 from scipy.integrate import trapz
@@ -2709,7 +2710,7 @@ class VerifyRM:
         g.plot_joint(sns.kdeplot, shade=False, cmap="Purples_d", n_levels=7)
         g.plot_joint(p.scatter, color='black', s=1, alpha=.3)
         g.plot_marginals(sns.kdeplot, color=sns.color_palette('Purples_d')[2], shade=True)
-        g.ax_joint.plot(n.linspace(0,1,1000), fit_func(n.linspace(0,1,1000),popt[0], popt[1], popt[2]), linewidth=1, color='k')
+        #g.ax_joint.plot(n.linspace(0,1,1000), fit_func(n.linspace(0,1,1000),popt[0], popt[1], popt[2]), linewidth=1, color='k')
         g.ax_joint.plot(n.linspace(0,1,1000), n.linspace(0,1,1000), ':k')
         g.ax_joint.collections[0].set_alpha(0)
         g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
@@ -2876,6 +2877,7 @@ class VerifyRM:
         fiber = None
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        plotted = False
         nfibers = hdu1[1].data.ZWARNING.shape[0]
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
             print 'Object %s of %s' % (i+1,nfibers)
@@ -2888,7 +2890,10 @@ class VerifyRM:
                     platehdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
                     platehdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
                 fiber = hdu1[1].data.FIBERID[i]
-                this_wave = wavearr / (1 + hdu1[1].data.Z[i])
+                if not zwarn & 4:
+                    this_wave = wavearr / (1 + hdu1[1].data.Z[i])
+                else:
+                    this_wave = wavearr / (1 + hdu4[1].data.Z[i])
                 pix_low = n.abs(this_wave - waverange[0]).argmin()
                 pix_high = n.abs(this_wave - waverange[1]).argmin()
                 data_slice = hduidl[0].data[fiber][pix_low:pix_high]
@@ -2902,6 +2907,22 @@ class VerifyRM:
                     else:
                         rchi21_yes1no4.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
                         rchi24_yes1no4.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
+                        if not plotted:
+                            if n.random.uniform() < .01:
+                                f = p.figure()
+                                ax = f.add_subplot(211)
+                                p.plot(this_wave[pix_low:pix_high], data_slice, color='black')
+                                p.plot(this_wave[pix_low:pix_high], model1_slice, color='cyan')
+                                p.title('%s' % (n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0]))
+                                ax = f.add_subplot(212)
+                                p.plot(this_wave[pix_low:pix_high], data_slice, color='black')
+                                p.plot(this_wave[pix_low:pix_high], model4_slice, color='cyan')
+                                p.title('%s' % (n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0]))
+                                p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_test.pdf')
+                                p.close()
+                                print 'Plotted!'
+                                time.sleep(2)
+                                plotted = True
                 else:
                     rchi21_no1yes4.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
                     rchi24_no1yes4.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
