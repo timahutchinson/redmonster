@@ -3026,6 +3026,8 @@ class VerifyRM:
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
 
+        plate = None
+        mjd = None
         nfibers = hdu1[1].data.ZWARNING.shape[0]
         
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
