@@ -2985,9 +2985,11 @@ class VerifyRM:
 
         f = p.figure()
         ax = f.add_subplot(111)
+        p.plot(n.linspace(-1,2,1000), n.linspace(-2,2,1000), '--', color='black')
         p.scatter(drchi21, drchi24, s=1, color='black', label='Both', alpha=0.6)
         p.scatter(drchi21_yes1no4, drchi24_yes1no4, s=1, color='tomato', label='1 poly')
         p.scatter(drchi21_no1yes4, drchi24_no1yes4, s=1, color='darkturquoise', label='4 poly')
+        p.axis([-1,2,-1,2])
         p.legend(loc=2)
         p.xlabel(r'$\Delta\chi_1^2 / \mathrm{dof}$')
         p.ylabel(r'$\Delta\chi_4^2 / \mathrm{dof}$')
@@ -2995,8 +2997,10 @@ class VerifyRM:
 
         f = p.figure()
         ax = f.add_subplot(111)
+        p.plot(n.linspace(-0.5,1,1000), n.linspace(-0.5,1,1000), '--', color='black')
         p.scatter(drchi21_yes1no4, drchi24_yes1no4, s=1, color='tomato', label='1 poly')
         p.scatter(drchi21_no1yes4, drchi24_no1yes4, s=1, color='darkturquoise', label='4 poly')
+        p.axis(-0.5,1,-0.5,1])
         p.legend(loc=2)
         p.xlabel(r'$\Delta\chi_1^2 / \mathrm{dof}$')
         p.ylabel(r'$\Delta\chi_4^2 / \mathrm{dof}$')
