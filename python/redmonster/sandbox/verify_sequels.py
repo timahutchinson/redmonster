@@ -3122,8 +3122,11 @@ class VerifyRM:
 
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
             total += 1.
-            if not zwarn & 4 or not hdu4[1].data.ZWARNING[i] & 4:
+            if not zwarn & 4:
                 count += 1.
+            else:
+                if not hdu4[1].data.ZWARNING[i] & 4:
+                    count += 1
         print count/total
 
 
