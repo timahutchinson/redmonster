@@ -37,7 +37,7 @@ data_range = [4000,9000]
 
 if spallpath:
     cjob = 0
-    q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,
+    q.create(label='zfind_sequels_sky_%r' % cjob,alloc=alloc,nodes=nodes,
              ppn=ppn,walltime=walltime)
     hdu = fits.open(spallpath)
     blocksize = nodes*ppn*ncycles
