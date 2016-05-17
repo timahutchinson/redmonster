@@ -36,7 +36,7 @@ except: run2d = None
 try: run1d = environ['RUN1D']
 except: run1d = None
 spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
-rmallpath = join(rmdir, run2d, 'redmonsterAll-%s.fits' % run2d)
+rmallpath = join(rmdir, '%s_poly1' % run2d, 'redmonsterAll-%s.fits' % run2d)
 
 data_range = [4000,9000]
 
