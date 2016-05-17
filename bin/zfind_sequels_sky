@@ -52,19 +52,19 @@ plates = []
 mjds = []
 fibers = []
 for entry in platelist:
-    hduplate = fits.open(topdir, run2d, '%s' % plate, 'spPlate-%s-%s.fits' %(entry[0], entry[1]))
-    for i,ebosstarg0 in enumerate(hduplate[1].data.EBOSS_TARGET0):
-        if ebosstarg0 & 1:
+    hduplate = fits.open(join(topdir, run2d, '%s' % entry[0], 'spPlate-%s-%s.fits' %(entry[0], entry[1])))
+    for i,objtype in enumerate(hduplate[5].data.OBJTYPE):
+        if objtype.lower() == 'sky':
             plates.append(entry[0])
-            mjds.append(mjds[1])
-            fibers.append(hduplate[1].data.FIBERID[i])
+            mjds.append(entry[1])
+            fibers.append(hduplate[5].data.FIBERID[i] - 1)
 
 if rmallpath:
     cjob = 0
     q.create(label='zfind_sequels_sky_%r' % cjob,alloc=alloc,nodes=nodes,
              ppn=ppn,walltime=walltime)
     blocksize = nodes*ppn*ncycles
-    for i,plate in plates:
+    for i,plate in enumerate(plates):
         mjd = mjds[i]
         fiberid = fibers[i]
         try:
