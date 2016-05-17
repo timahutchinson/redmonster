@@ -29,30 +29,51 @@ else:
 
 try: topdir = environ['BOSS_SPECTRO_REDUX']
 except: topdir = None
+try: rmdir = environ['REDMONSTER_SPECTRO_REDUX']
+except: rmdir = None
 try: run2d = environ['RUN2D']
 except: run2d = None
+try: run1d = environ['RUN1D']
+except: run1d = None
 spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
+rmallpath = join(rmdir, run2d, 'redmonsterAll-%s.fits' % run2d)
 
 data_range = [4000,9000]
 
-if spallpath:
+platelist = []
+if rmallpath:
+    hdurm = fits.open(rmallpath)
+    for i,plate in enumerate(hdurm[1].data.PLATE):
+        mjd = hdurm[1].data.MJD[i]
+        if not (plate,mjd) in platelist:
+            platelist.append((plate,mjd))
+
+plates = []
+mjds = []
+fibers = []
+for entry in platelist:
+    hduplate = fits.open(topdir, run2d, '%s' % plate, 'spPlate-%s-%s.fits' %(entry[0], entry[1]))
+    for i,ebosstarg0 in enumerate(hduplate[1].data.EBOSS_TARGET0):
+        if ebosstarg0 & 1:
+            plates.append(entry[0])
+            mjds.append(mjds[1])
+            fibers.append(hduplate[1].data.FIBERID[i])
+
+if rmallpath:
     cjob = 0
     q.create(label='zfind_sequels_sky_%r' % cjob,alloc=alloc,nodes=nodes,
              ppn=ppn,walltime=walltime)
-    hdu = fits.open(spallpath)
     blocksize = nodes*ppn*ncycles
-    for ind,ebosstarg0 in enumerate(hdu[1].data.EBOSS_TARGET0):
-        if (ebosstarg0 & 1):
-            plate = hdu[1].data.PLATE[ind]
-            mjd = hdu[1].data.MJD[ind]
-            fiberid = hdu[1].data.FIBERID[ind] - 1
-            try:
-                data_range
-            except NameError:
-                q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
-            else:
-                q.append( "zfind -p %i -m %i -f %i -j %s -k %s" %
-                         (plate, mjd, fiberid, data_range[0], data_range[1]) )
+    for i,plate in plates:
+        mjd = mjds[i]
+        fiberid = fibers[i]
+        try:
+            data_range
+        except NameError:
+            q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
+        else:
+            q.append( "zfind -p %i -m %i -f %i -j %s -k %s" %
+                     (plate, mjd, fiberid, data_range[0], data_range[1]) )
         if q.task_number >= blocksize:
             cjob += 1
             q.commit(hard=True, submit=True)
