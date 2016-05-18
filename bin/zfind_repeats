@@ -8,9 +8,11 @@ from os import environ
 from os.path import join, basename
 from glob import iglob
 import re
+import sys
 
 from pbs import queue
 from astropy.io import fits
+import numpy as n
 
 q = queue()
 q.verbose = True
@@ -43,7 +45,7 @@ hdu = fits.open('/uufs/chpc.utah.edu/common/home/sdss02/ebosswork/eboss/spectro/
 
 print 'Selecting LRGs'
 a = hdu[1].data
-w = N.where( a.EBOSS_TARGET1 & 2 > 0)[0]
+w = n.where( a.EBOSS_TARGET1 & 2 > 0)[0]
 a = a[w]
 
 wr = list()
@@ -51,19 +53,19 @@ wr = list()
 for i in range(len(a)):
     sys.stderr.write('\r '+str(i)+' '+str(len(a)))
     t = a.THING_ID[i]
-    w = N.where( a.THING_ID == t )[0]
+    w = n.where( a.THING_ID == t )[0]
     if len(w) > 1:
         wr.extend(w)
 print len(wr)
 
-wr = N.unique(N.array(wr))
+wr = n.unique(n.array(wr))
 newa = a[wr]
-print len(N.unique( newa.THING_ID )), 'repeats'
-newhdu = pyfits.BinTableHDU(data=newa)
-newhdu.writeto(Repeatability.directory+'/spAll-v5_8_0-repeats_lrg.fits')
+print len(n.unique( newa.THING_ID )), 'repeats'
+newhdu = fits.BinTableHDU(data=newa)
+newhdu.writeto(directory+'/spAll-v5_8_0-repeats_lrg.fits', clobber=True)
 
 
-hdu = fits.open(directory+'/spAll-v5_8_0-repeats_lrg.fits')[1].data
+hdu = fits.open(directory+'/spAll-v5_8_0-repeats_lrg.fits')
 
 thing_ids = []
 object_ids1 = []
@@ -95,7 +97,7 @@ elif set == 2:
         fibers.append(object_id[2])
 
 cjob = 0
-q.create(label='zfind_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn, walltime=walltime)
+q.create(label='zfind_repeats%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn, walltime=walltime)
 blocksize = nodes*ppn*ncycles
 for i,plate in enumerate(plates):
     q.append("zfind -p %i -m %i -f %i" % (plate,mjds[i],fibers[i]))
