@@ -2,6 +2,7 @@ from os.path import join, basename
 from os import environ
 from math import isnan
 import time
+from sys import stderr
 
 import numpy as n
 from scipy.integrate import trapz
@@ -3130,6 +3131,60 @@ class VerifyRM:
                 if not hdu4[1].data.ZWARNING[i] & 4:
                     count += 1
         print count/total
+
+
+    def sequels_sky_drchi2_sns(self, spectro1d=False, nthreshold=50):
+        sns.set_style('whitegrid')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_sky' % self.version, 'redmonsterAll-%s.fits'))
+
+        plate = None
+        mjd = None
+
+        drchi2_threshold = n.linspace(0,0.1,nthreshold)
+        rmfrac = []
+        idlfrac = []
+
+        for i,threshold in enumerate(drchi2_threshold):
+            stderr.write('\r %s of %s' % (i,nthreshold))
+            count = 0.
+            total = 0.
+            countidl = 0.
+            totalidl = 0.
+            for j,rchi2diff in enumerate(hdurm[1].data.RCHI2DIFF):
+                total += 1
+                if rchi2diff > threshold:
+                    count += 1
+                if spectro1d:
+                    totalidl += 1
+                    if plate != hdurm[1].data.PLATE[j] or mjd != hdurm[1].data.MJD[j]:
+                        plate = hdurm[1].data.PLATE[j]
+                        mjd = hdurm[1].data.MJD[j]
+                        hduplate = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, self.version, 'spZbest-%s-%s.fits' % (plate,mjd)))
+                    fiber = hdurm[1].data.FIBERID[j]
+                    if hduplate[1].data.RCHI2DIFF_NOQSO[fiber] > threshold:
+                        countidl += 1
+            rmfrac.append(count/total)
+            idlfrac.append(countidl/totalidl)
+
+        f = p.figure()
+        f.add_subplot(111)
+        if not spectro1d:
+            p.plot(drchi2_threshold, rmfrac, drawstyle='steps-mid')
+        else:
+            p.plot(drchi2_threshold, rmfrac, drawstyle='steps-mid', label='redmonster')
+            p.plot(drchi2_threshold, idlfrac, drawstyle='steps-mid', label='spectro1d')
+            p.legend()
+        p.xlabel(r'$\Delta\chi_r^2$')
+        p.ylabel(r'Cumulative fraction above threshold')
+        ax.set_yscale('log')
+        p.grid(b=True, which='major', linestyle='-')
+        p.grid(b=True, which='minor', linestyle='--')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/sky_failure_vs_drchi2.pdf')
+        p.close()
+
 
 
 
