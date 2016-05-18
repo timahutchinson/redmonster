@@ -3133,22 +3133,22 @@ class VerifyRM:
         print count/total
 
 
-    def sequels_sky_drchi2_sns(self, spectro1d=False, nthreshold=50):
+    def sequels_sky_drchi2_sns(self, spectro1d=False, nthreshold=50, sns_pal='muted'):
         sns.set_style('whitegrid')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
 
-        hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_sky' % self.version, 'redmonsterAll-%s.fits'))
+        hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_sky' % self.version, 'redmonsterAll-%s.fits' % self.version))
 
         plate = None
         mjd = None
 
-        drchi2_threshold = n.linspace(0,0.1,nthreshold)
+        drchi2_threshold = n.linspace(0,0.01,nthreshold)
         rmfrac = []
         idlfrac = []
 
         for i,threshold in enumerate(drchi2_threshold):
-            stderr.write('\r %s of %s' % (i,nthreshold))
+            stderr.write('\r %s of %s' % (i+1,nthreshold))
             count = 0.
             total = 0.
             countidl = 0.
@@ -3167,15 +3167,17 @@ class VerifyRM:
                     if hduplate[1].data.RCHI2DIFF_NOQSO[fiber] > threshold:
                         countidl += 1
             rmfrac.append(count/total)
-            idlfrac.append(countidl/totalidl)
+            if spectro1d:
+                idlfrac.append(countidl/totalidl)
 
+        print rmfrac
         f = p.figure()
-        f.add_subplot(111)
+        ax = f.add_subplot(111)
         if not spectro1d:
-            p.plot(drchi2_threshold, rmfrac, drawstyle='steps-mid')
+            p.plot(drchi2_threshold, rmfrac, color=sns.color_palette(sns_pal)[2], drawstyle='steps-mid')
         else:
-            p.plot(drchi2_threshold, rmfrac, drawstyle='steps-mid', label='redmonster')
-            p.plot(drchi2_threshold, idlfrac, drawstyle='steps-mid', label='spectro1d')
+            p.plot(drchi2_threshold, rmfrac, drawstyle='steps-mid', color=sns.color_palette(sns_pal)[2], label='redmonster')
+            p.plot(drchi2_threshold, idlfrac, drawstyle='steps-mid',color=sns.color_palette(sns_pal)[0], label='spectro1d')
             p.legend()
         p.xlabel(r'$\Delta\chi_r^2$')
         p.ylabel(r'Cumulative fraction above threshold')
