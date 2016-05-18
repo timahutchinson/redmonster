@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # this determines if you run first or second observation of each object
-set = 1
+set = 2
 
 # Run redmonster on all sequels LRG targets observed more than once
 from os import environ
