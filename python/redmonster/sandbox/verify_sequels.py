@@ -3188,6 +3188,28 @@ class VerifyRM:
         p.close()
 
 
+    def dchi2_dv_repeats(self, sns_pal='muted'):
+        sns.set_style('whitegrid')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
+        hdu = fits.open(directory+'/spAll-v5_8_0-repeats_lrg.fits')[1].data
+
+        thing_ids = []
+        object_ids1 = []
+        object_ids2 = []
+
+        for thing_id in hdu[1].data.THING_ID:
+            if thing_id not in thing_ids:
+                thing_ids.append(thing_id)
+                w1 = n.where(hdu[1].data.THING_ID == thing_id)[0][0]
+                w2 = n.where(hdu[1].data.THING_ID == thing_id)[0][1]
+                object_id1 = (hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)
+                object_ids1.append(object_id1)
+                object_id2 = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
+                object_ids2.append(object_id2)
+
 
 
 
