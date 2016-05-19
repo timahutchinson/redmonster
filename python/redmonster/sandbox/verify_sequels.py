@@ -3189,17 +3189,18 @@ class VerifyRM:
 
 
     def dchi2_dv_repeats(self, sns_pal='muted'):
-        sns.set_style('whitegrid')
+        sns.set_style('white')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
 
         c_kms = 299792.458
         directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
-        hdu = fits.open(directory+'/spAll-v5_8_0-repeats_lrg.fits')[1].data
+        hdu = fits.open(directory+'/spAll-v5_8_0-repeats_lrg.fits')
 
         thing_ids = []
         object_ids1 = []
         object_ids2 = []
+        object_ids = {}
         
         dv = []
         drchi2 = []
@@ -3213,32 +3214,42 @@ class VerifyRM:
                 object_ids1.append(object_id1)
                 object_id2 = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
                 object_ids2.append(object_id2)
+                object_ids[(hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)] = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
 
-        for i,object_id1 in enumerate(object_ids1):
-            object_id2 = object_ids2[i]
-            hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
-            hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
-            fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1)[0][0]
-            fiberind2 = n.where(hdu2[1].data.FIBERID == object_id2)[0][0]
-            z1 = hdu1[1].data.Z1[fiberind1]
-            z2 = hdu2[1].data.Z1[fiberind2]
-            rchi21 = hdu1[1].data.RCHI2DIFF[fiberind1]
-            rchi22 = hdu2[1].data.RCHI2DIFF[fiberind2]
+        for i,object_id1 in enumerate(object_ids):
+            stderr.write('\r %s of %s' % (i+1,len(object_ids)))
+            try:
+                object_id2 = object_ids[object_id1]
+                hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
+                hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
+                fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1[2])[0][0]
+                fiberind2 = n.where(hdu2[1].data.FIBERID == object_id2[2])[0][0]
+                z1 = hdu1[1].data.Z1[fiberind1]
+                z2 = hdu2[1].data.Z1[fiberind2]
+                rchi21 = hdu1[1].data.RCHI2DIFF[fiberind1]
+                rchi22 = hdu2[1].data.RCHI2DIFF[fiberind2]
 
-            dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
-            drchi2.append(n.min([rchi21, rchi22]))
+                dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
+                drchi2.append(n.min([rchi21, rchi22]))
+            except IndexError:
+                pass
+        print "Total objects: %s" % len(dv)
 
         f = p.figure()
         ax = f.add_subplot(111)
-        p.scatter(drchi2, dv, alpha=0.4)
-        ax.ylim(0.1, 1e6)
-        ax.xlim(1e-6, 1)
-        ax.xscale('log')
-        ax.yscale('log')
-        ylim = ax.ylim()
-        p.plot( [1e-2, 1e-2], ylim, 'b--', lw=2)
-        p.plot( [5e-3, 5e-3], ylim, 'r--', lw=2)
-        p.plot( [1e-6, 1], [1000, 1000], 'm--', lw=2)
+        p.scatter(drchi2, dv, alpha=0.4, color='black', s=2)
+        p.axis([1e-6, 1, 0.1, 1e6])
+        #ax.ylim(0.1, 1e6)
+        #ax.xlim(1e-6, 1)
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        #ylim = p.ylim()
+        #p.plot( [1e-2, 1e-2], 1e6, 'b--', lw=2)
+        p.plot( [1e-2]*1000, n.linspace(0.1,1e6,1000), '--', color=sns.color_palette('muted')[0], lw=1.5)
+        #p.plot( [5e-3, 5e-3], 1e6, 'r--', lw=2)
+        p.plot([5e-3]*1000, n.linspace(0.1,1e6,1000), '--', color=sns.color_palette('muted')[2], lw=1.5)
+        #p.plot( [1e-6, 1], [1000, 1000], 'm--', lw=2)
+        p.plot(n.linspace(1e-6,1,1000), [1000]*1000, '--', color=sns.color_palette('muted')[3], lw=1.5)
         p.xlabel(r'$\Delta \chi^2/dof$')
         p.ylabel(r'$\Delta v$ (km/s)')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/repeat_dchi2_dv.pdf')
