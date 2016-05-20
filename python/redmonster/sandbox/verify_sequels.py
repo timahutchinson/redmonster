@@ -3255,6 +3255,58 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/repeat_dchi2_dv.pdf')
 
 
+    def make_n_of_z_table(self):
+        hdu = fits.open(join(environ['REDMONSTER_DIR'], self.version, 'redmonsterAll-%s.fits' % self.version))
+
+        spectra = {
+                   'total':0.,
+                   'poor':0,
+                   'stellar':0,
+                   '0.0<z<0.5':0,
+                   '0.5<z<0.6':0,
+                   '0.6<z<0.7':0,
+                   '0.7<z<0.8':0,
+                   '0.8<z<0.9':0,
+                   '0.9<z<1.0':0,
+                   '1.0<z<1.1':0,
+                   '1.1<z<1.2':0,
+                    'z>1.2':0
+                    }
+
+        for i,zwarn in enumerate(hdu[1].data.ZWARNING):
+            spectra['total'] += 1.
+            if zwarn & 4:
+                spectra['poor'] += 1.
+            else:
+                if hdu[1].data.CLASS[i] == 'CAP':
+                    spectra['stellar'] += 1.
+                else:
+                    if hdu[1].data.Z[i] > 0.0 and hdu[1].data.Z[i] < 0.5:
+                        spectra['0.0<z<0.5'] += 1.
+                    elif hdu[1].data.Z[i] > 0.5 and hdu[1].data.Z[i] < 0.6:
+                        spectra['0.5<z<0.6'] += 1.
+                    elif hdu[1].data.Z[i] > 0.6 and hdu[1].data.Z[i] < 0.7:
+                        spectra['0.6<z<0.7'] += 1.
+                    elif hdu[1].data.Z[i] > 0.7 and hdu[1].data.Z[i] < 0.8:
+                        spectra['0.7<z<0.8'] += 1.
+                    elif hdu[1].data.Z[i] > 0.8 and hdu[1].data.Z[i] < 0.9:
+                        spectra['0.8<z<0.9'] += 1.
+                    elif hdu[1].data.Z[i] > 0.9 and hdu[1].data.Z[i] < 1.0:
+                        spectra['0.9<z<1.0'] += 1.
+                    elif hdu[1].data.Z[i] > 1.0 and hdu[1].data.Z[i] < 1.1:
+                        spectra['1.0<z<1.1'] += 1.
+                    elif hdu[1].data.Z[i] > 1.1 and hdu[1].data.Z[i] < 1.2:
+                        spectra['1.1<z<1.2'] += 1.
+                    elif hdu[1].data.Z[i] > 1.2:
+                        spectra['z>1.2'] += 1.
+
+        for entry in spectra:
+            print 'Fraction %s: %s' % (entry, spectra[entry]/spectra['total'])
+            print 'N(%s): %s' % (entry, (spectra[entry]/spectra['total'])*60)
+
+
+
+
 
 
 
