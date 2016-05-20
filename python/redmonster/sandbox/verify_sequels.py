@@ -3256,7 +3256,7 @@ class VerifyRM:
 
 
     def make_n_of_z_table(self):
-        hdu = fits.open(join(environ['REDMONSTER_DIR'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
 
         spectra = {
                    'total':0.,
@@ -3303,6 +3303,8 @@ class VerifyRM:
         for entry in spectra:
             print 'Fraction %s: %s' % (entry, spectra[entry]/spectra['total'])
             print 'N(%s): %s' % (entry, (spectra[entry]/spectra['total'])*60)
+
+        print 'Total tracers: %s' % ((spectra['0.6<z<0.7']/spectra['total'])*60 + (spectra['0.7<z<0.8']/spectra['total'])*60 + (spectra['0.8<z<0.9']/spectra['total'])*60 + (spectra['0.9<z<1.0']/spectra['total'])*60)
 
 
 
