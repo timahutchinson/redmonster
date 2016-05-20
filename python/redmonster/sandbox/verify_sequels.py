@@ -3307,6 +3307,33 @@ class VerifyRM:
         print 'Total tracers: %s' % ((spectra['0.6<z<0.7']/spectra['total'])*60 + (spectra['0.7<z<0.8']/spectra['total'])*60 + (spectra['0.8<z<0.9']/spectra['total'])*60 + (spectra['0.9<z<1.0']/spectra['total'])*60)
 
 
+    def failure_vs_fiberid(self, sns_pal='muted'):
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        hdu = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+
+        totals = {}
+        counts = {}
+        for i in xrange(1000):
+            totals[i] = 1
+            counts[i] = 0
+
+        for i,zwarn in enumerate(hdu[1].data.ZWARNING):
+            fiber = hdu[1].data.FIBERID[i]
+            totals[fiber] += 1.
+            if zwarn > 0:
+                counts[fiber] += 1.
+
+        import pdb; pdb.set_trace()
+        p.plot(n.arange(1000)+1, n.array(counts.values())/n.array(totals.values()), color='black', drawstyle='steps-mid')
+        #sp.axes([1,1000, 0, n.max( n.array(counts.values())/n.array(totals.values()) )*1.2])
+        p.xlabel(r'Fiber number', size=12)
+        p.ylabel(r'Failure rate', size=12)
+        p.savefig('./testfig.pdf')
+        p.close()
+
 
 
 
