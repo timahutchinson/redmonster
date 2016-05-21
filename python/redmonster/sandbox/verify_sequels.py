@@ -3350,6 +3350,7 @@ class VerifyRM:
         plate = None
         mjd = None
         for i,zwarn in enumerate(hdu[1].data.ZWARNING):
+            stderr.write('\r %s of %s' % (i+1,hdu[1].data.ZWARNING.shape[0]))
             fiberid = hdu[1].data.FIBERID[i]
             if plate != hdu[1].data.PLATE[i] or mjd != hdu[1].data.MJD[i]:
                 plate = hdu[1].data.PLATE[i]
@@ -3358,8 +3359,8 @@ class VerifyRM:
             xfocal.append(hduidl[5].data.XFOCAL[fiberid])
             yfocal.append(hduidl[5].data.YFOCAL[fiberid])
             if zwarn > 0:
-                xzwarn.append(hdu[1].data.XFOCAL[i])
-                yzwarn.append(hdu[1].data.YFOCAL[i])
+                xzwarn.append(hduidl[5].data.XFOCAL[fiberid])
+                yzwarn.append(hduidl[5].data.YFOCAL[fiberid])
         xfocal = n.array(xfocal)
         yfocal = n.array(yfocal)
         xzwarn = n.array(xzwarn)
@@ -3380,7 +3381,7 @@ class VerifyRM:
 
         hist = failures / totals
 
-        p.imshow(hist, interpolation='nearest', origin='lower', norm=LogNorm(), extent=[xbinedges[0], xbinedges[-1], ybinedges[0], ybinedges[-1]])
+        p.imshow(hist, interpolation='nearest', origin='lower', extent=[xbinedges[0], xbinedges[-1], ybinedges[0], ybinedges[-1]], cmap='Reds')
         cbar = p.colorbar()
         cbar.set_label('Failure rate', size=12)
         p.xlabel('X', size=12)
