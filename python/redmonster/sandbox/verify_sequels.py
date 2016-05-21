@@ -10,6 +10,7 @@ from astropy.io import fits
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as p
+from matplotlib.colors import LogNorm
 from glob import iglob
 from astropy.convolution import convolve, Box1DKernel
 from scipy.optimize import curve_fit
@@ -3331,8 +3332,61 @@ class VerifyRM:
         #sp.axes([1,1000, 0, n.max( n.array(counts.values())/n.array(totals.values()) )*1.2])
         p.xlabel(r'Fiber number', size=12)
         p.ylabel(r'Failure rate', size=12)
-        p.savefig('./testfig.pdf')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_fiberid.pdf')
         p.close()
+
+
+    def failure_rate_on_plate(self, nbins=40, sns_pal='muted'):
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        hdu = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+
+        p.close()
+
+        xfocal, yfocal = [], []
+        xzwarn, yzwarn = [], []
+        plate = None
+        mjd = None
+        for i,zwarn in enumerate(hdu[1].data.ZWARNING):
+            fiberid = hdu[1].data.FIBERID[i]
+            if plate != hdu[1].data.PLATE[i] or mjd != hdu[1].data.MJD[i]:
+                plate = hdu[1].data.PLATE[i]
+                mjd = hdu[1].data.MJD[i]
+                hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
+            xfocal.append(hduidl[5].data.XFOCAL[fiberid])
+            yfocal.append(hduidl[5].data.YFOCAL[fiberid])
+            if zwarn > 0:
+                xzwarn.append(hdu[1].data.XFOCAL[i])
+                yzwarn.append(hdu[1].data.YFOCAL[i])
+        xfocal = n.array(xfocal)
+        yfocal = n.array(yfocal)
+        xzwarn = n.array(xzwarn)
+        yzwarn = n.array(yzwarn)
+
+        totals, x_edges, y_edges, image = p.hist2d(xfocal, yfocal, bins=nbins, norm=LogNorm())
+        p.close()
+        failures, xbinedges, ybinedges, image = p.hist2d(xzwarn, yzwarn, bins=[x_edges,y_edges], norm=LogNorm())
+        p.close()
+
+        '''
+        xbins = n.zeros(xbinedges.shape[0]-1)
+        ybins = n.zeros(ybinedges.shape[0]-1)
+        for i in xrange(xbinedges.shape[0]-1):
+            xbins[i] = (xbinedges[i+1] + xbinedges[i])/2.
+            ybins[i] = (ybinedges[i+1] + ybinedges[i])/2.
+        '''
+
+        hist = failures / totals
+
+        p.imshow(hist, interpolation='nearest', origin='lower', norm=LogNorm(), extent=[xbinedges[0], xbinedges[-1], ybinedges[0], ybinedges[-1]])
+        cbar = p.colorbar()
+        cbar.set_label('Failure rate', size=12)
+        p.xlabel('X', size=12)
+        p.ylabel('Y', size=12)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_plate.pdf')
+
 
 
 
