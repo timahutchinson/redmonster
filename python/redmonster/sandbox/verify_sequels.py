@@ -2557,7 +2557,9 @@ class VerifyRM:
             p.xlim(wave[0], wave[-1])
             p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
                    n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
-            p.legend()
+            p.legend(loc=4)
+            p.xlabel(r'Observed wavelength ($\AA$)')
+            p.ylabel('$f_\lambda$ $10^{-17}$ erg cm$^{-2}$ s$^{-1}$ $\AA^{-1}$')
             p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/yes1no4_%s.pdf' % i)
             p.close()
 
@@ -2594,7 +2596,9 @@ class VerifyRM:
             p.xlim(wave[0], wave[-1])
             p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
                    n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
-            p.legend()
+            p.legend(loc=4)
+            p.xlabel(r'Observed wavelength ($\AA$)')
+            p.ylabel('$f_\lambda$ $10^{-17}$ erg cm$^{-2}$ s$^{-1}$ $\AA^{-1}$')
             p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/no1yes4_%s.pdf' % i)
             p.close()
 
