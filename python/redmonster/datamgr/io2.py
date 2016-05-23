@@ -796,7 +796,6 @@ class MergeRedmonster:
                                            'spPlate-%s-%s.fits' %
                                            (self.plate,self.mjd) ) )[0].header
                 '''
-                import pdb; pdb.set_trace()
                 self.hdr = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/%s/spPlate-%s-%s.fits' % (self.plate, self.plate, self.mjd))[0].header
             except AttributeError:
                 self.hdr = fits.Header()
