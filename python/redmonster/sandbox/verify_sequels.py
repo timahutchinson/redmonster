@@ -30,6 +30,9 @@ class VerifyRM:
                         3686:55268,3687:55269,3804:55267,3805:55269,3853:55268,
                         3855:55268,3856:55269,3860:55269
                  }):
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
         self.version = version
         self.plates = plates
         self.mjds = mjds
