@@ -2376,8 +2376,8 @@ class VerifyRM:
             normhist = hist / float(count)
             p.plot(bins, normhist, drawstyle='steps-mid', label=labels[j])
         p.minorticks_on()
-        p.xlabel(r'$\log_{10} \delta v$ (km s$^{-1}$)')
-        p.ylabel(r'Fraction per bin in $\log_{10} \delta v$')
+        p.xlabel(r'$\log_{10} \delta v$ (km s$^{-1}$)', size=14)
+        p.ylabel(r'Fraction per bin in $\log_{10} \delta v$', size=14)
         p.title('SEQUELS LRGs')
         p.axis([.5,2.5,0,.25])
         p.legend()
@@ -2413,8 +2413,8 @@ class VerifyRM:
         else:
             p.plot(n.linspace(0,0.005,1000), [rmcoords005[1]]*1000, color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
             p.plot([0.005]*1000, n.linspace(0,rmcoords005[1],1000), color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
-        p.xlabel(r'$\Delta\chi_{r}^2$ threshold')
-        p.ylabel(r'Cumulative fraction below threshold')
+        p.xlabel(r'$\Delta\chi_{r}^2$ threshold', size=14)
+        p.ylabel(r'Cumulative fraction below threshold', size=14)
         #p.grid(b=True, which='major', color='black', linestyle='--')
         p.legend(loc=2)
         p.axis([0,.02,0,.7])
@@ -2470,8 +2470,8 @@ class VerifyRM:
             p.text(.78*(xfit[-1]-xfit[0])+xfit[0], .78*(1.1*max([max(yfit),max(normhist)])), r'$\sigma_{\mathrm{fit}}=$%.2f' % popt[1])
             p.text(.78*(xfit[-1]-xfit[0])+xfit[0], .72*(1.1*max([max(yfit),max(normhist)])), r'$\mu_{\mathrm{fit}}=$%.2f' % popt[2])
 
-        p.xlabel(r'$(z_2-z_1)/ (\delta z_1^2+$ $\delta z_2^2)^{1/2}$')
-        p.ylabel('Fraction per bin')
+        p.xlabel(r'$(z_2-z_1)/ (\delta z_1^2+$ $\delta z_2^2)^{1/2}$', size=14)
+        p.ylabel('Fraction per bin', size=14)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
         p.clf()
 
@@ -2499,8 +2499,8 @@ class VerifyRM:
         p.plot([n.log10(0.005)]*1000, n.linspace(0,1.2,1000),linestyle='--')
         p.axis([-4,0,0,1.2])
         p.legend()
-        p.xlabel(r'$\log_{10} \Delta \chi^2 / \mathrm{dof}$')
-        p.ylabel('Distribution')
+        p.xlabel(r'$\log_{10} \Delta \chi^2 / \mathrm{dof}$', size=14)
+        p.ylabel('Distribution', size=14)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_poly_histos.pdf')
 
 
@@ -2715,7 +2715,7 @@ class VerifyRM:
         #g.ax_joint.plot(n.linspace(0,1,1000), fit_func(n.linspace(0,1,1000),popt[0], popt[1], popt[2]), linewidth=1, color='k')
         g.ax_joint.plot(n.linspace(0,1,1000), n.linspace(0,1,1000), ':k')
         g.ax_joint.collections[0].set_alpha(0)
-        g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
+        g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$', size=14)
         p.gcf().subplots_adjust(bottom=.15)
         p.gcf().subplots_adjust(left=.15)
         #g.fig.suptitle('1 failure, 4 success')
@@ -3180,8 +3180,8 @@ class VerifyRM:
             p.plot(drchi2_threshold, rmfrac, drawstyle='steps-mid', color=sns.color_palette(sns_pal)[2], label='redmonster')
             p.plot(drchi2_threshold, idlfrac, drawstyle='steps-mid',color=sns.color_palette(sns_pal)[0], label='spectro1d')
             p.legend()
-        p.xlabel(r'$\Delta\chi_r^2$')
-        p.ylabel(r'Cumulative fraction above threshold')
+        p.xlabel(r'$\Delta\chi_r^2$', size=14)
+        p.ylabel(r'Cumulative fraction above threshold', size=14)
         ax.set_yscale('log')
         p.grid(b=True, which='major', linestyle='-')
         p.grid(b=True, which='minor', linestyle='--')
@@ -3251,8 +3251,8 @@ class VerifyRM:
         p.plot([5e-3]*1000, n.linspace(0.1,1e6,1000), '--', color=sns.color_palette('muted')[2], lw=1.5)
         #p.plot( [1e-6, 1], [1000, 1000], 'm--', lw=2)
         p.plot(n.linspace(1e-6,1,1000), [1000]*1000, '--', color=sns.color_palette('muted')[3], lw=1.5)
-        p.xlabel(r'$\Delta \chi^2/dof$')
-        p.ylabel(r'$\Delta v$ (km/s)')
+        p.xlabel(r'$\Delta \chi^2/dof$', size=14)
+        p.ylabel(r'$\Delta v$ (km/s)', size=14)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/repeat_dchi2_dv.pdf')
 
 
@@ -3330,8 +3330,8 @@ class VerifyRM:
         import pdb; pdb.set_trace()
         p.plot(n.arange(1000)+1, n.array(counts.values())/n.array(totals.values()), color='black', drawstyle='steps-mid')
         #sp.axes([1,1000, 0, n.max( n.array(counts.values())/n.array(totals.values()) )*1.2])
-        p.xlabel(r'Fiber number', size=12)
-        p.ylabel(r'Failure rate', size=12)
+        p.xlabel(r'Fiber number', size=14)
+        p.ylabel(r'Failure rate', size=14)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_fiberid.pdf')
         p.close()
 
@@ -3383,9 +3383,9 @@ class VerifyRM:
 
         p.imshow(hist, interpolation='nearest', origin='lower', extent=[xbinedges[0], xbinedges[-1], ybinedges[0], ybinedges[-1]], cmap='cool')
         cbar = p.colorbar()
-        cbar.set_label('Failure rate', size=12)
-        p.xlabel('X', size=12)
-        p.ylabel('Y', size=12)
+        cbar.set_label('Failure rate', size=14)
+        p.xlabel('XFOCAL', size=14)
+        p.ylabel('YFOCAL', size=14)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_plate.pdf')
 
 
