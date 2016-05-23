@@ -3381,7 +3381,7 @@ class VerifyRM:
 
         hist = failures / totals
 
-        p.imshow(hist, interpolation='nearest', origin='lower', extent=[xbinedges[0], xbinedges[-1], ybinedges[0], ybinedges[-1]], cmap='Reds')
+        p.imshow(hist, interpolation='nearest', origin='lower', extent=[xbinedges[0], xbinedges[-1], ybinedges[0], ybinedges[-1]], cmap='cool')
         cbar = p.colorbar()
         cbar.set_label('Failure rate', size=12)
         p.xlabel('X', size=12)
