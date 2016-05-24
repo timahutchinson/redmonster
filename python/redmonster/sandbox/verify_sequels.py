@@ -3266,6 +3266,8 @@ class VerifyRM:
 
     def make_n_of_z_table(self):
         hdu = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hduidldr13 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], 'v5_8_0', 'spAll-v5_8_0.fits'))
+        hduidldr14 = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/spAll-test_dr14.fits')
 
         spectra = {
                    'total':0.,
@@ -3281,6 +3283,36 @@ class VerifyRM:
                    '1.1<z<1.2':0,
                     'z>1.2':0
                     }
+
+        spectraidldr13 = {
+                   'total':0.,
+                   'poor':0,
+                   'stellar':0,
+                   '0.0<z<0.5':0,
+                   '0.5<z<0.6':0,
+                   '0.6<z<0.7':0,
+                   '0.7<z<0.8':0,
+                   '0.8<z<0.9':0,
+                   '0.9<z<1.0':0,
+                   '1.0<z<1.1':0,
+                   '1.1<z<1.2':0,
+                    'z>1.2':0
+                    }
+        spectraidldr14 = {
+                   'total':0.,
+                   'poor':0,
+                   'stellar':0,
+                   '0.0<z<0.5':0,
+                   '0.5<z<0.6':0,
+                   '0.6<z<0.7':0,
+                   '0.7<z<0.8':0,
+                   '0.8<z<0.9':0,
+                   '0.9<z<1.0':0,
+                   '1.0<z<1.1':0,
+                   '1.1<z<1.2':0,
+                    'z>1.2':0
+                    }
+
 
         for i,zwarn in enumerate(hdu[1].data.ZWARNING):
             spectra['total'] += 1.
@@ -3309,11 +3341,86 @@ class VerifyRM:
                     elif hdu[1].data.Z[i] > 1.2:
                         spectra['z>1.2'] += 1.
 
+        for i,ebt1 in enumerate(hduidldr13[1].data.EBOSS_TARGET1):
+            if ebt1 & 2:
+                if hduidldr13[1].data.SPECPRIMARY[i] > 0:
+                    spectraidldr13['total'] += 1.
+                    if hduidldr13[1].data.RCHI2DIFF_NOQSO[i] < 0.01:
+                        spectraidldr13['poor'] += 1.
+                    else:
+                        if hduidldr13[1].data.CLASS_NOQSO[i] == 'STAR':
+                            spectraidldr13['stellar'] += 1.
+                        else:
+                            if hduidldr13[1].data.Z_NOQSO[i] > 0.0 and hduidldr13[1].data.Z_NOQSO[i] < 0.5:
+                                spectraidldr13['0.0<z<0.5'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 0.5 and hduidldr13[1].data.Z_NOQSO[i] < 0.6:
+                                spectraidldr13['0.5<z<0.6'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 0.6 and hduidldr13[1].data.Z_NOQSO[i] < 0.7:
+                                spectraidldr13['0.6<z<0.7'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 0.7 and hduidldr13[1].data.Z_NOQSO[i] < 0.8:
+                                spectraidldr13['0.7<z<0.8'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 0.8 and hduidldr13[1].data.Z_NOQSO[i] < 0.9:
+                                spectraidldr13['0.8<z<0.9'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 0.9 and hduidldr13[1].data.Z_NOQSO[i] < 1.0:
+                                spectraidldr13['0.9<z<1.0'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 1.0 and hduidldr13[1].data.Z_NOQSO[i] < 1.1:
+                                spectraidldr13['1.0<z<1.1'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 1.1 and hduidldr13[1].data.Z_NOQSO[i] < 1.2:
+                                spectraidldr13['1.1<z<1.2'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 1.2:
+                                spectraidldr13['z>1.2'] += 1.
+
+        for i,ebt1 in enumerate(hduidldr14[1].data.EBOSS_TARGET1):
+            if ebt1 & 2:
+                if hduidldr14[1].data.SPECPRIMARY[i] > 0:
+                    spectraidldr14['total'] += 1.
+                    if hduidldr14[1].data.RCHI2DIFF_NOQSO[i] < 0.004:
+                        spectraidldr14['poor'] += 1.
+                    else:
+                        if hduidldr14[1].data.CLASS_NOQSO[i] == 'STAR':
+                            spectraidldr14['stellar'] += 1.
+                        else:
+                            if hduidldr14[1].data.Z_NOQSO[i] > 0.0 and hduidldr14[1].data.Z_NOQSO[i] < 0.5:
+                                spectraidldr14['0.0<z<0.5'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 0.5 and hduidldr14[1].data.Z_NOQSO[i] < 0.6:
+                                spectraidldr14['0.5<z<0.6'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 0.6 and hduidldr14[1].data.Z_NOQSO[i] < 0.7:
+                                spectraidldr14['0.6<z<0.7'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 0.7 and hduidldr14[1].data.Z_NOQSO[i] < 0.8:
+                                spectraidldr14['0.7<z<0.8'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 0.8 and hduidldr14[1].data.Z_NOQSO[i] < 0.9:
+                                spectraidldr14['0.8<z<0.9'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 0.9 and hduidldr14[1].data.Z_NOQSO[i] < 1.0:
+                                spectraidldr14['0.9<z<1.0'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 1.0 and hduidldr14[1].data.Z_NOQSO[i] < 1.1:
+                                spectraidldr14['1.0<z<1.1'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 1.1 and hduidldr14[1].data.Z_NOQSO[i] < 1.2:
+                                spectraidldr14['1.1<z<1.2'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 1.2:
+                                spectraidldr14['z>1.2'] += 1.
+
+        print 'REDMONSTER %s' % self.version
         for entry in spectra:
             print 'Fraction %s: %s' % (entry, spectra[entry]/spectra['total'])
             print 'N(%s): %s' % (entry, (spectra[entry]/spectra['total'])*60)
-
         print 'Total tracers: %s' % ((spectra['0.6<z<0.7']/spectra['total'])*60 + (spectra['0.7<z<0.8']/spectra['total'])*60 + (spectra['0.8<z<0.9']/spectra['total'])*60 + (spectra['0.9<z<1.0']/spectra['total'])*60)
+        print ''
+        print 'IDL DR13'
+        for entry in spectraidldr13:
+            print 'Fraction %s: %s' % (entry, spectraidldr13[entry]/spectraidldr13['total'])
+            print 'N(%s): %s' % (entry, (spectraidldr13[entry]/spectraidldr13['total'])*60)
+        print 'Total tracers: %s' % ((spectraidldr13['0.6<z<0.7']/spectraidldr13['total'])*60 + (spectraidldr13['0.7<z<0.8']/spectraidldr13['total'])*60 + (spectraidldr13['0.8<z<0.9']/spectraidldr13['total'])*60 + (spectraidldr13['0.9<z<1.0']/spectraidldr13['total'])*60)
+        print ''
+        print 'IDL DR14'
+        for entry in spectraidldr14:
+            try:
+                print 'Fraction %s: %s' % (entry, spectraidldr14[entry]/spectraidldr14['total'])
+                print 'N(%s): %s' % (entry, (spectraidldr14[entry]/spectraidldr14['total'])*60)
+            except ZeroDivisionError:
+                print '%s has no objects at all' % entry
+        print 'Total tracers: %s' % ((spectraidldr14['0.6<z<0.7']/spectraidldr14['total'])*60 + (spectraidldr14['0.7<z<0.8']/spectraidldr14['total'])*60 + (spectraidldr14['0.8<z<0.9']/spectraidldr14['total'])*60 + (spectraidldr14['0.9<z<1.0']/spectraidldr14['total'])*60)
+
+
 
 
     def failure_vs_fiberid(self, sns_pal='muted'):
@@ -3325,22 +3432,24 @@ class VerifyRM:
 
         totals = {}
         counts = {}
-        for i in xrange(1000):
+        for i in [2*x for x in xrange(500)]:
             totals[i] = 1
             counts[i] = 0
 
         for i,zwarn in enumerate(hdu[1].data.ZWARNING):
             fiber = hdu[1].data.FIBERID[i]
-            totals[fiber] += 1.
-            if zwarn > 0:
-                counts[fiber] += 1.
+            if fiber % 2 == 0:
+                totals[fiber] += 1.
+                if zwarn > 0:
+                    counts[fiber] += 1.
 
-        p.plot(n.arange(1000)+1, n.array(counts.values())/n.array(totals.values()), color=sns.color_palette("Set2", 10)[1], drawstyle='steps-mid')
-        p.plot(n.arange(1000)+1, convolve(n.array(counts.values())/n.array(totals.values()), Box1DKernel(20)), color='black', drawstyle='steps-mid')
+        p.plot(n.array([2*x for x in xrange(500)])+1, n.array(counts.values())/n.array(totals.values()), color=sns.color_palette("Set2", 10)[1], drawstyle='steps-mid')
+        p.plot(n.array([2*x for x in xrange(500)])+1, convolve(n.array(counts.values())/n.array(totals.values()), Box1DKernel(5)), color='black', drawstyle='steps-mid')
         #sp.axes([1,1000, 0, n.max( n.array(counts.values())/n.array(totals.values()) )*1.2])
         p.xlabel(r'Fiber number', size=14)
         p.ylabel(r'Failure rate', size=14)
-        p.tick_params(labelsize=10)
+        p.tick_params(labelsize=12)
+        p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_fiberid.pdf')
         p.close()
 
@@ -3394,14 +3503,177 @@ class VerifyRM:
         p.imshow(hist, interpolation='nearest', origin='lower', extent=[xbinedges[0], xbinedges[-1], ybinedges[0], ybinedges[-1]], cmap='cool')
         cbar = p.colorbar()
         cbar.set_label('Failure rate', size=14)
-        cbar.ax.tick_params(labelsize=10)
+        cbar.ax.tick_params(labelsize=12)
         p.clim(0,0.25)
-        p.tick_params(labelsize=10)
+        p.tick_params(labelsize=12)
         p.xlabel('XFOCAL', size=14)
         p.ylabel('YFOCAL', size=14)
         f = p.gcf()
         #f.subplots_adjust(bottom=0.2)
+        p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_plate.pdf')
+
+
+    def failure_vs_sn_sns(self,sn_max=5,nbins=20):
+        # Makes plot of eBOSS LRG target failure rate (zwarning > 0)
+        # vs median S/N in r-, i-, and z-bands
+        f = p.figure()
+        ax = f.add_subplot(1,1,1)
+        total = 0
+        bad_fibers = []
+        bad_r_sn = []
+        bad_i_sn = []
+        bad_z_sn = []
+        r_sn = []
+        i_sn = []
+        z_sn = []
+        rmax = 0
+        imax = 0
+        zmax = 0
+        globpath = join( self.redmonster_spectro_redux,'*')
+        openplate = 0
+        openmjd = 0
+        hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        self.rm_zwarning = hdurm[1].data.ZWARNING
+        for i,fiber in enumerate(hdurm[1].data.FIBERID):
+            plate = hdurm[1].data.PLATE[i]
+            mjd = hdurm[1].data.MJD[i]
+            stderr.write('\r %s of %s' % (i+1,hdurm[1].data.FIBERID.shape[0]))
+            if (openplate != plate) or (openmjd != mjd):
+                hduidl = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                openplate = plate
+                openmjd = mjd
+                self.sn_median = hduidl[1].data.SN_MEDIAN[:,2:]
+            if (self.sn_median[fiber,0] <= sn_max):
+                total += 1
+                r_sn.append(self.sn_median[fiber,0])
+                if self.sn_median[fiber,0] > rmax:
+                    rmax = self.sn_median[fiber,0]
+                i_sn.append(self.sn_median[fiber,1])
+                if self.sn_median[fiber,1] > imax:
+                    imax = self.sn_median[fiber,1]
+                z_sn.append(self.sn_median[fiber,2])
+                if self.sn_median[fiber,2] > zmax:
+                    zmax = self.sn_median[fiber,2]
+                if (self.rm_zwarning[i] & 4):
+                    bad_fibers.append(fiber)
+                    bad_r_sn.append(self.sn_median[fiber,0])
+                    bad_i_sn.append(self.sn_median[fiber,1])
+                    bad_z_sn.append(self.sn_median[fiber,2])
+        nbinsarr = n.linspace(0,sn_max,nbins+1)
+        rtotal,rbinedges = n.histogram(r_sn,bins=nbinsarr)
+        itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
+        ztotal,zbinedges = n.histogram(z_sn,bins=nbinsarr)
+        rhist,rbinedges = n.histogram(bad_r_sn,bins=nbinsarr)
+        ihist,ibinedges = n.histogram(bad_i_sn,bins=nbinsarr)
+        zhist,zbinedges = n.histogram(bad_z_sn,bins=nbinsarr)
+        rbins = n.zeros(nbins)
+        ibins = n.zeros(nbins)
+        zbins = n.zeros(nbins)
+        for i in xrange(nbins):
+            rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
+            ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
+            zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
+        rhist = rhist / map(float,rtotal)
+        ihist = ihist / map(float,itotal)
+        zhist = zhist / map(float,ztotal)
+        for i in xrange(nbins):
+            if i != 0 and i != (nbins-1):
+                if isnan(rhist[i]):
+                    try:
+                        rhist[i] = (rhist[i-1] + rhist[i+1]) / 2.
+                    except:
+                        rhist[i] = 0
+                if isnan(ihist[i]):
+                    try:
+                        ihist[i] = (ihist[i-1] + ihist[i+1]) / 2.
+                    except:
+                        ihist[i] = 0
+                if isnan(zhist[i]):
+                    try:
+                        zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
+                    except:
+                        zhist[i] = 0
+        
+        p.plot(rbins,rhist,color=sns.color_palette("hls", 8)[4],label='r-band', drawstyle='steps-mid')
+        p.plot(ibins,ihist,color=sns.color_palette("hls", 8)[5],label='i-band', drawstyle='steps-mid')
+        p.plot(zbins,zhist,color=sns.color_palette("hls", 8)[6],label='z-band', drawstyle='steps-mid')
+        ax.set_yscale('log')
+        p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=14)
+        p.ylabel(r'eBOSS LRG target failure rate', size=14)
+        print rbins
+        print rhist
+        print rtotal
+        print total
+        print rmax
+        print imax
+        print zmax
+        p.legend()
+        p.tick_params(labelsize=12)
+        p.grid(b=True, which='major', color='grey', linestyle='-')
+        p.tight_layout()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
+        p.close()
+
+
+    def failure_vs_imag_sns(self,imin=18,imax=24,nbins=25):
+        # Makes plot of SEQUELS LRG failure rate (zwarning > 0)
+        # vs i-band magnitude
+        f = p.figure()
+        ax = f.add_subplot(1,1,1)
+        total = 0
+        bad_i_mag = []
+        i_mag = []
+        openplate = 0
+        openmjd = 0
+        hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        self.rm_zwarning = hdurm[1].data.ZWARNING
+        for i,fiber in enumerate(hdurm[1].data.FIBERID):
+            plate = hdurm[1].data.PLATE[i]
+            mjd = hdurm[1].data.MJD[i]
+            stderr.write('\r %s of %s' % (i+1,hdurm[1].data.FIBERID.shape[0]))
+            if (openplate != plate) and (openmjd != mjd):
+                hduzbest = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                hduspplate = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/', '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd)))
+                self.spectroflux = 22.5 - 2.5*n.log10(hduzbest[1].data.SPECTROFLUX)
+                openplate = plate
+                openmjd = mjd
+            if (self.spectroflux[fiber,3] <= imax):
+                total += 1.
+                i_mag.append(self.spectroflux[fiber,3])
+                if (self.rm_zwarning[i] & 4 > 0):
+                    bad_i_mag.append(self.spectroflux[fiber,3])
+        nbinsarr = n.linspace(imin,imax,nbins+1)
+        itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
+        ihist,ibinedges = n.histogram(bad_i_mag,bins=nbinsarr)
+        ibins = n.zeros(nbins)
+        for i in xrange(nbins):
+            ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
+        ihist = ihist / map(float,itotal)
+        for i in xrange(nbins):
+            if i != 0 and i != (nbins-1):
+                if isnan(ihist[i]):
+                    try:
+                        ihist[i] = (ihist[i-1] + ihist[i+1]) / 2.
+                    except:
+                        ihist[i] = 0
+        p.plot(ibins,ihist,drawstyle='steps-mid',label='i-band')
+        p.axis([imin,imax,.01,1])
+        ax.set_yscale('log')
+        p.axvline(21.8,linestyle='--',color='k')
+        p.xlabel(r'$i$-band magnitude',size=14)
+        p.ylabel(r'Failure rate', size=14)
+        #print rbins
+        #print rhist
+        #print rtotal
+        #p.legend()
+        p.tick_params(labelsize=12)
+        p.grid(b=True, which='major', color='grey', linestyle='-')
+        f.tight_layout()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_imag.pdf')
+        p.close
+
+
 
 
 
