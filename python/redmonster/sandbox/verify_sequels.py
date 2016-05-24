@@ -841,7 +841,7 @@ class VerifyRM:
         print avg
 
 
-    def sequels_logdv_vs_z_histos_all(self, nbins=12):
+    def logdv_vs_z_histos(self, nbins=12):
         # Make histograms of log10(dv) in redshift bins for
         # LOWZ and CMASS galaxies
         colors = [
@@ -1027,7 +1027,7 @@ class VerifyRM:
         p.clf()
 
 
-    def sequels_logdv_vs_sn_histos_all(self, nbins=25):
+    def logdv_vs_sn_histos(self, nbins=25):
         # Make histograms of log10(dv) in S/N bins in bands
         # r,i,z for SEQUELS LRG targets
         colors = [
@@ -1068,9 +1068,12 @@ class VerifyRM:
                 plate = self.rm_plates_summary[i]
                 mjd = self.rm_mjds_summary[i]
                 #print '%s-%s-%s' % (plate,fiber,mjd)
-                if (openplate != plate) and (openmjd != mjd):
-                    self.read_spZbest_all(plate,mjd)
-                    self.read_spPlate_all(plate,mjd)
+                if (openplate != plate) or (openmjd != mjd):
+                    #self.read_spZbest_all(plate,mjd)
+                    hduzbest = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                    self.sn_median = hduzbest[1].data.SN_MEDIAN[:,2:]
+                    #self.read_spPlate_all(plate,mjd)
+                    hduspplate = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
                     openplate = plate
                     openmjd = mjd
                 if (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
@@ -1205,8 +1208,11 @@ class VerifyRM:
                 mjd = self.rm_mjds_summary[i]
                 #print '%s-%s-%s' % (plate,fiber,mjd)
                 if (openplate != plate) and (openmjd != mjd):
-                    self.read_spZbest_all(plate,mjd)
-                    self.read_spPlate_all(plate,mjd)
+                    #self.read_spZbest_all(plate,mjd)
+                    #self.read_spPlate_all(plate,mjd)
+                    hduzbest = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                    self.sn_median = hduzbest[1].data.SN_MEDIAN[:,2:]
+                    hduspplate = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
                     openplate = plate
                     openmjd = mjd
                 if (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
@@ -1341,8 +1347,11 @@ class VerifyRM:
                 mjd = self.rm_mjds_summary[i]
                 #print '%s-%s-%s' % (plate,fiber,mjd)
                 if (openplate != plate) and (openmjd != mjd):
-                    self.read_spZbest_all(plate,mjd)
-                    self.read_spPlate_all(plate,mjd)
+                    #self.read_spZbest_all(plate,mjd)
+                    #self.read_spPlate_all(plate,mjd)
+                    hduzbest = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                    self.sn_median = hduzbest[1].data.SN_MEDIAN[:,2:]
+                    hduspplate = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
                     openplate = plate
                     openmjd = mjd
                 if (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
@@ -3674,12 +3683,6 @@ class VerifyRM:
         f.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_imag.pdf')
         p.close
-
-
-
-
-
-
 
 
 
