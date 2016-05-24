@@ -3608,9 +3608,10 @@ class VerifyRM:
         print rmax
         print imax
         print zmax
-        p.legend()
+        p.legend(prop={'size':14})
         p.tick_params(labelsize=12)
-        p.grid(b=True, which='major', color='grey', linestyle='-')
+        p.grid(b=True, which='major', color='lightgrey', linestyle='-')
+        p.grid(b=True, which='minor', color='lightgrey', linestyle='--')
         p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
         p.close()
@@ -3668,7 +3669,8 @@ class VerifyRM:
         #print rtotal
         #p.legend()
         p.tick_params(labelsize=12)
-        p.grid(b=True, which='major', color='grey', linestyle='-')
+        p.grid(b=True, which='major', color='lightgrey', linestyle='-')
+        p.grid(b=True, which='minor', color='lightgrey', linestyle='--')
         f.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_imag.pdf')
         p.close
