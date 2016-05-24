@@ -24,8 +24,8 @@ from redmonster.physics import misc
     here and subsequently passed in during the next step, the default behavior
     is to run on all fibers.
     '''
-plate = 7848
-mjd = 56959
+plate = 8187
+mjd = 57402
 fiberid = [266,267] # fiberid must be a list, not a numpy array
 
 
