@@ -24,12 +24,13 @@ from redmonster.physics.misc import poly_array
 
 class VerifyRM:
     
-    def __init__(self,version='v5_8_0',
+    def __init__(self,version='v5_10_0',
                  plates=[3686,3687,3804,3805,3853,3855,3856,3860],
                  mjds={
                         3686:55268,3687:55269,3804:55267,3805:55269,3853:55268,
                         3855:55268,3856:55269,3860:55269
-                 }):
+                 },
+                 sns_pal='muted'):
         sns.set_style('white')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
@@ -3334,11 +3335,12 @@ class VerifyRM:
             if zwarn > 0:
                 counts[fiber] += 1.
 
-        import pdb; pdb.set_trace()
-        p.plot(n.arange(1000)+1, n.array(counts.values())/n.array(totals.values()), color='black', drawstyle='steps-mid')
+        p.plot(n.arange(1000)+1, n.array(counts.values())/n.array(totals.values()), color=sns.color_palette("Set2", 10)[1], drawstyle='steps-mid')
+        p.plot(n.arange(1000)+1, convolve(n.array(counts.values())/n.array(totals.values()), Box1DKernel(20)), color='black', drawstyle='steps-mid')
         #sp.axes([1,1000, 0, n.max( n.array(counts.values())/n.array(totals.values()) )*1.2])
         p.xlabel(r'Fiber number', size=14)
         p.ylabel(r'Failure rate', size=14)
+        p.tick_params(labelsize=10)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_fiberid.pdf')
         p.close()
 
@@ -3362,7 +3364,8 @@ class VerifyRM:
             if plate != hdu[1].data.PLATE[i] or mjd != hdu[1].data.MJD[i]:
                 plate = hdu[1].data.PLATE[i]
                 mjd = hdu[1].data.MJD[i]
-                hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
+                #hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
+                hduidl = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/%s/spPlate-%s-%s.fits' % (plate,plate,mjd))
             xfocal.append(hduidl[5].data.XFOCAL[fiberid])
             yfocal.append(hduidl[5].data.YFOCAL[fiberid])
             if zwarn > 0:
@@ -3391,8 +3394,13 @@ class VerifyRM:
         p.imshow(hist, interpolation='nearest', origin='lower', extent=[xbinedges[0], xbinedges[-1], ybinedges[0], ybinedges[-1]], cmap='cool')
         cbar = p.colorbar()
         cbar.set_label('Failure rate', size=14)
+        cbar.ax.tick_params(labelsize=10)
+        p.clim(0,0.25)
+        p.tick_params(labelsize=10)
         p.xlabel('XFOCAL', size=14)
         p.ylabel('YFOCAL', size=14)
+        f = p.gcf()
+        #f.subplots_adjust(bottom=0.2)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_plate.pdf')
 
 
