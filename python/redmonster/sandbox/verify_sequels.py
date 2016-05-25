@@ -3213,7 +3213,7 @@ class VerifyRM:
 
         c_kms = 299792.458
         directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
-        hdu = fits.open(directory+'/spAll-v5_8_0-repeats_lrg.fits')
+        hdu = fits.open(directory+'/spAll-v5_10_0-repeats_lrg.fits')
 
         thing_ids = []
         object_ids1 = []
@@ -3234,12 +3234,14 @@ class VerifyRM:
                 object_ids2.append(object_id2)
                 object_ids[(hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)] = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
 
+        #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
         for i,object_id1 in enumerate(object_ids):
             stderr.write('\r %s of %s' % (i+1,len(object_ids)))
             try:
                 object_id2 = object_ids[object_id1]
-                hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
-                hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
+                
+                hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
+                hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
                 fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1[2])[0][0]
                 fiberind2 = n.where(hdu2[1].data.FIBERID == object_id2[2])[0][0]
                 z1 = hdu1[1].data.Z1[fiberind1]
@@ -3251,7 +3253,17 @@ class VerifyRM:
                 drchi2.append(n.min([rchi21, rchi22]))
             except IndexError:
                 pass
-        print "Total objects: %s" % len(dv)
+            except IOError:
+                pass
+        print "Total objects: %s" % len(dv)*2
+        confobjs = 0
+        cataobjs = 0
+        for i,chi2 in enumerate(drchi2):
+            if drchi2 > 0.005:
+                confobjs += 1.
+                if dv[i] > 1000:
+                    cataobjs += 1.
+        print "Catastrophic failures: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/confobjs)
 
         f = p.figure()
         ax = f.add_subplot(111)
