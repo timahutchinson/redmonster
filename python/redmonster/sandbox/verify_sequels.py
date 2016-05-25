@@ -3383,7 +3383,7 @@ class VerifyRM:
             if ebt1 & 2:
                 if hduidldr14[1].data.SPECPRIMARY[i] > 0:
                     spectraidldr14['total'] += 1.
-                    if hduidldr14[1].data.RCHI2DIFF_NOQSO[i] < 0.004:
+                    if hduidldr14[1].data.RCHI2DIFF_NOQSO[i] < 0.01:
                         spectraidldr14['poor'] += 1.
                     else:
                         if hduidldr14[1].data.CLASS_NOQSO[i] == 'STAR':

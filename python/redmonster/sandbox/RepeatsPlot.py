@@ -13,7 +13,7 @@ class Repeatability:
     @staticmethod
     def makeSpAllRepeats():
 
-        hdu = pyfits.open('/uufs/chpc.utah.edu/common/home/sdss02/ebosswork/eboss/spectro/redux/v5_8_0/spAll-v5_8_0.fits')
+        hdu = pyfits.open('/uufs/chpc.utah.edu/common/home/sdss02/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/spAll-test_dr14.fits')
 
         print 'Selecting LRGs'
         a = hdu[1].data
@@ -35,12 +35,12 @@ class Repeatability:
         newa = a[wr]
         print len(N.unique( newa.THING_ID )), 'repeats'
         newhdu = pyfits.BinTableHDU(data=newa)
-        newhdu.writeto(Repeatability.directory+'/spAll-v5_8_0-repeats_lrg.fits')
+        newhdu.writeto(Repeatability.directory+'/spAll-v5_10_0-repeats_lrg.fits')
 
     @staticmethod
     def getDeltaVexistent():
 
-        a = pyfits.open(Repeatability.directory+'/spAll-v5_8_0-repeats_lrg.fits')[1].data
+        a = pyfits.open(Repeatability.directory+'/spAll-v5_10_0-repeats_lrg.fits')[1].data
 
         data = N.empty( 0, dtype= [ ('thing_id', int), ('dv', float), ('z1', float), \
                                     ('z2', float), ('dc1', float), ('dc2', float), \
