@@ -3235,6 +3235,7 @@ class VerifyRM:
                 object_ids[(hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)] = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
 
         #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
+        ioerrors = 0
         for i,object_id1 in enumerate(object_ids):
             stderr.write('\r %s of %s' % (i+1,len(object_ids)))
             try:
@@ -3252,9 +3253,12 @@ class VerifyRM:
                 dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
                 drchi2.append(n.min([rchi21, rchi22]))
             except IndexError:
-                pass
+                print "IndexError"
             except IOError:
-                pass
+                ioerrors += 1
+                print "IOError! %s %s" % (repr(object_id1), ioerrors)
+
+        import pdb; pdb.set_trace()
         print "Total objects: %s" % len(dv)*2
         confobjs = 0
         cataobjs = 0

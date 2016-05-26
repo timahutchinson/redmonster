@@ -798,23 +798,23 @@ class MergeRedmonster:
                 fiberfile = basename( path )
                 self.fiberid.append( int(fiberfile[22:25]) )
             try:
-                '''
+                
                 self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'],
                                            environ['RUN2D'], '%s' % self.plate,
                                            'spPlate-%s-%s.fits' %
                                            (self.plate,self.mjd) ) )[0].header
-                '''
-                self.hdr = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/%s/spPlate-%s-%s.fits' % (self.plate, self.plate, self.mjd))[0].header
+                
+                #self.hdr = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/%s/spPlate-%s-%s.fits' % (self.plate, self.plate, self.mjd))[0].header
             except AttributeError:
                 self.hdr = fits.Header()
             
-            '''
+            
             npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'],
                                    environ['RUN2D'], '%s' % self.plate,
                                    'spPlate-%s-%s.fits' %
                                    (self.plate,self.mjd) ) )[0].data.shape[1]
-            '''
-            npix = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/%s/spPlate-%s-%s.fits' % (self.plate, self.plate, self.mjd))[0].data.shape[1]
+            
+            #npix = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/%s/spPlate-%s-%s.fits' % (self.plate, self.plate, self.mjd))[0].data.shape[1]
             self.models = n.zeros( (len(self.fiberid),5,npix) )
             self.filepaths.sort()
             self.fiberid.sort()
