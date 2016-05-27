@@ -41,7 +41,7 @@ spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 data_range = [4000,9000]
 
 directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
-hdu = fits.open('/uufs/chpc.utah.edu/common/home/sdss02/ebosswork/eboss/spectro/redux/v5_8_0/spAll-v5_8_0.fits')
+hdu = fits.open('/uufs/chpc.utah.edu/common/home/sdss02/ebosswork/eboss/spectro/redux/v5_10_0/spAll-v5_10_0.fits')
 
 print 'Selecting LRGs'
 a = hdu[1].data
