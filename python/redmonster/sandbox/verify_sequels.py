@@ -1649,8 +1649,11 @@ class VerifyRM:
             mjd = self.rm_mjds_summary[i]
             #print '%s-%s-%s' % (plate,mjd,fiber)
             if (openplate != plate) and (openmjd != mjd):
-                self.read_spZbest_all(plate,mjd)
-                self.read_spPlate_all(plate,mjd)
+                #self.read_spZbest_all(plate,mjd)
+                #self.read_spPlate_all(plate,mjd)
+                hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], 'test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                self.idl_rchi2diff = hduidl[1].data.RCHI2DIFF_NOQSO
+                self.idl_dof = hduidl[1].data.DOF
                 openplate = plate
                 openmjd = mjd
             #if (self.rm_rchi2diff[i] < drchi2max) and \
@@ -2399,7 +2402,7 @@ class VerifyRM:
         p.clf()
 
 
-    def sequels_failure_vs_dchi2_sns(self, drchi2max=.02, npoints=150, sns_pal='muted', rm_line_x=0.01):
+    def sequels_failure_vs_dchi2_sns(self, drchi2max=.02, npoints=150, sns_pal='muted', rm_line_x=0.005):
     # Makes a plot of SEQUELS LRG failure rate as a function of
     # dchi2 threshold for redmonster and idlspec1d
         sns.set_style('whitegrid')
@@ -2413,6 +2416,8 @@ class VerifyRM:
             rm_point, idl_point = self.dchi2_failure_diff_function(diff)
             rm_data.append(rm_point)
             idl_data.append(idl_point)
+        f = p.figure()
+        ax = f.add_subplot(111)
         p.plot(diffs, rm_data, color=sns.color_palette("RdBu_r", 7)[-1], label='redmonster')
         p.plot(diffs, idl_data, color=sns.color_palette("RdBu_r", 7)[0], label='spectro1d')
         rmcoords01 = (0.01, rm_data[n.abs(n.array(diffs)-0.01).argmin()])
@@ -2431,6 +2436,9 @@ class VerifyRM:
         #p.grid(b=True, which='major', color='black', linestyle='--')
         p.legend(loc=2)
         p.axis([0,.02,0,.7])
+        p.tick_params(labelsize=12)
+        p.grid(b=True, which='major', color='lightgrey', linestyle='-')
+        f.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
         p.clf()
 
@@ -3234,6 +3242,7 @@ class VerifyRM:
                 object_ids2.append(object_id2)
                 object_ids[(hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)] = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
 
+        
         #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
         ioerrors = 0
         for i,object_id1 in enumerate(object_ids):

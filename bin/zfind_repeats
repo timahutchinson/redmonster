@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # this determines if you run first or second observation of each object
-set = 1
+set = 2
 
 # Run redmonster on all sequels LRG targets observed more than once
 from os import environ
@@ -41,7 +41,7 @@ spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 data_range = [4000,9000]
 
 directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
-hdu = fits.open('/uufs/chpc.utah.edu/common/home/sdss02/ebosswork/eboss/spectro/redux/v5_10_0/spAll-v5_10_0.fits')
+hdu = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/spAll-test_dr14.fits')
 
 print 'Selecting LRGs'
 a = hdu[1].data
@@ -62,10 +62,10 @@ wr = n.unique(n.array(wr))
 newa = a[wr]
 print len(n.unique( newa.THING_ID )), 'repeats'
 newhdu = fits.BinTableHDU(data=newa)
-newhdu.writeto(directory+'/spAll-v5_8_0-repeats_lrg.fits', clobber=True)
+newhdu.writeto(directory+'/spAll-v5_10_0-repeats_lrg.fits', clobber=True)
 
 
-hdu = fits.open(directory+'/spAll-v5_8_0-repeats_lrg.fits')
+hdu = fits.open(directory+'/spAll-v5_10_0-repeats_lrg.fits')
 
 thing_ids = []
 object_ids1 = []
@@ -99,7 +99,7 @@ elif set == 2:
         fibers.append(object_id[2])
 
 cjob = 0
-q.create(label='zfind_repeats%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn, walltime=walltime)
+q.create(label='zfind_repeats_%r' % cjob,alloc=alloc,nodes=nodes,ppn=ppn, walltime=walltime)
 blocksize = nodes*ppn*ncycles
 for i,plate in enumerate(plates):
     q.append("zfind -p %i -m %i -f %i" % (plate,mjds[i],fibers[i]))
