@@ -3250,8 +3250,8 @@ class VerifyRM:
             try:
                 object_id2 = object_ids[object_id1]
                 
-                hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
-                hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
+                hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
+                hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
                 fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1[2])[0][0]
                 fiberind2 = n.where(hdu2[1].data.FIBERID == object_id2[2])[0][0]
                 z1 = hdu1[1].data.Z1[fiberind1]
