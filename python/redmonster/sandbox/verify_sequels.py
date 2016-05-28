@@ -2487,7 +2487,7 @@ class VerifyRM:
         #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
         ioerrors = 0
         for i,object_id1 in enumerate(object_ids):
-            stderr.write('\r %s of %s' % (i+1,len(object_ids)))
+            stderr.write('\r %s of %s ' % (i+1,len(object_ids)))
             try:
                 object_id2 = object_ids[object_id1]
                 
