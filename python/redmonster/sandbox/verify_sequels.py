@@ -2442,11 +2442,12 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
         p.clf()
 
-    def plate_splits_errors_sns(self, nbins=25, fit=True, normed=True,sns_pal='muted'):
+    def plate_splits_errors_sns(self, nbins=25, fit=True, normed=True, sns_pal='muted'):
         # redshift pdf from splits of extra-deep plates
         sns.set_style('white')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
+        '''
         plates = [7834,7839,7848]
         mjds = [56979,56900,56959]
         self.z1 = []
@@ -2456,6 +2457,59 @@ class VerifyRM:
         for i,plate in enumerate(plates):
             self.plate_splits_function(plate=plate, mjd=mjds[i],
                                        nbins=nbins, fit=fit)
+        '''
+            c_kms = 299792.458
+        directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
+        hdu = fits.open(directory+'/spAll-v5_10_0-repeats_lrg.fits')
+        
+        thing_ids = []
+        object_ids1 = []
+        object_ids2 = []
+        object_ids = {}
+        
+        self.z1 = []
+        self.z2 = []
+        self.zerr1 = []
+        self.zerr2 = []
+        
+        for thing_id in hdu[1].data.THING_ID:
+            if thing_id not in thing_ids:
+                thing_ids.append(thing_id)
+                w1 = n.where(hdu[1].data.THING_ID == thing_id)[0][0]
+                w2 = n.where(hdu[1].data.THING_ID == thing_id)[0][1]
+                object_id1 = (hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)
+                object_ids1.append(object_id1)
+                object_id2 = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
+                object_ids2.append(object_id2)
+                object_ids[(hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)] = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
+        
+        
+        #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
+        ioerrors = 0
+        for i,object_id1 in enumerate(object_ids):
+        stderr.write('\r %s of %s' % (i+1,len(object_ids)))
+        try:
+            object_id2 = object_ids[object_id1]
+            
+            hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
+            hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
+            fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1[2])[0][0]
+            fiberind2 = n.where(hdu2[1].data.FIBERID == object_id2[2])[0][0]
+            self.z1.append(hdu1[1].data.Z1[fiberind1])
+            self.z2.append(hdu2[1].data.Z1[fiberind2])
+            self.zerr1.append(hdu1[1].data.Z_ERR1[fiberind1])
+            self.zerr2.append(hdu2[1].data.Z_ERR2[fiberind2])
+            
+            #dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
+            #drchi2.append(n.min([rchi21, rchi22]))
+        except IndexError:
+            print "IndexError"
+        except IOError:
+            ioerrors += 1
+            print "IOError! %s %s" % (repr(object_id1), ioerrors)
+
+        
+        
         self.z1 = n.array(self.z1)
         self.z2 = n.array(self.z2)
         self.zerr1 = n.array(self.zerr1)
@@ -3188,7 +3242,8 @@ class VerifyRM:
                     if plate != hdurm[1].data.PLATE[j] or mjd != hdurm[1].data.MJD[j]:
                         plate = hdurm[1].data.PLATE[j]
                         mjd = hdurm[1].data.MJD[j]
-                        hduplate = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, self.version, 'spZbest-%s-%s.fits' % (plate,mjd)))
+                        #hduplate = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, self.version, 'spZbest-%s-%s.fits' % (plate,mjd)))
+                        hduplate = fits.open(join(environ['BOSS_SPECTRO_REDUX'], 'test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate,mjd)))
                     fiber = hdurm[1].data.FIBERID[j]
                     if hduplate[1].data.RCHI2DIFF_NOQSO[fiber] > threshold:
                         countidl += 1
@@ -3269,16 +3324,23 @@ class VerifyRM:
                 ioerrors += 1
                 print "IOError! %s %s" % (repr(object_id1), ioerrors)
 
-        import pdb; pdb.set_trace()
         print "Total objects: %s" % len(dv)*2
         confobjs = 0
         cataobjs = 0
+        confobs01 = 0
+        cataobjs01 = 0
         for i,chi2 in enumerate(drchi2):
             if drchi2 > 0.005:
                 confobjs += 1.
                 if dv[i] > 1000:
                     cataobjs += 1.
-        print "Catastrophic failures: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/confobjs)
+            if drchi2 > 0.01:
+                confobjs01 += 1.
+                if dv[i] > 1000:
+                    cataobjs01 += 1
+        
+        print "Catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/confobjs)
+        print "Catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01, cataobjs01/confobjs01)
 
         f = p.figure()
         ax = f.add_subplot(111)
