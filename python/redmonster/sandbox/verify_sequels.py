@@ -2405,7 +2405,7 @@ class VerifyRM:
     def sequels_failure_vs_dchi2_sns(self, drchi2max=.02, npoints=150, sns_pal='muted', rm_line_x=0.005):
     # Makes a plot of SEQUELS LRG failure rate as a function of
     # dchi2 threshold for redmonster and idlspec1d
-        sns.set_style('whitegrid')
+        sns.set_style('white')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
         rm_data = []
@@ -2444,7 +2444,7 @@ class VerifyRM:
 
     def plate_splits_errors_sns(self, nbins=25, fit=True, normed=True,sns_pal='muted'):
         # redshift pdf from splits of extra-deep plates
-        sns.set_style('whitegrid')
+        sns.set_style('white')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
         plates = [7834,7839,7848]
