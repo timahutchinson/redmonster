@@ -36,9 +36,10 @@ except: run2d = None
 try: run1d = environ['RUN1D']
 except: run1d = None
 spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
-rmallpath = join(rmdir, '%s_poly1' % run2d, 'redmonsterAll-%s.fits' % run2d)
+#rmallpath = join(rmdir, '%s_poly1' % run2d, 'redmonsterAll-%s.fits' % run2d)
+rmallpath = join(rmdir, '%s' % run1d, 'redmonsterAll-%s.fits' % run1d)
 
-#data_range = [4000,9000]
+data_range = [4000,9000]
 
 platelist = []
 if rmallpath:
@@ -53,7 +54,7 @@ mjds = []
 fibers = []
 for entry in platelist:
     #hduplate = fits.open(join(topdir, run2d, '%s' % entry[0], 'spPlate-%s-%s.fits' %(entry[0], entry[1])))
-    hduplate = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % entry[0], spPlate-%s-%s.fits' % (entry[0], entry[1])))
+    hduplate = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % entry[0], 'spPlate-%s-%s.fits' % (entry[0], entry[1])))
     for i,objtype in enumerate(hduplate[5].data.OBJTYPE):
         if objtype.lower() == 'sky':
             plates.append(entry[0])
@@ -64,7 +65,7 @@ if rmallpath:
     cjob = 0
     q.create(label='zfind_sequels_sky_%r' % cjob,alloc=alloc,nodes=nodes,
              ppn=ppn,walltime=walltime)
-    blocksize = 2000
+    blocksize = 5000
     for i,plate in enumerate(plates):
         mjd = mjds[i]
         fiberid = fibers[i]
