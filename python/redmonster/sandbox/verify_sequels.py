@@ -2487,26 +2487,26 @@ class VerifyRM:
         #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
         ioerrors = 0
         for i,object_id1 in enumerate(object_ids):
-        stderr.write('\r %s of %s' % (i+1,len(object_ids)))
-        try:
-            object_id2 = object_ids[object_id1]
-            
-            hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
-            hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
-            fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1[2])[0][0]
-            fiberind2 = n.where(hdu2[1].data.FIBERID == object_id2[2])[0][0]
-            self.z1.append(hdu1[1].data.Z1[fiberind1])
-            self.z2.append(hdu2[1].data.Z1[fiberind2])
-            self.zerr1.append(hdu1[1].data.Z_ERR1[fiberind1])
-            self.zerr2.append(hdu2[1].data.Z_ERR2[fiberind2])
-            
-            #dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
-            #drchi2.append(n.min([rchi21, rchi22]))
-        except IndexError:
-            print "IndexError"
-        except IOError:
-            ioerrors += 1
-            print "IOError! %s %s" % (repr(object_id1), ioerrors)
+            stderr.write('\r %s of %s' % (i+1,len(object_ids)))
+            try:
+                object_id2 = object_ids[object_id1]
+                
+                hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
+                hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
+                fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1[2])[0][0]
+                fiberind2 = n.where(hdu2[1].data.FIBERID == object_id2[2])[0][0]
+                self.z1.append(hdu1[1].data.Z1[fiberind1])
+                self.z2.append(hdu2[1].data.Z1[fiberind2])
+                self.zerr1.append(hdu1[1].data.Z_ERR1[fiberind1])
+                self.zerr2.append(hdu2[1].data.Z_ERR2[fiberind2])
+                
+                #dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
+                #drchi2.append(n.min([rchi21, rchi22]))
+            except IndexError:
+                print "IndexError"
+            except IOError:
+                ioerrors += 1
+                print "IOError! %s %s" % (repr(object_id1), ioerrors)
 
         
         
