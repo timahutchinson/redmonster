@@ -2547,6 +2547,8 @@ class VerifyRM:
 
         p.xlabel(r'$(z_2-z_1)/ (\delta z_1^2+$ $\delta z_2^2)^{1/2}$', size=14)
         p.ylabel('Fraction per bin', size=14)
+        p.tick_params(labelsize=12)
+        p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
         p.clf()
 
