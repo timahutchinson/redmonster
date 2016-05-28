@@ -3359,6 +3359,8 @@ class VerifyRM:
         p.plot(n.linspace(1e-6,1,1000), [1000]*1000, '--', color=sns.color_palette('muted')[3], lw=1.5)
         p.xlabel(r'$\Delta \chi^2/dof$', size=14)
         p.ylabel(r'$\Delta v$ (km/s)', size=14)
+        p.tick_params(labelsize=12)
+        p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/repeat_dchi2_dv.pdf')
 
 
