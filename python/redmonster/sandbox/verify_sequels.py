@@ -3330,11 +3330,11 @@ class VerifyRM:
         confobjs01 = 0
         cataobjs01 = 0
         for i,chi2 in enumerate(drchi2):
-            if drchi2 > 0.005:
+            if chi2 > 0.005:
                 confobjs += 1.
                 if dv[i] > 1000:
                     cataobjs += 1.
-            if drchi2 > 0.01:
+            if chi2 > 0.01:
                 confobjs01 += 1.
                 if dv[i] > 1000:
                     cataobjs01 += 1
