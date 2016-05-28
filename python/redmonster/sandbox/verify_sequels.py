@@ -3301,7 +3301,7 @@ class VerifyRM:
 
         
         #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
-        ioerrors = 0
+        totalobjs = 0
         for i,object_id1 in enumerate(object_ids):
             stderr.write('\r %s of %s' % (i+1,len(object_ids)))
             try:
@@ -3318,6 +3318,7 @@ class VerifyRM:
 
                 dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
                 drchi2.append(n.min([rchi21, rchi22]))
+                totalobjs += 1
             except IndexError:
                 print "IndexError"
             except IOError:
@@ -3338,9 +3339,10 @@ class VerifyRM:
                 confobjs01 += 1.
                 if dv[i] > 1000:
                     cataobjs01 += 1
-        
-        print "Catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/confobjs)
-        print "Catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01, cataobjs01/confobjs01)
+                        
+        print "Total objects: %s" % (totalobjs)
+        print "Catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/(confobjs*2))
+        print "Catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01, cataobjs01/(confobjs01*2))
 
         f = p.figure()
         ax = f.add_subplot(111)
