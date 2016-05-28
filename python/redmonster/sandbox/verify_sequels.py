@@ -3327,7 +3327,7 @@ class VerifyRM:
         print "Total objects: %s" % len(dv)*2
         confobjs = 0
         cataobjs = 0
-        confobs01 = 0
+        confobjs01 = 0
         cataobjs01 = 0
         for i,chi2 in enumerate(drchi2):
             if drchi2 > 0.005:
