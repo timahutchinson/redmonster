@@ -2458,7 +2458,7 @@ class VerifyRM:
             self.plate_splits_function(plate=plate, mjd=mjds[i],
                                        nbins=nbins, fit=fit)
         '''
-            c_kms = 299792.458
+        c_kms = 299792.458
         directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
         hdu = fits.open(directory+'/spAll-v5_10_0-repeats_lrg.fits')
         
