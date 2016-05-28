@@ -3160,7 +3160,7 @@ class VerifyRM:
 
 
     def sequels_sky_drchi2_sns(self, spectro1d=False, nthreshold=50, sns_pal='muted'):
-        sns.set_style('whitegrid')
+        sns.set_style('white')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
 
@@ -3208,8 +3208,10 @@ class VerifyRM:
         p.xlabel(r'$\Delta\chi_r^2$', size=14)
         p.ylabel(r'Cumulative fraction above threshold', size=14)
         ax.set_yscale('log')
-        p.grid(b=True, which='major', linestyle='-')
-        p.grid(b=True, which='minor', linestyle='--')
+        p.tick_params(labelsize=12)
+        p.grid(b=True, which='major', color='lightgrey', linestyle='-')
+        p.grid(b=True, which='minor', color='lightgrey', linestyle='--')
+        p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/sky_failure_vs_drchi2.pdf')
         p.close()
 
