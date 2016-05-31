@@ -1,28 +1,39 @@
 from os.path import join, basename
 from os import environ
 from math import isnan
+import time
+from sys import stderr
 
 import numpy as n
+from scipy.integrate import trapz
 from astropy.io import fits
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as p
+from matplotlib.colors import LogNorm
 from glob import iglob
 from astropy.convolution import convolve, Box1DKernel
 from scipy.optimize import curve_fit
+import seaborn as sns
 
 from redmonster.sandbox import yanny as y
 from redmonster.datamgr import spec
 from redmonster.physics import zfinder
+from redmonster.datamgr.io import read_ndArch
+from redmonster.physics.misc import poly_array
 
 class VerifyRM:
     
-    def __init__(self,version='v5_8_0',
+    def __init__(self,version='v5_10_0',
                  plates=[3686,3687,3804,3805,3853,3855,3856,3860],
                  mjds={
                         3686:55268,3687:55269,3804:55267,3805:55269,3853:55268,
                         3855:55268,3856:55269,3860:55269
-                 }):
+                 },
+                 sns_pal='muted'):
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
         self.version = version
         self.plates = plates
         self.mjds = mjds
@@ -830,7 +841,7 @@ class VerifyRM:
         print avg
 
 
-    def sequels_logdv_vs_z_histos_all(self, nbins=12):
+    def logdv_vs_z_histos(self, nbins=12):
         # Make histograms of log10(dv) in redshift bins for
         # LOWZ and CMASS galaxies
         colors = [
@@ -997,6 +1008,7 @@ class VerifyRM:
                         zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
                     except:
                         zhist[i] = 0
+        
         p.plot(rbins,rhist,color='purple',label='r-band', drawstyle='steps-mid')
         p.plot(ibins,ihist,color='blue',label='i-band', drawstyle='steps-mid')
         p.plot(zbins,zhist,color='cyan',label='z-band', drawstyle='steps-mid')
@@ -1015,7 +1027,7 @@ class VerifyRM:
         p.clf()
 
 
-    def sequels_logdv_vs_sn_histos_all(self, nbins=25):
+    def logdv_vs_sn_histos(self, nbins=25):
         # Make histograms of log10(dv) in S/N bins in bands
         # r,i,z for SEQUELS LRG targets
         colors = [
@@ -1056,9 +1068,12 @@ class VerifyRM:
                 plate = self.rm_plates_summary[i]
                 mjd = self.rm_mjds_summary[i]
                 #print '%s-%s-%s' % (plate,fiber,mjd)
-                if (openplate != plate) and (openmjd != mjd):
-                    self.read_spZbest_all(plate,mjd)
-                    self.read_spPlate_all(plate,mjd)
+                if (openplate != plate) or (openmjd != mjd):
+                    #self.read_spZbest_all(plate,mjd)
+                    hduzbest = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                    self.sn_median = hduzbest[1].data.SN_MEDIAN[:,2:]
+                    #self.read_spPlate_all(plate,mjd)
+                    hduspplate = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
                     openplate = plate
                     openmjd = mjd
                 if (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
@@ -1193,8 +1208,11 @@ class VerifyRM:
                 mjd = self.rm_mjds_summary[i]
                 #print '%s-%s-%s' % (plate,fiber,mjd)
                 if (openplate != plate) and (openmjd != mjd):
-                    self.read_spZbest_all(plate,mjd)
-                    self.read_spPlate_all(plate,mjd)
+                    #self.read_spZbest_all(plate,mjd)
+                    #self.read_spPlate_all(plate,mjd)
+                    hduzbest = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                    self.sn_median = hduzbest[1].data.SN_MEDIAN[:,2:]
+                    hduspplate = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
                     openplate = plate
                     openmjd = mjd
                 if (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
@@ -1329,8 +1347,11 @@ class VerifyRM:
                 mjd = self.rm_mjds_summary[i]
                 #print '%s-%s-%s' % (plate,fiber,mjd)
                 if (openplate != plate) and (openmjd != mjd):
-                    self.read_spZbest_all(plate,mjd)
-                    self.read_spPlate_all(plate,mjd)
+                    #self.read_spZbest_all(plate,mjd)
+                    #self.read_spPlate_all(plate,mjd)
+                    hduzbest = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                    self.sn_median = hduzbest[1].data.SN_MEDIAN[:,2:]
+                    hduspplate = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
                     openplate = plate
                     openmjd = mjd
                 if (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
@@ -1628,8 +1649,11 @@ class VerifyRM:
             mjd = self.rm_mjds_summary[i]
             #print '%s-%s-%s' % (plate,mjd,fiber)
             if (openplate != plate) and (openmjd != mjd):
-                self.read_spZbest_all(plate,mjd)
-                self.read_spPlate_all(plate,mjd)
+                #self.read_spZbest_all(plate,mjd)
+                #self.read_spPlate_all(plate,mjd)
+                hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], 'test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                self.idl_rchi2diff = hduidl[1].data.RCHI2DIFF_NOQSO
+                self.idl_dof = hduidl[1].data.DOF
                 openplate = plate
                 openmjd = mjd
             #if (self.rm_rchi2diff[i] < drchi2max) and \
@@ -1830,27 +1854,29 @@ class VerifyRM:
                                      '%s' % self.version, '%s' % plate,
                                      'spPlate-%s-*.fits' % plate)
                     for file in iglob(globpath2):
-                        if len(basename(file)) == 23:
-                            mjd = basename(file)[13:18]
-                            hduplate = fits.open(file)
-                            hduidl=fits.open(join(environ['BOSS_SPECTRO_REDUX'],
-                                                  '%s' % self.version,
-                                                  '%s' % plate,
-                                                  '%s' % self.version,
-                                                  'spZbest-%s-%s.fits' %
-                                                  (plate,mjd)))
-                            hdurm = fits.open(
-                                    join(environ['REDMONSTER_SPECTRO_REDUX'],
-                                         '%s' % self.version, '%s' % plate,
-                                         '%s' % self.version,
-                                         'redmonster-%s-%s.fits' % (plate,mjd)))
-                            for i,zwarn in enumerate(hdurm[1].data.ZWARNING):
-                                if zwarn & 1 > 0:
-                                    total += 1.
-                                    if hduidl[1].data.RCHI2DIFF[i] > chi2max:
-                                        countidl += 1.
-                                    if hdurm[1].data.RCHI2DIFF[i] > chi2max:
-                                        countrm += 1.
+                        try:
+                            if len(basename(file)) == 23:
+                                mjd = basename(file)[13:18]
+                                hduplate = fits.open(file)
+                                hduidl=fits.open(join(environ['BOSS_SPECTRO_REDUX'],
+                                                      '%s' % self.version,
+                                                      '%s' % plate,
+                                                      '%s' % self.version,
+                                                      'spZbest-%s-%s.fits' %
+                                                      (plate,mjd)))
+                                hdurm = fits.open(
+                                        join(environ['REDMONSTER_SPECTRO_REDUX'],
+                                             '%s' % self.version, '%s' % plate,
+                                             '%s' % self.version,
+                                             'redmonster-%s-%s.fits' % (plate,mjd)))
+                                for i,zwarn in enumerate(hdurm[1].data.ZWARNING):
+                                    if zwarn & 1 > 0:
+                                        total += 1.
+                                        if hduidl[1].data.RCHI2DIFF[i] > chi2max:
+                                            countidl += 1.
+                                        if hdurm[1].data.RCHI2DIFF[i] > chi2max:
+                                            countrm += 1.
+                        except IOError: pass
             rm_ydata.append(countrm/total)
             idl_ydata.append(countidl/total)
 
@@ -2274,6 +2300,1498 @@ class VerifyRM:
 # (x.rm_type == 'ssp_galaxy_glob') & (x.boss_target1 & 2 == 2) )[0]+1
 
 # Plate 7338 has 6 MJDs, 7340 has 4
+
+
+
+
+# ------------------------------------------------------------------------------
+
+
+# Below here are re-writes of plotting functions using seaborn
+
+
+
+    def sequels_logdv_vs_z_histos_all_sns(self, nbins=12, sns_pal='deep'):
+    # Make histograms of log10(dv) in redshift bins for
+    # LOWZ and CMASS galaxies
+        colors = [
+              'tomato','sage','cornflowerblue','sandybrown',
+              'mediumpurple','grey'
+              ]
+        labels = ['0.1<z<0.2','0.2<z<0.3','0.3<z<0.4','0.4<z<0.5']
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+        f = p.figure()
+        '''
+            ax1 = f.add_subplot(1,2,1)
+            for j,zmin in enumerate(n.linspace(.1,.4,4)):
+            zmax = zmin + .1
+            errors = n.array([])
+            count = 0
+            for plate in self.plates:
+            self.read_redmonster(plate)
+            self.read_spPlate(plate)
+            self.read_spZbest(plate)
+            self.get_all_yanny(plate)
+            fibers = self.get_okay_lowz()
+            fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
+            count += len(fibers)
+            errors = n.append(errors, self.rm_zerr1[fibers])
+            errors = self.dz_to_dv(errors)
+            errors = n.log10(errors)
+            hist,binedges = n.histogram(errors, bins=nbins)
+            bins = n.zeros(nbins)
+            for i in xrange(nbins):
+            bins[i] = (binedges[i+1]+binedges[i])/2.
+            normhist = hist / float(count)
+            p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j],
+            label=labels[j])
+            p.xlabel(r'$\log_{10} \delta$v (km s$^{-1}$)', size=16)
+            p.ylabel(r'Fraction per bin in $\log_{10} \delta$v', size=16)
+            p.title('LOWZ Sample', size=18)
+            p.legend()
+            p.axis([.55,2,0,.4])
+            '''
+        ax2 = f.add_subplot(1,1,1)
+        labels = ['0.6<z<0.7','0.7<z<0.8','0.8<z<0.9','0.9<z<1.0']
+        nbins = 25
+        for j,zmin in enumerate(n.linspace(.6,.9,4)):
+            #import pdb; pdb.set_trace()
+            zmax = zmin + .1
+            errors = n.array([])
+            zs = n.array([])
+            count = 0
+            '''
+                for plate in self.plates:
+                self.read_redmonster(plate)
+                #self.read_spPlate(plate)
+                #self.read_spZbest(plate)
+                #self.get_all_yanny(plate)
+                fibers = self.get_okay_cmass()
+                fibers = self.redshift_bin_fibers(fibers, zmin, zmax)
+                count += len(fibers)
+                errors = n.append(errors,self.rm_zerr1[fibers])
+                '''
+            self.read_redmonster_summary_file()
+            for i,z in enumerate(self.rm_z1):
+                if (z >= zmin) & (z <= zmax):
+                    if (self.rm_type[i] == 'ssp_galaxy_glob') & \
+                        (self.rm_zwarning[i] == 0) & (self.rm_zerr1[i] > 0):
+                        count += 1
+                        errors = n.append(errors,self.rm_zerr1[i])
+                        zs = n.append(zs,z)
+            #errors.append(self.rm_zerr1[fibers].tolist())
+            errors = self.dz_to_dv(zs, errors)
+            print zmin, zmax, n.mean(errors), n.std(errors)
+            errors = n.log10(errors)
+            hist,binedges = n.histogram(errors, bins=nbins)
+            bins = n.zeros(nbins)
+            for i in xrange(nbins):
+                bins[i] = (binedges[i+1]+binedges[i])/2.
+            normhist = hist / float(count)
+            p.plot(bins, normhist, drawstyle='steps-mid', label=labels[j])
+        p.minorticks_on()
+        p.xlabel(r'$\log_{10} \delta v$ (km s$^{-1}$)', size=14)
+        p.ylabel(r'Fraction per bin in $\log_{10} \delta v$', size=14)
+        p.title('SEQUELS LRGs')
+        p.axis([.5,2.5,0,.25])
+        p.legend()
+        p.subplots_adjust(wspace = .35)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_z_histos.pdf')
+        p.clf()
+
+
+    def sequels_failure_vs_dchi2_sns(self, drchi2max=.02, npoints=150, sns_pal='muted', rm_line_x=0.005):
+    # Makes a plot of SEQUELS LRG failure rate as a function of
+    # dchi2 threshold for redmonster and idlspec1d
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+        rm_data = []
+        idl_data = []
+        diffs = n.linspace(0,drchi2max,npoints)
+        for i,diff in enumerate(diffs):
+            print '%s of %s' % (i+1,npoints)
+            rm_point, idl_point = self.dchi2_failure_diff_function(diff)
+            rm_data.append(rm_point)
+            idl_data.append(idl_point)
+        f = p.figure()
+        ax = f.add_subplot(111)
+        p.plot(diffs, rm_data, color=sns.color_palette("RdBu_r", 7)[-1], label='redmonster')
+        p.plot(diffs, idl_data, color=sns.color_palette("RdBu_r", 7)[0], label='spectro1d')
+        rmcoords01 = (0.01, rm_data[n.abs(n.array(diffs)-0.01).argmin()])
+        rmcoords005 = (0.005, rm_data[n.abs(n.array(diffs)-0.005).argmin()])
+        idlcoords01 = (0.01, idl_data[n.abs(n.array(diffs)-0.01).argmin()])
+        p.plot(n.linspace(0,0.01,1000),[idlcoords01[1]]*1000, color=sns.color_palette("RdBu_r", 7)[0], linestyle='--')
+        p.plot([0.01]*1000, n.linspace(0,idlcoords01[1],1000), color=sns.color_palette("RdBu_r", 7)[0], linestyle='--')
+        if rm_line_x == 0.01:
+            p.plot(n.linspace(0,0.01,1000), [rmcoords01[1]]*1000, color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
+            p.plot([0.01]*1000, n.linspace(0,rmcoords01[1],1000), color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
+        else:
+            p.plot(n.linspace(0,0.005,1000), [rmcoords005[1]]*1000, color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
+            p.plot([0.005]*1000, n.linspace(0,rmcoords005[1],1000), color=sns.color_palette("RdBu_r", 7)[-1], linestyle='--')
+        p.xlabel(r'$\Delta\chi_{r}^2$ threshold', size=14)
+        p.ylabel(r'Cumulative fraction below threshold', size=14)
+        #p.grid(b=True, which='major', color='black', linestyle='--')
+        p.legend(loc=2)
+        p.axis([0,.02,0,.7])
+        p.tick_params(labelsize=12)
+        p.grid(b=True, which='major', color='lightgrey', linestyle='-')
+        f.tight_layout()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_vs_failure.pdf')
+        p.clf()
+
+    def plate_splits_errors_sns(self, nbins=25, fit=True, normed=True, sns_pal='muted'):
+        # redshift pdf from splits of extra-deep plates
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+        '''
+        plates = [7834,7839,7848]
+        mjds = [56979,56900,56959]
+        self.z1 = []
+        self.z2 = []
+        self.zerr1 = []
+        self.zerr2 = []
+        for i,plate in enumerate(plates):
+            self.plate_splits_function(plate=plate, mjd=mjds[i],
+                                       nbins=nbins, fit=fit)
+        '''
+        c_kms = 299792.458
+        directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
+        hdu = fits.open(directory+'/spAll-v5_10_0-repeats_lrg.fits')
+        
+        thing_ids = []
+        object_ids1 = []
+        object_ids2 = []
+        object_ids = {}
+        
+        self.z1 = []
+        self.z2 = []
+        self.zerr1 = []
+        self.zerr2 = []
+        
+        for thing_id in hdu[1].data.THING_ID:
+            if thing_id not in thing_ids:
+                thing_ids.append(thing_id)
+                w1 = n.where(hdu[1].data.THING_ID == thing_id)[0][0]
+                w2 = n.where(hdu[1].data.THING_ID == thing_id)[0][1]
+                object_id1 = (hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)
+                object_ids1.append(object_id1)
+                object_id2 = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
+                object_ids2.append(object_id2)
+                object_ids[(hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)] = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
+        
+        
+        #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
+        ioerrors = 0
+        for i,object_id1 in enumerate(object_ids):
+            stderr.write('\r %s of %s ' % (i+1,len(object_ids)))
+            try:
+                object_id2 = object_ids[object_id1]
+                
+                hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
+                hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
+                fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1[2])[0][0]
+                fiberind2 = n.where(hdu2[1].data.FIBERID == object_id2[2])[0][0]
+                self.z1.append(hdu1[1].data.Z1[fiberind1])
+                self.z2.append(hdu2[1].data.Z1[fiberind2])
+                self.zerr1.append(hdu1[1].data.Z_ERR1[fiberind1])
+                self.zerr2.append(hdu2[1].data.Z_ERR2[fiberind2])
+                
+                #dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
+                #drchi2.append(n.min([rchi21, rchi22]))
+            except IndexError:
+                print "IndexError"
+            except IOError:
+                ioerrors += 1
+                print "IOError! %s %s" % (repr(object_id1), ioerrors)
+
+        
+        
+        self.z1 = n.array(self.z1)
+        self.z2 = n.array(self.z2)
+        self.zerr1 = n.array(self.zerr1)
+        self.zerr2 = n.array(self.zerr2)
+        z_diff = self.z2-self.z1
+        zerr_rms = n.sqrt( (self.zerr1**2 + self.zerr2**2) )
+        scaled_diff = z_diff / zerr_rms
+        while True:
+            if n.abs(scaled_diff[n.abs(scaled_diff).argmax()]) > 5:
+                scaled_diff = n.delete(scaled_diff, n.abs(scaled_diff).argmax())
+            else:
+                break
+        print n.max(n.abs(scaled_diff))
+        print scaled_diff.shape
+        hist,binedges = n.histogram(scaled_diff, bins = nbins)
+        if normed:
+            normhist = hist / float(self.z1.shape[0])
+        else:
+            normhist = hist
+        bins = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins[i] = (binedges[i+1]+binedges[i])/2.
+        p.plot(bins, normhist, drawstyle='steps-mid', color='black')
+
+        def fit_func(x, a, sigma, mu): # Gaussian function to fit to histogram
+            return a * n.exp( -((x-mu)**2)/(2.*sigma**2) )
+        
+        if fit:
+            popt, pcov = curve_fit(fit_func, bins, normhist)
+            xfit = n.linspace(-4,4,1000)
+            yfit = fit_func(xfit, popt[0], popt[1], popt[2])
+            p.plot(xfit, yfit, color='mediumpurple')
+            p.text(.78*(xfit[-1]-xfit[0])+xfit[0], .78*(1.1*max([max(yfit),max(normhist)])), r'$\sigma_{\mathrm{fit}}=$%.2f' % popt[1])
+            p.text(.78*(xfit[-1]-xfit[0])+xfit[0], .72*(1.1*max([max(yfit),max(normhist)])), r'$\mu_{\mathrm{fit}}=$%.2f' % popt[2])
+
+        p.xlabel(r'$(z_2-z_1)/ (\delta z_1^2+$ $\delta z_2^2)^{1/2}$', size=14)
+        p.ylabel('Fraction per bin', size=14)
+        p.tick_params(labelsize=12)
+        p.tight_layout()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/reobs_errors.pdf')
+        p.clf()
+
+
+    def logdrchi2_poly_histos_sns(self, nbins=50, sns_pal='muted'):
+        # Histograms of log10 delta rchi2 for 1,2,3,4 poly runs
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly2' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu3 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly3' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdulist = [hdu1, hdu2, hdu3, hdu4]
+        labels = ['1poly', '2poly', '3poly', '4poly']
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+        f = p.figure()
+        ax = f.add_subplot(111)
+        for j,hdu in enumerate(hdulist):
+            x = n.delete(hdu[1].data.RCHI2DIFF, n.where(hdu[1].data.RCHI2DIFF == 0)[0])
+            hist,binedges = n.histogram(n.log10(x), bins=nbins, normed=True)
+            bins = n.zeros(nbins)
+            for i in xrange(nbins):
+                bins[i] = (binedges[i+1]+binedges[i])/2.
+            p.plot(bins, hist, drawstyle='steps-mid', label=labels[j])
+        p.plot([n.log10(0.005)]*1000, n.linspace(0,1.2,1000),linestyle='--')
+        p.axis([-4,0,0,1.2])
+        p.legend()
+        p.xlabel(r'$\log_{10} \Delta \chi^2 / \mathrm{dof}$', size=14)
+        p.ylabel('Distribution', size=14)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_poly_histos.pdf')
+
+
+    def fiber_poly_differences(self, sns_pal = sns.color_palette("hls", 8)):
+        # Find fibers that are successful with 1 poly but not 4 and vice versa, then plot some examples of each
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        yes1no4 = []
+        no1yes4 = []
+        for i,zwarn1 in enumerate(hdu1[1].data.ZWARNING):
+            if not zwarn1 & 4:
+                if hdu4[1].data.ZWARNING[i] & 4 == 4:
+                    fiber = (hdu1[1].data.PLATE[i], hdu1[1].data.MJD[i], hdu1[1].data.FIBERID[i])
+                    yes1no4.append(fiber)
+                    print "1poly success, 4poly failure: plate %s mjd %s fiber %s" % fiber
+            else:
+                if not hdu4[1].data.ZWARNING[i]:
+                    fiber = (hdu1[1].data.PLATE[i], hdu1[1].data.MJD[i], hdu1[1].data.FIBERID[i])
+                    no1yes4.append(fiber)
+                    print "4poly success, 1poly failure: plate %s mjd %s fiber %s" % fiber
+        for i in xrange(20):
+            objid = yes1no4[i]
+            print 'yes1no4'
+            print 'plot %s: plate %s mjd %s fiber %s' % (i, objid[0], objid[1], objid[2])
+            hduidl = fits.open( join( environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % objid[0], 'spPlate-%s-%s.fits' % (objid[0],objid[1]) ) )
+            hdurm1 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % objid[0], self.version, 'redmonster-%s-%s.fits' % (objid[0],objid[1]) ) )
+            hdurm4 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % objid[0], self.version,'redmonster-%s-%s.fits'% (objid[0], objid[1]) ) )
+            print '1poly z = %s' % hdurm1[1].data.Z1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]]
+            print '1poly template = %s' % hdurm1[1].data.CLASS1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]]
+            print '1poly template amplitude = %s' % eval(hdurm1[1].data.THETA1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]])[0]
+            print '4poly z = %s' % hdurm4[1].data.Z1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
+            print '4poly template = %s' % hdurm4[1].data.CLASS1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
+            print '4poly template amplitude = %s' % eval(hdurm4[1].data.THETA1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])[0]
+            print ''
+            sns.set_style('white')
+            sns.set_palette(sns_pal)
+            sns.set_context('paper')
+            f = p.figure()
+            ax = f.add_subplot(211)
+            wave = 10**(hduidl[0].header['COEFF0'] + n.arange(hduidl[0].header['NAXIS1'])*hduidl[0].header['COEFF1'])
+            p.plot(wave, convolve(hduidl[0].data[objid[2]], Box1DKernel(5)), color='black', label='Data')
+            p.plot(wave, hdurm1[2].data[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]][0], color=sns_pal[0], label='1 polynomial model')
+            p.xlim(wave[0], wave[-1])
+            p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
+                   n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
+            p.legend()
+            ax = f.add_subplot(212)
+            p.plot(wave, convolve(hduidl[0].data[objid[2]], Box1DKernel(5)), color='black', label='Data')
+            p.plot(wave, hdurm4[2].data[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]][0], color=sns_pal[0], label='4 polynomial model')
+            p.xlim(wave[0], wave[-1])
+            p.xlim(wave[0], wave[-1])
+            p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
+                   n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
+            p.legend(loc=4)
+            p.xlabel(r'Observed wavelength ($\AA$)')
+            p.ylabel('$f_\lambda$ $10^{-17}$ erg cm$^{-2}$ s$^{-1}$ $\AA^{-1}$')
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/yes1no4_%s.pdf' % i)
+            p.close()
+
+        for i in xrange(20):
+            objid = no1yes4[i]
+            print 'no1yes4'
+            print 'plot %s: plate %s mjd %s fiber %s' % (i, objid[0], objid[1], objid[2])
+            hduidl = fits.open( join( environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % objid[0], 'spPlate-%s-%s.fits' % (objid[0],objid[1]) ) )
+            hdurm1 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % objid[0], self.version, 'redmonster-%s-%s.fits' % (objid[0],objid[1]) ) )
+            hdurm4 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % objid[0], self.version,'redmonster-%s-%s.fits'% (objid[0], objid[1]) ) )
+            print '1poly z = %s' % hdurm1[1].data.Z1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]]
+            print '1poly template = %s' % hdurm1[1].data.CLASS1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]]
+            print '1poly template amplitude = %s' % eval(hdurm1[1].data.THETA1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]])[0]
+            print '4poly z = %s' % hdurm4[1].data.Z1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
+            print '4poly template = %s' % hdurm4[1].data.CLASS1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
+            print '4poly template amplitude = %s' % eval(hdurm4[1].data.THETA1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])[0]
+            print ''
+            sns.set_style('white')
+            sns.set_palette(sns_pal)
+            sns.set_context('paper')
+            f = p.figure()
+            ax = f.add_subplot(211)
+            wave = 10**(hduidl[0].header['COEFF0'] + n.arange(hduidl[0].header['NAXIS1'])*hduidl[0].header['COEFF1'])
+            p.plot(wave, convolve(hduidl[0].data[objid[2]], Box1DKernel(5)), color='black', label='Data')
+            p.plot(wave, hdurm1[2].data[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]][0], color=sns_pal[0], label='1 polynomial model')
+            p.xlim(wave[0], wave[-1])
+            p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
+                   n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
+            p.legend()
+            ax = f.add_subplot(212)
+            p.plot(wave, convolve(hduidl[0].data[objid[2]], Box1DKernel(5)), color='black', label='Data')
+            p.plot(wave, hdurm4[2].data[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]][0], color=sns_pal[0], label='4 polynomial model')
+            p.xlim(wave[0], wave[-1])
+            p.xlim(wave[0], wave[-1])
+            p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
+                   n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
+            p.legend(loc=4)
+            p.xlabel(r'Observed wavelength ($\AA$)')
+            p.ylabel('$f_\lambda$ $10^{-17}$ erg cm$^{-2}$ s$^{-1}$ $\AA^{-1}$')
+            p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/no1yes4_%s.pdf' % i)
+            p.close()
+
+
+    def chi2_compare_poly_sns(self, sns_pal='deep'):
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        chi201 = n.array([])
+        chi201_yes1no4 = n.array([])
+        chi201_no1yes4 = n.array([])
+        chi204 = n.array([])
+        chi204_yes1no4 = n.array([])
+        chi204_no1yes4 = n.array([])
+        chi2null1 = n.array([])
+        chi2null1_yes1no4 = n.array([])
+        chi2null1_no1yes4 = n.array([])
+        chi2null4 = n.array([])
+        chi2null4_yes1no4 = n.array([])
+        chi2null4_no1yes4 = n.array([])
+        for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
+            if not zwarn & 4:
+                if not hdu4[1].data.ZWARNING[i]:
+                    chi201 = n.append(chi201, hdu1[1].data.SN2DATA[i])
+                    chi204 = n.append(chi204, hdu4[1].data.SN2DATA[i])
+                    chi2null1 = n.append(chi2null1, hdu1[1].data.CHI2NULL[i])
+                    chi2null4 = n.append(chi2null4, hdu4[1].data.CHI2NULL[i])
+                else:
+                    chi201_yes1no4 = n.append(chi201_yes1no4, hdu1[1].data.SN2DATA[i])
+                    chi204_yes1no4 = n.append(chi204_yes1no4, hdu4[1].data.SN2DATA[i])
+                    chi2null1_yes1no4 = n.append(chi2null1_yes1no4, hdu1[1].data.CHI2NULL[i])
+                    chi2null4_yes1no4 = n.append(chi2null4_yes1no4, hdu4[1].data.CHI2NULL[i])
+            else:
+                if not hdu4[1].data.ZWARNING[i]:
+                    chi201_no1yes4 = n.append(chi201_no1yes4, hdu1[1].data.SN2DATA[i])
+                    chi204_no1yes4 = n.append(chi204_no1yes4, hdu4[1].data.SN2DATA[i])
+                    chi2null1_no1yes4 = n.append(chi2null1_no1yes4, hdu1[1].data.CHI2NULL[i])
+                    chi2null4_no1yes4 = n.append(chi2null4_no1yes4, hdu4[1].data.CHI2NULL[i])
+        
+        f = p.figure()
+        ax = f.add_subplot(211)
+        p.plot(n.linspace(0,50000,1000),n.linspace(0,50000,1000), color='black', linestyle='--')
+        p.scatter( (chi201-chi2null1), (chi204-chi2null4), s=1, color='black', label='Both', alpha=0.6)
+        p.scatter( (chi201_yes1no4-chi2null1_yes1no4), (chi204_yes1no4-chi2null4_yes1no4), s=1, color='tomato', label='1 poly')
+        p.scatter( (chi201_no1yes4-chi2null1_no1yes4), (chi204_no1yes4-chi2null4_no1yes4), s=1, color='darkturquoise',label='4 poly')
+        p.axis([0,50000,0,50000])
+        p.legend(loc=4)
+        p.xlabel(r'$\chi_{0}^2-\chi_{\mathrm{null},1}^2$')
+        p.ylabel(r'$\chi_{0}^2-\chi_{\mathrm{null},4}^2$')
+
+        ax = f.add_subplot(212)
+        p.plot(n.linspace(0,1,1000),n.linspace(0,1,1000), color='black', linestyle='--')
+        p.scatter( (chi201-chi2null1)/chi201, (chi204-chi2null4)/chi204, s=1, color='black', label='Both', alpha=0.6)
+        p.scatter( (chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4, s=1, color='tomato', label='1 poly')
+        p.scatter( (chi201_no1yes4-chi2null1_no1yes4)/chi201_no1yes4, (chi204_no1yes4-chi2null4_no1yes4)/chi204_no1yes4, s=1, color='darkturquoise',label='4 poly')
+        p.axis([0,1,0,1])
+        p.legend(loc=4)
+        p.xlabel(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$')
+        p.ylabel(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
+
+        p.subplots_adjust(hspace = .4)
+        p.gcf().subplots_adjust(bottom=.15)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_compare.pdf')
+        p.close()
+
+        # SNS jointplot test
+        '''
+        f = p.figure()
+        ax = f.add_subplot(111)
+        sns.jointplot((chi201-chi2null1)/chi201, (chi204-chi2null4)/chi204, kind='reg')
+        sns.jointplot((chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4, kind='reg')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot.pdf')
+        '''
+        sns.set()
+        sns.set_style('whitegrid')
+
+        f = p.figure()
+        ax = f.add_subplot(111)
+        #g = sns.jointplot((chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4, kind="kde", color="k")
+        g = sns.JointGrid((chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4, xlim=(0,1), ylim=(0,1))
+        g.plot_joint(sns.kdeplot, shade=True, cmap="Greys", n_levels=7)
+        g.plot_joint(p.scatter, color='#e74c3c', s=1.5)
+        g.plot_marginals(sns.kdeplot, color="black", shade=True)
+        g.ax_joint.collections[0].set_alpha(0)
+        g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
+        p.gcf().subplots_adjust(bottom=.15)
+        p.gcf().subplots_adjust(left=.15)
+        g.fig.suptitle('1 success, 4 failure')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot1.pdf')
+        p.close()
+        
+        f = p.figure()
+        ax = f.add_subplot(111)
+        g = sns.JointGrid((chi201_no1yes4-chi2null1_no1yes4)/chi201_no1yes4, (chi204_no1yes4-chi2null4_no1yes4)/chi204_no1yes4, xlim=(0,1), ylim=(0,1))
+        g.plot_joint(sns.kdeplot, shade=True, cmap="Greys", n_levels=10)
+        g.plot_joint(p.scatter, color='#e74c3c', s=1.5)
+        g.plot_marginals(sns.kdeplot, color="black", shade=True)
+        g.ax_joint.collections[0].set_alpha(0)
+        g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$')
+        p.gcf().subplots_adjust(bottom=.15)
+        p.gcf().subplots_adjust(left=.15)
+        g.fig.suptitle('1 failure, 4 success')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot2.pdf')
+        p.close()
+        
+
+        # Fit power law to data points and plot on top as well
+        def fit_func(x, a, k, b):
+            return a*x**k + b
+        popt, pcov = curve_fit(fit_func, (chi201-chi2null1)/chi201, (chi204-chi2null4)/chi204)
+        print 'power law parameters: a=%s, k=%s, b=%s' % (popt[0], popt[1], popt[2])
+
+        f = p.figure()
+        ax = f.add_subplot(111)
+        g = sns.JointGrid((chi201-chi2null1)/chi201, (chi204-chi2null4)/chi204, xlim=(0,1), ylim=(0,1))
+        g.plot_joint(sns.kdeplot, shade=False, cmap="Purples_d", n_levels=7)
+        g.plot_joint(p.scatter, color='black', s=1, alpha=.3)
+        g.plot_marginals(sns.kdeplot, color=sns.color_palette('Purples_d')[2], shade=True)
+        #g.ax_joint.plot(n.linspace(0,1,1000), fit_func(n.linspace(0,1,1000),popt[0], popt[1], popt[2]), linewidth=1, color='k')
+        g.ax_joint.plot(n.linspace(0,1,1000), n.linspace(0,1,1000), ':k')
+        g.ax_joint.collections[0].set_alpha(0)
+        g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$', size=14)
+        p.gcf().subplots_adjust(bottom=.15)
+        p.gcf().subplots_adjust(left=.15)
+        #g.fig.suptitle('1 failure, 4 success')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot3.pdf')
+        p.close()
+        print 'median x: %s' % (n.median((chi201-chi2null1)/chi201))
+        print 'median y: %s' % (n.median((chi204-chi2null4)/chi204))
+
+        # compute KDE of the x, y data points
+        from scipy.stats.kde import gaussian_kde
+        kde_x = gaussian_kde((chi201-chi2null1)/chi201)
+        kde_y = gaussian_kde((chi204-chi2null4)/chi204)
+        
+        # Fit a gaussian to each of the KDEs
+        '''
+        def fit_func(x,a,sigma,mu):
+            return a * n.exp( -((x-mu)**2)/(2*sigma**2) )
+        '''
+        import scipy.special as sse
+        def fit_func(x, l, s, m):
+            return 0.5*l*n.exp(0.5*l*(2*m+l*s*s-2*x))*sse.erfc((m+l*s*s-x)/(n.sqrt(2)*s))
+
+        poptx, pcov = curve_fit(fit_func, n.linspace(0,1,100), kde_x(n.linspace(0,1,100)), p0=(2,.5,.1))
+        print kde_y(n.linspace(0,1,100))
+        popty, pcov = curve_fit(fit_func, n.linspace(0,1,1000), kde_y(n.linspace(0,1,1000)))
+        grid = n.zeros((1000,1000))
+        kdex = kde_x(n.linspace(0,1,1000))
+        kdey = kde_y(n.linspace(0,1,1000))
+        for i in xrange(1000):
+            grid[i] = kdex * kdey[i]
+        maxcoords = n.unravel_index(grid.argmax(), (1000,1000))
+        print maxcoords
+        print n.linspace(0,1,1000)[maxcoords[0]], n.linspace(0,1,1000)[maxcoords[1]]
+
+        #plot gaussian fit over histogram of samples from kde, just to check quality of fit
+        sns.set_style('white')
+        f = p.figure()
+        #ax = f.add_subplot(111)
+        #p.plot(n.linspace(0,1,1000), kde_x(n.linspace(0,1,1000)), 'r')
+        #p.plot(n.linspace(0,1,1000), fit_func(n.linspace(0,1,1000), poptx[0], poptx[1], poptx[2]), 'k')
+        #p.hist((chi201-chi2null1)/chi201, normed=1, alpha=.3, bins=25)
+        ax = f.add_subplot(111)
+        p.plot(n.linspace(0,1,100), kde_y(n.linspace(0,1,100)), 'r')
+        p.plot(n.linspace(0,1,1000), fit_func(n.linspace(0,1,1000), popty[0], popty[1], popty[2]), 'k')
+        p.hist((chi204-chi2null4)/chi204, normed=1, alpha=.3, bins=20)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/kde_hist.png')
+        p.close()
+
+        f = p.figure()
+        ax = f.add_subplot(111)
+        g = sns.JointGrid((chi201_no1yes4-chi2null1_no1yes4)/chi201_no1yes4, (chi204_no1yes4-chi2null4_no1yes4)/chi204_no1yes4, xlim=(0,1), ylim=(0,1))
+        h = sns.JointGrid((chi201_yes1no4-chi2null1_yes1no4)/chi201_yes1no4, (chi204_yes1no4-chi2null4_yes1no4)/chi204_yes1no4, xlim=(0,1), ylim=(0,1))
+        g.plot_joint(sns.kdeplot, shade=True, cmap='Blues')
+        h.plot_joint(sns.kdeplot, shade=True, cmap='Greens')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/test.pdf')
+        p.close()
+
+
+    def polynomial_and_template_contribution_sns(self, sns_pal='muted'):
+        sns.set_style('whitegrid')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        intmodel1 = [[],[]]
+        intpoly1 = [[],[]]
+        inttemp1 = [[],[]]
+        intmodel4 = [[],[]]
+        intpoly4 = [[],[]]
+        inttemp4 = [[],[]]
+        for path in iglob(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, '*')):
+             if len(basename(path)) == 4:
+                 plate = basename(path)
+                 print plate
+                 for filepath in iglob(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % plate,
+                                            self.version, '*')):
+                     if len(basename(filepath)) == 26:
+                         hduplate = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate,
+                                                   'spPlate-%s-%s.fits' % (plate, basename(filepath)[16:21])))
+                         hdu1 = fits.open(filepath)
+                         hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version,
+                                               '%s' % plate, self.version, basename(filepath)))
+                         wave = 10**(hduplate[0].header['COEFF0'] + n.arange(hduplate[0].header['NAXIS1']) * 
+                                     hduplate[0].header['COEFF1'])
+                         for i in xrange(hdu1[2].data.shape[0]):
+                             if not hdu1[1].data.ZWARNING[i] & 4:
+                                 intmodel1[0].append( trapz(hdu1[2].data[i,0], wave) )
+                                 temps = read_ndArch(join(environ['REDMONSTER_TEMPLATES_DIR'],
+                                                          hdu1[1].data.FNAME1[i]))[0]
+                                 this_temp = temps[eval(hdu1[1].data.MINVECTOR1[i])[:-1]][eval(hdu1[1].data.MINVECTOR1[i])[-1]:eval(hdu1[1].data.MINVECTOR1[i])[-1] + hduplate[0].header['NAXIS1']]
+                                 inttemp1[0].append( trapz(this_temp * eval(hdu1[1].data.THETA1[i])[0],wave) )
+                                 intpoly1[0].append( trapz(poly_array(1, hduplate[0].header['NAXIS1'])[0] *
+                                                        eval(hdu1[1].data.THETA1[i])[1], wave) )
+                             else:
+                                 intmodel1[1].append( trapz(hdu1[2].data[i,0], wave) )
+                                 temps = read_ndArch(join(environ['REDMONSTER_TEMPLATES_DIR'],
+                                                          hdu1[1].data.FNAME1[i]))[0]
+                                 this_temp = temps[eval(hdu1[1].data.MINVECTOR1[i])[:-1]][eval(hdu1[1].data.MINVECTOR1[i])[-1]:eval(hdu1[1].data.MINVECTOR1[i])[-1] + hduplate[0].header['NAXIS1']]
+                                 inttemp1[1].append( trapz(this_temp * eval(hdu1[1].data.THETA1[i])[0],wave) )
+                                 intpoly1[1].append( trapz(poly_array(1, hduplate[0].header['NAXIS1'])[0] *
+                                                        eval(hdu1[1].data.THETA1[i])[1], wave) )
+                             if not hdu4[1].data.ZWARNING[i] & 4:
+                                 intmodel4[0].append( trapz(hdu4[2].data[i,0],wave) )
+                                 temps = read_ndArch(join(environ['REDMONSTER_TEMPLATES_DIR'],
+                                                          hdu4[1].data.FNAME1[i]))[0]
+                                 this_temp = temps[eval(hdu4[1].data.MINVECTOR1[i])[:-1]][eval(hdu4[1].data.MINVECTOR1[i])[-1]:eval(hdu4[1].data.MINVECTOR1[i])[-1] + hduplate[0].header['NAXIS1']]
+                                 inttemp4[0].append( trapz(this_temp * eval(hdu4[1].data.THETA1[i])[0],wave) )
+                                 pmat = n.transpose(poly_array(4, hduplate[0].header['NAXIS1']))
+                                 intpoly4[0].append( trapz(n.dot(pmat,eval(hdu4[1].data.THETA1[i])[1:]),wave) )
+                             else:
+                                 intmodel4[1].append( trapz(hdu4[2].data[i,0],wave) )
+                                 temps = read_ndArch(join(environ['REDMONSTER_TEMPLATES_DIR'],
+                                                          hdu4[1].data.FNAME1[i]))[0]
+                                 this_temp = temps[eval(hdu4[1].data.MINVECTOR1[i])[:-1]][eval(hdu4[1].data.MINVECTOR1[i])[-1]:eval(hdu4[1].data.MINVECTOR1[i])[-1] + hduplate[0].header['NAXIS1']]
+                                 inttemp4[1].append( trapz(this_temp * eval(hdu4[1].data.THETA1[i])[0],wave) )
+                                 pmat = n.transpose(poly_array(4, hduplate[0].header['NAXIS1']))
+                                 intpoly4[1].append( trapz(n.dot(pmat,eval(hdu4[1].data.THETA1[i])[1:]),wave) )
+        
+        import pdb; pdb.set_trace()
+        f = p.figure()
+        ax = f.add_subplot(111)
+        plt.scatter(n.array(inttemp1[0])/n.array(intmodel1[0]),n.array(intpoly1[0])/n.array(intmodel1[0]),color='black',s=1,alpha=.5,label='ZWARNING = 0')
+        plt.scatter(n.array(inttemp1[1])/n.array(intmodel1[1]), n.array(intpoly1[1])/n.array(intmodel1[1]), color='red', s=1, alpha=.5, label='ZWARNING > 0')
+        plt.axis([0,2.5,-3,1])
+        plt.xlabel(r'$\frac{\int_{\lambda}^{} \theta_{\mathrm{t}} \, \mathrm{d}\lambda}{\int_{\lambda}^{} \theta \, \mathrm{d}\lambda}$')
+        plt.ylabel(r'$\frac{\int_{\lambda}^{} \theta_{\mathrm{p}} \, \mathrm{d}\lambda}{\int_{\lambda}^{} \theta \, \mathrm{d}\lambda}$')
+        plt.title('Constant polynomial')
+        plt.gcf().subplots_adjust(bottom=.2)
+        plt.gcf().subplots_adjust(left=.15)
+        plt.legend(loc=3)
+        plt.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/poly1_contributions.pdf')
+        plt.close()
+
+        f = p.figure()
+        ax = f.add_subplot(111)
+        plt.scatter(n.array(inttemp4[0])/n.array(intmodel4[0]), n.array(intpoly4[0])/n.array(intmodel4[0]), color='black', s=1, alpha=.5, label='ZWARNING = 0')
+        plt.scatter(n.array(inttemp4[1])/n.array(intmodel4[1]), n.array(intpoly4[1])/n.array(intmodel4[1]), color='red', s=1, alpha=.5, label='ZWARNING > 0')
+        plt.axis([0,2.5,-2,1])
+        plt.xlabel(r'$\frac{\int_{\lambda}^{} \theta_{\mathrm{t}} \, \mathrm{d}\lambda}{\int_{\lambda}^{} \theta \, \mathrm{d}\lambda}$')
+        plt.ylabel(r'$\frac{\int_{\lambda}^{} \theta_{\mathrm{p}} \, \mathrm{d}\lambda}{\int_{\lambda}^{} \theta \, \mathrm{d}\lambda}$')
+        plt.title('Cubic polynomial')
+        plt.gcf().subplots_adjust(bottom=.2)
+        plt.gcf().subplots_adjust(left=.15)
+        plt.legend(loc=3)
+        plt.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/poly4_contributions.pdf')
+        plt.close()
+
+
+    def narrow_band_chi2_sns(self, waverange=[3700,4100], sns_pal='muted'):
+        sns.set_style('whitegrid')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        rchi21 = []
+        rchi24 = []
+        rchi21_yes1no4 = []
+        rchi24_yes1no4 = []
+        rchi21_no1yes4 = []
+        rchi24_no1yes4 = []
+        
+        drchi21 = []
+        drchi24 = []
+        drchi21_yes1no4 = []
+        drchi24_yes1no4 = []
+        drchi21_no1yes4 = []
+        drchi24_no1yes4 = []
+        
+        plate = None
+        mjd = None
+        fiber = None
+        
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        plotted = False
+        nfibers = hdu1[1].data.ZWARNING.shape[0]
+        
+        for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
+            print 'Object %s of %s' % (i+1,nfibers)
+            if not (zwarn & 4 and hdu4[1].data.ZWARNING[i] & 4): # only bother with this fiber if at least one has run has !(zwarn & 4)
+                if plate != hdu1[1].data.PLATE[i] or mjd != hdu1[1].data.MJD[i]:
+                    plate = hdu1[1].data.PLATE[i]
+                    mjd = hdu1[1].data.MJD[i]
+                    hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd)))
+                    wavearr = 10**(hduidl[0].header['COEFF0'] + n.arange(hduidl[0].header['NAXIS1'])*hduidl[0].header['COEFF1'])
+                    platehdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
+                    platehdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
+                fiber = hdu1[1].data.FIBERID[i]
+                if not zwarn & 4:
+                    this_wave = wavearr / (1 + hdu1[1].data.Z[i])
+                else:
+                    this_wave = wavearr / (1 + hdu4[1].data.Z[i])
+                pix_low = n.abs(this_wave - waverange[0]).argmin()
+                pix_high = n.abs(this_wave - waverange[1]).argmin()
+                data_slice = hduidl[0].data[fiber][pix_low:pix_high]
+                ivar_slice = hduidl[1].data[fiber][pix_low:pix_high]
+                model1_slice = platehdu1[2].data[n.where(platehdu1[1].data.FIBERID == fiber)[0][0],0][pix_low:pix_high]
+                model4_slice = platehdu4[2].data[n.where(platehdu4[1].data.FIBERID == fiber)[0][0],0][pix_low:pix_high]
+                # Repeat for second best model for delta chi2 plot
+                this_wave1 = wavearr / (1 + platehdu1[1].data.Z2[n.where(platehdu1[1].data.FIBERID == fiber)[0][0]])
+                this_wave4 = wavearr / (1 + platehdu4[1].data.Z2[n.where(platehdu4[1].data.FIBERID == fiber)[0][0]])
+                pix_low1 = n.abs(this_wave1 - waverange[0]).argmin()
+                pix_high1 = n.abs(this_wave1 - waverange[1]).argmin()
+                pix_low4 = n.abs(this_wave4 - waverange[0]).argmin()
+                pix_high4 = n.abs(this_wave4 - waverange[1]).argmin()
+                data_slice1 = hduidl[0].data[fiber][pix_low1:pix_high1]
+                ivar_slice1 = hduidl[1].data[fiber][pix_low1:pix_high1]
+                data_slice4 = hduidl[0].data[fiber][pix_low4:pix_high4]
+                ivar_slice4 = hduidl[1].data[fiber][pix_low4:pix_high4]
+                model1_slice2 = platehdu1[2].data[n.where(platehdu1[1].data.FIBERID == fiber)[0][0],1][pix_low1:pix_high1]
+                model4_slice2 = platehdu4[2].data[n.where(platehdu4[1].data.FIBERID == fiber)[0][0],1][pix_low4:pix_high4]
+                if not zwarn & 4:
+                    if not hdu4[1].data.ZWARNING[i] & 4:
+                        rchi21.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
+                        rchi24.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
+                    
+                        drchi21.append(n.sum(((data_slice1 - model1_slice2)**2)*ivar_slice1)/data_slice1.shape[0] - rchi21[-1])
+                        drchi24.append(n.sum(((data_slice4 - model4_slice2)**2)*ivar_slice4)/data_slice4.shape[0] - rchi24[-1])
+                    else:
+                        rchi21_yes1no4.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
+                        rchi24_yes1no4.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
+                        
+                        drchi21_yes1no4.append(n.sum(((data_slice1 - model1_slice2)**2)*ivar_slice1)/data_slice1.shape[0] - rchi21_yes1no4[-1])
+                        drchi24_yes1no4.append(n.sum(((data_slice4 - model4_slice2)**2)*ivar_slice4)/data_slice4.shape[0] - rchi24_yes1no4[-1])
+                        if not plotted:
+                            if n.random.uniform() < .01:
+                                f = p.figure()
+                                ax = f.add_subplot(211)
+                                p.plot(this_wave[pix_low:pix_high], data_slice, color='black')
+                                p.plot(this_wave[pix_low:pix_high], model1_slice, color='cyan')
+                                p.title('%s' % (n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0]))
+                                ax = f.add_subplot(212)
+                                p.plot(this_wave[pix_low:pix_high], data_slice, color='black')
+                                p.plot(this_wave[pix_low:pix_high], model4_slice, color='cyan')
+                                p.title('%s' % (n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0]))
+                                p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_test.pdf')
+                                p.close()
+                                print 'Plotted!'
+                                time.sleep(2)
+                                plotted = True
+                else:
+                    rchi21_no1yes4.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
+                    rchi24_no1yes4.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
+
+                    drchi21_no1yes4.append(n.sum(((data_slice1 - model1_slice2)**2)*ivar_slice1)/data_slice1.shape[0] - rchi21_no1yes4[-1])
+                    drchi24_no1yes4.append(n.sum(((data_slice4 - model4_slice2)**2)*ivar_slice4)/data_slice4.shape[0] - rchi24_no1yes4[-1])
+        f = p.figure()
+        ax = f.add_subplot(111)
+        p.plot(n.linspace(0.4,1.6,1000), n.linspace(0.4,1.6,1000), '--', color='black')
+        p.scatter(rchi21, rchi24, s=1, color='black', label='Both', alpha=0.6)
+        p.scatter(rchi21_yes1no4, rchi24_yes1no4, s=1, color='tomato', label='1 poly')
+        p.scatter(rchi21_no1yes4, rchi24_no1yes4, s=1, color='darkturquoise', label='4 poly')
+        p.axis([0.4,1.6,0.4,1.6])
+        p.legend(loc=2)
+        p.xlabel(r'$\chi_1^2 / \mathrm{dof}$')
+        p.ylabel(r'$\chi_4^2 / \mathrm{dof}$')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_band_chi2.pdf')
+        p.close()
+        
+        f = p.figure()
+        ax = f.add_subplot(111)
+        p.plot(n.linspace(0.4,1.6,1000), n.linspace(0.4,1.6,1000), '--', color='black')
+        p.scatter(rchi21_yes1no4, rchi24_yes1no4, s=1, color='tomato', label='1 poly')
+        p.scatter(rchi21_no1yes4, rchi24_no1yes4, s=1, color='darkturquoise', label='4 poly')
+        p.axis([0.4,1.6,0.4,1.6])
+        p.legend(loc=2)
+        p.xlabel(r'$\chi_1^2 / \mathrm{dof}$')
+        p.ylabel(r'$\chi_4^2 / \mathrm{dof}$')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_band_chi2_only_failures.pdf')
+        p.close()
+
+        f = p.figure()
+        ax = f.add_subplot(111)
+        p.plot(n.linspace(-1,2,1000), n.linspace(-1,2,1000), '--', color='black')
+        p.plot(n.linspace(-1,2,1000), [0]*1000, '--', color='black')
+        p.plot([0]*1000, n.linspace(-1,2,1000), '--', color='black')
+        p.scatter(drchi21, drchi24, s=1, color='black', label='Both', alpha=0.6)
+        p.scatter(drchi21_yes1no4, drchi24_yes1no4, s=1, color='tomato', label='1 poly')
+        p.scatter(drchi21_no1yes4, drchi24_no1yes4, s=1, color='darkturquoise', label='4 poly')
+        p.axis([-1,2,-1,2])
+        p.legend(loc=2)
+        p.xlabel(r'$\Delta\chi_1^2 / \mathrm{dof}$')
+        p.ylabel(r'$\Delta\chi_4^2 / \mathrm{dof}$')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_band_dchi2.pdf')
+
+        f = p.figure()
+        ax = f.add_subplot(111)
+        p.plot(n.linspace(-0.5,1,1000), n.linspace(-0.5,1,1000), '--', color='black')
+        p.plot(n.linspace(-0.5,1,1000), [0]*1000,'--', color='black')
+        p.plot([0]*1000, n.linspace(-0.5,1,1000),'--', color='black')
+        p.scatter(drchi21_yes1no4, drchi24_yes1no4, s=1, color='tomato', label='1 poly')
+        p.scatter(drchi21_no1yes4, drchi24_no1yes4, s=1, color='darkturquoise', label='4 poly')
+        p.axis([-0.5,1,-0.5,1])
+        p.legend(loc=2)
+        p.xlabel(r'$\Delta\chi_1^2 / \mathrm{dof}$')
+        p.ylabel(r'$\Delta\chi_4^2 / \mathrm{dof}$')
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_band_dchi2_only_failures.pdf')
+
+
+    def poly_signal_to_noise_histos_sns(self, sns_pal='muted'):
+        sns.set_style('whitegrid')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        yes1no4_r = []
+        no1yes4_r = []
+        yes1no4_i = []
+        no1yes4_i = []
+        yes1no4_z = []
+        no1yes4_z = []
+
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+
+        plate = None
+        mjd = None
+        nfibers = hdu1[1].data.ZWARNING.shape[0]
+        
+        for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
+            print 'Object %s of %s' % (i+1,nfibers)
+            if not (zwarn & 4 and hdu4[1].data.ZWARNING[i] & 4): # only bother with this fiber if at least one has run has !(zwarn & 4)
+                if plate != hdu1[1].data.PLATE[i] or mjd != hdu1[1].data.MJD[i]:
+                    plate = hdu1[1].data.PLATE[i]
+                    mjd = hdu1[1].data.MJD[i]
+                    hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, self.version, 'spZbest-%s-%s.fits' % (plate,mjd)))
+                    sn_median = hduidl[1].data.SN_MEDIAN[:,2:]
+
+                fiber = hdu1[1].data.FIBERID[i]
+                if not zwarn & 4:
+                    if hdu4[1].data.ZWARNING[i] & 4:
+                        if sn_median[fiber][0] > -1 and sn_median[fiber][0] < 4:
+                            yes1no4_r.append(sn_median[fiber][0])
+                        if sn_median[fiber][1] > 0 and sn_median[fiber][1] < 6:
+                            yes1no4_i.append(sn_median[fiber][1])
+                        if sn_median[fiber][2] > 0 and sn_median[fiber][2] < 6:
+                            yes1no4_z.append(sn_median[fiber][2])
+                else:
+                    if not hdu4[1].data.ZWARNING[i] & 4:
+                        if sn_median[fiber][0] > -1 and sn_median[fiber][0] < 4:
+                            no1yes4_r.append(sn_median[fiber][0])
+                        if sn_median[fiber][1] > 0 and sn_median[fiber][1] < 6:
+                            no1yes4_i.append(sn_median[fiber][1])
+                        if sn_median[fiber][2] > 0 and sn_median[fiber][2] < 6:
+                            no1yes4_z.append(sn_median[fiber][2])
+
+        f = p.figure()
+        ax = f.add_subplot(311)
+        nbins = 25
+        hist1, binedges1 = n.histogram(yes1no4_r, bins=nbins, normed=True)
+        hist2, binedges2 = n.histogram(no1yes4_r, bins=nbins, normed=True)
+        bins1 = n.zeros(nbins)
+        bins2 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins1[i] = (binedges1[i+1]+binedges1[i])/2.
+            bins2[i] = (binedges2[i+1]+binedges2[i])/2.
+        p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
+        p.plot(bins2, hist2, drawstyle='steps-mid', label='4 poly')
+        lowerx = n.floor( n.min([n.min(bins1), n.min(bins2)]) )
+        upperx = n.ceil( n.max([n.max(bins1), n.max(bins2)]) )
+        lowery = 0
+        uppery = n.around(n.max([n.max(hist1), n.max(hist2)])*1.15,1)
+        p.axis([lowerx, upperx, lowery, uppery])
+        p.text( (upperx-lowerx)*.03 + lowerx, uppery*.8, '$r$-band', size=8)
+        p.legend()
+        ax = f.add_subplot(312)
+        hist1, binedges1 = n.histogram(yes1no4_i, bins=nbins, normed=True)
+        hist2, binedges2 = n.histogram(no1yes4_i, bins=nbins, normed=True)
+        bins1 = n.zeros(nbins)
+        bins2 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins1[i] = (binedges1[i+1]+binedges1[i])/2.
+            bins2[i] = (binedges2[i+1]+binedges2[i])/2.
+        p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
+        p.plot(bins2, hist2, drawstyle='steps-mid', label='4 poly')
+        lowerx = n.floor( n.min([n.min(bins1), n.min(bins2)]) )
+        upperx = n.ceil( n.max([n.max(bins1), n.max(bins2)]) )
+        lowery = 0
+        uppery = n.around(n.max([n.max(hist1), n.max(hist2)])*1.15,1)
+        p.axis([lowerx,upperx,lowery,uppery])
+        p.text((upperx-lowerx)*.03 + lowerx, uppery*.8,'$i$-band', size=8)
+        p.ylabel('Fraction per bin')
+        p.legend()
+        ax = f.add_subplot(313)
+        hist1, binedges1 = n.histogram(yes1no4_z, bins=nbins, normed=True)
+        hist2, binedges2 = n.histogram(no1yes4_z, bins=nbins, normed=True)
+        bins1 = n.zeros(nbins)
+        bins2 = n.zeros(nbins)
+        for i in xrange(nbins):
+            bins1[i] = (binedges1[i+1]+binedges1[i])/2.
+            bins2[i] = (binedges2[i+1]+binedges2[i])/2.
+        p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
+        p.plot(bins2, hist2, drawstyle='steps-mid', label='4 poly')
+        lowerx = n.floor( n.min([n.min(bins1), n.min(bins2)]) )
+        upperx = n.ceil( n.max([n.max(bins1), n.max(bins2)]) )
+        lowery = 0
+        uppery = n.around(n.max([n.max(hist1), n.max(hist2)])*1.15,1)
+        p.axis([lowerx,upperx,lowery,uppery])
+        p.text((upperx-lowerx)*.03 + lowerx, uppery*.8,'$z$-band', size=8)
+        p.xlabel('Signal to noise ratio')
+        p.legend()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/poly_sn_histos.pdf')
+        p.close()
+
+
+    def test_merge_poly_runs(self):
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        
+        total = 0
+        count = 0
+        for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
+            total += 1.
+            if not zwarn & 4:
+                count += 1.
+            else:
+                if not hdu4[1].data.ZWARNING[i] & 4:
+                    count += 1
+        print count/total
+
+
+    def sequels_sky_drchi2_sns(self, spectro1d=False, nthreshold=50, sns_pal='muted'):
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_sky' % self.version, 'redmonsterAll-%s.fits' % self.version))
+
+        plate = None
+        mjd = None
+
+        drchi2_threshold = n.linspace(0,0.01,nthreshold)
+        rmfrac = []
+        idlfrac = []
+
+        for i,threshold in enumerate(drchi2_threshold):
+            stderr.write('\r %s of %s' % (i+1,nthreshold))
+            count = 0.
+            total = 0.
+            countidl = 0.
+            totalidl = 0.
+            for j,rchi2diff in enumerate(hdurm[1].data.RCHI2DIFF):
+                total += 1
+                if rchi2diff > threshold:
+                    count += 1
+                if spectro1d:
+                    totalidl += 1
+                    if plate != hdurm[1].data.PLATE[j] or mjd != hdurm[1].data.MJD[j]:
+                        plate = hdurm[1].data.PLATE[j]
+                        mjd = hdurm[1].data.MJD[j]
+                        #hduplate = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, self.version, 'spZbest-%s-%s.fits' % (plate,mjd)))
+                        hduplate = fits.open(join(environ['BOSS_SPECTRO_REDUX'], 'test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate,mjd)))
+                    fiber = hdurm[1].data.FIBERID[j]
+                    if hduplate[1].data.RCHI2DIFF_NOQSO[fiber] > threshold:
+                        countidl += 1
+            rmfrac.append(count/total)
+            if spectro1d:
+                idlfrac.append(countidl/totalidl)
+
+        print rmfrac
+        f = p.figure()
+        ax = f.add_subplot(111)
+        if not spectro1d:
+            p.plot(drchi2_threshold, rmfrac, color=sns.color_palette(sns_pal)[2], drawstyle='steps-mid')
+        else:
+            p.plot(drchi2_threshold, rmfrac, drawstyle='steps-mid', color=sns.color_palette(sns_pal)[2], label='redmonster')
+            p.plot(drchi2_threshold, idlfrac, drawstyle='steps-mid',color=sns.color_palette(sns_pal)[0], label='spectro1d')
+            p.legend()
+        p.xlabel(r'$\Delta\chi_r^2$', size=14)
+        p.ylabel(r'Cumulative fraction above threshold', size=14)
+        ax.set_yscale('log')
+        p.tick_params(labelsize=12)
+        p.grid(b=True, which='major', color='lightgrey', linestyle='-')
+        p.grid(b=True, which='minor', color='lightgrey', linestyle='--')
+        p.tight_layout()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/sky_failure_vs_drchi2.pdf')
+        p.close()
+
+
+    def dchi2_dv_repeats(self, sns_pal='muted'):
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        c_kms = 299792.458
+        directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
+        hdu = fits.open(directory+'/spAll-v5_10_0-repeats_lrg.fits')
+
+        thing_ids = []
+        object_ids1 = []
+        object_ids2 = []
+        object_ids = {}
+        
+        dv = []
+        drchi2 = []
+
+        for thing_id in hdu[1].data.THING_ID:
+            if thing_id not in thing_ids:
+                thing_ids.append(thing_id)
+                w1 = n.where(hdu[1].data.THING_ID == thing_id)[0][0]
+                w2 = n.where(hdu[1].data.THING_ID == thing_id)[0][1]
+                object_id1 = (hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)
+                object_ids1.append(object_id1)
+                object_id2 = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
+                object_ids2.append(object_id2)
+                object_ids[(hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)] = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
+
+        
+        #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
+        totalobjs = 0
+        for i,object_id1 in enumerate(object_ids):
+            stderr.write('\r %s of %s' % (i+1,len(object_ids)))
+            try:
+                object_id2 = object_ids[object_id1]
+                
+                hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
+                hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
+                fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1[2])[0][0]
+                fiberind2 = n.where(hdu2[1].data.FIBERID == object_id2[2])[0][0]
+                z1 = hdu1[1].data.Z1[fiberind1]
+                z2 = hdu2[1].data.Z1[fiberind2]
+                rchi21 = hdu1[1].data.RCHI2DIFF[fiberind1]
+                rchi22 = hdu2[1].data.RCHI2DIFF[fiberind2]
+
+                dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
+                drchi2.append(n.min([rchi21, rchi22]))
+                totalobjs += 1
+            except IndexError:
+                print "IndexError"
+            except IOError:
+                ioerrors += 1
+                print "IOError! %s %s" % (repr(object_id1), ioerrors)
+
+        print "Total objects: %s" % len(dv)*2
+        confobjs = 0
+        cataobjs = 0
+        confobjs01 = 0
+        cataobjs01 = 0
+        for i,chi2 in enumerate(drchi2):
+            if chi2 > 0.005:
+                confobjs += 1.
+                if dv[i] > 1000:
+                    cataobjs += 1.
+            if chi2 > 0.01:
+                confobjs01 += 1.
+                if dv[i] > 1000:
+                    cataobjs01 += 1
+                        
+        print "Total objects: %s" % (totalobjs)
+        print "Catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/(confobjs*2))
+        print "Catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01, cataobjs01/(confobjs01*2))
+
+        f = p.figure()
+        ax = f.add_subplot(111)
+        p.scatter(drchi2, dv, alpha=0.4, color='black', s=2)
+        p.axis([1e-6, 1, 0.1, 1e6])
+        #ax.ylim(0.1, 1e6)
+        #ax.xlim(1e-6, 1)
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        #ylim = p.ylim()
+        #p.plot( [1e-2, 1e-2], 1e6, 'b--', lw=2)
+        p.plot( [1e-2]*1000, n.linspace(0.1,1e6,1000), '--', color=sns.color_palette('muted')[0], lw=1.5)
+        #p.plot( [5e-3, 5e-3], 1e6, 'r--', lw=2)
+        p.plot([5e-3]*1000, n.linspace(0.1,1e6,1000), '--', color=sns.color_palette('muted')[2], lw=1.5)
+        #p.plot( [1e-6, 1], [1000, 1000], 'm--', lw=2)
+        p.plot(n.linspace(1e-6,1,1000), [1000]*1000, '--', color=sns.color_palette('muted')[3], lw=1.5)
+        p.xlabel(r'$\Delta \chi^2/dof$', size=14)
+        p.ylabel(r'$\Delta v$ (km/s)', size=14)
+        p.tick_params(labelsize=12)
+        p.tight_layout()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/repeat_dchi2_dv.pdf')
+
+
+    def make_n_of_z_table(self):
+        hdu = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hduidldr13 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], 'v5_8_0', 'spAll-v5_8_0.fits'))
+        hduidldr14 = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/spAll-test_dr14.fits')
+
+        spectra = {
+                   'total':0.,
+                   'poor':0,
+                   'stellar':0,
+                   '0.0<z<0.5':0,
+                   '0.5<z<0.6':0,
+                   '0.6<z<0.7':0,
+                   '0.7<z<0.8':0,
+                   '0.8<z<0.9':0,
+                   '0.9<z<1.0':0,
+                   '1.0<z<1.1':0,
+                   '1.1<z<1.2':0,
+                    'z>1.2':0
+                    }
+
+        spectraidldr13 = {
+                   'total':0.,
+                   'poor':0,
+                   'stellar':0,
+                   '0.0<z<0.5':0,
+                   '0.5<z<0.6':0,
+                   '0.6<z<0.7':0,
+                   '0.7<z<0.8':0,
+                   '0.8<z<0.9':0,
+                   '0.9<z<1.0':0,
+                   '1.0<z<1.1':0,
+                   '1.1<z<1.2':0,
+                    'z>1.2':0
+                    }
+        spectraidldr14 = {
+                   'total':0.,
+                   'poor':0,
+                   'stellar':0,
+                   '0.0<z<0.5':0,
+                   '0.5<z<0.6':0,
+                   '0.6<z<0.7':0,
+                   '0.7<z<0.8':0,
+                   '0.8<z<0.9':0,
+                   '0.9<z<1.0':0,
+                   '1.0<z<1.1':0,
+                   '1.1<z<1.2':0,
+                    'z>1.2':0
+                    }
+
+
+        for i,zwarn in enumerate(hdu[1].data.ZWARNING):
+            spectra['total'] += 1.
+            if zwarn & 4:
+                spectra['poor'] += 1.
+            else:
+                if hdu[1].data.CLASS[i] == 'CAP':
+                    spectra['stellar'] += 1.
+                else:
+                    if hdu[1].data.Z[i] > 0.0 and hdu[1].data.Z[i] < 0.5:
+                        spectra['0.0<z<0.5'] += 1.
+                    elif hdu[1].data.Z[i] > 0.5 and hdu[1].data.Z[i] < 0.6:
+                        spectra['0.5<z<0.6'] += 1.
+                    elif hdu[1].data.Z[i] > 0.6 and hdu[1].data.Z[i] < 0.7:
+                        spectra['0.6<z<0.7'] += 1.
+                    elif hdu[1].data.Z[i] > 0.7 and hdu[1].data.Z[i] < 0.8:
+                        spectra['0.7<z<0.8'] += 1.
+                    elif hdu[1].data.Z[i] > 0.8 and hdu[1].data.Z[i] < 0.9:
+                        spectra['0.8<z<0.9'] += 1.
+                    elif hdu[1].data.Z[i] > 0.9 and hdu[1].data.Z[i] < 1.0:
+                        spectra['0.9<z<1.0'] += 1.
+                    elif hdu[1].data.Z[i] > 1.0 and hdu[1].data.Z[i] < 1.1:
+                        spectra['1.0<z<1.1'] += 1.
+                    elif hdu[1].data.Z[i] > 1.1 and hdu[1].data.Z[i] < 1.2:
+                        spectra['1.1<z<1.2'] += 1.
+                    elif hdu[1].data.Z[i] > 1.2:
+                        spectra['z>1.2'] += 1.
+
+        for i,ebt1 in enumerate(hduidldr13[1].data.EBOSS_TARGET1):
+            if ebt1 & 2:
+                if hduidldr13[1].data.SPECPRIMARY[i] > 0:
+                    spectraidldr13['total'] += 1.
+                    if hduidldr13[1].data.RCHI2DIFF_NOQSO[i] < 0.01:
+                        spectraidldr13['poor'] += 1.
+                    else:
+                        if hduidldr13[1].data.CLASS_NOQSO[i] == 'STAR':
+                            spectraidldr13['stellar'] += 1.
+                        else:
+                            if hduidldr13[1].data.Z_NOQSO[i] > 0.0 and hduidldr13[1].data.Z_NOQSO[i] < 0.5:
+                                spectraidldr13['0.0<z<0.5'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 0.5 and hduidldr13[1].data.Z_NOQSO[i] < 0.6:
+                                spectraidldr13['0.5<z<0.6'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 0.6 and hduidldr13[1].data.Z_NOQSO[i] < 0.7:
+                                spectraidldr13['0.6<z<0.7'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 0.7 and hduidldr13[1].data.Z_NOQSO[i] < 0.8:
+                                spectraidldr13['0.7<z<0.8'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 0.8 and hduidldr13[1].data.Z_NOQSO[i] < 0.9:
+                                spectraidldr13['0.8<z<0.9'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 0.9 and hduidldr13[1].data.Z_NOQSO[i] < 1.0:
+                                spectraidldr13['0.9<z<1.0'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 1.0 and hduidldr13[1].data.Z_NOQSO[i] < 1.1:
+                                spectraidldr13['1.0<z<1.1'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 1.1 and hduidldr13[1].data.Z_NOQSO[i] < 1.2:
+                                spectraidldr13['1.1<z<1.2'] += 1.
+                            elif hduidldr13[1].data.Z_NOQSO[i] > 1.2:
+                                spectraidldr13['z>1.2'] += 1.
+
+        for i,ebt1 in enumerate(hduidldr14[1].data.EBOSS_TARGET1):
+            if ebt1 & 2:
+                if hduidldr14[1].data.SPECPRIMARY[i] > 0:
+                    spectraidldr14['total'] += 1.
+                    if hduidldr14[1].data.RCHI2DIFF_NOQSO[i] < 0.01:
+                        spectraidldr14['poor'] += 1.
+                    else:
+                        if hduidldr14[1].data.CLASS_NOQSO[i] == 'STAR':
+                            spectraidldr14['stellar'] += 1.
+                        else:
+                            if hduidldr14[1].data.Z_NOQSO[i] > 0.0 and hduidldr14[1].data.Z_NOQSO[i] < 0.5:
+                                spectraidldr14['0.0<z<0.5'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 0.5 and hduidldr14[1].data.Z_NOQSO[i] < 0.6:
+                                spectraidldr14['0.5<z<0.6'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 0.6 and hduidldr14[1].data.Z_NOQSO[i] < 0.7:
+                                spectraidldr14['0.6<z<0.7'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 0.7 and hduidldr14[1].data.Z_NOQSO[i] < 0.8:
+                                spectraidldr14['0.7<z<0.8'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 0.8 and hduidldr14[1].data.Z_NOQSO[i] < 0.9:
+                                spectraidldr14['0.8<z<0.9'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 0.9 and hduidldr14[1].data.Z_NOQSO[i] < 1.0:
+                                spectraidldr14['0.9<z<1.0'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 1.0 and hduidldr14[1].data.Z_NOQSO[i] < 1.1:
+                                spectraidldr14['1.0<z<1.1'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 1.1 and hduidldr14[1].data.Z_NOQSO[i] < 1.2:
+                                spectraidldr14['1.1<z<1.2'] += 1.
+                            elif hduidldr14[1].data.Z_NOQSO[i] > 1.2:
+                                spectraidldr14['z>1.2'] += 1.
+
+        print 'REDMONSTER %s' % self.version
+        for entry in spectra:
+            print 'Fraction %s: %s' % (entry, spectra[entry]/spectra['total'])
+            print 'N(%s): %s' % (entry, (spectra[entry]/spectra['total'])*60)
+        print 'Total tracers: %s' % ((spectra['0.6<z<0.7']/spectra['total'])*60 + (spectra['0.7<z<0.8']/spectra['total'])*60 + (spectra['0.8<z<0.9']/spectra['total'])*60 + (spectra['0.9<z<1.0']/spectra['total'])*60)
+        print ''
+        print 'IDL DR13'
+        for entry in spectraidldr13:
+            print 'Fraction %s: %s' % (entry, spectraidldr13[entry]/spectraidldr13['total'])
+            print 'N(%s): %s' % (entry, (spectraidldr13[entry]/spectraidldr13['total'])*60)
+        print 'Total tracers: %s' % ((spectraidldr13['0.6<z<0.7']/spectraidldr13['total'])*60 + (spectraidldr13['0.7<z<0.8']/spectraidldr13['total'])*60 + (spectraidldr13['0.8<z<0.9']/spectraidldr13['total'])*60 + (spectraidldr13['0.9<z<1.0']/spectraidldr13['total'])*60)
+        print ''
+        print 'IDL DR14'
+        for entry in spectraidldr14:
+            try:
+                print 'Fraction %s: %s' % (entry, spectraidldr14[entry]/spectraidldr14['total'])
+                print 'N(%s): %s' % (entry, (spectraidldr14[entry]/spectraidldr14['total'])*60)
+            except ZeroDivisionError:
+                print '%s has no objects at all' % entry
+        print 'Total tracers: %s' % ((spectraidldr14['0.6<z<0.7']/spectraidldr14['total'])*60 + (spectraidldr14['0.7<z<0.8']/spectraidldr14['total'])*60 + (spectraidldr14['0.8<z<0.9']/spectraidldr14['total'])*60 + (spectraidldr14['0.9<z<1.0']/spectraidldr14['total'])*60)
+
+
+
+
+    def failure_vs_fiberid(self, sns_pal='muted'):
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        hdu = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+
+        totals = {}
+        counts = {}
+        for i in [2*x for x in xrange(500)]:
+            totals[i] = 1
+            counts[i] = 0
+
+        for i,zwarn in enumerate(hdu[1].data.ZWARNING):
+            fiber = hdu[1].data.FIBERID[i]
+            if fiber % 2 == 0:
+                totals[fiber] += 1.
+                if zwarn > 0:
+                    counts[fiber] += 1.
+
+        p.plot(n.array([2*x for x in xrange(500)])+1, n.array(counts.values())/n.array(totals.values()), color=sns.color_palette("Set2", 10)[1], drawstyle='steps-mid')
+        p.plot(n.array([2*x for x in xrange(500)])+1, convolve(n.array(counts.values())/n.array(totals.values()), Box1DKernel(5)), color='black', drawstyle='steps-mid')
+        #sp.axes([1,1000, 0, n.max( n.array(counts.values())/n.array(totals.values()) )*1.2])
+        p.xlabel(r'Fiber number', size=14)
+        p.ylabel(r'Failure rate', size=14)
+        p.tick_params(labelsize=12)
+        p.tight_layout()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_fiberid.pdf')
+        p.close()
+
+
+    def failure_rate_on_plate(self, nbins=40, sns_pal='muted'):
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        hdu = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+
+        p.close()
+
+        xfocal, yfocal = [], []
+        xzwarn, yzwarn = [], []
+        plate = None
+        mjd = None
+        for i,zwarn in enumerate(hdu[1].data.ZWARNING):
+            stderr.write('\r %s of %s' % (i+1,hdu[1].data.ZWARNING.shape[0]))
+            fiberid = hdu[1].data.FIBERID[i]
+            if plate != hdu[1].data.PLATE[i] or mjd != hdu[1].data.MJD[i]:
+                plate = hdu[1].data.PLATE[i]
+                mjd = hdu[1].data.MJD[i]
+                #hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
+                hduidl = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/%s/spPlate-%s-%s.fits' % (plate,plate,mjd))
+            xfocal.append(hduidl[5].data.XFOCAL[fiberid])
+            yfocal.append(hduidl[5].data.YFOCAL[fiberid])
+            if zwarn > 0:
+                xzwarn.append(hduidl[5].data.XFOCAL[fiberid])
+                yzwarn.append(hduidl[5].data.YFOCAL[fiberid])
+        xfocal = n.array(xfocal)
+        yfocal = n.array(yfocal)
+        xzwarn = n.array(xzwarn)
+        yzwarn = n.array(yzwarn)
+
+        totals, x_edges, y_edges, image = p.hist2d(xfocal, yfocal, bins=nbins, norm=LogNorm())
+        p.close()
+        failures, xbinedges, ybinedges, image = p.hist2d(xzwarn, yzwarn, bins=[x_edges,y_edges], norm=LogNorm())
+        p.close()
+
+        '''
+        xbins = n.zeros(xbinedges.shape[0]-1)
+        ybins = n.zeros(ybinedges.shape[0]-1)
+        for i in xrange(xbinedges.shape[0]-1):
+            xbins[i] = (xbinedges[i+1] + xbinedges[i])/2.
+            ybins[i] = (ybinedges[i+1] + ybinedges[i])/2.
+        '''
+
+        hist = failures / totals
+
+        p.imshow(hist, interpolation='nearest', origin='lower', extent=[xbinedges[0], xbinedges[-1], ybinedges[0], ybinedges[-1]], cmap='cool')
+        cbar = p.colorbar()
+        cbar.set_label('Failure rate', size=14)
+        cbar.ax.tick_params(labelsize=12)
+        p.clim(0,0.25)
+        p.tick_params(labelsize=12)
+        p.xlabel('XFOCAL', size=14)
+        p.ylabel('YFOCAL', size=14)
+        f = p.gcf()
+        #f.subplots_adjust(bottom=0.2)
+        p.tight_layout()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_plate.pdf')
+
+
+    def failure_vs_sn_sns(self,sn_max=5,nbins=20):
+        # Makes plot of eBOSS LRG target failure rate (zwarning > 0)
+        # vs median S/N in r-, i-, and z-bands
+        f = p.figure()
+        ax = f.add_subplot(1,1,1)
+        total = 0
+        bad_fibers = []
+        bad_r_sn = []
+        bad_i_sn = []
+        bad_z_sn = []
+        r_sn = []
+        i_sn = []
+        z_sn = []
+        rmax = 0
+        imax = 0
+        zmax = 0
+        globpath = join( self.redmonster_spectro_redux,'*')
+        openplate = 0
+        openmjd = 0
+        hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        self.rm_zwarning = hdurm[1].data.ZWARNING
+        for i,fiber in enumerate(hdurm[1].data.FIBERID):
+            plate = hdurm[1].data.PLATE[i]
+            mjd = hdurm[1].data.MJD[i]
+            stderr.write('\r %s of %s' % (i+1,hdurm[1].data.FIBERID.shape[0]))
+            if (openplate != plate) or (openmjd != mjd):
+                hduidl = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                openplate = plate
+                openmjd = mjd
+                self.sn_median = hduidl[1].data.SN_MEDIAN[:,2:]
+            if (self.sn_median[fiber,0] <= sn_max):
+                total += 1
+                r_sn.append(self.sn_median[fiber,0])
+                if self.sn_median[fiber,0] > rmax:
+                    rmax = self.sn_median[fiber,0]
+                i_sn.append(self.sn_median[fiber,1])
+                if self.sn_median[fiber,1] > imax:
+                    imax = self.sn_median[fiber,1]
+                z_sn.append(self.sn_median[fiber,2])
+                if self.sn_median[fiber,2] > zmax:
+                    zmax = self.sn_median[fiber,2]
+                if (self.rm_zwarning[i] & 4):
+                    bad_fibers.append(fiber)
+                    bad_r_sn.append(self.sn_median[fiber,0])
+                    bad_i_sn.append(self.sn_median[fiber,1])
+                    bad_z_sn.append(self.sn_median[fiber,2])
+        nbinsarr = n.linspace(0,sn_max,nbins+1)
+        rtotal,rbinedges = n.histogram(r_sn,bins=nbinsarr)
+        itotal,ibinedges = n.histogram(i_sn,bins=nbinsarr)
+        ztotal,zbinedges = n.histogram(z_sn,bins=nbinsarr)
+        rhist,rbinedges = n.histogram(bad_r_sn,bins=nbinsarr)
+        ihist,ibinedges = n.histogram(bad_i_sn,bins=nbinsarr)
+        zhist,zbinedges = n.histogram(bad_z_sn,bins=nbinsarr)
+        rbins = n.zeros(nbins)
+        ibins = n.zeros(nbins)
+        zbins = n.zeros(nbins)
+        for i in xrange(nbins):
+            rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
+            ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
+            zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
+        rhist = rhist / map(float,rtotal)
+        ihist = ihist / map(float,itotal)
+        zhist = zhist / map(float,ztotal)
+        for i in xrange(nbins):
+            if i != 0 and i != (nbins-1):
+                if isnan(rhist[i]):
+                    try:
+                        rhist[i] = (rhist[i-1] + rhist[i+1]) / 2.
+                    except:
+                        rhist[i] = 0
+                if isnan(ihist[i]):
+                    try:
+                        ihist[i] = (ihist[i-1] + ihist[i+1]) / 2.
+                    except:
+                        ihist[i] = 0
+                if isnan(zhist[i]):
+                    try:
+                        zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
+                    except:
+                        zhist[i] = 0
+        
+        p.plot(rbins,rhist,color=sns.color_palette("hls", 8)[4],label='r-band', drawstyle='steps-mid')
+        p.plot(ibins,ihist,color=sns.color_palette("hls", 8)[5],label='i-band', drawstyle='steps-mid')
+        p.plot(zbins,zhist,color=sns.color_palette("hls", 8)[6],label='z-band', drawstyle='steps-mid')
+        ax.set_yscale('log')
+        p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=14)
+        p.ylabel(r'eBOSS LRG target failure rate', size=14)
+        print rbins
+        print rhist
+        print rtotal
+        print total
+        print rmax
+        print imax
+        print zmax
+        p.legend(prop={'size':14})
+        p.tick_params(labelsize=12)
+        p.grid(b=True, which='major', color='lightgrey', linestyle='-')
+        p.grid(b=True, which='minor', color='lightgrey', linestyle='--')
+        p.tight_layout()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
+        p.close()
+
+
+    def failure_vs_imag_sns(self,imin=18,imax=24,nbins=25):
+        # Makes plot of SEQUELS LRG failure rate (zwarning > 0)
+        # vs i-band magnitude
+        f = p.figure()
+        ax = f.add_subplot(1,1,1)
+        total = 0
+        bad_i_mag = []
+        i_mag = []
+        openplate = 0
+        openmjd = 0
+        hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        self.rm_zwarning = hdurm[1].data.ZWARNING
+        for i,fiber in enumerate(hdurm[1].data.FIBERID):
+            plate = hdurm[1].data.PLATE[i]
+            mjd = hdurm[1].data.MJD[i]
+            stderr.write('\r %s of %s' % (i+1,hdurm[1].data.FIBERID.shape[0]))
+            if (openplate != plate) and (openmjd != mjd):
+                hduzbest = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14', '%s' % plate, 'test_dr14', 'spZbest-%s-%s.fits' % (plate, mjd)))
+                hduspplate = fits.open(join('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/', '%s' % plate, 'spPlate-%s-%s.fits' % (plate,mjd)))
+                self.spectroflux = 22.5 - 2.5*n.log10(hduzbest[1].data.SPECTROFLUX)
+                openplate = plate
+                openmjd = mjd
+            if (self.spectroflux[fiber,3] <= imax):
+                total += 1.
+                i_mag.append(self.spectroflux[fiber,3])
+                if (self.rm_zwarning[i] & 4 > 0):
+                    bad_i_mag.append(self.spectroflux[fiber,3])
+        nbinsarr = n.linspace(imin,imax,nbins+1)
+        itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
+        ihist,ibinedges = n.histogram(bad_i_mag,bins=nbinsarr)
+        ibins = n.zeros(nbins)
+        for i in xrange(nbins):
+            ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
+        ihist = ihist / map(float,itotal)
+        for i in xrange(nbins):
+            if i != 0 and i != (nbins-1):
+                if isnan(ihist[i]):
+                    try:
+                        ihist[i] = (ihist[i-1] + ihist[i+1]) / 2.
+                    except:
+                        ihist[i] = 0
+        p.plot(ibins,ihist,drawstyle='steps-mid',label='i-band')
+        p.axis([imin,imax,.01,1])
+        ax.set_yscale('log')
+        p.axvline(21.8,linestyle='--',color='k')
+        p.xlabel(r'$i$-band magnitude',size=14)
+        p.ylabel(r'Failure rate', size=14)
+        #print rbins
+        #print rhist
+        #print rtotal
+        #p.legend()
+        p.tick_params(labelsize=12)
+        p.grid(b=True, which='major', color='lightgrey', linestyle='-')
+        p.grid(b=True, which='minor', color='lightgrey', linestyle='--')
+        f.tight_layout()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_imag.pdf')
+        p.close
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

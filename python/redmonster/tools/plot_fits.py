@@ -19,6 +19,8 @@ NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 from astropy.io import fits
 from astropy.convolution import convolve, Box1DKernel
+import seaborn as sns
+sns.set_style('whitegrid')
 
 from redmonster.physics.misc import poly_array
 

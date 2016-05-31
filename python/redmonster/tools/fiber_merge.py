@@ -52,8 +52,12 @@ if platedir:
                 else:
                     mjds.append( basename(file)[16:21] )
                     '''
-                if basename(file)[16:21] not in mjds:
-                    mjds.append( basename(file)[16:21] )
+                if len(plate) == 4:
+                    if basename(file)[16:21] not in mjds:
+                        mjds.append( basename(file)[16:21] )
+                elif len(plate) == 5:
+                    if basename(file)[17:22] not in mjds:
+                        mjds.append( basename(file)[17:22] )
         except Exception as e:
             mjds = None
             print "Exception: %r" % e
