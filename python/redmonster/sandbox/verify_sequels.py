@@ -2460,7 +2460,7 @@ class VerifyRM:
         '''
         c_kms = 299792.458
         directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
-        hdu = fits.open(directory+'/spAll-v5_10_0-repeats_lrg.fits')
+        hdu = fits.open(directory+'/spAll-%s-repeats_lrg.fits' % self.version)
         
         thing_ids = []
         object_ids1 = []
