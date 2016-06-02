@@ -2282,7 +2282,7 @@ class VerifyRM:
         p.ylabel(r'$\Delta\chi_{\mathrm{r},4}^2$',size=14)
         p.plot(n.linspace(-0.1,.1,10000), n.linspace(-0.1,.1,10000), color='black', linestyle='--')
 
-        p.subplots_adjust(hspace = .5)
+        p.subplots_adjust(hspace = .8)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/1poly_4poly_scatters.pdf')
         p.clf()
         
