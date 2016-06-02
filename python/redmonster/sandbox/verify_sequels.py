@@ -2133,19 +2133,32 @@ class VerifyRM:
         yes1no4 = []
         no1yes4 = []
         no1no4 = []
+        openplate = None
+        openmjd = None
         for i,zwarn in enumerate(hdu1poly[1].data.ZWARNING):
-            thesechi2 = (hdu1poly[1].data.CHI2NULL[i],
-                         hdu4poly[1].data.CHI2NULL[i])
-            if not zwarn & 4:
-                if not hdu4poly[1].data.ZWARNING[i] & 4:
-                    yes1yes4.append(thesechi2)
+            stderr.write('\r %s of %s' % (i+1, hdu1poly[1].data.ZWARNING.shape[0]))
+            plate = hdu1poly[1].data.PLATE[i]
+            mjd = hdu1poly[1].data.MJD[i]
+            fiberid = hdu1poly[1].data.FIBERID[i]
+            if openplate != plate or openmjd != mjd:
+                hdu4poly = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
+                openplate = plate
+                openmjd = mjd
+            try:
+                fiberind = n.where(hdu4poly[1].data.FIBERID == fiberid)[0][0]
+                thesechi2 = (hdu1poly[1].data.CHI2NULL[i], hdu4poly[1].data.CHI2NULL[fiberind])
+                if not zwarn & 4:
+                    if not hdu4poly[1].data.ZWARNING[fiberind] & 4:
+                        yes1yes4.append(thesechi2)
+                    else:
+                        yes1no4.append(thesechi2)
                 else:
-                    yes1no4.append(thesechi2)
-            else:
-                if not hdu4poly[1].data.ZWARNING[i] & 4:
-                    no1yes4.append(thesechi2)
-                else:
-                    no1no4.append(thesechi2)
+                    if not hdu4poly[1].data.ZWARNING[fiberind] & 4:
+                        no1yes4.append(thesechi2)
+                    else:
+                        no1no4.append(thesechi2)
+            except IndexError:
+                pass
         f = p.figure()
         ax1 = f.add_subplot(311)
         colors = ['black', 'tomato', 'darkturquoise', 'green']
@@ -2172,18 +2185,29 @@ class VerifyRM:
         no1yes4 = []
         no1no4 = []
         for i,zwarn in enumerate(hdu1poly[1].data.ZWARNING):
-            thesechi2 = (hdu1poly[1].data.MINRCHI2[i],
-                         hdu4poly[1].data.MINRCHI2[i])
-            if not zwarn & 4:
-                if not hdu4poly[1].data.ZWARNING[i] & 4:
-                    yes1yes4.append(thesechi2)
+            stderr.write('\r %s of %s' % (i+1, hdu1poly[1].data.ZWARNING.shape[0]))
+            plate = hdu1poly[1].data.PLATE[i]
+            mjd = hdu1poly[1].data.MJD[i]
+            fiberid = hdu1poly[1].data.FIBERID[i]
+            if openplate != plate or openmjd != mjd:
+                hdu4poly = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
+                openplate = plate
+                openmjd = mjd
+            try:
+                fiberind = n.where(hdu4poly[1].data.FIBERID == fiberid)[0][0]
+                thesechi2 = (hdu1poly[1].data.MINRCHI2[i], hdu4poly[1].data.MINRCHI21[fiberind])
+                if not zwarn & 4:
+                    if not hdu4poly[1].data.ZWARNING[fiberind] & 4:
+                        yes1yes4.append(thesechi2)
+                    else:
+                        yes1no4.append(thesechi2)
                 else:
-                    yes1no4.append(thesechi2)
-            else:
-                if not hdu4poly[1].data.ZWARNING[i] & 4:
-                    no1yes4.append(thesechi2)
-                else:
-                    no1no4.append(thesechi2)
+                    if not hdu4poly[1].data.ZWARNING[fiberind] & 4:
+                        no1yes4.append(thesechi2)
+                    else:
+                        no1no4.append(thesechi2)
+            except IndexError:
+                pass
         f.add_subplot(312) 
         colors = ['black', 'tomato', 'darkturquoise', 'green']
         labels = ['Both', '1 poly', '4 poly', 'Neither']
@@ -2208,20 +2232,31 @@ class VerifyRM:
         no1yes4 = []
         no1no4 = []
         for i,zwarn in enumerate(hdu1poly[1].data.ZWARNING):
-            thesechi2 = (hdu1poly[1].data.RCHI2DIFF[i],
-                         hdu4poly[1].data.RCHI2DIFF[i])
-            if not zwarn & 4:
-                if not hdu4poly[1].data.ZWARNING[i] & 4:
-                    yes1yes4.append(thesechi2)
+            stderr.write('\r %s of %s' % (i+1, hdu1poly[1].data.ZWARNING.shape[0]))
+            plate = hdu1poly[1].data.PLATE[i]
+            mjd = hdu1poly[1].data.MJD[i]
+            fiberid = hdu1poly[1].data.FIBERID[i]
+            if openplate != plate or openmjd != mjd:
+                hdu4poly = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
+                openplate = plate
+                openmjd = mjd
+            try:
+                fiberind = n.where(hdu4poly[1].data.FIBERID == fiberid)[0][0]
+                thesechi2 = (hdu1poly[1].data.RCHI2DIFF[i], hdu4poly[1].data.RCHI2DIFF[fiberind])
+                if not zwarn & 4:
+                    if not hdu4poly[1].data.ZWARNING[fiberind] & 4:
+                        yes1yes4.append(thesechi2)
+                    else:
+                        #print '1:  %s %s %s' % (hdu1poly[1].data.PLATE[i],hdu1poly[1].data.MJD[i],hdu1poly[1].data.FIBERID[i])
+                        yes1no4.append(thesechi2)
                 else:
-                    print '1:  %s %s %s' % (hdu1poly[1].data.PLATE[i],hdu1poly[1].data.MJD[i],hdu1poly[1].data.FIBERID[i])
-                    yes1no4.append(thesechi2)
-            else:
-                if not hdu4poly[1].data.ZWARNING[i] & 4:
-                    no1yes4.append(thesechi2)
-                    print '4:  %s %s %s' % (hdu1poly[1].data.PLATE[i],hdu1poly[1].data.MJD[i],hdu1poly[1].data.FIBERID[i])
-                else:
-                    no1no4.append(thesechi2)
+                    if not hdu4poly[1].data.ZWARNING[fiberind] & 4:
+                        no1yes4.append(thesechi2)
+                        #print '4:  %s %s %s' % (hdu1poly[1].data.PLATE[i],hdu1poly[1].data.MJD[i],hdu1poly[1].data.FIBERID[i])
+                    else:
+                        no1no4.append(thesechi2)
+            except IndexError:
+                pass
         f.add_subplot(313)
         colors = ['black', 'tomato', 'darkturquoise', 'green']
         labels = ['Both', '1 poly', '4 poly', 'Neither']
