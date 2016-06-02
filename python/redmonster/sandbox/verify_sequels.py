@@ -2178,6 +2178,13 @@ class VerifyRM:
         ax1.set_yticks([3000,4000,5000,6000,7000])
         p.xlabel(r'$\chi_{\mathrm{null},1}^2$', size=14)
         p.ylabel(r'$\chi_{\mathrm{null},4}^2$', size=14)
+        ypoints = []
+        xpoints = []
+        for pair in yes1yes4:
+            xpoints.append(pair[0])
+            ypoints.append(pair[1])
+        xrms = n.sqrt(n.mean(n.square(xpoints)))
+        yrms = n.sqrt(n.mean(n.square(ypoints)))
 
         # minrchi2
         yes1yes4 = []
@@ -2278,6 +2285,9 @@ class VerifyRM:
         p.subplots_adjust(hspace = .5)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/1poly_4poly_scatters.pdf')
         p.clf()
+        
+        print 'X_rms:  %s' % xrms
+        print 'Y_rms:  %s' % yrms
         
         '''
         import seaborn as sns
