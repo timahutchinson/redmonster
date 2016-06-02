@@ -2629,20 +2629,34 @@ class VerifyRM:
     def fiber_poly_differences(self, sns_pal = sns.color_palette("hls", 8)):
         # Find fibers that are successful with 1 poly but not 4 and vice versa, then plot some examples of each
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
-        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        #hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
         yes1no4 = []
         no1yes4 = []
+        openplate = None
+        openmjd = None
         for i,zwarn1 in enumerate(hdu1[1].data.ZWARNING):
-            if not zwarn1 & 4:
-                if hdu4[1].data.ZWARNING[i] & 4 == 4:
-                    fiber = (hdu1[1].data.PLATE[i], hdu1[1].data.MJD[i], hdu1[1].data.FIBERID[i])
-                    yes1no4.append(fiber)
-                    print "1poly success, 4poly failure: plate %s mjd %s fiber %s" % fiber
-            else:
-                if not hdu4[1].data.ZWARNING[i]:
-                    fiber = (hdu1[1].data.PLATE[i], hdu1[1].data.MJD[i], hdu1[1].data.FIBERID[i])
-                    no1yes4.append(fiber)
-                    print "4poly success, 1poly failure: plate %s mjd %s fiber %s" % fiber
+            stderr.write('\r %s of %s' % (i+1, hdu1[1].data.ZWARNING.shape[0]))
+            plate = hdu1[1].data.PLATE[i]
+            mjd = hdu1[1].data.MJD[i]
+            fiberid = hdu[1].data.FIBERID[i]
+            if openplate != plate or openmjd != mjd:
+                hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
+                openplate = plate
+                openmjd = mjd
+            try:
+                fiberind = n.where(hdu4[1].data.FIBERID == fiberid)[0][0]
+                if not zwarn1 & 4:
+                    if hdu4[1].data.ZWARNING[fiberind] & 4 == 4:
+                        fiber = (hdu1[1].data.PLATE[i], hdu1[1].data.MJD[i], hdu1[1].data.FIBERID[i])
+                        yes1no4.append(fiber)
+                        print "1poly success, 4poly failure: plate %s mjd %s fiber %s" % fiber
+                else:
+                    if not hdu4[1].data.ZWARNING[fiberind]:
+                        fiber = (hdu1[1].data.PLATE[i], hdu1[1].data.MJD[i], hdu1[1].data.FIBERID[i])
+                        no1yes4.append(fiber)
+                        print "4poly success, 1poly failure: plate %s mjd %s fiber %s" % fiber
+            except IndexError:
+                pass
         for i in xrange(20):
             objid = yes1no4[i]
             print 'yes1no4'
