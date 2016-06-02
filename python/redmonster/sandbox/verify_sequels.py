@@ -2719,7 +2719,7 @@ class VerifyRM:
                     chi2null1_yes1no4 = n.append(chi2null1_yes1no4, hdu1[1].data.CHI2NULL[i])
                     chi2null4_yes1no4 = n.append(chi2null4_yes1no4, hdu4[1].data.CHI2NULL[fiberind])
             else:
-                if not hdu4[1].data.ZWARNING[i]:
+                if not hdu4[1].data.ZWARNING[fiberind]:
                     chi201_no1yes4 = n.append(chi201_no1yes4, hdu1[1].data.SN2DATA[i])
                     chi204_no1yes4 = n.append(chi204_no1yes4, hdu4[1].data.SN2DATA[fiberind])
                     chi2null1_no1yes4 = n.append(chi2null1_no1yes4, hdu1[1].data.CHI2NULL[i])
