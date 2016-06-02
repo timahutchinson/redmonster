@@ -2176,8 +2176,8 @@ class VerifyRM:
         p.plot(n.linspace(0,10000,10000), n.linspace(0,10000,10000), color='black', linestyle='--')
         p.axis([2800,20000,3000,7000])
         ax1.set_yticks([3000,4000,5000,6000,7000])
-        p.xlabel(r'$\chi_{\mathrm{null},1}^2$', size=14)
-        p.ylabel(r'$\chi_{\mathrm{null},4}^2$', size=14)
+        p.xlabel(r'$\chi_{\mathrm{null},1}^2$', size=12)
+        p.ylabel(r'$\chi_{\mathrm{null},4}^2$', size=12)
         ypoints = []
         xpoints = []
         for pair in yes1yes4:
@@ -2230,8 +2230,8 @@ class VerifyRM:
             p.legend(loc=2, prop={'size':8})
         p.plot(n.linspace(0,2,10000), n.linspace(0,2,10000), color='black', linestyle='--')
         p.axis([0.75,1.4,0.7,1.4])
-        p.xlabel(r'$\chi_{\mathrm{r,min},1}^2$',size=14)
-        p.ylabel(r'$\chi_{\mathrm{r,min},4}^2$',size=14)
+        p.xlabel(r'$\chi_{\mathrm{r,min},1}^2$',size=12)
+        p.ylabel(r'$\chi_{\mathrm{r,min},4}^2$',size=12)
 
         # rchi2diff                                                       
         yes1yes4 = []
@@ -2278,8 +2278,8 @@ class VerifyRM:
             else: p.scatter(x, y, s=1, color=colors[i], label=labels[i], alpha=1)
             p.legend(loc=2, prop={'size':8})
         p.axis([-0.008,0.05,-0.003,0.05])
-        p.xlabel(r'$\Delta\chi_{\mathrm{r},1}^2$',size=14)
-        p.ylabel(r'$\Delta\chi_{\mathrm{r},4}^2$',size=14)
+        p.xlabel(r'$\Delta\chi_{\mathrm{r},1}^2$',size=12)
+        p.ylabel(r'$\Delta\chi_{\mathrm{r},4}^2$',size=12)
         p.plot(n.linspace(-0.1,.1,10000), n.linspace(-0.1,.1,10000), color='black', linestyle='--')
 
         p.subplots_adjust(hspace = .8)
