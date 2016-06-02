@@ -2682,7 +2682,7 @@ class VerifyRM:
         sns.set_palette(sns_pal)
         sns.set_context('paper')
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
-        hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
+        #hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
         chi201 = n.array([])
         chi201_yes1no4 = n.array([])
         chi201_no1yes4 = n.array([])
@@ -2695,24 +2695,34 @@ class VerifyRM:
         chi2null4 = n.array([])
         chi2null4_yes1no4 = n.array([])
         chi2null4_no1yes4 = n.array([])
+        openplate = None
+        openmjd = None
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
+            plate = hdu1[1].data.PLATE[i]
+            mjd = hdu1[1].data.MJD[i]
+            fiberid = hdu1[1].data.FIBERID[i]
+            if openplate != plate or openmjd != mjd:
+                hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
+                openplate = plate
+                openmjd = mjd
+            fiberind = n.where(hdu4[1].data.FIBERID == fiberid)[0][0]
             if not zwarn & 4:
-                if not hdu4[1].data.ZWARNING[i]:
+                if not hdu4[1].data.ZWARNING[fiberind]:
                     chi201 = n.append(chi201, hdu1[1].data.SN2DATA[i])
-                    chi204 = n.append(chi204, hdu4[1].data.SN2DATA[i])
+                    chi204 = n.append(chi204, hdu4[1].data.SN2DATA[fiberind])
                     chi2null1 = n.append(chi2null1, hdu1[1].data.CHI2NULL[i])
-                    chi2null4 = n.append(chi2null4, hdu4[1].data.CHI2NULL[i])
+                    chi2null4 = n.append(chi2null4, hdu4[1].data.CHI2NULL[fiberind])
                 else:
                     chi201_yes1no4 = n.append(chi201_yes1no4, hdu1[1].data.SN2DATA[i])
-                    chi204_yes1no4 = n.append(chi204_yes1no4, hdu4[1].data.SN2DATA[i])
+                    chi204_yes1no4 = n.append(chi204_yes1no4, hdu4[1].data.SN2DATA[fiberind])
                     chi2null1_yes1no4 = n.append(chi2null1_yes1no4, hdu1[1].data.CHI2NULL[i])
-                    chi2null4_yes1no4 = n.append(chi2null4_yes1no4, hdu4[1].data.CHI2NULL[i])
+                    chi2null4_yes1no4 = n.append(chi2null4_yes1no4, hdu4[1].data.CHI2NULL[fiberind])
             else:
                 if not hdu4[1].data.ZWARNING[i]:
                     chi201_no1yes4 = n.append(chi201_no1yes4, hdu1[1].data.SN2DATA[i])
-                    chi204_no1yes4 = n.append(chi204_no1yes4, hdu4[1].data.SN2DATA[i])
+                    chi204_no1yes4 = n.append(chi204_no1yes4, hdu4[1].data.SN2DATA[fiberind])
                     chi2null1_no1yes4 = n.append(chi2null1_no1yes4, hdu1[1].data.CHI2NULL[i])
-                    chi2null4_no1yes4 = n.append(chi2null4_no1yes4, hdu4[1].data.CHI2NULL[i])
+                    chi2null4_no1yes4 = n.append(chi2null4_no1yes4, hdu4[1].data.CHI2NULL[fiberind])
         
         f = p.figure()
         ax = f.add_subplot(211)
