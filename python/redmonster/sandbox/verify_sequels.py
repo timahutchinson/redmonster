@@ -2698,6 +2698,7 @@ class VerifyRM:
         openplate = None
         openmjd = None
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
+            stderr.write('\r %s of %s' % (i+1,hdu1[1].data.ZWARNING.shape[0]))
             plate = hdu1[1].data.PLATE[i]
             mjd = hdu1[1].data.MJD[i]
             fiberid = hdu1[1].data.FIBERID[i]
