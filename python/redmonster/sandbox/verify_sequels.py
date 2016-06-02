@@ -2706,24 +2706,27 @@ class VerifyRM:
                 hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
                 openplate = plate
                 openmjd = mjd
-            fiberind = n.where(hdu4[1].data.FIBERID == fiberid)[0][0]
-            if not zwarn & 4:
-                if not hdu4[1].data.ZWARNING[fiberind]:
-                    chi201 = n.append(chi201, hdu1[1].data.SN2DATA[i])
-                    chi204 = n.append(chi204, hdu4[1].data.SN2DATA[fiberind])
-                    chi2null1 = n.append(chi2null1, hdu1[1].data.CHI2NULL[i])
-                    chi2null4 = n.append(chi2null4, hdu4[1].data.CHI2NULL[fiberind])
+            try:
+                fiberind = n.where(hdu4[1].data.FIBERID == fiberid)[0][0]
+                if not zwarn & 4:
+                    if not hdu4[1].data.ZWARNING[fiberind]:
+                        chi201 = n.append(chi201, hdu1[1].data.SN2DATA[i])
+                        chi204 = n.append(chi204, hdu4[1].data.SN2DATA[fiberind])
+                        chi2null1 = n.append(chi2null1, hdu1[1].data.CHI2NULL[i])
+                        chi2null4 = n.append(chi2null4, hdu4[1].data.CHI2NULL[fiberind])
+                    else:
+                        chi201_yes1no4 = n.append(chi201_yes1no4, hdu1[1].data.SN2DATA[i])
+                        chi204_yes1no4 = n.append(chi204_yes1no4, hdu4[1].data.SN2DATA[fiberind])
+                        chi2null1_yes1no4 = n.append(chi2null1_yes1no4, hdu1[1].data.CHI2NULL[i])
+                        chi2null4_yes1no4 = n.append(chi2null4_yes1no4, hdu4[1].data.CHI2NULL[fiberind])
                 else:
-                    chi201_yes1no4 = n.append(chi201_yes1no4, hdu1[1].data.SN2DATA[i])
-                    chi204_yes1no4 = n.append(chi204_yes1no4, hdu4[1].data.SN2DATA[fiberind])
-                    chi2null1_yes1no4 = n.append(chi2null1_yes1no4, hdu1[1].data.CHI2NULL[i])
-                    chi2null4_yes1no4 = n.append(chi2null4_yes1no4, hdu4[1].data.CHI2NULL[fiberind])
-            else:
-                if not hdu4[1].data.ZWARNING[fiberind]:
-                    chi201_no1yes4 = n.append(chi201_no1yes4, hdu1[1].data.SN2DATA[i])
-                    chi204_no1yes4 = n.append(chi204_no1yes4, hdu4[1].data.SN2DATA[fiberind])
-                    chi2null1_no1yes4 = n.append(chi2null1_no1yes4, hdu1[1].data.CHI2NULL[i])
-                    chi2null4_no1yes4 = n.append(chi2null4_no1yes4, hdu4[1].data.CHI2NULL[fiberind])
+                    if not hdu4[1].data.ZWARNING[fiberind]:
+                        chi201_no1yes4 = n.append(chi201_no1yes4, hdu1[1].data.SN2DATA[i])
+                        chi204_no1yes4 = n.append(chi204_no1yes4, hdu4[1].data.SN2DATA[fiberind])
+                        chi2null1_no1yes4 = n.append(chi2null1_no1yes4, hdu1[1].data.CHI2NULL[i])
+                        chi2null4_no1yes4 = n.append(chi2null4_no1yes4, hdu4[1].data.CHI2NULL[fiberind])
+            except IndexError:
+                pass
         
         f = p.figure()
         ax = f.add_subplot(211)
