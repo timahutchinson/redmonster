@@ -2176,8 +2176,8 @@ class VerifyRM:
         p.plot(n.linspace(0,10000,10000), n.linspace(0,10000,10000), color='black', linestyle='--')
         p.axis([2800,20000,3000,7000])
         ax1.set_yticks([3000,4000,5000,6000,7000])
-        p.xlabel(r'$\chi_{\mathrm{null},1}^2$', size=14)
-        p.ylabel(r'$\chi_{\mathrm{null},4}^2$', size=14)
+        p.xlabel(r'$\chi_{\mathrm{null},1}^2$', size=12)
+        p.ylabel(r'$\chi_{\mathrm{null},4}^2$', size=12)
         ypoints = []
         xpoints = []
         for pair in yes1yes4:
@@ -2230,8 +2230,8 @@ class VerifyRM:
             p.legend(loc=2, prop={'size':8})
         p.plot(n.linspace(0,2,10000), n.linspace(0,2,10000), color='black', linestyle='--')
         p.axis([0.75,1.4,0.7,1.4])
-        p.xlabel(r'$\chi_{\mathrm{r,min},1}^2$',size=14)
-        p.ylabel(r'$\chi_{\mathrm{r,min},4}^2$',size=14)
+        p.xlabel(r'$\chi_{\mathrm{r,min},1}^2$',size=12)
+        p.ylabel(r'$\chi_{\mathrm{r,min},4}^2$',size=12)
 
         # rchi2diff                                                       
         yes1yes4 = []
@@ -2278,8 +2278,8 @@ class VerifyRM:
             else: p.scatter(x, y, s=1, color=colors[i], label=labels[i], alpha=1)
             p.legend(loc=2, prop={'size':8})
         p.axis([-0.008,0.05,-0.003,0.05])
-        p.xlabel(r'$\Delta\chi_{\mathrm{r},1}^2$',size=14)
-        p.ylabel(r'$\Delta\chi_{\mathrm{r},4}^2$',size=14)
+        p.xlabel(r'$\Delta\chi_{\mathrm{r},1}^2$',size=12)
+        p.ylabel(r'$\Delta\chi_{\mathrm{r},4}^2$',size=12)
         p.plot(n.linspace(-0.1,.1,10000), n.linspace(-0.1,.1,10000), color='black', linestyle='--')
 
         p.subplots_adjust(hspace = .8)
@@ -2863,8 +2863,9 @@ class VerifyRM:
         f = p.figure()
         ax = f.add_subplot(111)
         g = sns.JointGrid((chi201-chi2null1)/chi201, (chi204-chi2null4)/chi204, xlim=(0,1), ylim=(0,1))
-        g.plot_joint(sns.kdeplot, shade=False, cmap="Purples_d", n_levels=7)
+        g.plot_joint(sns.kdeplot, shade=False, cmap="Purples_d", n_levels=10)
         g.plot_joint(p.scatter, color='black', s=1, alpha=.3)
+        p.tick_params(labelsize=12)
         p.grid(b=True, which='major', color='lightgrey', linestyle='-')
         #p.tight_layout()
         g.plot_marginals(sns.kdeplot, color=sns.color_palette('Purples_d')[2], shade=True)
@@ -2873,7 +2874,7 @@ class VerifyRM:
         #g.ax_joint.plot(n.linspace(0,1,1000), fit_func(n.linspace(0,1,1000),popt[0], popt[1], popt[2]), linewidth=1, color='k')
         g.ax_joint.plot(n.linspace(0,1,1000), n.linspace(0,1,1000), ':k')
         g.ax_joint.collections[0].set_alpha(0)
-        g.set_axis_labels(r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},1}^2}{\chi_{0}^2}$', r'$\frac{\chi_{0}^2-\chi_{\mathrm{null},4}^2}{\chi_{0}^2}$', size=16)
+        g.set_axis_labels(r'$(\chi_{0}^2-\chi_{\mathrm{null},1}^2)/\chi_{0}^2$', r'$(\chi_{0}^2-\chi_{\mathrm{null},4}^2)/\chi_{0}^2$', size=16)
         p.gcf().subplots_adjust(bottom=.15)
         p.gcf().subplots_adjust(left=.15)
         #g.fig.suptitle('1 failure, 4 success')
