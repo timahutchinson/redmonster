@@ -33,8 +33,8 @@ try: topdir = environ['BOSS_SPECTRO_REDUX']
 except: topdir = None
 try: run2d = environ['RUN2D']
 except: run2d = None
-#spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
-spallpath = '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/v5_9_1/spAll-v5_9_1.fits'
+spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
+#spallpath = '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/v5_9_1/spAll-v5_9_1.fits'
 
 if spallpath:
     cjob = 0
