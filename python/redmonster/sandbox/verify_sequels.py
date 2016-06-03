@@ -3865,11 +3865,7 @@ class VerifyRM:
         sns.set_palette(sns_pal)
         sns.set_context('paper')
 
-<<<<<<< HEAD
-        hdu580 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'v5_8_0_all', 'v5_8_0_poly1', 'redmonsterAll-v5_8_0.fits'))
-=======
         hdu591 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'v5_8_0_all', 'v5_8_0_poly1', 'redmonsterAll-v5_8_0'))
->>>>>>> 54a20b0ebe0b9df51da40d6715c7c7f705b93aa0
 
         fibercount = 0
         dz591 = []
@@ -3894,13 +3890,8 @@ class VerifyRM:
 
         f = p.figure()
         ax = f.add_subplot(111)
-<<<<<<< HEAD
-        p.scatter(dz580, dz5100, alpha=0.4, color='black', s=2)
-        p.xlabel(r'$\delta z$ v5_8_0', size=14)
-=======
         p.scatter(dz591, dz5100, alpha=0.4, color='black', s=2)
-        p.xlabel(r'$\delta z$ v5_9_1, size=14)
->>>>>>> 54a20b0ebe0b9df51da40d6715c7c7f705b93aa0
+        p.xlabel(r'$\delta z$ v5_9_1', size=14)
         p.ylabel(r'$\Delta z$ v5_10_0', size=14)
         p.tick_params(labelsize=12)
         p.tight_layout()
