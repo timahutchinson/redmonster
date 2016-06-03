@@ -3860,6 +3860,45 @@ class VerifyRM:
         p.close
 
 
+    def zerr_reductions_scatter(self, sns_pal='muted'):
+        sns.set_style('white')
+        sns.set_palette(sns_pal)
+        sns.set_context('paper')
+
+        hdu580 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'v5_8_0_all', 'v5_8_0_poly1', 'redmonsterAll-v5_8_0'))
+
+        fibercount = 0
+        dz580 = []
+        dz5100 = []
+        
+        openplate = None
+        openmjd = None
+
+        while fibercount < 1000:
+            print fibercount
+            ind580 = n.random.randint(0,hdu580[1].data.ZWARNING.shape[0])
+            plate, mjd, fiberid = hdu580[1].data.PLATE[ind580], hdu580[1].data.MJD[ind580], hdu580[1].data.FIBERID[ind580]
+            if not hdu580[1].data.ZWARNING[ind580] & 4:
+                if exists(join(environ['REDMONSTER_SPECTRO_REDUX'], 'v5_10_0', '%s' % plate, 'v5_10_0', 'redmonster-%s-%s-%s.fits' %
+                               (plate, mjd,fiberid))):
+                    hdu5100 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'v5_10_0', '%s' % plate, 'v5_10_0',
+                                             'redmonster-%s-%s-%s.fits' % (plate,mjd,fiber)))
+                    if not hdu5100[1].data.ZWARNING[0] & 4:
+                        fibercount += 1
+                        dz580.append(hdu580[1].data.Z_ERR[ind580])
+                        dz5100.append(hdu5100[1].data.Z_ERR1[0])
+
+        f = p.figure()
+        ax = f.add_subplot(111)
+        p.scatter(dz580, dz5100, alpha=0.4, color='black', s=2)
+        p.xlabel(r'$\delta z$ v5_8_0, size=14)
+        p.ylabel(r'$\Delta z$ v5_10_0', size=14)
+        p.tick_params(labelsize=12)
+        p.tight_layout()
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/zerr_reductions.pdf')
+
+
+
 
 
 
