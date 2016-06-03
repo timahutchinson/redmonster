@@ -3865,7 +3865,7 @@ class VerifyRM:
         sns.set_palette(sns_pal)
         sns.set_context('paper')
 
-        hdu591 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'v5_8_0_all', 'v5_8_0_poly1', 'redmonsterAll-v5_8_0'))
+        hdu591 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'v5_9_1', 'redmonsterAll-v5_9_1.fits'))
 
         fibercount = 0
         dz591 = []
@@ -3882,17 +3882,23 @@ class VerifyRM:
                 if exists(join(environ['REDMONSTER_SPECTRO_REDUX'], 'v5_10_0', '%s' % plate, 'v5_10_0', 'redmonster-%s-%s-%s.fits' %
                                (plate, mjd,fiberid))):
                     hdu5100 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'v5_10_0', '%s' % plate, 'v5_10_0',
-                                             'redmonster-%s-%s-%s.fits' % (plate,mjd,fiber)))
+                                             'redmonster-%s-%s-%s.fits' % (plate,mjd,fiberid)))
                     if not hdu5100[1].data.ZWARNING[0] & 4:
                         fibercount += 1
-                        dz591.append(hdu580[1].data.Z_ERR[ind591])
+                        dz591.append(hdu591[1].data.Z_ERR[ind591])
                         dz5100.append(hdu5100[1].data.Z_ERR1[0])
 
         f = p.figure()
         ax = f.add_subplot(111)
-        p.scatter(dz591, dz5100, alpha=0.4, color='black', s=2)
-        p.xlabel(r'$\delta z$ v5_9_1', size=14)
-        p.ylabel(r'$\Delta z$ v5_10_0', size=14)
+        p.plot(n.linspace(0,0.01,100), n.linspace(0,0.01,100), color=sns.color_palette("Set2", 10)[1], linestyle='--', alpha=0.8)
+        p.scatter(dz591, dz5100, alpha=0.8, color='black', s=2)
+        p.xlabel(r'$\delta z$ (v5_9_1)', size=14)
+        p.ylabel(r'$\delta z$ (v5_10_0)', size=14)
+        print max(dz591)
+        print max(dz5100)
+        print min(dz591)
+        print min(dz5100)
+        p.axis([min(dz591), max(dz591), min(dz5100), max(dz591)]) 
         p.tick_params(labelsize=12)
         p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/zerr_reductions.pdf')

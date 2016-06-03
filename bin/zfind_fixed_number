@@ -15,7 +15,7 @@ q.verbose = True
 nodes = 12
 walltime = '36:00:00'
 ncycles = 250
-ntargets = 1000 # number of targets to run
+ntargets = 2000 # number of targets to run
 
 try: uufscell = environ['UUFSCELL']
 except: uufscell = None
@@ -38,7 +38,7 @@ spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
 if spallpath:
     cjob = 0
-    q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,
+    q.create(label='zfind_fixed_number',alloc=alloc,nodes=nodes,
              ppn=ppn,walltime=walltime)
     hdu = fits.open(spallpath)
     blocksize = ntargets
