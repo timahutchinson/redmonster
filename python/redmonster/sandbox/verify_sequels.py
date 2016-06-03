@@ -2635,10 +2635,10 @@ class VerifyRM:
         openplate = None
         openmjd = None
         for i,zwarn1 in enumerate(hdu1[1].data.ZWARNING):
-            stderr.write('\r %s of %s' % (i+1, hdu1[1].data.ZWARNING.shape[0]))
+            stderr.write('\r %s of %s ' % (i+1, hdu1[1].data.ZWARNING.shape[0]))
             plate = hdu1[1].data.PLATE[i]
             mjd = hdu1[1].data.MJD[i]
-            fiberid = hdu[1].data.FIBERID[i]
+            fiberid = hdu1[1].data.FIBERID[i]
             if openplate != plate or openmjd != mjd:
                 hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjd)))
                 openplate = plate
@@ -2682,7 +2682,8 @@ class VerifyRM:
             p.xlim(wave[0], wave[-1])
             p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
                    n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
-            p.legend()
+            p.legend(loc=2)
+            p.ylabel('$f_\lambda$ $10^{-17}$ erg cm$^{-2}$ s$^{-1}$ $\AA^{-1}$')
             ax = f.add_subplot(212)
             p.plot(wave, convolve(hduidl[0].data[objid[2]], Box1DKernel(5)), color='black', label='Data')
             p.plot(wave, hdurm4[2].data[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]][0], color=sns_pal[0], label='4 polynomial model')
@@ -2690,7 +2691,7 @@ class VerifyRM:
             p.xlim(wave[0], wave[-1])
             p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
                    n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
-            p.legend(loc=4)
+            p.legend(loc=2)
             p.xlabel(r'Observed wavelength ($\AA$)')
             p.ylabel('$f_\lambda$ $10^{-17}$ erg cm$^{-2}$ s$^{-1}$ $\AA^{-1}$')
             p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/yes1no4_%s.pdf' % i)
@@ -2721,7 +2722,8 @@ class VerifyRM:
             p.xlim(wave[0], wave[-1])
             p.ylim(n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.05)],
                    n.sort(hduidl[0].data[objid[2]])[n.round(hduidl[0].data[objid[2]].shape[0]*.95)])
-            p.legend()
+            p.legend(loc=4)
+            p.ylabel('$f_\lambda$ $10^{-17}$ erg cm$^{-2}$ s$^{-1}$ $\AA^{-1}$')
             ax = f.add_subplot(212)
             p.plot(wave, convolve(hduidl[0].data[objid[2]], Box1DKernel(5)), color='black', label='Data')
             p.plot(wave, hdurm4[2].data[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]][0], color=sns_pal[0], label='4 polynomial model')
