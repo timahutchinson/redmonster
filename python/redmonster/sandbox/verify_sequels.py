@@ -1,4 +1,4 @@
-from os.path import join, basename
+from os.path import join, basename, exists
 from os import environ
 from math import isnan
 import time
@@ -3865,7 +3865,7 @@ class VerifyRM:
         sns.set_palette(sns_pal)
         sns.set_context('paper')
 
-        hdu580 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'v5_8_0_all', 'v5_8_0_poly1', 'redmonsterAll-v5_8_0'))
+        hdu580 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], 'v5_8_0_all', 'v5_8_0_poly1', 'redmonsterAll-v5_8_0.fits'))
 
         fibercount = 0
         dz580 = []
@@ -3891,7 +3891,7 @@ class VerifyRM:
         f = p.figure()
         ax = f.add_subplot(111)
         p.scatter(dz580, dz5100, alpha=0.4, color='black', s=2)
-        p.xlabel(r'$\delta z$ v5_8_0, size=14)
+        p.xlabel(r'$\delta z$ v5_8_0', size=14)
         p.ylabel(r'$\Delta z$ v5_10_0', size=14)
         p.tick_params(labelsize=12)
         p.tight_layout()
