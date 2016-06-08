@@ -3738,6 +3738,39 @@ class VerifyRM:
         p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_plate.pdf')
         p.close()
+    
+        fail_dict = {}
+        for i in xrange(355):
+            fail_dict[i] = [0,0]
+
+        xbins = n.zeros(len(xbinedges)-1)
+        ybins = n.zeros(len(ybinedges)-1)
+        for i in xrange(xbins.shape[0]):
+            xbins[i] = (xbinedges[i+1] + xbinedges[i])/2.
+            ybins[i] = (ybinedges[i+1] + ybinedges[i])/2.
+
+        for i,x in enumerate(xbins):
+            for j,y in enumerate(ybins):
+                dist = n.floor(n.sqrt(x**2 + y**2))
+                faildict[dist][0] += 1.
+                faildict[dist][1] += hist[i,j]
+
+        fail = []
+        dist = []
+        for key in faildict:
+            dist.append(key/350.)
+            fail.append( faildict[key][1]/faildict[key][0])
+        
+        f = p.figure()
+        f.add_subplot(111)
+        p.plot(dist, fail, drawstyle='steps-mid')
+        p.xlabel(r'$r/R_\mathrm{plate}$', size=14)
+        p.ylabel(r'Failure rate', size=14)
+        p.tick_params(labelsize=12)
+        p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_dist.pdf')
+        p.close()
+    
+                
 
 
     def failure_vs_sn_sns(self,sn_max=5,nbins=20):
