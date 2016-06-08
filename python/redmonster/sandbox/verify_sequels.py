@@ -3406,19 +3406,19 @@ class VerifyRM:
             except IOError:
                 ioerrors += 1
                 print "IOError! %s %s" % (repr(object_id1), ioerrors)
-    
+        
         dvidl = []
         drchi2idl = []
         for i,object_id1 in enumerate(object_ids):
             stderr.write('\r %s of %s' % (i+1,len(object_ids)))
             try:
                 object_id2 = object_ids[object_id1]
-                hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version, '%s' % object_id1[0], '%s' % self.version,
+                hdu1 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % object_id1[0], '%s' % self.version,
                                       'spZbest-%s-%s.fits' % (object_id1[0],object_id1[1])))
-                hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s' % self.version, '%s' % object_id2[0], '%s' % self.version,
-                                      'spZbest-%s-%s.fits' % (object_id2[0],object_id1[1])))
-                z1 = hdu1[1].data.Z_NOQSO[object_idl1[2]]
-                z2 = hdu2[1].data.Z_NOQSO[object_idl2[2]]
+                hdu2 = fits.open(join(environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % object_id2[0], '%s' % self.version,
+                                      'spZbest-%s-%s.fits' % (object_id2[0],object_id2[1])))
+                z1 = hdu1[1].data.Z_NOQSO[object_id1[2]]
+                z2 = hdu2[1].data.Z_NOQSO[object_id2[2]]
                 rchi21 = hdu1[1].data.RCHI2DIFF_NOQSO[object_id1[2]]
                 rchi22 = hdu2[1].data.RCHI2DIFF_NOQSO[object_id2[2]]
                 
@@ -3426,9 +3426,10 @@ class VerifyRM:
                 drchi2idl.append(n.min([rchi21,rchi22]))
             except IndexError:
                 print "IndexError"
-            except IOError:
+            except IOError as e:
                 print "IOError"
 
+        
         print "Total objects: %s" % len(dv)*2
         confobjs = 0
         cataobjs = 0
@@ -3447,8 +3448,9 @@ class VerifyRM:
         print "Total objects: %s" % (totalobjs)
         print "Redmonster catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/(confobjs*2))
         print "Redmonster catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01, cataobjs01/(confobjs01*2))
-
+    
         print "Total objects: %s" % len(dvidl)*2
+        import pdb; pdb.set_trace()
         confobjs = 0
         cataobjs = 0
         confobjs01 = 0
@@ -3462,8 +3464,8 @@ class VerifyRM:
                 confobjs01 += 1.
                 if dvidl[i] > 1000:
                     cataobjs01 += 1
-        print "Spectro1d catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/(confobjs*2))
-        print "Spectro1d catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01, cataobjs01/(confobjs01*2))
+        print "Spectro1d catast´\rophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs*2, cataobjs/(confobjs*2))
+        print "Spectro1d catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01*2, cataobjs01/(confobjs01*2))
 
         f = p.figure()
         ax = f.add_subplot(111)

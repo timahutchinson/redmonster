@@ -30,6 +30,9 @@ else:
 
 spallpath = '/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/spAll-test_dr14.fits'
 
+print "uufscell:'{0}'".format(uufscell)
+print "alloc:'{0}'".format(alloc)
+
 if spallpath:
     cjob = 0
     q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,
