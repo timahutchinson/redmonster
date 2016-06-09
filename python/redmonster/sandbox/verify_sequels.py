@@ -3438,6 +3438,8 @@ class VerifyRM:
         cataobjs = 0
         confobjs01 = 0
         cataobjs01 = 0
+        confobjs002 = 0
+        cataobjs002 = 0
         for i,chi2 in enumerate(drchi2):
             if chi2 > 0.005:
                 confobjs += 1.
@@ -3446,11 +3448,16 @@ class VerifyRM:
             if chi2 > 0.01:
                 confobjs01 += 1.
                 if dv[i] > 1000:
-                    cataobjs01 += 1
-                        
+                    cataobjs01 += 1.
+            if chi2 > 0.002:
+                confobjs002 += 1.
+                if dv[i] > 1000:
+                    cataobjs002 += 1.
+                    
         print "Total objects: %s" % (totalobjs)
+        print "Redmonster catastrophic failures at 0.002: %s of %s -- %s percent" % (cataobjs002, confobjs002*2, cataobjs002/(confobjs002*2))
         print "Redmonster catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/(confobjs*2))
-        print "Redmonster catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01, cataobjs01/(confobjs01*2))
+        print "Redmonster catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01*2, cataobjs01/(confobjs01*2))
     
         print "Total objects: %s" % len(dvidl)*2
         import pdb; pdb.set_trace()
