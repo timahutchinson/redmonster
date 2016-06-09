@@ -2609,6 +2609,7 @@ class VerifyRM:
         sns.set_style('white')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
+        import pdb; pdb.set_trace()
         f = p.figure()
         ax = f.add_subplot(111)
         for j,hdu in enumerate(hdulist):
@@ -2623,6 +2624,8 @@ class VerifyRM:
         p.legend()
         p.xlabel(r'$\log_{10} \Delta \chi^2 / \mathrm{dof}$', size=14)
         p.ylabel('Distribution', size=14)
+        p.tick_params(labelsize=12)
+        p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/drchi2_poly_histos.pdf')
 
 
@@ -3464,7 +3467,7 @@ class VerifyRM:
                 confobjs01 += 1.
                 if dvidl[i] > 1000:
                     cataobjs01 += 1
-        print "Spectro1d catast´\rophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs*2, cataobjs/(confobjs*2))
+        print "Spectro1d catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs*2, cataobjs/(confobjs*2))
         print "Spectro1d catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01*2, cataobjs01/(confobjs01*2))
 
         f = p.figure()
@@ -3739,9 +3742,7 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_plate.pdf')
         p.close()
     
-        fail_dict = {}
-        for i in xrange(355):
-            fail_dict[i] = [0,0]
+        faildict = {}
 
         xbins = n.zeros(len(xbinedges)-1)
         ybins = n.zeros(len(ybinedges)-1)
@@ -3752,21 +3753,26 @@ class VerifyRM:
         for i,x in enumerate(xbins):
             for j,y in enumerate(ybins):
                 dist = n.floor(n.sqrt(x**2 + y**2))
-                faildict[dist][0] += 1.
-                faildict[dist][1] += hist[i,j]
+                if dist <= 300:
+                    if faildict.has_key(dist):
+                        faildict[dist][0] += 1.
+                        faildict[dist][1] += hist[i,j]
+                    else:
+                        faildict[dist] = [1, hist[i,j]]
 
         fail = []
         dist = []
         for key in faildict:
-            dist.append(key/350.)
+            dist.append(key/300.)
             fail.append( faildict[key][1]/faildict[key][0])
         
         f = p.figure()
         f.add_subplot(111)
-        p.plot(dist, fail, drawstyle='steps-mid')
+        p.plot(dist, convolve(fail,Box1DKernel(5)), drawstyle='steps-mid')
         p.xlabel(r'$r/R_\mathrm{plate}$', size=14)
         p.ylabel(r'Failure rate', size=14)
         p.tick_params(labelsize=12)
+        p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_dist.pdf')
         p.close()
     
