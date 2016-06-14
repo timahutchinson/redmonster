@@ -79,6 +79,7 @@ class ZFinder:
         self.npixstep = npixstep
         self.zwarning = n.zeros(specs.shape[0])
         flag_val_unplugged = int('0b10000000',2)
+        flag_val_nodata = int('0b1000000000',2)
         flag_val_neg_model = int('0b1000',2)
         self.create_z_baseline(specloglam[0])
         if (self.zmin != None) and (self.zmax != None) and \
@@ -129,15 +130,21 @@ class ZFinder:
         for i in xrange(specs.shape[0]): # Loop over fibers
             print 'Fitting fiber %s of %s for template %s' % \
                     (i+1, specs.shape[0], self.fname)
+            self.sn2_data.append (n.sum( (specs[i]**2)*ivar[i] ) )
             # If flux is all zeros, flag as unplugged according to BOSS
             # zwarning flags and don't bother with doing fit
             if len(n.where(specs[i] != 0.)[0]) == 0:
                 self.zwarning[i] = int(self.zwarning[i]) | flag_val_unplugged
+                self.f_nulls.append(0)
+                self.chi2_null.append(0)
+            elif len(n.where(ivar[i] !=0.)[0]) == 0:
+                self.zwarning[i] = int(self.zwarning[i]) | flag_val_nodata
+                self.f_nulls.append(0)
+                self.chi2_null.append(0)
             else: # Otherwise, go ahead and do fit
                 for ipos in xrange(self.npoly):
                     bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] *
                                          ivar_pad[i])
-                self.sn2_data.append (n.sum( (specs[i]**2)*ivar[i] ) )
                 for ipos in xrange(self.npoly):
                     for jpos in xrange(self.npoly):
                         pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] *
