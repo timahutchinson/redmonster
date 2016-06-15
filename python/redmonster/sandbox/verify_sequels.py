@@ -3449,7 +3449,7 @@ class VerifyRM:
                 confobjs01 += 1.
                 if dv[i] > 1000:
                     cataobjs01 += 1.
-            if chi2 > 0.002:
+            if chi2 > 0.0015:
                 confobjs002 += 1.
                 if dv[i] > 1000:
                     cataobjs002 += 1.
@@ -3687,6 +3687,18 @@ class VerifyRM:
         p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_fiberid.pdf')
         p.close()
+        
+        total, count = 0., 0.
+        for i in [2*x for x in xrange(250)]:
+            total += totals[i]
+            count += counts[i]
+        print count/total
+        total, count = 0., 0.
+        for i in [2*x+500 for x in xrange(250)]:
+            total += totals[i]
+            count += counts[i]
+        print count/total
+        
 
 
     def failure_rate_on_plate(self, nbins=40, sns_pal='muted'):
