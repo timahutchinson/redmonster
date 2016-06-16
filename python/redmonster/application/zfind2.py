@@ -172,12 +172,11 @@ class ZFind:
             else:
                 self.npixstep = map(int, self.npixstep)
 
-    def reduce_plate_mjd(self, plate, mjd, fiberid=None, data_range=None,
-                         chi2file=False):
+    def reduce_plate_mjd(self, plate=None, mjd=None, fiberid=None, data_range=None,
+                         chi2file=False, platepath=None):
         self.chi2file = chi2file
         # Check types and try to convert to proper types if necessary
-        if fiberid is None: fiberid = [i for i in xrange(1000)]
-        else:
+        if fiberid is not None:
             if type(fiberid) is not list:
                 try:
                     fiberid = [fiberid]
@@ -188,11 +187,11 @@ class ZFind:
                         fiberid = map(int, fiberid)
                     except ValueError:
                         print 'fiberid not set properly - running full plate!'
-                        fiberid = [i for i in xrange(1000)]
             else: fiberid = map(int, fiberid)
 
         # Spec
-        specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
+        specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid, platepath=platepath)
+        fiberid = specs.fiberid
 
         # ZFinder, ZFitter
         zfindobjs = []

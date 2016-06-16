@@ -10,6 +10,8 @@ except: inidir = None
 
 
 parser = ArgumentParser()
+parser.add_argument("-s", "--platepath", help="Run Redmonster on this spPlate-PLATE-MJD file",
+                    type=str,metavar="SPPLATE")
 parser.add_argument("-p", "--plate", help="Run Redmonster on this Plate",
                     type=int,metavar="PLATE")
 parser.add_argument("-m", "--mjd", help="Run Redmonster on this MJD",
@@ -29,8 +31,11 @@ parser.add_argument("-d", "--dest", help="overide REDMONSTER_SPECTRO_REDUX",
                     type=str,metavar="DEST")
 
 arg = parser.parse_args()
-if not arg.plate: parser.error("Please specify a valid --plate")
-if not arg.mjd: parser.error("Please specify a valid --mjd")
+if not arg.platepath: 
+    arg.platepath=None
+
+if not arg.platepath and not arg.plate: parser.error("Please specify a valid --plate or --platepath")
+if not arg.platepath and not arg.mjd: parser.error("Please specify a valid --mjd")
 inifile = join(inidir,arg.inifile) if inidir else arg.inifile
 
 data_range = []
@@ -38,14 +43,14 @@ try:
     data_range.append(arg.datamin)
     data_range.append(arg.datamax)
 except:
-    pass
+    data_range = None
 
 zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
-if data_range:
-    zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
-                        chi2file=False)
-else:
-    zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, chi2file=False)
+#if data_range:
+zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
+                        chi2file=False, platepath=arg.platepath)
+#else:
+#    zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, chi2file=False)
 
 # Delete QSO and CAP chi2files
 from os import remove

@@ -105,7 +105,7 @@ class ZPicker:
             npixsteptuple = ()
             fstuple = ()
             # Catch spectra that are all 0's and return null result
-            if len(n.where(self.flux[0] != 0)[0]) == 0:
+            if len(n.where(self.flux[ifiber] != 0)[0]) == 0 or len(n.where(self.ivar[ifiber] != 0)[0]) == 0:
                 ztuple = (-1,)*self.num_z
                 zerrtuple = (-1,)*self.num_z
                 fnametuple = ('noSpectrum',)*self.num_z

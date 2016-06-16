@@ -4,7 +4,7 @@
 # t.hutchinson@utah.edu
 
 from os import environ
-from os.path import exists, join
+from os.path import exists, join, splitext, basename
 from math import ceil, floor
 
 import numpy as n
@@ -18,8 +18,8 @@ from redmonster.datamgr.io import remove_log, write_to_log
 
 class Spec:
 
-    def __init__(self, plate=None, mjd=None, fiberid=None, data_range=None):
-        print 'plate %s mjd %s fiberid %s' % (plate, mjd, fiberid)
+    def __init__(self, plate=None, mjd=None, fiberid=None, data_range=None, platepath=None):
+        #print 'plate %s mjd %s fiberid %s' % (plate, mjd, fiberid)
         self.hdr = None
         self.flux = None
         self.ivar = None
@@ -44,7 +44,7 @@ class Spec:
             self.run2d = None
             print "Enviromental variable 'RUN2D' not set: %r" % e
         self.set_plate_mjd(plate=plate, mjd=mjd, fiberid=fiberid,
-                           data_range=data_range)
+                           data_range=data_range, platepath=platepath)
         #for i in xrange(self.flux.shape[0]):
             #self.flux[i] = convolve(self.flux[i], Box1DKernel(5))
         if exists(self.platepath):
@@ -56,18 +56,24 @@ class Spec:
             #write_to_log(plate, mjd, '%s does not exist.' % self.platepath)
 
     def set_plate_mjd(self, plate=None, mjd=None, fiberid=None,
-                      data_range=None):
+                      data_range=None, platepath=None):
+        if platepath:
+            platemjd = splitext(basename(platepath))[0].split('-')[1:] 
+            plate = int(platemjd[0])
+            mjd = int(platemjd[1])
+            self.platepath = platepath
+
         self.plate = plate
         self.mjd = mjd
-        if self.topdir and self.run2d and self.plate and self.mjd:
+        if platepath==None and self.topdir and self.run2d and self.plate and self.mjd:
             self.platepath = join(self.topdir, self.run2d, "%s" % self.plate,
                                   "spPlate-%s-%s.fits" % (self.plate,self.mjd))
-            if exists(self.platepath):
-                self.set_data()
-                if data_range: self.chop_data(data_range)
-                if fiberid != None: self.set_fibers(fiberid)
-                else: self.fiberid = [i for i in xrange(1000)]
-                self.flag_sky_fibers()
+        if exists(self.platepath):
+            self.set_data()
+            if data_range: self.chop_data(data_range)
+            if fiberid != None: self.set_fibers(fiberid)
+            else: self.fiberid = [i for i in xrange(self.nobj)]
+            self.flag_sky_fibers()
     
     def set_data(self):
         if self.platepath and exists(self.platepath):
