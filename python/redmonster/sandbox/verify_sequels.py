@@ -4129,7 +4129,7 @@ class VerifyRM:
             for j,idlchi2 in enumreate(drchi2idl):
                 if idlchi2 >= chi2:
                     total += 1.
-                    if dvidl[j] > 1000.
+                    if dvidl[j] > 1000:
                         count += 1.
             if total != 0:
                 cataidl.append(1-count/total)
