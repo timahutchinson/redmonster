@@ -93,6 +93,9 @@ class Spec:
             self.andmask = hdu[2].data
             self.ormask = hdu[3].data
             self.plugmap = hdu[5].data
+
+            self.sky_mask()
+
             try:
                 self.boss_target1 = hdu[5].data.BOSS_TARGET1
             except AttributeError:
@@ -167,8 +170,23 @@ class Spec:
                 self.zwarning[i] = int(self.zwarning[i]) | flag_val
 
 
+    #-- Added by J. Bautista 06/16/2016
+    #-- same as $IDLSPEC2D_DIR/pro/spec1d/skymask.pro
+    def sky_mask(self):
 
+        #-- from sdssMaskbits.par
+        flag_val_badsky = 2**27  # "Relative chi^2 > 3 in sky residuals at this wavelength"
+        flag_val_redmonster = 2**28  # "Contiguous region of bad chi^2 in sky residuals (with threshhold of relative chi^2 > 3)." 
 
+        badmask = (self.ivar*0 == 1)
+        badmask = badmask | (self.ormask & flag_val_badsky > 0) | \
+                            (self.ormask & flag_val_redmonster > 0)
+    
+        #-- use convolution to mask neighboring pixels
+        for i, mask in enumerate(badmask):
+            badmask[i] = n.convolve(mask, n.ones(5), mode='same')
+
+        self.ivar[badmask>0] = 0
 
 
 
