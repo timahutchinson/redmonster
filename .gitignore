@@ -1,3 +1,27 @@
-*.pyc
-.DS_Store
+# Compiled files
+*.py[co]
+
+# Other generated files
+htmlcov
+.coverage
+
+# Packages/installer info
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+var
+sdist
+develop-eggs
+.installed.cfg
+distribute-*.tar.gz
+MANIFEST
+
+# Other
+.*.swp
 *~
+
+# Mac OSX
+.DS_Store

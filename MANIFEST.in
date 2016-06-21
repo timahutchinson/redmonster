@@ -1,0 +1,13 @@
+include LICENSE.rst
+include README.rst
+
+graft bin
+graft conf
+graft doc
+graft pro
+graft templates
+
+prune build
+prune dist
+prune htmlcov
+prune doc/_build
