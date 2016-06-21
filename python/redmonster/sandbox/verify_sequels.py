@@ -4013,31 +4013,50 @@ class VerifyRM:
         
         # Calculate completeness as function of drchi2
         hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
-        hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, 'spAll-%s.fits'))
+        hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, 'spAll-%s.fits' % self.version))
 
         compidl = []
         comprm = []
+        indices = []
 
         for i,chi2 in enumerate(chi2s):
-            stderr.write('\r completeness %s of %s' % (i+1,chi2s.shape[0]))
             total = 0.
             count = 0.
-            for rmchi2 in hdurm[1].data.RCHI2DIFF:
+            for j,rmchi2 in enumerate(hdurm[1].data.RCHI2DIFF):
+                stderr.write('\r completeness %s of %s, %s of %s' % (i+1,chi2s.shape[0],j+1,hdurm[1].data.RCHI2DIFF.shape[0]))
                 total += 1
                 if rmchi2 >= chi2:
                     count += 1
             if total != 0:
-                comprm.append(count/total)
+                if chi2 != 0.005:
+                    comprm.append(count/total)
+                else:
+                    rmcstar = count/total
             else:
                 comprm.append(1.)
             total = 0.
             count = 0.
-            for j,idlchi2 in enumerate(hduidl[1].data.RCHI2DIFF_NOQSO):
-                if hduidl[1].data.EBOSS_TARGET1[j] & 2:
+            if i == 0:
+                for j,idlchi2 in enumerate(hduidl[1].data.RCHI2DIFF_NOQSO):
+                    stderr.write('\r completeness %s of %s, %s of %s' % (i+1,chi2s.shape[0],j+1,hduidl[1].data.RCHI2DIFF_NOQSO.shape[0]))
+                    if hduidl[1].data.EBOSS_TARGET1[j] & 2:
+                        indices.append(j)
+                        total += 1.
+                        if idlchi2 >= chi2:
+                            count += 1.
+            else:
+                for j,ind in enumerate(indices):
+                    stderr.write('\r completeness %s of %s, %s of %s' % (i+1,chi2s.shape[0],j+1,len(indices)))
                     total += 1.
-                    if idlchi2 >= chi2:
-                        count += 1.
-            compidl.append(count/total)
+                    if hduidl[1].data.RCHI2DIFF_NOQSO[ind] >= chi2:
+                        count += 1
+            if total != 0:
+                if chi2 != 0.01:
+                    compidl.append(count/total)
+                else:
+                    idlcstar = count/total
+            else:
+                compidl.append(1.)
 
         # Calculate purity as a function of drchi2
         c_kms = 299792.458
@@ -4111,40 +4130,50 @@ class VerifyRM:
 
         catarm = []
         cataidl = []
-        for i,chi2 in enumreate(chi2s):
+        for i,chi2 in enumerate(chi2s):
             stderr.write('\r catastrophic failures %s of %s' % (i+1,chi2s.shape[0]))
             total = 0.
             count = 0.
-            for j,rmchi2 in enumreate(drchi2):
+            for j,rmchi2 in enumerate(drchi2):
                 if rmchi2 >= chi2:
                     total += 1.
                     if dv[j] > 1000:
                         count += 1.
             if total != 0:
-                catarm.append(1-count/total)
+                if chi2 != 0.005:
+                    catarm.append(1-count/(total*2))
+                else:
+                    rmpstar = 1-count/(total*2)
             else:
                 catarm.append(0.)
             total = 0.
             count = 0.
-            for j,idlchi2 in enumreate(drchi2idl):
+            for j,idlchi2 in enumerate(drchi2idl):
                 if idlchi2 >= chi2:
                     total += 1.
                     if dvidl[j] > 1000:
                         count += 1.
             if total != 0:
-                cataidl.append(1-count/total)
+                if chi2 != 0.01:
+                    cataidl.append(1-count/(total*2))
+                else:
+                    idlpstar = 1-count/(total*2)
             else:
                 cataidl.append(0.)
 
         f = p.figure()
         ax = f.add_subplot(111)
-        p.scatter(comprm, catarm, c=chi2s, label='redmonster')
-        p.scatter(compidl, cataidl, 'x', c=chi2s, label='spectro1d')
+        p.scatter(comprm, catarm, marker='o', c=n.delete(chi2s,12), label='redmonster')
         cbar = p.colorbar()
         cbar.set_label(r'$\Delta\chi^2/$dof', size=14)
+        cbar.ax.tick_params(labelsize=12)
+        p.scatter(compidl, cataidl, marker='D', c=n.delete(chi2s,24), label='spectro1d')
+        p.scatter(rmcstar, rmpstar, marker='*', color='red')
+        p.scatter(idlcstar, idlpstar, marker='*', color='red')
         p.xlabel(r'Completeness', size=14)
         p.ylabel(r'Purity', size=14)
         p.legend()
+        p.grid(b=True, which='major', color='lightgrey', linestyle='-')
         p.tick_params(labelsize=12)
         p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/comp_pur_contour.pdf')
