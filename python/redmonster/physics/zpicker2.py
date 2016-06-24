@@ -105,7 +105,7 @@ class ZPicker:
             npixsteptuple = ()
             fstuple = ()
             # Catch spectra that are all 0's and return null result
-            if len(n.where(self.flux[ifiber] != 0)[0]) == 0 or len(n.where(self.ivar[ifiber] != 0)[0]) == 0:
+            if len(n.where(self.flux[0] != 0)[0]) == 0:
                 ztuple = (-1,)*self.num_z
                 zerrtuple = (-1,)*self.num_z
                 fnametuple = ('noSpectrum',)*self.num_z
@@ -135,11 +135,17 @@ class ZPicker:
                             fiberminvecs.append(
                                     zfitobjs[itemp].minvectors[ifiber][imin])
                         except IndexError as e:
-                            print "%r" % e
-                            fibermins.append( \
-                                    n.max(zfitobjs[itemp].chi2vals[ifiber]) / \
-                                    (self.dof[ifiber] - zfindobjs[itemp].npoly))
+                            #print "%r" % e
+                            #fibermins.append( \
+                            #        n.max(zfitobjs[itemp].chi2vals[ifiber]) / \
+                            #        (self.dof[ifiber] - zfindobjs[itemp].npoly))
+                            
+                            # this is ok, might be no solution
+                            #print "WARNING no z fitted for fiber #%d, class #%d, zid #%d"%(ifiber,itemp,imin)
+                            
+                            fibermins.append(100000.)
                             fiberminvecs.append( (-1,) )
+                            
                 # Build tuples of num_z best redshifts and classifications
                 # for this fiber
                 #for iz in xrange(self.num_z):
