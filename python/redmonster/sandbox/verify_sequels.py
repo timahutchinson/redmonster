@@ -14,6 +14,7 @@ from matplotlib.colors import LogNorm
 from glob import iglob
 from astropy.convolution import convolve, Box1DKernel
 from scipy.optimize import curve_fit
+from scipy import ndimage
 import seaborn as sns
 
 from redmonster.sandbox import yanny as y
@@ -3747,6 +3748,7 @@ class VerifyRM:
 
         hist = failures / totals
 
+        hist = ndimage.rotate(hist,-90)
         p.imshow(hist, interpolation='nearest', origin='lower', extent=[xbinedges[0], xbinedges[-1], ybinedges[0], ybinedges[-1]], cmap='cool')
         cbar = p.colorbar()
         cbar.set_label('Failure rate', size=14)
