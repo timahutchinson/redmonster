@@ -275,15 +275,15 @@ class WriteRedmonster:
             hdr = fits.Header()
         try:
             hdr.remove('HUMIDITY')
-        except (AttributeError, KeyError):
+        except ValueError:
             pass
         try:
             hdr.remove('DUSTA')
-        except (AttributeError, KeyError):
+        except ValueError:
             pass
         try:
             hdr.remove('DUSTB')
-        except (AttributeError, KeyError):
+        except ValueError:
             pass
         hdr.extend([('SPEC2D',environ['RUN2D'],
                      'Version of spec2d reductions used'),
