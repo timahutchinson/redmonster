@@ -246,16 +246,21 @@ class ZFinder:
                     else :
                         arguments = {"j":j,"t_fft":self.t_fft[j], "t2_fft":self.t2_fft[j], "data_fft":data_fft[i], "ivar_fft":ivar_fft[i], "chi2_0":self.sn2_data[i], "num_z":num_z, "npixstep":self.npixstep, "zminpix":zminpix, "flag_val_neg_model":flag_val_neg_model}
                     func_args.append(arguments)
-                    
                 
-                              
-                pool = multiprocessing.Pool(self.nproc)
-                if self.npoly>0 :
-                    results = pool.map(_zchi2, func_args)
-                else :
-                    results = pool.map(_zchi2_no_poly, func_args)
-                pool.close()
-                pool.join()
+                results = None
+                if self.nproc > 1:
+                    pool = multiprocessing.Pool(self.nproc)
+                    if self.npoly>0 :
+                        results = pool.map(_zchi2, func_args)
+                    else :
+                        results = pool.map(_zchi2_no_poly, func_args)
+                    pool.close()
+                    pool.join()
+                else:
+                    if self.npoly>0 :
+                        results = [ _zchi2(x) for x in func_args ]
+                    else :
+                        results = [ _zchi2_no_poly(x) for x in func_args ]
                 
                 for result in results :
                     j                  = result[0]
