@@ -3798,8 +3798,12 @@ class VerifyRM:
         p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_dist.pdf')
         p.close()
-    
-                
+
+        inner_50_fails = []
+        for i,this_dist in enumerate(dist):
+            if this_dist <= n.sqrt(.5):
+                inner_50_fails.append(fail[i])
+        print 'Average failure rate of inner 50 percent of fibers is %s' % n.sum(n.asarray(inner_50_fails))/len(inner_50_fails)
 
 
     def failure_vs_sn_sns(self,sn_max=5,nbins=20):
