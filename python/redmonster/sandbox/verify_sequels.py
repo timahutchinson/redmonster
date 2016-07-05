@@ -3709,7 +3709,7 @@ class VerifyRM:
         sns.set_palette(sns_pal)
         sns.set_context('paper')
 
-        hdu = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly1' % self.version, 'redmonsterAll-%s.fits' % self.version))
 
         p.close()
 
@@ -3803,7 +3803,8 @@ class VerifyRM:
         for i,this_dist in enumerate(dist):
             if this_dist <= n.sqrt(.5):
                 inner_50_fails.append(fail[i])
-        print 'Average failure rate of inner 50 percent of fibers is %s' % n.sum(n.asarray(inner_50_fails))/len(inner_50_fails)
+        inner_50_fails = n.array(inner_50_fails)
+        print 'Average failure rate of inner 50 percent of fibers is %s' % (n.sum(inner_50_fails)/inner_50_fails.shape[0])
 
 
     def failure_vs_sn_sns(self,sn_max=5,nbins=20):
