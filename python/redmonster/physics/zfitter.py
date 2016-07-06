@@ -165,6 +165,10 @@ class ZFitter:
             #import pdb; pdb.set_trace()
             if len(zminvals) == 0:
                 self.flag_null_fit(ifiber)
+                self.z[ifiber] = -1.
+                self.z_err[ifiber] = -1.
+                bestminvectors = [(-1,)]*num_z
+                bestchi2vals = [n.max(bestzvec)]*num_z
             else:
                 while (z_ind < num_z) & (stop == False):
                     # Location in zminvals vector of minimum
