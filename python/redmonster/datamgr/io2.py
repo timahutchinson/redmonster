@@ -255,7 +255,9 @@ class WriteRedmonster:
             run2d = environ['RUN2D']
             run1d = environ['RUN1D']
             if bsr and run2d and run1d:
-                testpath = join(bsr, run2d, '%s' % zpick.plate, run1d)
+                testpath = join(bsr, run2d, '%s'%
+                                __version__.replace('.', '_'), '%s' %
+                                zpick.plate)
                 if exists(testpath):
                     self.dest = testpath
                 else:
@@ -556,7 +558,7 @@ class MergeRedmonster:
         except KeyError as e:
             run1d = None
             print "Enviromental variable 'RUN1D' not set: %r" % e
-        fiberdir = join(topdir, run2d, '%s' % self.plate, run1d,
+        fiberdir = join(topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % self.plate,
                         'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if \
                                topdir and run2d and run1d else None
         if fiberdir:
@@ -659,7 +661,7 @@ class MergeRedmonster:
                 print 'Merging plate %s' % plate
                 mjds = []
                 try:
-                    for x in iglob( join( topdir, run2d, '%s' % plate, run1d,
+                    for x in iglob( join( topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % plate,
                                          'redmonster-%s-*.fits' % plate) ):
                         if basename(x)[16:21] not in mjds:
                             mjds.append(basename(x)[16:21])
@@ -668,7 +670,7 @@ class MergeRedmonster:
                     mjds = None
                 if mjds is not [] and mjds is not None:
                     for mjd in mjds:
-                        filepath = join( topdir, run2d, str(plate), run1d,
+                        filepath = join( topdir, run2d, '%s' % __version__.replace('.', '_'), str(plate),
                                         'redmonster-%s-%s.fits' % (plate, mjd))
                         if exists(filepath):
                             hdu = fits.open(filepath)
@@ -708,7 +710,7 @@ class MergeRedmonster:
         
         output = WriteRedmonster(self)
         output.create_hdulist()
-        output.thdulist.writeto( join( topdir, run2d, 'redmonsterAll-%s.fits' %
+        output.thdulist.writeto( join( topdir, run2d, '%s' % __version__.replace('.', '_'), 'redmonsterAll-%s.fits' %
                                       run2d), clobber=True)
 
 
@@ -789,7 +791,7 @@ class MergeRedmonster:
         except KeyError:
             run1d = None
             print "Environmental variable 'RUN1D' is not set: %r" % e
-        fiberdir = join(topdir, run2d, '%s' % self.plate, run1d,
+        fiberdir = join(topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % self.plate,
                         'redmonster-%s-%s-*.fits' % (self.plate, self.mjd)) if \
                                topdir and run2d and run1d else None
         
@@ -1038,7 +1040,7 @@ class MergeRedmonster:
             sechdu = fits.ImageHDU(data=self.models)
             thdulist = fits.HDUList([prihdu, tbhdu, sechdu])
             
-            dest = join(topdir, run2d, '%s' % self.plate, run1d,
+            dest = join(topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % self.plate,
                         'redmonster-%s-%s.fits' % (self.plate, self.mjd))
             thdulist.writeto( dest, clobber=True )
 
@@ -1094,7 +1096,7 @@ class MergeRedmonster:
                 print 'Merging plate %s' % plate
                 mjds = []
                 try:
-                    for x in iglob( join( topdir, run2d, '%s' % plate, run1d,
+                    for x in iglob( join( topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % plate,
                                          'redmonster-%s-*.fits' % plate) ):
                         if basename(x)[16:21] not in mjds:
                             mjds.append(basename(x)[16:21])
@@ -1103,7 +1105,7 @@ class MergeRedmonster:
                     print "Exception: %r" % e
                 if mjds is not [] and mjds is not None:
                     for mjd in mjds:
-                        filepath = join( topdir, run2d, '%s' % plate, run1d,
+                        filepath = join( topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % plate,
                                         'redmonster-%s-%s.fits' % (plate, mjd))
                         if exists(filepath):
                             hdu = fits.open(filepath)
@@ -1212,7 +1214,7 @@ class MergeRedmonster:
             tbhdu = fits.BinTableHDU.from_columns(cols)
             thdulist = fits.HDUList([prihdu, tbhdu])
             
-            dest = join(topdir, run2d, 'redmonsterAll-%s.fits' % run1d)
+            dest = join(topdir, run2d, '%s' % __version__.replace('.', '_'), 'redmonsterAll-%s.fits' % run1d)
             thdulist.writeto( dest, clobber=True )
 
     def merge_chi2(self):
@@ -1231,7 +1233,7 @@ class MergeRedmonster:
         except KeyError:
             run1d = None
             print "'RUN1D' env variable not set."
-        chi2path = join( topdir, run2d, '%s' % self.plate, run1d,
+        chi2path = join( topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % self.plate,
                         'chi2arr-%s-%s-%s-*.fits' %
                         (self.temp, self.plate, self.mjd) ) if topdir and \
                                 run2d and run1d else None
@@ -1264,7 +1266,7 @@ class MergeRedmonster:
             cols = fits.ColDefs([col1])
             tbhdu = fits.BinTableHDU.from_columns(cols)
             thdulist = fits.HDUList([prihdu,tbhdu])
-            thdulist.writeto( join( topdir, run2d, '%s' % self.plate, run1d,
+            thdulist.writeto( join( topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % self.plate,
                                    'chi2arr-%s-%s-%s.fits' %
                                    (self.temp, self.plate, self.mjd) ),
                              clobber=True)
@@ -1282,7 +1284,7 @@ def write_chi2arr(plate, mjd, fiberid, zchi2arr):
         run2d = environ['RUN2D']
         run1d = environ['RUN1D']
         if (rsr is not None) & (run2d is not None) & (run1d is not None):
-            testpath = join(rsr, run2d, '%s' % plate, run1d)
+            testpath = join(rsr, run2d, '%s' % __version__.replace('.', '_'), '%s' % plate)
             if exists(testpath):
                 dest = testpath
             else:
