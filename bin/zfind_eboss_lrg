@@ -36,7 +36,7 @@ spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
 if spallpath:
     cjob = 0
-    q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,
+    q.create(label='zfind_eboss_lrg_%r' % cjob,alloc=alloc,nodes=nodes,
              ppn=ppn,walltime=walltime)
     hdu = fits.open(spallpath)
     blocksize = nodes*ppn*ncycles
