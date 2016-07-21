@@ -42,7 +42,7 @@ if platedir:
         mjds = []
         files = []
         try:
-            for x in iglob( join( topdir, run2d, str(plate), run1d,
+            for x in iglob( join( topdir, run2d, '%s' % __version__.replace('.', '_'), str(plate)
                                  'redmonster-%s-*-*.fits' % plate) ):
                 files.append(x)
             for file in files:
