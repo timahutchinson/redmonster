@@ -394,7 +394,8 @@ class WriteRedmonster:
                                       clobber=self.clobber)
                 print 'Writing redmonster file to %s' % \
                         join( getcwd(), 'redmonster-%s-%s-%03d.fits' %
-                             (self.zpick.plate, self.zpick.mjd) )
+                             (self.zpick.plate, self.zpick.mjd,
+                              self.zpick.fiberid[0]) )
         else:
             if self.dest is not None:
                 if exists(join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' %
