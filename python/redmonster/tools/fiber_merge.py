@@ -20,7 +20,7 @@ except KeyError as e:
     topdir = None
     print "Environmental variable 'REDMONSTER_SPECTRO_REDUX' is not set: %r" % e
 try:
-    run1d = environ['REDMONSTER_VER']
+    rmver = environ['REDMONSTER_VER']
 except KeyError as e:
     rmver = None
     print "Environmental variable 'REDMONSTER_VER' is not set: %r" % e
