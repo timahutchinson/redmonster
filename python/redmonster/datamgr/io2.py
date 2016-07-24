@@ -1076,6 +1076,11 @@ class MergeRedmonster:
             print "Environmental variable 'REDMONSTER_SPECTRO_REDUX' is not \
             set: %r" % e
         try:
+            rmver = environ['REDMONSTER_VER']
+        except KeyError:
+            rmver = None
+            print "Environmental variable 'REDMONSTER_VER' is not set: %r" % e
+        try:
             run2d = environ['RUN2D']
         except KeyError:
             run2d = None
@@ -1085,7 +1090,7 @@ class MergeRedmonster:
         except KeyError:
             run1d = None
             print "Environmental variable 'RUN1D' is not set: %r" % e
-        platedir = join( topdir, run2d, '*') if topdir and run2d else None
+        platedir = join( topdir, run2d, rmver, '*') if topdir and run2d else None
         if platedir:
             for path in iglob(platedir):
                 self.plates.append( basename(path) )
@@ -1097,7 +1102,7 @@ class MergeRedmonster:
                 print 'Merging plate %s' % plate
                 mjds = []
                 try:
-                    for x in iglob( join( topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % plate,
+                    for x in iglob( join( topdir, run2d, rmver, '%s' % plate,
                                          'redmonster-%s-*.fits' % plate) ):
                         if basename(x)[16:21] not in mjds:
                             mjds.append(basename(x)[16:21])
@@ -1106,7 +1111,7 @@ class MergeRedmonster:
                     print "Exception: %r" % e
                 if mjds is not [] and mjds is not None:
                     for mjd in mjds:
-                        filepath = join( topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % plate,
+                        filepath = join( topdir, run2d, rmver, '%s' % plate,
                                         'redmonster-%s-%s.fits' % (plate, mjd))
                         if exists(filepath):
                             hdu = fits.open(filepath)
@@ -1147,7 +1152,7 @@ class MergeRedmonster:
             self.hdr.extend([
                              ('SPEC2D',environ['RUN2D'],
                               'Version of spec2d reductions used'),
-                             ('VERS_RM',__version__,'Version of redmonster used'),
+                             ('VERS_RM',rmver,'Version of redmonster used'),
                              ('TIME',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),
                               'Time of redmonsterAll creation'),
                              ('NFIBERS', len(self.fiberid), 'Number of fibers'),
@@ -1215,7 +1220,7 @@ class MergeRedmonster:
             tbhdu = fits.BinTableHDU.from_columns(cols)
             thdulist = fits.HDUList([prihdu, tbhdu])
             
-            dest = join(topdir, run2d, '%s' % __version__.replace('.', '_'), 'redmonsterAll-%s.fits' % run1d)
+            dest = join(topdir, run2d, rmver, 'redmonsterAll-%s.fits' % run1d)
             thdulist.writeto( dest, clobber=True )
 
     def merge_chi2(self):
@@ -1224,6 +1229,11 @@ class MergeRedmonster:
         except KeyError:
             topdir = None
             print "'REDMONSTER_SPECTRO_REDUX' env variable not set."
+        try:
+            rmver = environ['REDMONSTER_VER']
+        except KeyError:
+            rmver = None
+            print "Environmental variable 'REDMONSTER_VER' is not set: %r" % e
         try:
             run2d = environ['RUN2D']
         except KeyError:
@@ -1234,7 +1244,7 @@ class MergeRedmonster:
         except KeyError:
             run1d = None
             print "'RUN1D' env variable not set."
-        chi2path = join( topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % self.plate,
+        chi2path = join( topdir, run2d, rmver, '%s' % self.plate,
                         'chi2arr-%s-%s-%s-*.fits' %
                         (self.temp, self.plate, self.mjd) ) if topdir and \
                                 run2d and run1d else None
@@ -1267,7 +1277,7 @@ class MergeRedmonster:
             cols = fits.ColDefs([col1])
             tbhdu = fits.BinTableHDU.from_columns(cols)
             thdulist = fits.HDUList([prihdu,tbhdu])
-            thdulist.writeto( join( topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % self.plate,
+            thdulist.writeto( join( topdir, run2d, rmver, '%s' % self.plate,
                                    'chi2arr-%s-%s-%s.fits' %
                                    (self.temp, self.plate, self.mjd) ),
                              clobber=True)
