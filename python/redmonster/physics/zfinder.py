@@ -23,8 +23,9 @@ from redmonster.datamgr.io2 import read_ndArch, write_chi2arr
 
 class ZFinder:
     
-    def __init__(self, fname=None, npoly=None, zmin=None, zmax=None):
+    def __init__(self, fname=None, group=0, npoly=None, zmin=None, zmax=None):
         self.fname = fname
+        self.group = group
         self.npoly = npoly if npoly else 4
         self.zmin = float(zmin)
         self.zmax = float(zmax)

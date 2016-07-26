@@ -320,6 +320,7 @@ class WriteRedmonster:
             minvectorlist = []
             npolylist = []
             fnamelist = []
+            grouplist = []
             npixsteplist = []
             minrchi2list = []
             fslist = []
@@ -329,6 +330,7 @@ class WriteRedmonster:
                 classlist.append( self.zpick.type[j][i] )
                 subclasslist.append( repr(self.zpick.subtype[j][i]) )
                 fnamelist.append( self.zpick.fname[j][i] )
+                grouplist.append( self.zpick.group[j][i] )
                 minvectorlist.append( repr(self.zpick.minvector[j][i]) )
                 npolylist.append( self.zpick.npoly[j][i] )
                 npixsteplist.append( self.zpick.npixstep[j][i] )
@@ -347,6 +349,8 @@ class WriteRedmonster:
             colslist.append( fits.Column(name='FNAME%s' % (i+1), format='%iA' %
                                          max(map(len,fnamelist)),
                                          array=fnamelist) )
+            colslist.append( fits.Column(name='GROUP%s' % (i+1), format='J',
+                                         array=grouplist) )
             colslist.append( fits.Column(name='MINVECTOR%s' % (i+1),
                                          format='%iA' %
                                          max(map(len,minvectorlist)),
@@ -727,6 +731,7 @@ class MergeRedmonster:
         self.class1 = []
         self.subclass1 = []
         self.fname1 = []
+        self.group1 = []
         self.minvector1 = []
         self.minrchi21 = []
         self.npoly1 = []
@@ -737,6 +742,7 @@ class MergeRedmonster:
         self.class2 = []
         self.subclass2 = []
         self.fname2 = []
+        self.group2 = []
         self.minvector2 = []
         self.minrchi22 = []
         self.npoly2 = []
@@ -747,6 +753,7 @@ class MergeRedmonster:
         self.class3 = []
         self.subclass3 = []
         self.fname3 = []
+        self.group3 = []
         self.minvector3 = []
         self.minrchi23 = []
         self.npoly3 = []
@@ -757,6 +764,7 @@ class MergeRedmonster:
         self.class4 = []
         self.subclass4 = []
         self.fname4 = []
+        self.group4 = []
         self.minvector4 = []
         self.minrchi24 = []
         self.npoly4 = []
@@ -767,6 +775,7 @@ class MergeRedmonster:
         self.class5 = []
         self.subclass5 = []
         self.fname5 = []
+        self.group5 = []
         self.minvector5 = []
         self.minrchi25 = []
         self.npoly5 = []
@@ -828,6 +837,7 @@ class MergeRedmonster:
                 self.class1.append(hdu[1].data.CLASS1[0])
                 self.subclass1.append(hdu[1].data.SUBCLASS1[0])
                 self.fname1.append(hdu[1].data.FNAME1[0])
+                self.group1.append(hdu[1].data.GROUP1[0])
                 self.minvector1.append(hdu[1].data.MINVECTOR1[0])
                 self.minrchi21.append(hdu[1].data.MINRCHI21[0])
                 self.npoly1.append(hdu[1].data.NPOLY1[0])
@@ -838,6 +848,7 @@ class MergeRedmonster:
                 self.class2.append(hdu[1].data.CLASS2[0])
                 self.subclass2.append(hdu[1].data.SUBCLASS2[0])
                 self.fname2.append(hdu[1].data.FNAME2[0])
+                self.group2.append(hdu[1].data.GROUP2[0])
                 self.minvector2.append(hdu[1].data.MINVECTOR2[0])
                 self.minrchi22.append(hdu[1].data.MINRCHI22[0])
                 self.npoly2.append(hdu[1].data.NPOLY2[0])
@@ -848,6 +859,7 @@ class MergeRedmonster:
                 self.class3.append(hdu[1].data.CLASS3[0])
                 self.subclass3.append(hdu[1].data.SUBCLASS3[0])
                 self.fname3.append(hdu[1].data.FNAME3[0])
+                self.group3.append(hdu[1].data.GROUP3[0])
                 self.minvector3.append(hdu[1].data.MINVECTOR3[0])
                 self.minrchi23.append(hdu[1].data.MINRCHI23[0])
                 self.npoly3.append(hdu[1].data.NPOLY3[0])
@@ -858,6 +870,7 @@ class MergeRedmonster:
                 self.class4.append(hdu[1].data.CLASS4[0])
                 self.subclass4.append(hdu[1].data.SUBCLASS4[0])
                 self.fname4.append(hdu[1].data.FNAME4[0])
+                self.group4.append(hdu[1].data.GROUP4[0])
                 self.minvector4.append(hdu[1].data.MINVECTOR4[0])
                 self.minrchi24.append(hdu[1].data.MINRCHI24[0])
                 self.npoly4.append(hdu[1].data.NPOLY4[0])
@@ -868,6 +881,7 @@ class MergeRedmonster:
                 self.class5.append(hdu[1].data.CLASS5[0])
                 self.subclass5.append(hdu[1].data.SUBCLASS5[0])
                 self.fname5.append(hdu[1].data.FNAME5[0])
+                self.group5.append(hdu[1].data.GROUP5[0])
                 self.minvector5.append(hdu[1].data.MINVECTOR5[0])
                 self.minrchi25.append(hdu[1].data.MINRCHI25[0])
                 self.npoly5.append(hdu[1].data.NPOLY5[0])
@@ -919,6 +933,8 @@ class MergeRedmonster:
             colslist.append( fits.Column(name='FNAME1', format='%iA' %
                                          max(map(len,self.fname1)),
                                          array=self.fname1) )
+            colslist.append( fits.Column(name='GROUP1', format='J',
+                                         array=self.group1) )
             colslist.append( fits.Column(name='MINVECTOR1', format='%iA' %
                                          max(map(len,self.minvector1)),
                                          array=self.minvector1) )
@@ -943,6 +959,8 @@ class MergeRedmonster:
             colslist.append( fits.Column(name='FNAME2', format='%iA' %
                                          max(map(len,self.fname2)),
                                          array=self.fname2) )
+            colslist.append( fits.Column(name='GROUP2', format='J',
+                                         array=self.group2) )
             colslist.append( fits.Column(name='MINVECTOR2', format='%iA' %
                                          max(map(len,self.minvector2)),
                                          array=self.minvector2) )
@@ -967,6 +985,8 @@ class MergeRedmonster:
             colslist.append( fits.Column(name='FNAME3', format='%iA' %
                                          max(map(len,self.fname3)),
                                          array=self.fname3) )
+            colslist.append( fits.Column(name='GROUP3', format='J',
+                                         array=self.group3) )
             colslist.append( fits.Column(name='MINVECTOR3', format='%iA' %
                                          max(map(len,self.minvector3)),
                                          array=self.minvector3) )
@@ -991,6 +1011,8 @@ class MergeRedmonster:
             colslist.append( fits.Column(name='FNAME4', format='%iA' %
                                          max(map(len,self.fname4)),
                                          array=self.fname4) )
+            colslist.append( fits.Column(name='GROUP4', format='J',
+                                         array=self.group4) )
             colslist.append( fits.Column(name='MINVECTOR4', format='%iA' %
                                          max(map(len,self.minvector4)),
                                          array=self.minvector4) )
@@ -1015,6 +1037,8 @@ class MergeRedmonster:
             colslist.append( fits.Column(name='FNAME5', format='%iA' %
                                          max(map(len,self.fname5)),
                                          array=self.fname5) )
+            colslist.append( fits.Column(name='GROUP5', format='J',
+                                         array=self.group5) )
             colslist.append( fits.Column(name='MINVECTOR5', format='%iA' %
                                          max(map(len,self.minvector5)),
                                          array=self.minvector5) )
