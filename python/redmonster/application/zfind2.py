@@ -50,6 +50,7 @@ class ZFind:
         self.zmax = []
         self.npoly = []
         self.npixstep = []
+        self.group = []
         
         if exists(self.inifile):
             self.option = SafeConfigParser()
@@ -70,6 +71,9 @@ class ZFind:
                     if self.option.has_option(section,'npixstep'):
                         self.npixstep.append(self.option.getint(section,
                                                                 'npixstep'))
+                    if self.option.has_option(section,'group'):
+                        self.group.append(self.option.getint(section,'group'))
+        
             else: print "Cannot parse ini file %r" % self.inifile
             
             if not self.labels: self.labels = None
@@ -78,18 +82,20 @@ class ZFind:
             if not self.zmax: self.zmax = None
             if not self.npoly: self.npoly = None
             if not self.npixstep: self.npixstep = None
+            if not self.group: self.group = None
             
             self.set_templates()
         else: print "WARNING: %r does not exist" % self.inifile
 
 
     def set_templates(self, templates=None, zmin=None, zmax=None, npoly=None,
-                      npixstep=None):
+                      npixstep=None, group=None):
         if templates: self.templates = templates
         if zmin: self.zmin = zmin
         if zmax: self.zmax = zmax
         if npoly: self.npoly = npoly
         if npixstep: self.npixstep = npixstep
+        if group: self.group = group
         
         if type(self.templates) is str:
             try: self.templates = [self.templates]
@@ -141,6 +147,8 @@ class ZFind:
         #import pdb; pdb.set_trace()
         if self.npoly is None:
             self.npoly = [4]*len(self.templates)
+        if self.group is None:
+            self.group = [0]*len(self.templates)
         else:
             if type(self.npoly) is not list:
                 try:
@@ -172,6 +180,7 @@ class ZFind:
             else:
                 self.npixstep = map(int, self.npixstep)
 
+
     def reduce_plate_mjd(self, plate=None, mjd=None, fiberid=None, data_range=None,
                          chi2file=False, platepath=None):
         self.chi2file = chi2file
@@ -199,6 +208,7 @@ class ZFind:
         if (self.zmin is not None) & (self.zmax is not None):
             for i in xrange(len(self.templates)):
                 zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
+                                                  group=self.group[i],
                                                   npoly=self.npoly[i],
                                                   zmin=self.zmin[i],
                                                   zmax=self.zmax[i]) )
@@ -212,6 +222,7 @@ class ZFind:
         else:
             for i in xrange(len(self.templates)):
                 zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
+                                                  group=self.group[i],
                                                   npoly=self.npoly[i],
                                                   npixstep=self.npixstep[i]) )
                 zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
