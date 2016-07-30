@@ -111,7 +111,7 @@ class ZPicker:
                 ztuple = (-1,)*self.num_z
                 zerrtuple = (-1,)*self.num_z
                 fnametuple = ('noSpectrum',)*self.num_z
-                grouptuple = ('noSpectrum',)*self.num_z
+                grouptuple = (-1,)*self.num_z
                 typetuple = ('noSpectrum',)*self.num_z
                 subtypetuple = ('noSpectrum',)*self.num_z
                 minchi2tuple = (-1,)*self.num_z
