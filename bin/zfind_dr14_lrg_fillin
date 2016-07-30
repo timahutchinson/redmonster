@@ -1,0 +1,64 @@
+#!/usr/bin/env python
+
+# Run redmonster on all eboss LRG targets according to Kyles papers selection
+
+from os import environ
+from os.path import join, basename
+from glob import iglob
+import re
+
+from astropy.io import fits
+from pbs import queue
+
+from redmonster._version import __version__
+
+q = queue()
+q.verbose = True
+nodes = 12
+walltime = '36:00:00'
+ncycles = 250
+
+try: uufscell = environ['UUFSCELL']
+except: uufscell = None
+if 'kingspeak' in uufscell:
+    alloc = 'sdss-kp'
+    ppn=16
+elif 'ember' in uufscell:
+    alloc = 'bolton-em'
+    ppn=12
+else:
+    alloc = None
+    ppn=None
+
+try: topdir = environ['BOSS_SPECTRO_REDUX']
+except: topdir = None
+try: run2d = environ['RUN2D']
+except: run2d = None
+spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
+
+if spallpath:
+    cjob = 0
+    q.create(label='zfind_dr14_lrg_%r' % cjob,alloc=alloc,nodes=nodes,
+             ppn=ppn,walltime=walltime)
+    hdu = fits.open(spallpath)
+    blocksize = nodes*ppn*ncycles
+    for ind,ebosstarg1 in enumerate(hdu[1].data.EBOSS_TARGET1):
+        if ((ebosstarg1 & 2) or (hdu[1].data.EBOSS_TARGET0[ind] & 2) or (hdu[1].data.EBOSS_TARGET0[ind] & 4)) and (hdu[1].data.SPECPRIMARY[ind] > 0):
+            plate = hdu[1].data.PLATE[ind]
+            mjd = hdu[1].data.MJD[ind]
+            fiberid = hdu[1].data.FIBERID[ind] - 1
+            if not exists(join(environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'], '%s' % __version__.replace('.', '_'), '%s' % plate, 'redmonster-%s-%s-%03d.fits' % (plate, mjd, fiberid))):
+                q.append( "zfind -p %i -m %i -f %i" % (plate, mjd, fiberid) )
+        if q.task_number >= blocksize:
+            cjob += 1
+            q.commit(hard=True, submit=True)
+            q = queue()
+            q.verbose = True
+            q.create(label='zfind_dr14_lrg_%r' % cjob,alloc=alloc,
+                     nodes=nodes,ppn=ppn,walltime=walltime)
+    if not q.client.committed: q.commit(hard=True, submit=True)
+
+
+
+
+
