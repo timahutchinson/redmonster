@@ -211,7 +211,8 @@ class ZPicker:
                 if self.z[ifiber][0] != -1:
                     if (c_kms*n.abs(self.z[ifiber][0] - self.z[ifiber][1])) / \
                             (1 + self.z[ifiber][0]) > 1000:
-                        if self.group[ifiber][0] != self.group[ifiber][1]:
+                        if not any(a in self.group[ifiber][0] for
+                                   a in self.group[ifiber][1]):
                             self.flag_small_dchi2(ifiber)
                 else:
                     self.flag_small_dchi2(ifiber)

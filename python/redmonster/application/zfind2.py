@@ -72,7 +72,7 @@ class ZFind:
                         self.npixstep.append(self.option.getint(section,
                                                                 'npixstep'))
                     if self.option.has_option(section,'group'):
-                        self.group.append(self.option.getint(section,'group'))
+                        self.group.append(self.option.get(section,'group'))
         
             else: print "Cannot parse ini file %r" % self.inifile
             
