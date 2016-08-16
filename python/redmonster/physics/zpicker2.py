@@ -36,6 +36,7 @@ class ZPicker:
         else: self.hdr = fits.Header()
         self.threshold = zfitobjs[0].threshold
         self.fname = []
+        self.group = []
         self.type = []
         self.subtype = []
         self.minvector = []
@@ -97,6 +98,7 @@ class ZPicker:
             ztuple = ()
             zerrtuple = ()
             fnametuple = ()
+            grouptuple = ()
             typetuple = ()
             subtypetuple = ()
             minchi2tuple = ()
@@ -109,6 +111,7 @@ class ZPicker:
                 ztuple = (-1,)*self.num_z
                 zerrtuple = (-1,)*self.num_z
                 fnametuple = ('noSpectrum',)*self.num_z
+                grouptuple = ('noSpectrum',)*self.num_z
                 typetuple = ('noSpectrum',)*self.num_z
                 subtypetuple = ('noSpectrum',)*self.num_z
                 minchi2tuple = (-1,)*self.num_z
@@ -164,6 +167,7 @@ class ZPicker:
                         ztuple += (zfitobjs[tempnum].z[ifiber][znum],)
                         zerrtuple += (zfitobjs[tempnum].z_err[ifiber][znum],)
                         fnametuple += (zfindobjs[tempnum].fname,)
+                        grouptuple += (zfindobjs[tempnum].group,)
                         typetuple += (zfindobjs[tempnum].type,)
                         vectortuple += (fiberminvecs[zpos],)
                         d = {} # Dictionary for subtype
@@ -195,6 +199,7 @@ class ZPicker:
             self.z.append(ztuple)
             self.z_err.append(zerrtuple)
             self.fname.append(fnametuple)
+            self.group.append(grouptuple)
             self.type.append(typetuple)
             self.subtype.append(subtypetuple)
             self.minrchi2.append(minchi2tuple)
@@ -212,7 +217,8 @@ class ZPicker:
                 if self.z[ifiber][0] != -1:
                     if (c_kms*n.abs(self.z[ifiber][0] - self.z[ifiber][1])) / \
                             (1 + self.z[ifiber][0]) > 1000:
-                        self.flag_small_dchi2(ifiber)
+                        if self.group[ifiber][0] != self.group[ifiber][1]:
+                            self.flag_small_dchi2(ifiber)
                 else:
                     self.flag_small_dchi2(ifiber)
             if n.isnan(self.rchi2diff[ifiber]):
