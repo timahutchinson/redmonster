@@ -10,7 +10,10 @@ set of Python utilities for redshift measurement, physical parameter
 measurement, and classification of one-dimensional astronomical
 spectra.
 
-The code is being fully documented in Hutchinson *et al.* (in prep.).
+The code is fully documented in |text|_.
+
+.. _text: http://arxiv.org/abs/1607.02432
+.. |text| replace:: Hutchinson *et al* (2016)
 
 Contents
 --------

@@ -36,12 +36,12 @@ spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
 
 if spallpath:
     cjob = 0
-    q.create(label='zfind_eboss_lrg_%r' % cjob,alloc=alloc,nodes=nodes,
+    q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,nodes=nodes,
              ppn=ppn,walltime=walltime)
     hdu = fits.open(spallpath)
     blocksize = nodes*ppn*ncycles
-    for ind,ebosstarg1 in enumerate(hdu[1].data.EBOSS_TARGET1):
-        if (ebosstarg1 & 2) and (hdu[1].data.SPECPRIMARY[ind] > 0):
+    for ind,bosstarg1 in enumerate(hdu[1].data.BOSS_TARGET1):
+        if (bosstarg1 & 2) and (hdu[1].data.SPECPRIMARY[ind] > 0):
             plate = hdu[1].data.PLATE[ind]
             mjd = hdu[1].data.MJD[ind]
             fiberid = hdu[1].data.FIBERID[ind] - 1
