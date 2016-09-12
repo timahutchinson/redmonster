@@ -72,8 +72,8 @@ class ZFind:
                         self.npixstep.append(self.option.getint(section,
                                                                 'npixstep'))
                     if self.option.has_option(section,'group'):
-                        self.group.append(self.option.get(section,'group'))
-        
+                        self.group.append(self.option.getint(section,'group'))
+
             else: print "Cannot parse ini file %r" % self.inifile
             
             if not self.labels: self.labels = None
@@ -148,7 +148,7 @@ class ZFind:
         if self.npoly is None:
             self.npoly = [4]*len(self.templates)
         if self.group is None:
-            self.group = [0]*len(self.templates)
+            self.group = [0].len(self.templates)
         else:
             if type(self.npoly) is not list:
                 try:

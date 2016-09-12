@@ -111,7 +111,7 @@ class ZPicker:
                 ztuple = (-1,)*self.num_z
                 zerrtuple = (-1,)*self.num_z
                 fnametuple = ('noSpectrum',)*self.num_z
-                grouptuple = (-1,)*self.num_z
+                grouptuple = ('noSpectrum',)*self.num_z
                 typetuple = ('noSpectrum',)*self.num_z
                 subtypetuple = ('noSpectrum',)*self.num_z
                 minchi2tuple = (-1,)*self.num_z
@@ -217,8 +217,7 @@ class ZPicker:
                 if self.z[ifiber][0] != -1:
                     if (c_kms*n.abs(self.z[ifiber][0] - self.z[ifiber][1])) / \
                             (1 + self.z[ifiber][0]) > 1000:
-                        if not any(a in self.group[ifiber][0] for
-                                   a in self.group[ifiber][1]):
+                        if self.group[ifiber][0] != self.group[ifiber][1]:
                             self.flag_small_dchi2(ifiber)
                 else:
                     self.flag_small_dchi2(ifiber)
