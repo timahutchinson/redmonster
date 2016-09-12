@@ -76,10 +76,10 @@ class ZPicker:
         tempdict = {}
         # Builds list of 0:num_z repeated ntemps times (i.e.,
         # [0,1,2,3,0,1,2,3,0,1,2,3] for num_z=4 and 3 templates)
-        poslist = range(self.num_z)*len(zfindobjs)
+        poslist = list(range(self.num_z))*len(zfindobjs)
         rchi2s = []
-        for itemp in xrange(len(zfindobjs)):
-            for i in xrange(self.num_z):
+        for itemp in range(len(zfindobjs)):
+            for i in range(self.num_z):
                 tempdict[ i+(itemp*self.num_z) ] = itemp
             '''
             rchi2s.append( zfindojbs[itemp].zchi2arr.copy() ) # Add copy
@@ -89,7 +89,7 @@ class ZPicker:
                 zfindobjs[itemp].npoly ) # Convert from chi2 to rchi2 by
                 dividing by (number of pixels - number of poly terms)
             '''
-        for ifiber in xrange(zfindobjs[0].zchi2arr.shape[0]):
+        for ifiber in range(zfindobjs[0].zchi2arr.shape[0]):
             fibermins = []
             fiberminvecs = []
             # Create tuples for all the values we're going to carry forward.
@@ -123,8 +123,8 @@ class ZPicker:
                 self.flag_small_dchi2(ifiber)
             else:
                 # Build temporary array of num_z lowest minima for each template
-                for itemp in xrange(self.nclass):
-                    for imin in xrange(self.num_z):
+                for itemp in range(self.nclass):
+                    for imin in range(self.num_z):
                         try:
                             # Add num_z best chi2s found in zfitter divided by
                             # (number of pixels - number of poly terms) to
@@ -171,7 +171,7 @@ class ZPicker:
                         typetuple += (zfindobjs[tempnum].type,)
                         vectortuple += (fiberminvecs[zpos],)
                         d = {} # Dictionary for subtype
-                        for j in xrange( len(vectortuple[-1][:-1]) ):
+                        for j in range( len(vectortuple[-1][:-1]) ):
                             d[zfindobjs[tempnum].infodict['par_names'][j]] = \
                                     zfindobjs[tempnum].baselines[j] \
                                             [vectortuple[-1][j]]
@@ -224,7 +224,7 @@ class ZPicker:
             if n.isnan(self.rchi2diff[ifiber]):
                 self.flag_small_dchi2(ifiber)
             self.flag_null_fit(ifiber, flags)
-        self.zwarning = map(int, self.zwarning)
+        self.zwarning = list(map(int, self.zwarning))
 
     def flag_small_dchi2(self, ifiber):
         """Set the small delta chi**2 zwarning flag."""
@@ -266,12 +266,12 @@ class ZPicker:
                             f = n.array(f)
                     return n.dot(pmat,f), tuple(f)
                 except Exception as e:
-                    print "Exception: %r" % e
+                    print("Exception: %r" % e)
                     return n.zeros(self.npixflux), (0,)
             else:
                 return n.dot(pmat,f), tuple(f)
         except Exception as e:
-            print "Exception: %r" % e
+            print("Exception: %r" % e)
             return n.zeros(self.npixflux), (0,)
 
 

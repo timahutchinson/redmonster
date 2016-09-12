@@ -295,7 +295,7 @@ class VerifyRM:
         for plate in self.plates:
             self.get_all_yanny(plate)
             count += len(self.vifibers)
-        print count
+        print(count)
     
 
     def cmass_completeness(self):
@@ -309,7 +309,7 @@ class VerifyRM:
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0
                                            )[0].tolist())) / float(len(fibers)))
         avg = n.sum(vals) / float(len(vals))
-        print avg
+        print(avg)
                        
 
     def lowz_completeness(self):
@@ -323,7 +323,7 @@ class VerifyRM:
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0
                                            )[0].tolist())) / float(len(fibers)))
         avg = n.sum(vals) / float(len(vals))
-        print avg
+        print(avg)
 
 
     def cmass_galaxy_completeness(self):
@@ -344,9 +344,9 @@ class VerifyRM:
                         count += 1
         #avg = n.sum(vals) / float(len(vals))
         avg = float(count) / float(total)
-        print count
-        print total
-        print avg
+        print(count)
+        print(total)
+        print(avg)
 
 
     def lowz_galaxy_completeness(self):
@@ -365,9 +365,9 @@ class VerifyRM:
                         count += 1
         #avg = n.sum(vals) / float(len(vals))
         avg = float(count) / float(total)
-        print count
-        print total
-        print avg
+        print(count)
+        print(total)
+        print(avg)
 
     def count_okay_cmass_fibers(self):
         # Prints number of CMASS targets with yanny comment
@@ -379,7 +379,7 @@ class VerifyRM:
             self.read_spZbest(plate)
             self.get_all_yanny(plate)
             count += len(self.get_okay_cmass())
-        print count
+        print(count)
             
     def cmass_okay_completeness(self):
         # Prints fraction of CMASS targets having yanny comment
@@ -394,8 +394,8 @@ class VerifyRM:
             fibers = self.get_okay_cmass()
             total += len(fibers)
             count += len(n.where(self.rm_zwarning[fibers] == 0)[0].tolist())
-        print '%s out of %s' % (count,total)
-        print float(count) / float(total)
+        print('%s out of %s' % (count,total))
+        print(float(count) / float(total))
 
     def cmass_okay_galaxy_completeness(self):
         # Prints fraction of targets classified by RM as 'ssp_em_galaxies'
@@ -412,8 +412,8 @@ class VerifyRM:
             total += len(fibers)
             count += len( n.where( self.rm_type[fibers] ==
                                   'ssp_galaxy_glob')[0].tolist() )
-        print '%s out of %s' % (count,total)
-        print float(count) / float(total)
+        print('%s out of %s' % (count,total))
+        print(float(count) / float(total))
 
 
     def dz_to_dv(self, z, dz):
@@ -455,7 +455,7 @@ class VerifyRM:
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
             bins = n.zeros(nbins)
-            for i in xrange(nbins):
+            for i in range(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
             p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j],
@@ -487,7 +487,7 @@ class VerifyRM:
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
             bins = n.zeros(nbins)
-            for i in xrange(nbins):
+            for i in range(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
             p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j],
@@ -534,13 +534,13 @@ class VerifyRM:
                                 self.bad_zperson.append(self.zperson[vi_index])
                                 self.bad_type.append(self.rm_type[fiber])
                                 count_bad += 1
-        print '%s catastrophic failures out of %s fibers, or %s PERCENT \
+        print('%s catastrophic failures out of %s fibers, or %s PERCENT \
                 (not fraction!) of the total' % (count_bad,total,
-                                                 (count_bad/float(total))*100)
+                                                 (count_bad/float(total))*100))
         for i,fiber in enumerate(self.bad_fibers):
-            print 'Plate %s, fiber %s, redmonster z = %s, zperson = %s' % \
+            print('Plate %s, fiber %s, redmonster z = %s, zperson = %s' % \
                     (self.bad_plates[i],fiber,self.bad_rm_z[i],
-                     self.bad_zperson[i])
+                     self.bad_zperson[i]))
 
 
     def identify_unclear_impurities(self):
@@ -583,15 +583,15 @@ class VerifyRM:
                             self.recoverable_zperson.append(
                                     self.zperson[vi_index])
                             count_recoverable += 1
-        print '%s recoverable failures out of %s fibers, or %s PERCENT \
+        print('%s recoverable failures out of %s fibers, or %s PERCENT \
                 (not fraction!) of the total' % (count_recoverable,total,
                                                  (count_recoverable /
-                                                  float(total))*100)
+                                                  float(total))*100))
         for i,fiber in enumerate(self.recoverable_fibers):
-            print 'Plate %s, fiber %s, redmonster z = %s, \
+            print('Plate %s, fiber %s, redmonster z = %s, \
                     redmonster class = %s, zperson = %s' % \
                     (self.recoverable_plates[i],fiber,self.recoverable_rm_z[i],
-                     self.recoverable_rm_type[i], self.recoverable_zperson[i])
+                     self.recoverable_rm_type[i], self.recoverable_zperson[i]))
         big_diff_num = len( n.where( n.abs(n.asarray(self.recoverable_rm_z) -
                                            n.asarray(self.recoverable_zperson))
                                     >= .005 )[0] )
@@ -652,14 +652,14 @@ class VerifyRM:
         rbins = n.zeros(nbins)
         ibins = n.zeros(nbins)
         zbins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
             zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        rhist = rhist / map(float,rtotal)
-        ihist = ihist / map(float,itotal)
-        zhist = zhist / map(float,ztotal)
-        for i in xrange(nbins):
+        rhist = rhist / list(map(float,rtotal))
+        ihist = ihist / list(map(float,itotal))
+        zhist = zhist / list(map(float,ztotal))
+        for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(rhist[i]):
                     try:
@@ -807,9 +807,9 @@ class VerifyRM:
             if zwarn & 4 == 0:
                 count += 1
         avg = float(count) / float(total)
-        print count
-        print total
-        print avg
+        print(count)
+        print(total)
+        print(avg)
 
 
     def sequels_galaxy_completeness_all(self):
@@ -836,9 +836,9 @@ class VerifyRM:
                 if self.rm_type[i] == 'ssp_galaxy_glob':
                     count += 1
         avg = float(count) / float(total)
-        print count
-        print total
-        print avg
+        print(count)
+        print(total)
+        print(avg)
 
 
     def logdv_vs_z_histos(self, nbins=12):
@@ -910,11 +910,11 @@ class VerifyRM:
                         zs = n.append(zs,z)
             #errors.append(self.rm_zerr1[fibers].tolist())
             errors = self.dz_to_dv(zs, errors)
-            print zmin, zmax, n.mean(errors), n.std(errors)
+            print(zmin, zmax, n.mean(errors), n.std(errors))
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
             bins = n.zeros(nbins)
-            for i in xrange(nbins):
+            for i in range(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
             p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j],
@@ -953,7 +953,7 @@ class VerifyRM:
         for i,fiber in enumerate(self.rm_fibers_summary):
             plate = self.rm_plates_summary[i]
             mjd = self.rm_mjds_summary[i]
-            print '%s-%s-%s' % (plate,fiber,mjd)
+            print('%s-%s-%s' % (plate,fiber,mjd))
             if (openplate != plate) and (openmjd != mjd):
                 self.read_spZbest_all(plate,mjd)
                 openplate = plate
@@ -984,14 +984,14 @@ class VerifyRM:
         rbins = n.zeros(nbins)
         ibins = n.zeros(nbins)
         zbins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
             zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        rhist = rhist / map(float,rtotal)
-        ihist = ihist / map(float,itotal)
-        zhist = zhist / map(float,ztotal)
-        for i in xrange(nbins):
+        rhist = rhist / list(map(float,rtotal))
+        ihist = ihist / list(map(float,itotal))
+        zhist = zhist / list(map(float,ztotal))
+        for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(rhist[i]):
                     try:
@@ -1015,13 +1015,13 @@ class VerifyRM:
         ax.set_yscale('log')
         p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=14)
         p.ylabel(r'SEQUELS LRG target failure rate', size=14)
-        print rbins
-        print rhist
-        print rtotal
-        print total
-        print rmax
-        print imax
-        print zmax
+        print(rbins)
+        print(rhist)
+        print(rtotal)
+        print(total)
+        print(rmax)
+        print(imax)
+        print(zmax)
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_sn.pdf')
         p.clf()
@@ -1105,61 +1105,61 @@ class VerifyRM:
                             count6 += 1
 
         errors1 = self.dz_to_dv(z1,errors1)
-        print 'r', labels[0], n.mean(errors1), n.std(errors1)
+        print('r', labels[0], n.mean(errors1), n.std(errors1))
         errors1 = n.log10(errors1)
         hist1,binedges1 = n.histogram(errors1, bins=nbins)
         bins1 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
         normhist1 = hist1 / float(count1)
         p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0],
                label=labels[0])
         errors2 = self.dz_to_dv(z2,errors2)
-        print 'r', labels[1], n.mean(errors2), n.std(errors2)
+        print('r', labels[1], n.mean(errors2), n.std(errors2))
         errors2 = n.log10(errors2)
         hist2,binedges2 = n.histogram(errors2, bins=nbins)
         bins2 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         normhist2 = hist2 / float(count2)
         p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1],
                label=labels[1])
         errors3 = self.dz_to_dv(z3,errors3)
-        print 'r', labels[2], n.mean(errors3), n.std(errors3)
+        print('r', labels[2], n.mean(errors3), n.std(errors3))
         errors3 = n.log10(errors3)
         hist3,binedges3 = n.histogram(errors3, bins=nbins)
         bins3 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins3[i] = (binedges3[i+1]+binedges3[i])/2.
         normhist3 = hist3 / float(count3)
         p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2],
                label=labels[2])
         errors4 = self.dz_to_dv(z4,errors4)
-        print 'r', labels[3], n.mean(errors4), n.std(errors4)
+        print('r', labels[3], n.mean(errors4), n.std(errors4))
         errors4 = n.log10(errors4)
         hist4,binedges4 = n.histogram(errors4, bins=nbins)
         bins4 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
         p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3],
                label=labels[3])
         errors5 = self.dz_to_dv(z5,errors5)
-        print 'r', labels[4], n.mean(errors5), n.std(errors5)
+        print('r', labels[4], n.mean(errors5), n.std(errors5))
         errors5 = n.log10(errors5)
         hist5,binedges5 = n.histogram(errors5, bins=nbins)
         bins5 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins5[i] = (binedges5[i+1]+binedges5[i])/2.
         normhist5 = hist5 / float(count5)
         #p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4],
                 #label=labels[4])
         errors6 = self.dz_to_dv(z6,errors6)
-        print 'r', labels[5], n.mean(errors6), n.std(errors6)
+        print('r', labels[5], n.mean(errors6), n.std(errors6))
         errors6 = n.log10(errors6)
         hist6,binedges6 = n.histogram(errors6, bins=nbins)
         bins6 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         #p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5],
@@ -1170,14 +1170,14 @@ class VerifyRM:
         #p.title('r-band', size=18)
         p.axis([.5,2.5,0,.25])
         p.legend(prop={'size':6})
-        print count1
-        print count2
-        print count3
-        print count4
-        print count5
-        print count6
-        print (count1+count2+count3+count4+count5+count6) / \
-                float(self.rm_fibers_summary.shape[0])
+        print(count1)
+        print(count2)
+        print(count3)
+        print(count4)
+        print(count5)
+        print(count6)
+        print((count1+count2+count3+count4+count5+count6) / \
+                float(self.rm_fibers_summary.shape[0]))
 
         ax2 = f.add_subplot(3,1,2)
         errors1 = n.array([])
@@ -1244,61 +1244,61 @@ class VerifyRM:
                             count6 += 1
 
         errors1 = self.dz_to_dv(z1,errors1)
-        print 'i', labels[0], n.mean(errors1), n.std(errors1)
+        print('i', labels[0], n.mean(errors1), n.std(errors1))
         errors1 = n.log10(errors1)
         hist1,binedges1 = n.histogram(errors1, bins=nbins)
         bins1 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
         normhist1 = hist1 / float(count1)
         p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0],
                label=labels[0])
         errors2 = self.dz_to_dv(z2,errors2)
-        print 'i', labels[1], n.mean(errors2), n.std(errors2)
+        print('i', labels[1], n.mean(errors2), n.std(errors2))
         errors2 = n.log10(errors2)
         hist2,binedges2 = n.histogram(errors2, bins=nbins)
         bins2 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         normhist2 = hist2 / float(count2)
         p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1],
                label=labels[1])
         errors3 = self.dz_to_dv(z3,errors3)
-        print 'i', labels[2], n.mean(errors3), n.std(errors3)
+        print('i', labels[2], n.mean(errors3), n.std(errors3))
         errors3 = n.log10(errors3)
         hist3,binedges3 = n.histogram(errors3, bins=nbins)
         bins3 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins3[i] = (binedges3[i+1]+binedges3[i])/2.
         normhist3 = hist3 / float(count3)
         p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2],
                label=labels[2])
         errors4 = self.dz_to_dv(z4,errors4)
-        print 'i', labels[3], n.mean(errors4), n.std(errors4)
+        print('i', labels[3], n.mean(errors4), n.std(errors4))
         errors4 = n.log10(errors4)
         hist4,binedges4 = n.histogram(errors4, bins=nbins)
         bins4 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
         p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3],
                label=labels[3])
         errors5 = self.dz_to_dv(z5,errors5)
-        print 'i', labels[4], n.mean(errors5), n.std(errors5)
+        print('i', labels[4], n.mean(errors5), n.std(errors5))
         errors5 = n.log10(errors5)
         hist5,binedges5 = n.histogram(errors5, bins=nbins)
         bins5 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins5[i] = (binedges5[i+1]+binedges5[i])/2.
         normhist5 = hist5 / float(count5)
         p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4],
                label=labels[4])
         errors6 = self.dz_to_dv(z6,errors6)
-        print 'i', labels[5], n.mean(errors6), n.std(errors6)
+        print('i', labels[5], n.mean(errors6), n.std(errors6))
         errors6 = n.log10(errors6)
         hist6,binedges6 = n.histogram(errors6, bins=nbins)
         bins6 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5],
@@ -1309,14 +1309,14 @@ class VerifyRM:
         #p.title('r-band', size=18)
         p.axis([.5,2.5,0,.25])
         p.legend(prop={'size':6})
-        print count1
-        print count2
-        print count3
-        print count4
-        print count5
-        print count6
-        print (count1+count2+count3+count4+count5+count6) / \
-                float(self.rm_fibers_summary.shape[0])
+        print(count1)
+        print(count2)
+        print(count3)
+        print(count4)
+        print(count5)
+        print(count6)
+        print((count1+count2+count3+count4+count5+count6) / \
+                float(self.rm_fibers_summary.shape[0]))
 
         ax3 = f.add_subplot(3,1,3)
         errors1 = n.array([])
@@ -1383,61 +1383,61 @@ class VerifyRM:
                             count6 += 1
 
         errors1 = self.dz_to_dv(z1,errors1)
-        print 'z', labels[0], n.mean(errors1), n.std(errors1)
+        print('z', labels[0], n.mean(errors1), n.std(errors1))
         errors1 = n.log10(errors1)
         hist1,binedges1 = n.histogram(errors1, bins=nbins)
         bins1 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
         normhist1 = hist1 / float(count1)
         p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0],
                label=labels[1])
         errors2 = self.dz_to_dv(z2,errors2)
-        print 'z', labels[1], n.mean(errors2), n.std(errors2)
+        print('z', labels[1], n.mean(errors2), n.std(errors2))
         errors2 = n.log10(errors2)
         hist2,binedges2 = n.histogram(errors2, bins=nbins)
         bins2 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         normhist2 = hist2 / float(count2)
         p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1],
                label=labels[2])
         errors3 = self.dz_to_dv(z3,errors3)
-        print 'z', labels[2], n.mean(errors3), n.std(errors3)
+        print('z', labels[2], n.mean(errors3), n.std(errors3))
         errors3 = n.log10(errors3)
         hist3,binedges3 = n.histogram(errors3, bins=nbins)
         bins3 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins3[i] = (binedges3[i+1]+binedges3[i])/2.
         normhist3 = hist3 / float(count3)
         p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2],
                label=labels[3])
         errors4 = self.dz_to_dv(z4,errors4)
-        print 'z', labels[3], n.mean(errors4), n.std(errors4)
+        print('z', labels[3], n.mean(errors4), n.std(errors4))
         errors4 = n.log10(errors4)
         hist4,binedges4 = n.histogram(errors4, bins=nbins)
         bins4 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
         p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3],
                label=labels[4])
         errors5 = self.dz_to_dv(z5,errors5)
-        print 'z', labels[4], n.mean(errors5), n.std(errors5)
+        print('z', labels[4], n.mean(errors5), n.std(errors5))
         errors5 = n.log10(errors5)
         hist5,binedges5 = n.histogram(errors5, bins=nbins)
         bins5 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins5[i] = (binedges5[i+1]+binedges5[i])/2.
         normhist5 = hist5 / float(count5)
         p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4],
                label=labels[5])
         errors6 = self.dz_to_dv(z6,errors6)
-        print 'z', labels[5], n.mean(errors6), n.std(errors6)
+        print('z', labels[5], n.mean(errors6), n.std(errors6))
         errors6 = n.log10(errors6)
         hist6,binedges6 = n.histogram(errors6, bins=nbins)
         bins6 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5],
@@ -1450,14 +1450,14 @@ class VerifyRM:
         p.subplots_adjust(hspace = .5)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/dv_vs_sn_histos.pdf')
         p.clf()
-        print count1
-        print count2
-        print count3
-        print count4
-        print count5
-        print count6
-        print (count1+count2+count3+count4+count5+count6) / \
-                float(self.rm_fibers_summary.shape[0])
+        print(count1)
+        print(count2)
+        print(count3)
+        print(count4)
+        print(count5)
+        print(count6)
+        print((count1+count2+count3+count4+count5+count6) / \
+                float(self.rm_fibers_summary.shape[0]))
 
 
     def sequels_failure_vs_imag_all(self,imin=18,imax=24,nbins=21):
@@ -1474,7 +1474,7 @@ class VerifyRM:
         for i,fiber in enumerate(self.rm_fibers_summary):
             plate = self.rm_plates_summary[i]
             mjd = self.rm_mjds_summary[i]
-            print '%s-%s-%s' % (plate,mjd,fiber)
+            print('%s-%s-%s' % (plate,mjd,fiber))
             if (openplate != plate) and (openmjd != mjd):
                 self.read_spZbest_all(plate,mjd)
                 self.read_spPlate_all(plate,mjd)
@@ -1489,10 +1489,10 @@ class VerifyRM:
         itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
         ihist,ibinedges = n.histogram(bad_i_mag,bins=nbinsarr)
         ibins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
-        ihist = ihist / map(float,itotal)
-        for i in xrange(nbins):
+        ihist = ihist / list(map(float,itotal))
+        for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(ihist[i]):
                     try:
@@ -1518,7 +1518,7 @@ class VerifyRM:
         self.read_redmonster_summary_file()
         errors = []
         zs = []
-        for i in xrange(nobjs):
+        for i in range(nobjs):
             if (self.rm_zwarning[i] == 0) & \
                     (self.rm_type[i] == 'ssp_galaxy_glob') & \
                     (self.rm_zerr1[i] != -1):
@@ -1547,7 +1547,7 @@ class VerifyRM:
         for i,fiber in enumerate(self.rm_fibers_summary):
             plate = self.rm_plates_summary[i]
             mjd = self.rm_mjds_summary[i]
-            print '%s-%s-%s' % (plate,mjd,fiber)
+            print('%s-%s-%s' % (plate,mjd,fiber))
             if (openplate != plate) and (openmjd != mjd):
                 self.read_spZbest_all(plate,mjd)
                 self.read_spPlate_all(plate,mjd)
@@ -1566,12 +1566,12 @@ class VerifyRM:
                 #idl_rchi2s.append(self.idl_rchi2diff[fiber])
         rmhist,rmbinedges = n.histogram(rm_rchi2s,nbins)
         rmbins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             rmbins[i] = (rmbinedges[i+1]+rmbinedges[i])/2.
         rmhist = rmhist / float(total)
         idlhist, idlbinedges = n.histogram(idl_rchi2s,nbins)
         idlbins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             idlbins[i] = (idlbinedges[i+1]+idlbinedges[i])/2.
         idlhist = idlhist / float(total)
         p.plot(rmbins, rmhist, color='red', drawstyle='steps-mid',
@@ -1597,7 +1597,7 @@ class VerifyRM:
         for i,fiber in enumerate(self.rm_fibers_summary):
             plate = self.rm_plates_summary[i]
             mjd = self.rm_mjds_summary[i]
-            print '%s-%s-%s' % (plate,mjd,fiber)
+            print('%s-%s-%s' % (plate,mjd,fiber))
             if (openplate != plate) and (openmjd != mjd):
                 self.read_spZbest_all(plate,mjd)
                 self.read_spPlate_all(plate,mjd)
@@ -1615,12 +1615,12 @@ class VerifyRM:
                                        self.idl_dof[fiber] )
         rmhist, rmbinedges = n.histogram(rm_drchi2s,nbins)
         rmbins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             rmbins[i] = (rmbinedges[i+1]+rmbinedges[i])/2.
         rmhist = rmhist / float(total)
         idlhist, idlbinedges = n.histogram(idl_drchi2s,nbins)
         idlbins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             idlbins[i] = (idlbinedges[i+1]+idlbinedges[i])/2.
         idlhist = idlhist / float(total)
         p.plot(rmbins, rmhist, color='red', drawstyle='steps-mid',
@@ -1671,7 +1671,7 @@ class VerifyRM:
         idl_data = []
         diffs = n.linspace(0,drchi2max,npoints)
         for i,diff in enumerate(diffs):
-            print '%s of %s' % (i+1,npoints)
+            print('%s of %s' % (i+1,npoints))
             rm_point, idl_point = self.dchi2_failure_diff_function(diff)
             rm_data.append(rm_point)
             idl_data.append(idl_point)
@@ -1698,7 +1698,7 @@ class VerifyRM:
         for path in iglob(globpath):
             plate = basename(path)
             if plate != 'redmonsterAll-%s.fits' % self.version:
-                print plate
+                print(plate)
                 mjds = []
                 mjdglobpath = join( self.redmonster_spectro_redux, '%s' % plate,
                                    '%s' % self.version,
@@ -1708,7 +1708,7 @@ class VerifyRM:
                     if mjd not in mjds:
                         mjds.append(mjd)
                 if len(mjds) > 1:
-                    print 'Plate %s has multiple MJDs' % plate
+                    print('Plate %s has multiple MJDs' % plate)
                     hdu1 = fits.open( join( self.redmonster_spectro_redux,
                                            plate, self.version,
                                            'redmonster-%s-%s.fits' %
@@ -1736,7 +1736,7 @@ class VerifyRM:
         hist,binedges = n.histogram(scaled_diff,bins=nbins)
         normhist = hist / float(z1.shape[0])
         bins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
         p.plot(bins, hist, drawstyle='steps-mid', color='black')
         
@@ -1808,15 +1808,15 @@ class VerifyRM:
                 scaled_diff = n.delete(scaled_diff, n.abs(scaled_diff).argmax())
             else:
                 break
-        print n.max(n.abs(scaled_diff))
-        print scaled_diff.shape
+        print(n.max(n.abs(scaled_diff)))
+        print(scaled_diff.shape)
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
         if normed:
             normhist = hist / float(self.z1.shape[0])
         else:
             normhist = hist
         bins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
         p.plot(bins, normhist, drawstyle='steps-mid', color='black')
 
@@ -1843,7 +1843,7 @@ class VerifyRM:
         idl_ydata = []
         globpath1 = join(environ['REDMONSTER_SPECTRO_REDUX'],self.version, '*')
         for chi2max in xdata:
-            print chi2max
+            print(chi2max)
             total = 0.
             countidl = 0.
             countrm = 0.
@@ -1930,18 +1930,18 @@ class VerifyRM:
                     if self.rm_type2[ind][:3] == 'ssp': galstar += 1
                     if self.rm_type2[ind][:3] == 'QSO': starqso += 1
                     if self.rm_type2[ind][:3] == 'CAP': starstar += 1
-        print '%s galaxy-galaxy confusions of %s, which is %s' % \
-                (galgal,total,(galgal/total)*100)
-        print '%s galaxy-star confusions of %s, which is %s' % \
-                (galstar,total,(galstar/total)*100)
-        print '%s galaxy-QSO confusions of %s, which is %s' % \
-                (galqso,total,(galqso/total)*100)
-        print '%s star-star confusions of %s, which is %s' % \
-                (starstar,total,(starstar/total)*100)
-        print '%s star-QSO confusions of %s, which is %s' % \
-                (starqso,total,(starqso/total)*100)
-        print '%s QSO-QSO confusions of %s, which is %s' % \
-                (qsoqso,total,(qsoqso/total)*100)
+        print('%s galaxy-galaxy confusions of %s, which is %s' % \
+                (galgal,total,(galgal/total)*100))
+        print('%s galaxy-star confusions of %s, which is %s' % \
+                (galstar,total,(galstar/total)*100))
+        print('%s galaxy-QSO confusions of %s, which is %s' % \
+                (galqso,total,(galqso/total)*100))
+        print('%s star-star confusions of %s, which is %s' % \
+                (starstar,total,(starstar/total)*100))
+        print('%s star-QSO confusions of %s, which is %s' % \
+                (starqso,total,(starqso/total)*100))
+        print('%s QSO-QSO confusions of %s, which is %s' % \
+                (qsoqso,total,(qsoqso/total)*100))
 
 
     def rchi2_null_histos(self, nbins=35, reduced=True, normed=True):
@@ -1959,7 +1959,7 @@ class VerifyRM:
         hist, binedges = n.histogram(rchi2_nulls, bins=nbins)
         normhist = hist / float(rchi2_nulls.shape[0])
         bins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins[i] = (binedges[i+1] + binedges[i]) / 2.
         if normed:
             p.plot(bins, normhist, drawstyle='steps-mid')
@@ -2015,7 +2015,7 @@ class VerifyRM:
         hist3, binedges3 = n.histogram(diffs3,bins=nbins)
         normhist3 = hist3 / float(diffs3.shape[0])
         bins3 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins[i] = (binedges[i+1] + binedges[i]) / 2.
             bins2[i] = (binedges2[i+1] + binedges2[i]) / 2.
             bins3[i] = (binedges3[i+1] + binedges3[i]) / 2.
@@ -2045,8 +2045,8 @@ class VerifyRM:
         p.legend()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/chi2_null_less_chi2_min_histo.pdf')
         p.clf()
-        print bins[0:3], normhist[0:3], bins2[0:3], normhist2[0:3], bins3[0:3],\
-                normhist3[0:3],
+        print(bins[0:3], normhist[0:3], bins2[0:3], normhist2[0:3], bins3[0:3],\
+                normhist3[0:3], end=' ')
 
 
     def sequels_stack_spectra(self):
@@ -2164,10 +2164,10 @@ class VerifyRM:
         colors = ['black', 'tomato', 'darkturquoise', 'green']
         labels = ['Both', '1 poly', '4 poly', 'Neither']
         chi2list = [yes1yes4, yes1no4, no1yes4, no1no4]
-        for i in xrange(3):
+        for i in range(3):
             x = []
             y = []
-            for j in xrange(len(chi2list[i])):
+            for j in range(len(chi2list[i])):
                 x.append(chi2list[i][j][0])
                 y.append(chi2list[i][j][1])
             if i == 0: p.scatter(x, y, s=1, color=colors[i], label=labels[i], alpha=0.6) # lower alpha for grey points
@@ -2219,10 +2219,10 @@ class VerifyRM:
         colors = ['black', 'tomato', 'darkturquoise', 'green']
         labels = ['Both', '1 poly', '4 poly', 'Neither']
         chi2list = [yes1yes4, yes1no4, no1yes4, no1no4]
-        for i in xrange(3):
+        for i in range(3):
             x = []
             y = []
-            for j in xrange(len(chi2list[i])):
+            for j in range(len(chi2list[i])):
                 x.append(chi2list[i][j][0])
                 y.append(chi2list[i][j][1])
             if i == 0: p.scatter(x, y, s=1, color=colors[i], label=labels[i], alpha=0.6)
@@ -2268,10 +2268,10 @@ class VerifyRM:
         colors = ['black', 'tomato', 'darkturquoise', 'green']
         labels = ['Both', '1 poly', '4 poly', 'Neither']
         chi2list = [yes1yes4, yes1no4, no1yes4, no1no4]
-        for i in xrange(3):
+        for i in range(3):
             x = []
             y = []
-            for j in xrange(len(chi2list[i])):
+            for j in range(len(chi2list[i])):
                 x.append(chi2list[i][j][0])
                 y.append(chi2list[i][j][1])
             if i == 0: p.scatter(x, y, s=1, color=colors[i], label=labels[i], alpha=0.6)
@@ -2286,8 +2286,8 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/1poly_4poly_scatters.pdf')
         p.clf()
         
-        print 'X_rms:  %s' % xrms
-        print 'Y_rms:  %s' % yrms
+        print('X_rms:  %s' % xrms)
+        print('Y_rms:  %s' % yrms)
         
         '''
         import seaborn as sns
@@ -2311,12 +2311,12 @@ class VerifyRM:
         self.zwarning = n.zeros(zchi2.shape[0])
         self.threshold = threshold
         self.width = width
-        for ifiber in xrange(self.zchi2.shape[0]):
+        for ifiber in range(self.zchi2.shape[0]):
             self.minvector.append( (ifiber,) + \
                     n.unravel_index(self.zchi2[ifiber].argmin(),
                                     self.zchi2[ifiber].shape))
             bestzvec = n.zeros( self.zchi2.shape[-1])
-            for iz in xrange(self.zchi2.shape[-1]):
+            for iz in range(self.zchi2.shape[-1]):
                 bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
         return bestzvec
 
@@ -2428,11 +2428,11 @@ class VerifyRM:
                         zs = n.append(zs,z)
             #errors.append(self.rm_zerr1[fibers].tolist())
             errors = self.dz_to_dv(zs, errors)
-            print zmin, zmax, n.mean(errors), n.std(errors)
+            print(zmin, zmax, n.mean(errors), n.std(errors))
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
             bins = n.zeros(nbins)
-            for i in xrange(nbins):
+            for i in range(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
             p.plot(bins, normhist, drawstyle='steps-mid', label=labels[j])
@@ -2457,7 +2457,7 @@ class VerifyRM:
         idl_data = []
         diffs = n.linspace(0,drchi2max,npoints)
         for i,diff in enumerate(diffs):
-            print '%s of %s' % (i+1,npoints)
+            print('%s of %s' % (i+1,npoints))
             rm_point, idl_point = self.dchi2_failure_diff_function(diff)
             rm_data.append(rm_point)
             idl_data.append(idl_point)
@@ -2548,10 +2548,10 @@ class VerifyRM:
                 #dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
                 #drchi2.append(n.min([rchi21, rchi22]))
             except IndexError:
-                print "IndexError"
+                print("IndexError")
             except IOError:
                 ioerrors += 1
-                print "IOError! %s %s" % (repr(object_id1), ioerrors)
+                print("IOError! %s %s" % (repr(object_id1), ioerrors))
 
         
         
@@ -2567,15 +2567,15 @@ class VerifyRM:
                 scaled_diff = n.delete(scaled_diff, n.abs(scaled_diff).argmax())
             else:
                 break
-        print n.max(n.abs(scaled_diff))
-        print scaled_diff.shape
+        print(n.max(n.abs(scaled_diff)))
+        print(scaled_diff.shape)
         hist,binedges = n.histogram(scaled_diff, bins = nbins)
         if normed:
             normhist = hist / float(self.z1.shape[0])
         else:
             normhist = hist
         bins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
         p.plot(bins, normhist, drawstyle='steps-mid', color='black')
 
@@ -2616,7 +2616,7 @@ class VerifyRM:
             x = n.delete(hdu[1].data.RCHI2DIFF, n.where(hdu[1].data.RCHI2DIFF == 0)[0])
             hist,binedges = n.histogram(n.log10(x), bins=nbins, normed=True)
             bins = n.zeros(nbins)
-            for i in xrange(nbins):
+            for i in range(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             p.plot(bins, hist, drawstyle='steps-mid', label=labels[j])
         p.plot([n.log10(0.005)]*1000, n.linspace(0,1.2,1000),linestyle='--')
@@ -2652,28 +2652,28 @@ class VerifyRM:
                     if hdu4[1].data.ZWARNING[fiberind] & 4 == 4:
                         fiber = (hdu1[1].data.PLATE[i], hdu1[1].data.MJD[i], hdu1[1].data.FIBERID[i])
                         yes1no4.append(fiber)
-                        print "1poly success, 4poly failure: plate %s mjd %s fiber %s" % fiber
+                        print("1poly success, 4poly failure: plate %s mjd %s fiber %s" % fiber)
                 else:
                     if not hdu4[1].data.ZWARNING[fiberind]:
                         fiber = (hdu1[1].data.PLATE[i], hdu1[1].data.MJD[i], hdu1[1].data.FIBERID[i])
                         no1yes4.append(fiber)
-                        print "4poly success, 1poly failure: plate %s mjd %s fiber %s" % fiber
+                        print("4poly success, 1poly failure: plate %s mjd %s fiber %s" % fiber)
             except IndexError:
                 pass
-        for i in xrange(20):
+        for i in range(20):
             objid = yes1no4[i]
-            print 'yes1no4'
-            print 'plot %s: plate %s mjd %s fiber %s' % (i, objid[0], objid[1], objid[2])
+            print('yes1no4')
+            print('plot %s: plate %s mjd %s fiber %s' % (i, objid[0], objid[1], objid[2]))
             hduidl = fits.open( join( environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % objid[0], 'spPlate-%s-%s.fits' % (objid[0],objid[1]) ) )
             hdurm1 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % objid[0], self.version, 'redmonster-%s-%s.fits' % (objid[0],objid[1]) ) )
             hdurm4 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % objid[0], self.version,'redmonster-%s-%s.fits'% (objid[0], objid[1]) ) )
-            print '1poly z = %s' % hdurm1[1].data.Z1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]]
-            print '1poly template = %s' % hdurm1[1].data.CLASS1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]]
-            print '1poly template amplitude = %s' % eval(hdurm1[1].data.THETA1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]])[0]
-            print '4poly z = %s' % hdurm4[1].data.Z1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
-            print '4poly template = %s' % hdurm4[1].data.CLASS1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
-            print '4poly template amplitude = %s' % eval(hdurm4[1].data.THETA1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])[0]
-            print ''
+            print('1poly z = %s' % hdurm1[1].data.Z1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]])
+            print('1poly template = %s' % hdurm1[1].data.CLASS1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]])
+            print('1poly template amplitude = %s' % eval(hdurm1[1].data.THETA1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]])[0])
+            print('4poly z = %s' % hdurm4[1].data.Z1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])
+            print('4poly template = %s' % hdurm4[1].data.CLASS1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])
+            print('4poly template amplitude = %s' % eval(hdurm4[1].data.THETA1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])[0])
+            print('')
             sns.set_style('white')
             sns.set_palette(sns_pal)
             sns.set_context('paper')
@@ -2700,20 +2700,20 @@ class VerifyRM:
             p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/yes1no4_%s.pdf' % i)
             p.close()
 
-        for i in xrange(20):
+        for i in range(20):
             objid = no1yes4[i]
-            print 'no1yes4'
-            print 'plot %s: plate %s mjd %s fiber %s' % (i, objid[0], objid[1], objid[2])
+            print('no1yes4')
+            print('plot %s: plate %s mjd %s fiber %s' % (i, objid[0], objid[1], objid[2]))
             hduidl = fits.open( join( environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % objid[0], 'spPlate-%s-%s.fits' % (objid[0],objid[1]) ) )
             hdurm1 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % objid[0], self.version, 'redmonster-%s-%s.fits' % (objid[0],objid[1]) ) )
             hdurm4 = fits.open( join( environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, '%s' % objid[0], self.version,'redmonster-%s-%s.fits'% (objid[0], objid[1]) ) )
-            print '1poly z = %s' % hdurm1[1].data.Z1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]]
-            print '1poly template = %s' % hdurm1[1].data.CLASS1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]]
-            print '1poly template amplitude = %s' % eval(hdurm1[1].data.THETA1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]])[0]
-            print '4poly z = %s' % hdurm4[1].data.Z1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
-            print '4poly template = %s' % hdurm4[1].data.CLASS1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]]
-            print '4poly template amplitude = %s' % eval(hdurm4[1].data.THETA1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])[0]
-            print ''
+            print('1poly z = %s' % hdurm1[1].data.Z1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]])
+            print('1poly template = %s' % hdurm1[1].data.CLASS1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]])
+            print('1poly template amplitude = %s' % eval(hdurm1[1].data.THETA1[n.where(hdurm1[1].data.FIBERID == objid[2])[0][0]])[0])
+            print('4poly z = %s' % hdurm4[1].data.Z1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])
+            print('4poly template = %s' % hdurm4[1].data.CLASS1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])
+            print('4poly template amplitude = %s' % eval(hdurm4[1].data.THETA1[n.where(hdurm4[1].data.FIBERID == objid[2])[0][0]])[0])
+            print('')
             sns.set_style('white')
             sns.set_palette(sns_pal)
             sns.set_context('paper')
@@ -2863,7 +2863,7 @@ class VerifyRM:
         def fit_func(x, a, k, b):
             return a*x**k + b
         popt, pcov = curve_fit(fit_func, (chi201-chi2null1)/chi201, (chi204-chi2null4)/chi204)
-        print 'power law parameters: a=%s, k=%s, b=%s' % (popt[0], popt[1], popt[2])
+        print('power law parameters: a=%s, k=%s, b=%s' % (popt[0], popt[1], popt[2]))
 
         f = p.figure()
         ax = f.add_subplot(111)
@@ -2885,8 +2885,8 @@ class VerifyRM:
         #g.fig.suptitle('1 failure, 4 success')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot3.pdf')
         p.close()
-        print 'median x: %s' % (n.median((chi201-chi2null1)/chi201))
-        print 'median y: %s' % (n.median((chi204-chi2null4)/chi204))
+        print('median x: %s' % (n.median((chi201-chi2null1)/chi201)))
+        print('median y: %s' % (n.median((chi204-chi2null4)/chi204)))
 
         # compute KDE of the x, y data points
         from scipy.stats.kde import gaussian_kde
@@ -2903,16 +2903,16 @@ class VerifyRM:
             return 0.5*l*n.exp(0.5*l*(2*m+l*s*s-2*x))*sse.erfc((m+l*s*s-x)/(n.sqrt(2)*s))
 
         poptx, pcov = curve_fit(fit_func, n.linspace(0,1,100), kde_x(n.linspace(0,1,100)), p0=(2,.5,.1))
-        print kde_y(n.linspace(0,1,100))
+        print(kde_y(n.linspace(0,1,100)))
         popty, pcov = curve_fit(fit_func, n.linspace(0,1,1000), kde_y(n.linspace(0,1,1000)))
         grid = n.zeros((1000,1000))
         kdex = kde_x(n.linspace(0,1,1000))
         kdey = kde_y(n.linspace(0,1,1000))
-        for i in xrange(1000):
+        for i in range(1000):
             grid[i] = kdex * kdey[i]
         maxcoords = n.unravel_index(grid.argmax(), (1000,1000))
-        print maxcoords
-        print n.linspace(0,1,1000)[maxcoords[0]], n.linspace(0,1,1000)[maxcoords[1]]
+        print(maxcoords)
+        print(n.linspace(0,1,1000)[maxcoords[0]], n.linspace(0,1,1000)[maxcoords[1]])
 
         #plot gaussian fit over histogram of samples from kde, just to check quality of fit
         sns.set_style('white')
@@ -2952,7 +2952,7 @@ class VerifyRM:
         for path in iglob(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, '*')):
              if len(basename(path)) == 4:
                  plate = basename(path)
-                 print plate
+                 print(plate)
                  for filepath in iglob(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, '%s' % plate,
                                             self.version, '*')):
                      if len(basename(filepath)) == 26:
@@ -2963,7 +2963,7 @@ class VerifyRM:
                                                '%s' % plate, self.version, basename(filepath)))
                          wave = 10**(hduplate[0].header['COEFF0'] + n.arange(hduplate[0].header['NAXIS1']) * 
                                      hduplate[0].header['COEFF1'])
-                         for i in xrange(hdu1[2].data.shape[0]):
+                         for i in range(hdu1[2].data.shape[0]):
                              if not hdu1[1].data.ZWARNING[i] & 4:
                                  intmodel1[0].append( trapz(hdu1[2].data[i,0], wave) )
                                  temps = read_ndArch(join(environ['REDMONSTER_TEMPLATES_DIR'],
@@ -3056,7 +3056,7 @@ class VerifyRM:
         nfibers = hdu1[1].data.ZWARNING.shape[0]
         
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
-            print 'Object %s of %s' % (i+1,nfibers)
+            print('Object %s of %s' % (i+1,nfibers))
             if not (zwarn & 4 and hdu4[1].data.ZWARNING[i] & 4): # only bother with this fiber if at least one has run has !(zwarn & 4)
                 if plate != hdu1[1].data.PLATE[i] or mjd != hdu1[1].data.MJD[i]:
                     plate = hdu1[1].data.PLATE[i]
@@ -3115,7 +3115,7 @@ class VerifyRM:
                                 p.title('%s' % (n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0]))
                                 p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_test.pdf')
                                 p.close()
-                                print 'Plotted!'
+                                print('Plotted!')
                                 time.sleep(2)
                                 plotted = True
                 else:
@@ -3197,7 +3197,7 @@ class VerifyRM:
         nfibers = hdu1[1].data.ZWARNING.shape[0]
         
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
-            print 'Object %s of %s' % (i+1,nfibers)
+            print('Object %s of %s' % (i+1,nfibers))
             if not (zwarn & 4 and hdu4[1].data.ZWARNING[i] & 4): # only bother with this fiber if at least one has run has !(zwarn & 4)
                 if plate != hdu1[1].data.PLATE[i] or mjd != hdu1[1].data.MJD[i]:
                     plate = hdu1[1].data.PLATE[i]
@@ -3230,7 +3230,7 @@ class VerifyRM:
         hist2, binedges2 = n.histogram(no1yes4_r, bins=nbins, normed=True)
         bins1 = n.zeros(nbins)
         bins2 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
@@ -3247,7 +3247,7 @@ class VerifyRM:
         hist2, binedges2 = n.histogram(no1yes4_i, bins=nbins, normed=True)
         bins1 = n.zeros(nbins)
         bins2 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
@@ -3265,7 +3265,7 @@ class VerifyRM:
         hist2, binedges2 = n.histogram(no1yes4_z, bins=nbins, normed=True)
         bins1 = n.zeros(nbins)
         bins2 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         p.plot(bins1, hist1, drawstyle='steps-mid', label='1 poly')
@@ -3295,7 +3295,7 @@ class VerifyRM:
             else:
                 if not hdu4[1].data.ZWARNING[i] & 4:
                     count += 1
-        print count/total
+        print(count/total)
 
 
     def sequels_sky_drchi2_sns(self, spectro1d=False, nthreshold=50, sns_pal='muted'):
@@ -3336,7 +3336,7 @@ class VerifyRM:
             if spectro1d:
                 idlfrac.append(countidl/totalidl)
 
-        print rmfrac
+        print(rmfrac)
         f = p.figure()
         ax = f.add_subplot(111)
         if not spectro1d:
@@ -3405,10 +3405,10 @@ class VerifyRM:
                 drchi2.append(n.min([rchi21, rchi22]))
                 totalobjs += 1
             except IndexError:
-                print "IndexError"
+                print("IndexError")
             except IOError:
                 ioerrors += 1
-                print "IOError! %s %s" % (repr(object_id1), ioerrors)
+                print("IOError! %s %s" % (repr(object_id1), ioerrors))
         
         dvidl = []
         drchi2idl = []
@@ -3428,12 +3428,12 @@ class VerifyRM:
                 dvidl.append(n.abs(z1-z2)*c_kms/(1+n.min([z1,z2])))
                 drchi2idl.append(n.min([rchi21,rchi22]))
             except IndexError:
-                print "IndexError"
+                print("IndexError")
             except IOError as e:
-                print "IOError"
+                print("IOError")
 
         
-        print "Total objects: %s" % len(dv)*2
+        print("Total objects: %s" % len(dv)*2)
         confobjs = 0
         cataobjs = 0
         confobjs01 = 0
@@ -3454,12 +3454,12 @@ class VerifyRM:
                 if dv[i] > 1000:
                     cataobjs002 += 1.
                     
-        print "Total objects: %s" % (totalobjs)
-        print "Redmonster catastrophic failures at 0.002: %s of %s -- %s percent" % (cataobjs002, confobjs002*2, cataobjs002/(confobjs002*2))
-        print "Redmonster catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/(confobjs*2))
-        print "Redmonster catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01*2, cataobjs01/(confobjs01*2))
+        print("Total objects: %s" % (totalobjs))
+        print("Redmonster catastrophic failures at 0.002: %s of %s -- %s percent" % (cataobjs002, confobjs002*2, cataobjs002/(confobjs002*2)))
+        print("Redmonster catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/(confobjs*2)))
+        print("Redmonster catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01*2, cataobjs01/(confobjs01*2)))
     
-        print "Total objects: %s" % len(dvidl)*2
+        print("Total objects: %s" % len(dvidl)*2)
         import pdb; pdb.set_trace()
         confobjs = 0
         cataobjs = 0
@@ -3474,8 +3474,8 @@ class VerifyRM:
                 confobjs01 += 1.
                 if dvidl[i] > 1000:
                     cataobjs01 += 1
-        print "Spectro1d catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs*2, cataobjs/(confobjs*2))
-        print "Spectro1d catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01*2, cataobjs01/(confobjs01*2))
+        print("Spectro1d catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs*2, cataobjs/(confobjs*2)))
+        print("Spectro1d catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01*2, cataobjs01/(confobjs01*2)))
 
         f = p.figure()
         ax = f.add_subplot(111)
@@ -3634,26 +3634,26 @@ class VerifyRM:
                             elif hduidldr14[1].data.Z_NOQSO[i] > 1.2:
                                 spectraidldr14['z>1.2'] += 1.
 
-        print 'REDMONSTER %s' % self.version
+        print('REDMONSTER %s' % self.version)
         for entry in spectra:
-            print 'Fraction %s: %s' % (entry, spectra[entry]/spectra['total'])
-            print 'N(%s): %s' % (entry, (spectra[entry]/spectra['total'])*60)
-        print 'Total tracers: %s' % ((spectra['0.6<z<0.7']/spectra['total'])*60 + (spectra['0.7<z<0.8']/spectra['total'])*60 + (spectra['0.8<z<0.9']/spectra['total'])*60 + (spectra['0.9<z<1.0']/spectra['total'])*60)
-        print ''
-        print 'IDL DR13'
+            print('Fraction %s: %s' % (entry, spectra[entry]/spectra['total']))
+            print('N(%s): %s' % (entry, (spectra[entry]/spectra['total'])*60))
+        print('Total tracers: %s' % ((spectra['0.6<z<0.7']/spectra['total'])*60 + (spectra['0.7<z<0.8']/spectra['total'])*60 + (spectra['0.8<z<0.9']/spectra['total'])*60 + (spectra['0.9<z<1.0']/spectra['total'])*60))
+        print('')
+        print('IDL DR13')
         for entry in spectraidldr13:
-            print 'Fraction %s: %s' % (entry, spectraidldr13[entry]/spectraidldr13['total'])
-            print 'N(%s): %s' % (entry, (spectraidldr13[entry]/spectraidldr13['total'])*60)
-        print 'Total tracers: %s' % ((spectraidldr13['0.6<z<0.7']/spectraidldr13['total'])*60 + (spectraidldr13['0.7<z<0.8']/spectraidldr13['total'])*60 + (spectraidldr13['0.8<z<0.9']/spectraidldr13['total'])*60 + (spectraidldr13['0.9<z<1.0']/spectraidldr13['total'])*60)
-        print ''
-        print 'IDL DR14'
+            print('Fraction %s: %s' % (entry, spectraidldr13[entry]/spectraidldr13['total']))
+            print('N(%s): %s' % (entry, (spectraidldr13[entry]/spectraidldr13['total'])*60))
+        print('Total tracers: %s' % ((spectraidldr13['0.6<z<0.7']/spectraidldr13['total'])*60 + (spectraidldr13['0.7<z<0.8']/spectraidldr13['total'])*60 + (spectraidldr13['0.8<z<0.9']/spectraidldr13['total'])*60 + (spectraidldr13['0.9<z<1.0']/spectraidldr13['total'])*60))
+        print('')
+        print('IDL DR14')
         for entry in spectraidldr14:
             try:
-                print 'Fraction %s: %s' % (entry, spectraidldr14[entry]/spectraidldr14['total'])
-                print 'N(%s): %s' % (entry, (spectraidldr14[entry]/spectraidldr14['total'])*60)
+                print('Fraction %s: %s' % (entry, spectraidldr14[entry]/spectraidldr14['total']))
+                print('N(%s): %s' % (entry, (spectraidldr14[entry]/spectraidldr14['total'])*60))
             except ZeroDivisionError:
-                print '%s has no objects at all' % entry
-        print 'Total tracers: %s' % ((spectraidldr14['0.6<z<0.7']/spectraidldr14['total'])*60 + (spectraidldr14['0.7<z<0.8']/spectraidldr14['total'])*60 + (spectraidldr14['0.8<z<0.9']/spectraidldr14['total'])*60 + (spectraidldr14['0.9<z<1.0']/spectraidldr14['total'])*60)
+                print('%s has no objects at all' % entry)
+        print('Total tracers: %s' % ((spectraidldr14['0.6<z<0.7']/spectraidldr14['total'])*60 + (spectraidldr14['0.7<z<0.8']/spectraidldr14['total'])*60 + (spectraidldr14['0.8<z<0.9']/spectraidldr14['total'])*60 + (spectraidldr14['0.9<z<1.0']/spectraidldr14['total'])*60))
 
 
 
@@ -3667,7 +3667,7 @@ class VerifyRM:
 
         totals = {}
         counts = {}
-        for i in [2*x for x in xrange(500)]:
+        for i in [2*x for x in range(500)]:
             totals[i] = 1
             counts[i] = 0
 
@@ -3678,8 +3678,8 @@ class VerifyRM:
                 if zwarn > 0:
                     counts[fiber] += 1.
 
-        p.plot(n.array([2*x for x in xrange(500)])+1, n.array(counts.values())/n.array(totals.values()), color=sns.color_palette("Set2", 10)[1], drawstyle='steps-mid')
-        p.plot(n.array([2*x for x in xrange(500)])+1, convolve(n.array(counts.values())/n.array(totals.values()), Box1DKernel(5)), color='black', drawstyle='steps-mid')
+        p.plot(n.array([2*x for x in range(500)])+1, n.array(list(counts.values()))/n.array(list(totals.values())), color=sns.color_palette("Set2", 10)[1], drawstyle='steps-mid')
+        p.plot(n.array([2*x for x in range(500)])+1, convolve(n.array(list(counts.values()))/n.array(list(totals.values())), Box1DKernel(5)), color='black', drawstyle='steps-mid')
         #sp.axes([1,1000, 0, n.max( n.array(counts.values())/n.array(totals.values()) )*1.2])
         p.xlabel(r'Fiber number', size=14)
         p.ylabel(r'Failure rate', size=14)
@@ -3689,15 +3689,15 @@ class VerifyRM:
         p.close()
         
         total, count = 0., 0.
-        for i in [2*x for x in xrange(250)]:
+        for i in [2*x for x in range(250)]:
             total += totals[i]
             count += counts[i]
-        print count/total
+        print(count/total)
         total, count = 0., 0.
-        for i in [2*x+500 for x in xrange(250)]:
+        for i in [2*x+500 for x in range(250)]:
             total += totals[i]
             count += counts[i]
-        print count/total
+        print(count/total)
         
 
 
@@ -3765,7 +3765,7 @@ class VerifyRM:
 
         xbins = n.zeros(len(xbinedges)-1)
         ybins = n.zeros(len(ybinedges)-1)
-        for i in xrange(xbins.shape[0]):
+        for i in range(xbins.shape[0]):
             xbins[i] = (xbinedges[i+1] + xbinedges[i])/2.
             ybins[i] = (ybinedges[i+1] + ybinedges[i])/2.
 
@@ -3773,7 +3773,7 @@ class VerifyRM:
             for j,y in enumerate(ybins):
                 dist = n.floor(n.sqrt(x**2 + y**2))
                 if dist <= 300:
-                    if faildict.has_key(dist):
+                    if dist in faildict:
                         faildict[dist][0] += 1.
                         faildict[dist][1] += hist[i,j]
                     else:
@@ -3854,14 +3854,14 @@ class VerifyRM:
         rbins = n.zeros(nbins)
         ibins = n.zeros(nbins)
         zbins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
             zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        rhist = rhist / map(float,rtotal)
-        ihist = ihist / map(float,itotal)
-        zhist = zhist / map(float,ztotal)
-        for i in xrange(nbins):
+        rhist = rhist / list(map(float,rtotal))
+        ihist = ihist / list(map(float,itotal))
+        zhist = zhist / list(map(float,ztotal))
+        for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(rhist[i]):
                     try:
@@ -3885,13 +3885,13 @@ class VerifyRM:
         ax.set_yscale('log')
         p.xlabel(r'Median S/N per 69 km s$^{-1}$ coadded pixel',size=14)
         p.ylabel(r'eBOSS LRG target failure rate', size=14)
-        print rbins
-        print rhist
-        print rtotal
-        print total
-        print rmax
-        print imax
-        print zmax
+        print(rbins)
+        print(rhist)
+        print(rtotal)
+        print(total)
+        print(rmax)
+        print(imax)
+        print(zmax)
         p.legend(prop={'size':14})
         p.tick_params(labelsize=12)
         p.grid(b=True, which='major', color='lightgrey', linestyle='-')
@@ -3932,10 +3932,10 @@ class VerifyRM:
         itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
         ihist,ibinedges = n.histogram(bad_i_mag,bins=nbinsarr)
         ibins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
-        ihist = ihist / map(float,itotal)
-        for i in xrange(nbins):
+        ihist = ihist / list(map(float,itotal))
+        for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(ihist[i]):
                     try:
@@ -3975,7 +3975,7 @@ class VerifyRM:
         openmjd = None
 
         while fibercount < 1000:
-            print fibercount
+            print(fibercount)
             ind591 = n.random.randint(0,hdu591[1].data.ZWARNING.shape[0])
             plate, mjd, fiberid = hdu591[1].data.PLATE[ind591], hdu591[1].data.MJD[ind591], hdu591[1].data.FIBERID[ind591]
             if not hdu591[1].data.ZWARNING[ind591] & 4:
@@ -3994,10 +3994,10 @@ class VerifyRM:
         p.scatter(dz591, dz5100, alpha=0.8, color='black', s=2)
         p.xlabel(r'$\delta z$ (v5_9_1)', size=14)
         p.ylabel(r'$\delta z$ (v5_10_0)', size=14)
-        print max(dz591)
-        print max(dz5100)
-        print min(dz591)
-        print min(dz5100)
+        print(max(dz591))
+        print(max(dz5100))
+        print(min(dz591))
+        print(min(dz5100))
         p.axis([min(dz591), max(dz591), min(dz5100), max(dz591)]) 
         p.tick_params(labelsize=12)
         p.tight_layout()
@@ -4103,10 +4103,10 @@ class VerifyRM:
                 drchi2.append(n.min([rchi21, rchi22]))
                 totalobjs += 1
             except IndexError:
-                print "IndexError"
+                print("IndexError")
             except IOError:
                 ioerrors += 1
-                print "IOError! %s %s" % (repr(object_id1), ioerrors)
+                print("IOError! %s %s" % (repr(object_id1), ioerrors))
         
         dvidl = []
         drchi2idl = []
@@ -4124,9 +4124,9 @@ class VerifyRM:
                 dvidl.append(n.abs(z1-z2)*c_kms/(1+n.min([z1,z2])))
                 drchi2idl.append(n.min([rchi21,rchi22]))
             except IndexError:
-                print "IndexError"
+                print("IndexError")
             except IOError as e:
-                print "IOError"
+                print("IOError")
 
         catarm = []
         cataidl = []

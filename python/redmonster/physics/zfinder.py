@@ -41,7 +41,7 @@ def zchi2_single_template(j,poly_fft, t_fft, t2_fft, data_fft, ivar_fft, pmat_po
     # fill matrix
     pmat[0,0] = n.fft.ifft(t2_fft * ivar_fft.conj()).real
     bvec[0]   = n.fft.ifft(t_fft * data_fft.conj()).real
-    for ipos in xrange(npoly):
+    for ipos in range(npoly):
         pmat[ipos+1,0] = pmat[0,ipos+1] = n.fft.ifft(t_fft*poly_fft[ipos].conj()).real
     
     # solve for each z
@@ -59,7 +59,7 @@ def zchi2_single_template(j,poly_fft, t_fft, t2_fft, data_fft, ivar_fft, pmat_po
                 try:
                     n.dot(n.dot(f,pmat[:,:,l+zminpix]),f)
                 except Exception as e:
-                    print "Except: %r" % e
+                    print("Except: %r" % e)
                     zchi2arr[(l/npixstep)] = chi2_null
         except : # failure
             #print "failure"
@@ -105,8 +105,8 @@ class ZFinder:
             self.templatesdir = environ['REDMONSTER_TEMPLATES_DIR']
         except KeyError as e:
             self.templatesdir = None
-            print "Enviromental variable 'REDMONSTER_TEMPLATES_DIR' not set: \
-                    %r" % e
+            print("Enviromental variable 'REDMONSTER_TEMPLATES_DIR' not set: \
+                    %r" % e)
         self.read_template()
         self.npars = len(self.templates.shape) - 1
         self.templates_flat = n.reshape(self.templates, (-1,self.fftnaxis1))
@@ -197,7 +197,7 @@ class ZFinder:
             
             # Pre-compute FFTs for use in convolutions
             poly_fft = n.zeros((ivar_pad.shape[0], self.npoly, self.fftnaxis1),dtype=complex)
-            for i in xrange(self.npoly):
+            for i in range(self.npoly):
                 poly_fft[:,i,:] = n.fft.fft(poly_pad[i] * ivar_pad)
             
 
@@ -206,7 +206,7 @@ class ZFinder:
         
         # Compute z for all fibers
         
-        for i in xrange(specs.shape[0]): # Loop over fibers
+        for i in range(specs.shape[0]): # Loop over fibers
 
             start=time.time()  
 
@@ -222,11 +222,11 @@ class ZFinder:
                 self.sn2_data.append (n.sum( (specs[i]**2)*ivar[i] ) )
                 
                 if self.npoly>0 :
-                    for ipos in xrange(self.npoly):
+                    for ipos in range(self.npoly):
                         bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] *
                                               ivar_pad[i])
-                    for ipos in xrange(self.npoly):
-                        for jpos in xrange(self.npoly):
+                    for ipos in range(self.npoly):
+                        for jpos in range(self.npoly):
                             pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] *
                                                          poly_pad[jpos] *ivar_pad[i]) # CAN GO FASTER HERE (BUT NOT LIMITING = 0.001475
                 
@@ -241,7 +241,7 @@ class ZFinder:
                 # multiprocessing
                 
                 func_args = []
-                for j in xrange(self.templates_flat.shape[0]):
+                for j in range(self.templates_flat.shape[0]):
                     if self.npoly>0 :
                         arguments = {"j":j,"poly_fft":poly_fft[i], "t_fft":self.t_fft[j], "t2_fft":self.t2_fft[j], "data_fft":data_fft[i], "ivar_fft":ivar_fft[i], "pmat_pol":pmat, "bvec_pol":bvec, "chi2_0":self.sn2_data[i], "chi2_null":self.chi2_null[i],"num_z":num_z, "npixstep":self.npixstep, "zminpix":zminpix,"flag_val_neg_model":flag_val_neg_model}
                     else :
@@ -270,12 +270,12 @@ class ZFinder:
                 
                 stop=time.time()
                 
-                print "INFO fitted fiber %d/%d, chi2_null=%f, %d templates in %s, npoly=%d, using %d procs in %f sec"%(i+1, specs.shape[0],self.chi2_null[i],self.templates_flat.shape[0],self.fname,self.npoly,self.nproc,stop-start)
+                print("INFO fitted fiber %d/%d, chi2_null=%f, %d templates in %s, npoly=%d, using %d procs in %f sec"%(i+1, specs.shape[0],self.chi2_null[i],self.templates_flat.shape[0],self.fname,self.npoly,self.nproc,stop-start))
         
         
         # Use only neg_model flag from best fit model/redshift and add
         # it to self.zwarning
-        for i in xrange(self.zwarning.shape[0]):
+        for i in range(self.zwarning.shape[0]):
             minpos = ( n.where(zchi2arr[i] == n.min(zchi2arr[i]))[0][0],
                       n.where(zchi2arr[i] == n.min(zchi2arr[i]))[1][0] )
             self.zwarning[i] = int(self.zwarning[i]) | \
@@ -292,14 +292,14 @@ class ZFinder:
             if (plate is not None) & (mjd is not None) & (fiberid is not None):
                 write_chi2arr(plate, mjd, fiberid, self.zchi2arr)
             else:
-                print 'WARNING Plate/mjd/fiberid not given - unable to write chi2 file!'
+                print('WARNING Plate/mjd/fiberid not given - unable to write chi2 file!')
         else:
             #print 'INFO Not writing chi2'
             pass
 
     def store_models(self, specs, ivar):
         self.models = n.zeros( (specs.shape) )
-        for i in xrange(self.models.shape[0]):
+        for i in range(self.models.shape[0]):
             minloc = n.unravel_index( self.zchi2arr[i].argmin(),
                                      self.zchi2arr[i].shape )
             pmat = n.zeros( (specs.shape[-1],self.npoly+1) )
@@ -321,7 +321,7 @@ class ZFinder:
                 self.models[i] = n.dot(pmat, f)
             except Exception as e:
                 self.models[i] = n.zeros(specs.shape[-1])
-                print "Exception: %r" % r
+                print("Exception: %r" % r)
 
 
     def write_chi2arr(self, plate, mjd, fiberid):
@@ -340,26 +340,26 @@ class ZFinder:
                         makedirs(testpath)
                         dest = testpath
                     except Exception as e:
-                        print "Exception: %r" % e
+                        print("Exception: %r" % e)
                         dest = None
         except Exception as e:
-            print "Exception: %r" % e
+            print("Exception: %r" % e)
             dest = None
         if dest is not None:
             try:
                 thdulist.writeto(join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits'
                                       % (self.type, plate, mjd, fiberid)),
                                  clobber=True)
-                print 'Writing chi2 file to %s' % \
+                print('Writing chi2 file to %s' % \
                         join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits' %
-                             (self.type, plate, mjd, fiberid))
+                             (self.type, plate, mjd, fiberid)))
             except Exception as e:
-                print "Exception: %r" % e
-                print 'Environment variables not set or path does not exist - \
-                        not writing chi2 file!'
+                print("Exception: %r" % e)
+                print('Environment variables not set or path does not exist - \
+                        not writing chi2 file!')
         else:
-            print 'Environment variables not set or path does not exist - \
-                    not writing chi2 file!'
+            print('Environment variables not set or path does not exist - \
+                    not writing chi2 file!')
 
 
 

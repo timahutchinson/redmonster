@@ -18,7 +18,7 @@ def gaussflux(pixbound, cen, sig):
     # Calculate the pixel widths and test for monotonicity:
     pixdiff = pixbound[1:] - pixbound[:-1]
     if (pixdiff.min <= 0):
-        print 'pixbound must be monotonically increasing!'
+        print('pixbound must be monotonically increasing!')
         return 0
     # Compute scaled argument for error function:
     argscale = (pixbound - cen) / (n.sqrt(2.) * sig)

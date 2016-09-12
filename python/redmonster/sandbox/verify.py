@@ -269,7 +269,7 @@ class VerifyRM:
         for plate in self.plates:
             self.get_all_yanny(plate)
             count += len(self.vifibers)
-        print count
+        print(count)
     
 
     def cmass_completeness(self):
@@ -282,7 +282,7 @@ class VerifyRM:
             fibers = self.get_cmass()
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
-        print avg
+        print(avg)
                        
 
     def lowz_completeness(self):
@@ -295,7 +295,7 @@ class VerifyRM:
             fibers = self.get_lowz()
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
-        print avg
+        print(avg)
 
 
     def cmass_galaxy_completeness(self):
@@ -317,9 +317,9 @@ class VerifyRM:
             #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_galaxy_glob'))[0].tolist())) / float(len(fibers)) )
         #avg = n.sum(vals) / float(len(vals))
         avg = float(count) / float(total)
-        print count
-        print total
-        print avg
+        print(count)
+        print(total)
+        print(avg)
 
 
     def lowz_galaxy_completeness(self):
@@ -339,9 +339,9 @@ class VerifyRM:
             #vals.append( float(len(n.where((self.rm_zwarning[fibers] == 0) & (self.rm_type[fibers] == 'ssp_galaxy_glob'))[0].tolist())) / float(len(fibers)) )
         #avg = n.sum(vals) / float(len(vals))
         avg = float(count) / float(total)
-        print count
-        print total
-        print avg
+        print(count)
+        print(total)
+        print(avg)
 
     def count_okay_cmass_fibers(self):
         # Prints number of CMASS targets with yanny comment 'v5_4_9 ok' and imag <= 21.5
@@ -352,7 +352,7 @@ class VerifyRM:
             self.read_spZbest(plate)
             self.get_all_yanny(plate)
             count += len(self.get_okay_cmass())
-        print count
+        print(count)
             
     def cmass_okay_completeness(self):
         # Prints fraction of CMASS targets having yanny comment 'v5_4_9 ok' and imag <= 21.5 that have rm_zwarning == 0
@@ -366,8 +366,8 @@ class VerifyRM:
             fibers = self.get_okay_cmass()
             total += len(fibers)
             count += len(n.where(self.rm_zwarning[fibers] == 0)[0].tolist())
-        print '%s out of %s' % (count,total)
-        print float(count) / float(total)
+        print('%s out of %s' % (count,total))
+        print(float(count) / float(total))
 
     def cmass_okay_galaxy_completeness(self):
         # Prints fraction of targets classified by RM as 'ssp_em_galaxies' in the subset of CMASS targets having yanny comment 'v5_4_9 ok'
@@ -382,8 +382,8 @@ class VerifyRM:
             fibers = self.get_okay_cmass()
             total += len(fibers)
             count += len( n.where( self.rm_type[fibers] == 'ssp_galaxy_glob')[0].tolist() )
-        print '%s out of %s' % (count,total)
-        print float(count) / float(total)
+        print('%s out of %s' % (count,total))
+        print(float(count) / float(total))
 
 
     def dz_to_dv(self, z, dz):
@@ -424,7 +424,7 @@ class VerifyRM:
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
             bins = n.zeros(nbins)
-            for i in xrange(nbins):
+            for i in range(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
             p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
@@ -455,7 +455,7 @@ class VerifyRM:
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
             bins = n.zeros(nbins)
-            for i in xrange(nbins):
+            for i in range(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
             p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
@@ -496,9 +496,9 @@ class VerifyRM:
                                 self.bad_zperson.append(self.zperson[vi_index])
                                 self.bad_type.append(self.rm_type[fiber])
                                 count_bad += 1
-        print '%s catastrophic failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_bad,total,(count_bad/float(total))*100)
+        print('%s catastrophic failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_bad,total,(count_bad/float(total))*100))
         for i,fiber in enumerate(self.bad_fibers):
-            print 'Plate %s, fiber %s, redmonster z = %s, zperson = %s' % (self.bad_plates[i],fiber,self.bad_rm_z[i], self.bad_zperson[i])
+            print('Plate %s, fiber %s, redmonster z = %s, zperson = %s' % (self.bad_plates[i],fiber,self.bad_rm_z[i], self.bad_zperson[i]))
 
 
     def identify_unclear_impurities(self):
@@ -534,9 +534,9 @@ class VerifyRM:
                             self.recoverable_rm_type.append(self.rm_type[fiber])
                             self.recoverable_zperson.append(self.zperson[vi_index])
                             count_recoverable += 1
-        print '%s recoverable failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_recoverable,total,(count_recoverable/float(total))*100)
+        print('%s recoverable failures out of %s fibers, or %s PERCENT (not fraction!) of the total' % (count_recoverable,total,(count_recoverable/float(total))*100))
         for i,fiber in enumerate(self.recoverable_fibers):
-            print 'Plate %s, fiber %s, redmonster z = %s, redmonster class = %s, zperson = %s' % (self.recoverable_plates[i],fiber,self.recoverable_rm_z[i], self.recoverable_rm_type[i], self.recoverable_zperson[i])
+            print('Plate %s, fiber %s, redmonster z = %s, redmonster class = %s, zperson = %s' % (self.recoverable_plates[i],fiber,self.recoverable_rm_z[i], self.recoverable_rm_type[i], self.recoverable_zperson[i]))
         big_diff_num = len( n.where( n.abs(n.asarray(self.recoverable_rm_z)-n.asarray(self.recoverable_zperson)) >= .005 )[0] )
         f = p.figure()
         ax1 = f.add_subplot(1,1,1)
@@ -592,14 +592,14 @@ class VerifyRM:
         rbins = n.zeros(nbins)
         ibins = n.zeros(nbins)
         zbins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
             zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        rhist = rhist / map(float,rtotal)
-        ihist = ihist / map(float,itotal)
-        zhist = zhist / map(float,ztotal)
-        for i in xrange(nbins):
+        rhist = rhist / list(map(float,rtotal))
+        ihist = ihist / list(map(float,itotal))
+        zhist = zhist / list(map(float,ztotal))
+        for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(rhist[i]):
                     try:
@@ -710,9 +710,9 @@ class VerifyRM:
             if zwarn == 0:
                 count += 1
         avg = float(count) / float(total)
-        print count
-        print total
-        print avg
+        print(count)
+        print(total)
+        print(avg)
 
 
     def lowz_completeness_all(self):
@@ -722,7 +722,7 @@ class VerifyRM:
         globpath = join( self.redmonster_spectro_redux, '*')
         for path in iglob(globpath):
             plate = basename(path)
-            print plate
+            print(plate)
             self.read_spPlate_all(plate)
             self.read_redmonster_all(plate)
             fibers = self.get_lowz()
@@ -731,9 +731,9 @@ class VerifyRM:
                 if self.rm_zwarning[fiber] == 0:
                     count += 1
         avg = float(count) / float(total)
-        print count
-        print total
-        print avg
+        print(count)
+        print(total)
+        print(avg)
 
 
     def cmass_galaxy_completeness_all(self):
@@ -758,9 +758,9 @@ class VerifyRM:
                 if self.rm_type[i] == 'ssp_galaxy_glob':
                     count += 1
         avg = float(count) / float(total)
-        print count
-        print total
-        print avg
+        print(count)
+        print(total)
+        print(avg)
 
 
     def cmass_logdv_vs_z_histos_all(self, nbins=12):
@@ -829,7 +829,7 @@ class VerifyRM:
             errors = n.log10(errors)
             hist,binedges = n.histogram(errors, bins=nbins)
             bins = n.zeros(nbins)
-            for i in xrange(nbins):
+            for i in range(nbins):
                 bins[i] = (binedges[i+1]+binedges[i])/2.
             normhist = hist / float(count)
             p.plot(bins,normhist,drawstyle='steps-mid', color=colors[j], label=labels[j])
@@ -858,7 +858,7 @@ class VerifyRM:
         for path in iglob(globpath):
             plate = basename(path)
             if plate != 'redmonsterAll-%s.fits' % self.version:
-                print plate
+                print(plate)
                 self.read_redmonster_all(plate)
                 self.read_spPlate_all(plate)
                 self.read_spZbest_all(plate)
@@ -885,14 +885,14 @@ class VerifyRM:
         rbins = n.zeros(nbins)
         ibins = n.zeros(nbins)
         zbins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
             zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        rhist = rhist / map(float,rtotal)
-        ihist = ihist / map(float,itotal)
-        zhist = zhist / map(float,ztotal)
-        for i in xrange(nbins):
+        rhist = rhist / list(map(float,rtotal))
+        ihist = ihist / list(map(float,itotal))
+        zhist = zhist / list(map(float,ztotal))
+        for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(rhist[i]):
                     try:
@@ -948,7 +948,7 @@ class VerifyRM:
         for path in iglob(globpath):
             plate = basename(path)
             if plate != 'redmonsterAll-%s.fits' % self.version:
-                print plate
+                print(plate)
                 self.read_spPlate_all(plate)
                 self.read_spZbest_all(plate)
                 self.read_redmonster_all(plate)
@@ -980,7 +980,7 @@ class VerifyRM:
         errors1 = n.log10(errors1)
         hist1,binedges1 = n.histogram(errors1, bins=nbins)
         bins1 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
         normhist1 = hist1 / float(count1)
         p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0], label=labels[0])
@@ -988,7 +988,7 @@ class VerifyRM:
         errors2 = n.log10(errors2)
         hist2,binedges2 = n.histogram(errors2, bins=nbins)
         bins2 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         normhist2 = hist2 / float(count2)
         p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1], label=labels[1])
@@ -996,7 +996,7 @@ class VerifyRM:
         errors3 = n.log10(errors3)
         hist3,binedges3 = n.histogram(errors3, bins=nbins)
         bins3 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins3[i] = (binedges3[i+1]+binedges3[i])/2.
         normhist3 = hist3 / float(count3)
         p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2], label=labels[2])
@@ -1004,7 +1004,7 @@ class VerifyRM:
         errors4 = n.log10(errors4)
         hist4,binedges4 = n.histogram(errors4, bins=nbins)
         bins4 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
         p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3], label=labels[3])
@@ -1012,7 +1012,7 @@ class VerifyRM:
         errors5 = n.log10(errors5)
         hist5,binedges5 = n.histogram(errors5, bins=nbins)
         bins5 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins5[i] = (binedges5[i+1]+binedges5[i])/2.
         normhist5 = hist5 / float(count5)
         p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4], label=labels[4])
@@ -1020,7 +1020,7 @@ class VerifyRM:
         errors6 = n.log10(errors6)
         hist6,binedges6 = n.histogram(errors6, bins=nbins)
         bins6 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
@@ -1047,7 +1047,7 @@ class VerifyRM:
         for path in iglob(globpath):
             plate = basename(path)
             if plate != 'redmonsterAll-%s.fits' % self.version:
-                print plate
+                print(plate)
                 self.read_spPlate_all(plate)
                 self.read_spZbest_all(plate)
                 self.read_redmonster_all(plate)
@@ -1078,7 +1078,7 @@ class VerifyRM:
         errors1 = n.log10(errors1)
         hist1,binedges1 = n.histogram(errors1, bins=nbins)
         bins1 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
         normhist1 = hist1 / float(count1)
         p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0], label=labels[0])
@@ -1086,7 +1086,7 @@ class VerifyRM:
         errors2 = n.log10(errors2)
         hist2,binedges2 = n.histogram(errors2, bins=nbins)
         bins2 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         normhist2 = hist2 / float(count2)
         p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1], label=labels[1])
@@ -1094,7 +1094,7 @@ class VerifyRM:
         errors3 = n.log10(errors3)
         hist3,binedges3 = n.histogram(errors3, bins=nbins)
         bins3 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins3[i] = (binedges3[i+1]+binedges3[i])/2.
         normhist3 = hist3 / float(count3)
         p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2], label=labels[2])
@@ -1102,7 +1102,7 @@ class VerifyRM:
         errors4 = n.log10(errors4)
         hist4,binedges4 = n.histogram(errors4, bins=nbins)
         bins4 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
         p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3], label=labels[3])
@@ -1110,7 +1110,7 @@ class VerifyRM:
         errors5 = n.log10(errors5)
         hist5,binedges5 = n.histogram(errors5, bins=nbins)
         bins5 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins5[i] = (binedges5[i+1]+binedges5[i])/2.
         normhist5 = hist5 / float(count5)
         p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4], label=labels[4])
@@ -1118,7 +1118,7 @@ class VerifyRM:
         errors6 = n.log10(errors6)
         hist6,binedges6 = n.histogram(errors6, bins=nbins)
         bins6 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
@@ -1145,7 +1145,7 @@ class VerifyRM:
         for path in iglob(globpath):
             plate = basename(path)
             if plate != 'redmonsterAll-%s.fits' % self.version:
-                print plate
+                print(plate)
                 self.read_spPlate_all(plate)
                 self.read_spZbest_all(plate)
                 self.read_redmonster_all(plate)
@@ -1176,7 +1176,7 @@ class VerifyRM:
         errors1 = n.log10(errors1)
         hist1,binedges1 = n.histogram(errors1, bins=nbins)
         bins1 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins1[i] = (binedges1[i+1]+binedges1[i])/2.
         normhist1 = hist1 / float(count1)
         p.plot(bins1,normhist1,drawstyle='steps-mid', color=colors[0], label=labels[0])
@@ -1184,7 +1184,7 @@ class VerifyRM:
         errors2 = n.log10(errors2)
         hist2,binedges2 = n.histogram(errors2, bins=nbins)
         bins2 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins2[i] = (binedges2[i+1]+binedges2[i])/2.
         normhist2 = hist2 / float(count2)
         p.plot(bins2,normhist2,drawstyle='steps-mid', color=colors[1], label=labels[1])
@@ -1192,7 +1192,7 @@ class VerifyRM:
         errors3 = n.log10(errors3)
         hist3,binedges3 = n.histogram(errors3, bins=nbins)
         bins3 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins3[i] = (binedges3[i+1]+binedges3[i])/2.
         normhist3 = hist3 / float(count3)
         p.plot(bins3,normhist3,drawstyle='steps-mid', color=colors[2], label=labels[2])
@@ -1200,7 +1200,7 @@ class VerifyRM:
         errors4 = n.log10(errors4)
         hist4,binedges4 = n.histogram(errors4, bins=nbins)
         bins4 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins4[i] = (binedges4[i+1]+binedges4[i])/2.
         normhist4 = hist4 / float(count4)
         p.plot(bins4,normhist4,drawstyle='steps-mid', color=colors[3], label=labels[3])
@@ -1208,7 +1208,7 @@ class VerifyRM:
         errors5 = n.log10(errors5)
         hist5,binedges5 = n.histogram(errors5, bins=nbins)
         bins5 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins5[i] = (binedges5[i+1]+binedges5[i])/2.
         normhist5 = hist5 / float(count5)
         p.plot(bins5,normhist5,drawstyle='steps-mid', color=colors[4], label=labels[4])
@@ -1216,7 +1216,7 @@ class VerifyRM:
         errors6 = n.log10(errors6)
         hist6,binedges6 = n.histogram(errors6, bins=nbins)
         bins6 = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins6[i] = (binedges6[i+1]+binedges6[i])/2.
         normhist6 = hist6 / float(count6)
         p.plot(bins6,normhist6,drawstyle='steps-mid', color=colors[5], label=labels[5])
@@ -1242,7 +1242,7 @@ class VerifyRM:
         for path in iglob(globpath):
             plate = basename(path)
             if plate != 'redmonsterAll-%s.fits' % self.version:
-                print plate
+                print(plate)
                 self.read_redmonster_all(plate)
                 self.read_spPlate_all(plate)
                 self.read_spZbest_all(plate)
@@ -1258,10 +1258,10 @@ class VerifyRM:
         itotal,ibinedges = n.histogram(i_mag,bins=nbinsarr)
         ihist,ibinedges = n.histogram(bad_i_mag,bins=nbinsarr)
         ibins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
-        ihist = ihist / map(float,itotal)
-        for i in xrange(nbins):
+        ihist = ihist / list(map(float,itotal))
+        for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(ihist[i]):
                     try:
@@ -1288,7 +1288,7 @@ class VerifyRM:
         self.read_redmonster_summary_file()
         errors = []
         zs = []
-        for i in xrange(nobjs):
+        for i in range(nobjs):
             if (self.rm_zwarning[i] == 0) & (self.rm_type[i] == 'ssp_galaxy_glob') & (self.rm_zerr1[i] != -1):
                 errors.append(self.rm_zerr1[i])
                 zs.append(self.rm_z1[i])
@@ -1311,14 +1311,14 @@ class VerifyRM:
         for path in iglob(globpath):
             plate = basename(path)
             if plate != 'redmonsterAll-%s.fits' % self.version:
-                print plate
+                print(plate)
                 mjds = []
                 mjdglobpath = join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-*.fits' % plate)
                 for mjdpath in iglob(mjdglobpath):
                     mjd = basename(mjdpath)[16:21]
                     mjds.append(mjd)
                 if len(mjds) > 1:
-                    print 'Plate %s has multiple MJDs' % plate
+                    print('Plate %s has multiple MJDs' % plate)
                     hdu1 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[0]) ) )
                     hdu2 = fits.open( join( self.redmonster_spectro_redux, plate, self.version, 'redmonster-%s-%s.fits' % (plate,mjds[1]) ) )
                     for i,z in enumerate(hdu1[1].data.Z1):
@@ -1337,7 +1337,7 @@ class VerifyRM:
         hist,binedges = n.histogram(scaled_diff,bins=nbins)
         normhist = hist / float(z1.shape[0])
         bins = n.zeros(nbins)
-        for i in xrange(nbins):
+        for i in range(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
         p.plot(bins, hist, drawstyle='steps-mid', color='black')
         

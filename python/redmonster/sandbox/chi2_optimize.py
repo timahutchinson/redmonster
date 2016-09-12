@@ -41,7 +41,7 @@ purity = []
 
 
 # Loop over various dchi2 thresholds
-for inc in xrange(2):
+for inc in range(2):
     this_thresh = 41 + inc
     threshold_vals.append(this_thresh)
     specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
@@ -56,7 +56,7 @@ for inc in xrange(2):
     zpick = zpicker.ZPicker(specs, zssp, zfit_ssp, zstar, zfit_star)
     ssp_flags = n.zeros(len(fiberid))
     star_flags = n.zeros(len(fiberid))
-    for ifiber in xrange(len(fiberid)):
+    for ifiber in range(len(fiberid)):
         ssp_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zssp.zwarning[ifiber])) | int(zfit_ssp.zwarning[ifiber])
         star_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zstar.zwarning[ifiber])) | int(zfit_star.zwarning[ifiber])
     
@@ -67,7 +67,7 @@ for inc in xrange(2):
 
 
 #threshold_vals = [41,42]
-threshold_vals = [35.+i for i in xrange(10)]
+threshold_vals = [35.+i for i in range(10)]
 
 def run_redmonster(this_thresh):
     #global completeness
@@ -87,7 +87,7 @@ def run_redmonster(this_thresh):
     zpick = zpicker.ZPicker(specs, zssp, zfit_ssp, zstar, zfit_star)
     ssp_flags = n.zeros(len(fiberid))
     star_flags = n.zeros(len(fiberid))
-    for ifiber in xrange(len(fiberid)):
+    for ifiber in range(len(fiberid)):
         ssp_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zssp.zwarning[ifiber])) | int(zfit_ssp.zwarning[ifiber])
         star_flags[ifiber] = (int(specs.zwarning[ifiber]) | int(zstar.zwarning[ifiber])) | int(zfit_star.zwarning[ifiber])
     #purity.append( (len(n.where(ssp_flags == 0)))/float(nfib) )
@@ -98,16 +98,16 @@ def run_redmonster(this_thresh):
 
 
 # Without multi
-print strftime("%Y-%m-%d %H:%M:%S", gmtime())
-result = map(run_redmonster,threshold_vals)
-print strftime("%Y-%m-%d %H:%M:%S", gmtime())
+print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
+result = list(map(run_redmonster,threshold_vals))
+print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
 
 # With multi
-print strftime("%Y-%m-%d %H:%M:%S", gmtime())
+print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
 num_proc = 12
 pool = mp.Pool(num_proc)
 completeness, purity = pool.map(run_redmonster,threshold_vals)
-print strftime("%Y-%m-%d %H:%M:%S", gmtime())
+print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
 
 completeness = n.array(completeness)
 purity = n.array(purity)
