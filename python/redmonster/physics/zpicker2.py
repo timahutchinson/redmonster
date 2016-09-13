@@ -15,6 +15,7 @@ from os import environ
 from os.path import join
 
 import numpy as n
+from scipy import linalg
 from scipy.optimize import nnls
 from astropy.io import fits
 
@@ -142,13 +143,13 @@ class ZPicker:
                             #fibermins.append( \
                             #        n.max(zfitobjs[itemp].chi2vals[ifiber]) / \
                             #        (self.dof[ifiber] - zfindobjs[itemp].npoly))
-                            
+
                             # this is ok, might be no solution
                             #print "WARNING no z fitted for fiber #%d, class #%d, zid #%d"%(ifiber,itemp,imin)
-                            
+
                             fibermins.append(100000.)
                             fiberminvecs.append( (-1,) )
-                            
+
                 # Build tuples of num_z best redshifts and classifications
                 # for this fiber
                 #for iz in xrange(self.num_z):
@@ -195,7 +196,7 @@ class ZPicker:
                         iz += 1
                     else:
                         fibermins[zpos] = 1e9
-                
+
             self.z.append(ztuple)
             self.z_err.append(zerrtuple)
             self.fname.append(fnametuple)
@@ -230,7 +231,7 @@ class ZPicker:
         """Set the small delta chi**2 zwarning flag."""
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
         self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
-    
+
     def flag_null_fit(self, ifiber, flags):
         """Set flag if any template classes had a null fit."""
         null_fit_flag = int('0b100000000',2)
@@ -256,7 +257,7 @@ class ZPicker:
             polyarr = poly_array(npoly, self.npixflux)
             pmat[:,1:] = n.transpose(polyarr)
             ninv = n.diag(ivar)
-            f = n.linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat),
+            f = linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat),
                                n.dot( n.dot(n.transpose(pmat),ninv),flux) ); \
                     f = n.array(f)
             if f[0] < 0:
@@ -273,13 +274,3 @@ class ZPicker:
         except Exception as e:
             print("Exception: %r" % e)
             return n.zeros(self.npixflux), (0,)
-
-
-
-
-
-
-
-
-
-

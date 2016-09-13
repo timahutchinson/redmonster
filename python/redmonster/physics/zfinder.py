@@ -11,6 +11,7 @@ from time import gmtime, strftime
 
 import numpy as n
 from astropy.io import fits
+from scipy import linalg
 from scipy.optimize import nnls
 import matplotlib as m
 from matplotlib import pyplot as p
@@ -50,7 +51,7 @@ def zchi2_single_template(j,poly_fft, t_fft, t2_fft, data_fft, ivar_fft, pmat_po
     zwarning=n.zeros((num_z))
     for l in n.arange(num_z)*npixstep:
         try : # try to solve for this redshift
-            f = n.linalg.solve(pmat[:,:,l+zminpix],bvec[:,l+zminpix])
+            f = linalg.solve(pmat[:,:,l+zminpix],bvec[:,l+zminpix])
 
             zchi2arr[(l//npixstep)] = chi2_0 - n.dot(n.dot(f,pmat[:,:,l+zminpix]),f) # is this true ?????
             if f[0]<0 :
@@ -230,7 +231,7 @@ class ZFinder:
                             pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] *
                                                          poly_pad[jpos] *ivar_pad[i]) # CAN GO FASTER HERE (BUT NOT LIMITING = 0.001475
 
-                    f_null = n.linalg.solve(pmat[1:,1:,0],bvec[1:,0])
+                    f_null = linalg.solve(pmat[1:,1:,0],bvec[1:,0])
                     self.f_nulls.append( f_null )
                     self.chi2_null.append( self.sn2_data[i] -
                                            n.dot(n.dot(f_null,pmat[1:,1:,0]),f_null))
@@ -312,7 +313,7 @@ class ZFinder:
             ninv = n.diag(ivar[i])
             try: # Some eBOSS spectra have ivar[i] = 0 for all i
                 '''
-                f = n.linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat),
+                f = linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat),
                                 n.dot( n.dot(n.transpose(pmat),ninv),specs[i]) )
                 '''
                 f = nnls( n.dot(n.dot(n.transpose(pmat),ninv),pmat),
