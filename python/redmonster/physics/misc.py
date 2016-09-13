@@ -5,6 +5,7 @@
 # t.hutchinson@utah.edu
 
 import numpy as n
+from scipy import linalg
 from scipy import special as spc
 from scipy import sparse
 
@@ -100,7 +101,7 @@ def quadfit_2d(ind, dep):
         for i in range(3):
             for j in range(3):
                 A[k] = n.array([ x[i]**2, y[j]**2, x[i]*y[j], x[i], y[j], 1 ])
-    f = n.dot(n.linalg.pinv(A),b)
+    f = n.dot(linalg.pinv(A),b)
     return f
 
 
@@ -108,7 +109,7 @@ def quadfit(ind, dep): # Fit quadratic to 3 points
     A = n.zeros((3,3))
     for i in range(3):
         A[i] = n.array([ ind[i]**2, ind[i], 1 ])
-    f = n.linalg.solve(A,dep)
+    f = linalg.solve(A,dep)
     return f
 
 
@@ -153,10 +154,10 @@ def gaussflux(pixbound, cen, sig, h_order=0):
     centered on 'cen' and with sigma parameter 'sig', and return
     the average value of that Gaussian between the boundaries
     (i.e., its pixel-averaged value for possibly non-uniform pixels.)
-    
+
     Can specify a Gauss-Hermite order (a la scipy.special.hermitenorm)
     via the 'h_order' argument, which defaults to zero.
-    
+
     (bolton@utah@iac 2014mayo)
     (Added Hermite orders: bolton@utah@iac 2014junio)
     """
@@ -292,4 +293,3 @@ def gaussproj(pixbound_in, sigma_in, pixbound_out, h_order=0, nsigma=6.0):
                           h_order=h_order, nsigma=nsigma)
     # Compose those two matrices and return the result:
     return proj_mat * pix_flux_mat
-
