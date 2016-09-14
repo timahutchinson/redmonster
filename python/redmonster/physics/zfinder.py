@@ -4,7 +4,7 @@
 #
 # Tim Hutchinson, University of Utah @ IAC, May 2014
 # t.hutchinson@utah.edu
-
+from __future__ import division
 from os import environ, makedirs
 from os.path import join, exists
 from time import gmtime, strftime

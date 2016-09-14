@@ -9,8 +9,10 @@
 
 from os import environ
 from os.path import join, exists
-
-from tkinter import *
+try:
+    from tkinter import *
+except ImportError:
+    from Tkinter import *
 import numpy as n
 import matplotlib
 matplotlib.use('Agg')
@@ -364,5 +366,3 @@ class PlotFit(Frame):
 
 
 app = PlotFit()
-
-

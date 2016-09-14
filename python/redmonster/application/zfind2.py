@@ -24,7 +24,10 @@
 from os.path import exists
 from time import gmtime, strftime
 import sys
-from configparser import SafeConfigParser
+try:
+    from configparser import SafeConfigParser
+except ImportError:
+    from ConfigParser import SafeConfigParser
 
 import numpy as n
 from astropy.io import fits
@@ -51,7 +54,7 @@ class ZFind:
         self.npoly = []
         self.npixstep = []
         self.group = []
-        
+
         if exists(self.inifile):
             self.option = SafeConfigParser()
             self.option.optionxform = str
@@ -75,7 +78,7 @@ class ZFind:
                         self.group.append(self.option.getint(section,'group'))
 
             else: print("Cannot parse ini file %r" % self.inifile)
-            
+
             if not self.labels: self.labels = None
             if not self.templates: self.templates = None
             if not self.zmin: self.zmin = None
@@ -83,7 +86,7 @@ class ZFind:
             if not self.npoly: self.npoly = None
             if not self.npixstep: self.npixstep = None
             if not self.group: self.group = None
-            
+
             self.set_templates()
         else: print("WARNING: %r does not exist" % self.inifile)
 
@@ -96,7 +99,7 @@ class ZFind:
         if npoly: self.npoly = npoly
         if npixstep: self.npixstep = npixstep
         if group: self.group = group
-        
+
         if type(self.templates) is str:
             try: self.templates = [self.templates]
             except Exception as e:
@@ -266,20 +269,3 @@ class ZFind:
         if output:
             if len(zpick.fiberid) == 1: output.write_fiber()
             else: output.write_plate()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

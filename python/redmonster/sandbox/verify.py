@@ -12,7 +12,7 @@ from astropy.convolution import convolve, Box1DKernel
 from scipy.optimize import curve_fit
 
 class VerifyRM:
-    
+
     def __init__(self,version='v5_7_0',plates=[3686,3687,3804,3805,3853,3855,3856,3860],mjds={3686:55268,3687:55269,3804:55267,3805:55269,3853:55268,3855:55268,3856:55269,3860:55269}):
         self.version = version
         self.plates = plates
@@ -167,8 +167,8 @@ class VerifyRM:
         elif plate == 3855: self.zperson = self.zperson3855
         elif plate == 3856: self.zperson = self.zperson3856
         elif plate == 3860: self.zperson = self.zperson3860
-    
-    
+
+
     def get_zpipe(self,plate):
         # Set self.zpipe to yanny info for a given plate
         if plate == 3686: self.zpipe = self.zpipe3686
@@ -179,7 +179,7 @@ class VerifyRM:
         elif plate == 3855: self.zpipe = self.zpipe3855
         elif plate == 3856: self.zpipe = self.zpipe3856
         elif plate == 3860: self.zpipe = self.zpipe3860
-    
+
 
     def get_vitype(self,plate):
         # Set self.vitype to yanny info for a given plate
@@ -203,7 +203,7 @@ class VerifyRM:
         elif plate == 3855: self.comments = self.comments3855
         elif plate == 3856: self.comments = self.comments3856
         elif plate == 3860: self.comments = self.comments3860
-    
+
     def get_all_yanny(self,plate):
         # Call all of the above self.get_XXX() methods in one fell swoop
         self.get_vifibers(plate)
@@ -222,47 +222,47 @@ class VerifyRM:
         self.rm_fibers = hdu[1].data.FIBERID + 1 # +1 here because rm fibers are 0-based and idlspec2d are 1-based
         self.rm_type = hdu[1].data.CLASS
         self.rm_zwarning = hdu[1].data.ZWARNING
-    
-    
+
+
     def read_spPlate(self,plate):
         # Read in the spPlate file for a given plate
         spPlatepath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate, self.mjds[plate]) )
         hdu = fits.open(spPlatepath)
         self.boss_target1 = hdu[5].data.BOSS_TARGET1
-    
-    
+
+
     def read_spZbest(self,plate):
         # Read in the spZbest file for a given plate
         spZbestpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version, '%s' % plate, '%s' % self.version, 'spZbest-%s-%s.fits' % (plate, self.mjds[plate]) )
         hdu = fits.open(spZbestpath)
         self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
         self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX) # In i-band, note conversion from nanomaggies to magnitudes
-    
+
 
     def get_cmass(self):
         # Return (0-based) indices of CMASS targets
         return n.where( self.boss_target1 & 2 == 2 )[0].tolist()
-    
+
 
     def get_lowz(self):
         # Return (0-based indices) of LOWZ targets
         return n.where( self.boss_target1 & 1 == 1 )[0].tolist()
-    
-    
+
+
     def get_okay_cmass(self):
         # Return (0-based) indices of CMASS targets that have the yanny comment 'v5_4_9 ok' and imag <= 21.5
         # self.get_fibers() and self.get_comments() need to have already been called on this plate for this method to work properly
         okay_fibers = (n.asarray(self.vifibers)[n.where(n.asarray(self.comments) == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
         return n.asarray(okay_fibers)[n.where( (self.boss_target1[okay_fibers] & 2 == 2) & (self.spectroflux[okay_fibers][:,3] <= 21.5) )[0].tolist()].tolist()
-    
-    
+
+
     def get_okay_lowz(self):
         # Return (0-based) indices of LOWZ targets that have the yanny comment 'v5_4_9 ok' and imag <= 21.5
         # self.get_fibers() and self.get_comments() (or, equivalently, self.get_all_yanny() ) need to have already been called on this plate
         okay_fibers = (n.asarray(self.vifibers)[n.where(n.asarray(self.comments) == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
         return n.asarray(okay_fibers)[n.where( (self.boss_target1[okay_fibers] & 1 == 1) & (self.spectroflux[okay_fibers][:,3] <= 21.5) )[0].tolist()].tolist()
-    
-    
+
+
     def count_total_targets(self):
         # Prints the total number of visually inspected targets
         count = 0
@@ -270,7 +270,7 @@ class VerifyRM:
             self.get_all_yanny(plate)
             count += len(self.vifibers)
         print(count)
-    
+
 
     def cmass_completeness(self):
         # Prints percent of all CMASS targets with rm_zwarning == 0
@@ -283,7 +283,7 @@ class VerifyRM:
             vals.append( float(len(n.where( self.rm_zwarning[fibers] == 0 )[0].tolist())) / float(len(fibers)) )
         avg = n.sum(vals) / float(len(vals))
         print(avg)
-                       
+
 
     def lowz_completeness(self):
         # Prints percent of all LOWZ targets with rm_zwarning == 0
@@ -353,7 +353,7 @@ class VerifyRM:
             self.get_all_yanny(plate)
             count += len(self.get_okay_cmass())
         print(count)
-            
+
     def cmass_okay_completeness(self):
         # Prints fraction of CMASS targets having yanny comment 'v5_4_9 ok' and imag <= 21.5 that have rm_zwarning == 0
         count = 0
@@ -596,9 +596,9 @@ class VerifyRM:
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
             zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        rhist = rhist / list(map(float,rtotal))
-        ihist = ihist / list(map(float,itotal))
-        zhist = zhist / list(map(float,ztotal))
+        rhist = rhist / rtotal.astype(float)
+        ihist = ihist / itotal.astype(float)
+        zhist = zhist / ztotal.astype(float)
         for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(rhist[i]):
@@ -652,8 +652,8 @@ class VerifyRM:
         self.rm_fibers = hdu[1].data.FIBERID
         self.rm_type = hdu[1].data.CLASS
         self.rm_zwarning = hdu[1].data.ZWARNING
-        
-        
+
+
     def read_redmonster_summary_file(self):
         # Read the redmonster summary file
         summary_path = join( self.redmonster_spectro_redux, 'redmonsterAll-%s.fits' % self.version )
@@ -889,9 +889,9 @@ class VerifyRM:
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
             zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        rhist = rhist / list(map(float,rtotal))
-        ihist = ihist / list(map(float,itotal))
-        zhist = zhist / list(map(float,ztotal))
+        rhist = rhist / rtotal.astype(float)
+        ihist = ihist / itotal.astype(float)
+        zhist = zhist / ztotal.astype(float)
         for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(rhist[i]):
@@ -930,7 +930,7 @@ class VerifyRM:
         colors = ['tomato','sage','cornflowerblue','sandybrown','mediumpurple','grey'] #['purple', 'cyan', 'blue', 'lime', 'red', 'black']
         labels = ['1<S/N<2','2<S/N<3','3<S/N<4','4<S/N<5','5<S/N<6','6<S/N<7',]
         f = p.figure()
-        
+
         ax1 = f.add_subplot(3,1,1)
         globpath = join( self.redmonster_spectro_redux,'*')
         errors1 = n.array([])
@@ -1030,7 +1030,7 @@ class VerifyRM:
         #p.title('r-band', size=18)
         p.axis([.7,2.5,0,.25])
         p.legend(prop={'size':6})
-        
+
         ax2 = f.add_subplot(3,1,2)
         errors1 = n.array([])
         errors2 = n.array([])
@@ -1260,7 +1260,7 @@ class VerifyRM:
         ibins = n.zeros(nbins)
         for i in range(nbins):
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
-        ihist = ihist / list(map(float,itotal))
+        ihist = ihist / itotal.astype(float)
         for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(ihist[i]):
@@ -1340,10 +1340,10 @@ class VerifyRM:
         for i in range(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
         p.plot(bins, hist, drawstyle='steps-mid', color='black')
-        
+
         def fit_func(x,a,sigma,mu): # Gaussian function to fit to histogram
             return a * n.exp( -((x-mu)**2)/(2*sigma**2) )
-        
+
         popt,pcov = curve_fit(normhist,bins)
         xfit = n.linspace(-6,6,1000)
         yfit = fit_func(xfit, popt[0], popt[1], popt[2])
@@ -1376,24 +1376,3 @@ class VerifyRM:
 # To see fibers with zwarning != 0, ztype = 'galaxy', and boss_target1 = 'cmass', use >>> print n.where( (x.rm_zwarning != 0) & (x.rm_type == 'ssp_galaxy_glob') & (x.boss_target1 & 2 == 2) )[0]+1
 
 # Plate 7338 has 6 MJDs, 7340 has 4
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -28,7 +28,10 @@ from redmonster.physics import zfinder, zfitter, zpicker
 from redmonster.physics import misc
 from time import gmtime, strftime
 from os.path import exists
-from configparser import SafeConfigParser
+try:
+    from configparser import SafeConfigParser
+except ImportError:
+    from ConfigParser import SafeConfigParser
 import sys
 
 class ZFind:
@@ -47,7 +50,7 @@ class ZFind:
         self.zmax = []
         self.npoly = []
         self.npixstep = []
-        
+
         if exists(self.inifile):
             self.option = SafeConfigParser()
             self.option.optionxform = str
@@ -68,14 +71,14 @@ class ZFind:
                         self.npixstep.append(self.option.getint(section,
                                                                 'npixstep'))
             else: print("Cannot parse ini file %r" % self.inifile)
-            
+
             if not self.labels: self.labels = None
             if not self.templates: self.templates = None
             if not self.zmin: self.zmin = None
             if not self.zmax: self.zmax = None
             if not self.npoly: self.npoly = None
             if not self.npixstep: self.npixstep = None
-            
+
             self.set_templates()
         else: print("WARNING: %r does not exist" % self.inifile)
 
@@ -86,7 +89,7 @@ class ZFind:
         if zmax: self.zmax = zmax
         if npoly: self.npoly = npoly
         if npixstep: self.npixstep = npixstep
-        
+
         if type(self.templates) is str:
             try: self.templates = [self.templates]
             except:
@@ -246,20 +249,3 @@ class ZFind:
         if output:
             if len(zpick.fiberid) == 1: output.write_fiberid()
             else: output.write_plate()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

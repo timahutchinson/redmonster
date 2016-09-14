@@ -23,7 +23,7 @@ from redmonster.datamgr.io import read_ndArch
 from redmonster.physics.misc import poly_array
 
 class VerifyRM:
-    
+
     def __init__(self,version='v5_10_0',
                  plates=[3686,3687,3804,3805,3853,3855,3856,3860],
                  mjds={
@@ -176,8 +176,8 @@ class VerifyRM:
         elif plate == 3855: self.zperson = self.zperson3855
         elif plate == 3856: self.zperson = self.zperson3856
         elif plate == 3860: self.zperson = self.zperson3860
-    
-    
+
+
     def get_zpipe(self,plate):
         # Set self.zpipe to yanny info for a given plate
         if plate == 3686: self.zpipe = self.zpipe3686
@@ -188,7 +188,7 @@ class VerifyRM:
         elif plate == 3855: self.zpipe = self.zpipe3855
         elif plate == 3856: self.zpipe = self.zpipe3856
         elif plate == 3860: self.zpipe = self.zpipe3860
-    
+
 
     def get_vitype(self,plate):
         # Set self.vitype to yanny info for a given plate
@@ -212,7 +212,7 @@ class VerifyRM:
         elif plate == 3855: self.comments = self.comments3855
         elif plate == 3856: self.comments = self.comments3856
         elif plate == 3860: self.comments = self.comments3860
-    
+
     def get_all_yanny(self,plate):
         # Call all of the above self.get_XXX() methods in one fell swoop
         self.get_vifibers(plate)
@@ -234,8 +234,8 @@ class VerifyRM:
         self.rm_fibers = hdu[1].data.FIBERID + 1
         self.rm_type = hdu[1].data.CLASS
         self.rm_zwarning = hdu[1].data.ZWARNING
-    
-    
+
+
     def read_spPlate(self,plate):
         # Read in the spPlate file for a given plate
         spPlatepath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version,
@@ -243,8 +243,8 @@ class VerifyRM:
                            (plate, self.mjds[plate]) )
         hdu = fits.open(spPlatepath)
         self.boss_target1 = hdu[5].data.BOSS_TARGET1
-    
-    
+
+
     def read_spZbest(self,plate):
         # Read in the spZbest file for a given plate
         spZbestpath = join( environ['BOSS_SPECTRO_REDUX'], '%s' % self.version,
@@ -254,18 +254,18 @@ class VerifyRM:
         self.sn_median = hdu[1].data.SN_MEDIAN[:,2:]
         # In i-band, note conversion from nanomaggies to magnitudes
         self.spectroflux = 22.5 - 2.5*n.log10(hdu[1].data.SPECTROFLUX)
-    
+
 
     def get_cmass(self):
         # Return (0-based) indices of CMASS targets
         return n.where( self.boss_target1 & 2 == 2 )[0].tolist()
-    
+
 
     def get_lowz(self):
         # Return (0-based indices) of LOWZ targets
         return n.where( self.boss_target1 & 1 == 1 )[0].tolist()
-    
-    
+
+
     def get_okay_cmass(self):
         # Return (0-based) indices of CMASS targets that have the
         # yanny comment 'v5_4_9 ok' and imag <= 21.5
@@ -280,15 +280,15 @@ class VerifyRM:
                                               (self.spectroflux[okay_fibers]\
                                                [:,3] <= 21.5) )[0].tolist()]\
                                                 .tolist()
-    
-    
+
+
     def get_okay_lowz(self):
         # Return (0-based) indices of LOWZ targets that have the yanny comment 'v5_4_9 ok' and imag <= 21.5
         # self.get_fibers() and self.get_comments() (or, equivalently, self.get_all_yanny() ) need to have already been called on this plate
         okay_fibers = (n.asarray(self.vifibers)[n.where(n.asarray(self.comments) == 'v5_4_9 ok')[0].tolist()]-1).tolist() # -1 due to fibers being 1-based and python using 0-based
         return n.asarray(okay_fibers)[n.where( (self.boss_target1[okay_fibers] & 1 == 1) & (self.spectroflux[okay_fibers][:,3] <= 21.5) )[0].tolist()].tolist()
-    
-    
+
+
     def count_total_targets(self):
         # Prints the total number of visually inspected targets
         count = 0
@@ -296,7 +296,7 @@ class VerifyRM:
             self.get_all_yanny(plate)
             count += len(self.vifibers)
         print(count)
-    
+
 
     def cmass_completeness(self):
         # Prints percent of all CMASS targets with rm_zwarning == 0
@@ -310,7 +310,7 @@ class VerifyRM:
                                            )[0].tolist())) / float(len(fibers)))
         avg = n.sum(vals) / float(len(vals))
         print(avg)
-                       
+
 
     def lowz_completeness(self):
         # Prints percent of all LOWZ targets with rm_zwarning == 0
@@ -380,7 +380,7 @@ class VerifyRM:
             self.get_all_yanny(plate)
             count += len(self.get_okay_cmass())
         print(count)
-            
+
     def cmass_okay_completeness(self):
         # Prints fraction of CMASS targets having yanny comment
         # 'v5_4_9 ok' and imag <= 21.5 that have rm_zwarning == 0
@@ -656,9 +656,9 @@ class VerifyRM:
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
             zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        rhist = rhist / list(map(float,rtotal))
-        ihist = ihist / list(map(float,itotal))
-        zhist = zhist / list(map(float,ztotal))
+        rhist = rhist / rtotal.astype(float)
+        ihist = ihist / itotal.astype(float)
+        zhist = zhist / ztotal.astype(float)
         for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(rhist[i]):
@@ -718,8 +718,8 @@ class VerifyRM:
         self.rm_type2 = hdu[1].data.CLASS2
         self.rm_zwarning = hdu[1].data.ZWARNING
 
-        
-        
+
+
     def read_redmonster_summary_file(self):
         # Read the redmonster summary file
         summary_path = join( self.redmonster_spectro_redux,
@@ -988,9 +988,9 @@ class VerifyRM:
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
             zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        rhist = rhist / list(map(float,rtotal))
-        ihist = ihist / list(map(float,itotal))
-        zhist = zhist / list(map(float,ztotal))
+        rhist = rhist / rtotal.astype(float)
+        ihist = ihist / itotal.astype(float)
+        zhist = zhist / ztotal.astype(float)
         for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(rhist[i]):
@@ -1008,7 +1008,7 @@ class VerifyRM:
                         zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
                     except:
                         zhist[i] = 0
-        
+
         p.plot(rbins,rhist,color='purple',label='r-band', drawstyle='steps-mid')
         p.plot(ibins,ihist,color='blue',label='i-band', drawstyle='steps-mid')
         p.plot(zbins,zhist,color='cyan',label='z-band', drawstyle='steps-mid')
@@ -1039,7 +1039,7 @@ class VerifyRM:
                   '3.0<S/N<3.5','3.5<S/N<4.0','4.0<S/N<4.5'
                   ]
         f = p.figure()
-        
+
         ax1 = f.add_subplot(3,1,1)
         errors1 = n.array([])
         errors2 = n.array([])
@@ -1491,7 +1491,7 @@ class VerifyRM:
         ibins = n.zeros(nbins)
         for i in range(nbins):
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
-        ihist = ihist / list(map(float,itotal))
+        ihist = ihist / itotal.astype(float)
         for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(ihist[i]):
@@ -1739,11 +1739,11 @@ class VerifyRM:
         for i in range(nbins):
             bins[i] = (binedges[i+1]+binedges[i])/2.
         p.plot(bins, hist, drawstyle='steps-mid', color='black')
-        
+
         def fit_func(x,a,sigma,mu):
             # Gaussian function to fit to histogram
             return a * n.exp( -((x-mu)**2)/(2*sigma**2) )
-        
+
         popt,pcov = curve_fit(fit_func, normhist,bins)
         xfit = n.linspace(-6,6,1000)
         yfit = fit_func(xfit, popt[0], popt[1], popt[2])
@@ -2215,7 +2215,7 @@ class VerifyRM:
                         no1no4.append(thesechi2)
             except IndexError:
                 pass
-        f.add_subplot(312) 
+        f.add_subplot(312)
         colors = ['black', 'tomato', 'darkturquoise', 'green']
         labels = ['Both', '1 poly', '4 poly', 'Neither']
         chi2list = [yes1yes4, yes1no4, no1yes4, no1no4]
@@ -2233,7 +2233,7 @@ class VerifyRM:
         p.xlabel(r'$\chi_{\mathrm{r,min},1}^2$',size=12)
         p.ylabel(r'$\chi_{\mathrm{r,min},4}^2$',size=12)
 
-        # rchi2diff                                                       
+        # rchi2diff
         yes1yes4 = []
         yes1no4 = []
         no1yes4 = []
@@ -2285,10 +2285,10 @@ class VerifyRM:
         p.subplots_adjust(hspace = .8)
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/1poly_4poly_scatters.pdf')
         p.clf()
-        
+
         print('X_rms:  %s' % xrms)
         print('Y_rms:  %s' % yrms)
-        
+
         '''
         import seaborn as sns
         g = (sns.jointplot(n.asarray(x), n.asarray(y), kind='reg').set_axis_labels('x', 'y'))
@@ -2506,17 +2506,17 @@ class VerifyRM:
         c_kms = 299792.458
         directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
         hdu = fits.open(directory+'/spAll-%s-repeats_lrg.fits' % self.version)
-        
+
         thing_ids = []
         object_ids1 = []
         object_ids2 = []
         object_ids = {}
-        
+
         self.z1 = []
         self.z2 = []
         self.zerr1 = []
         self.zerr2 = []
-        
+
         for thing_id in hdu[1].data.THING_ID:
             if thing_id not in thing_ids:
                 thing_ids.append(thing_id)
@@ -2527,15 +2527,15 @@ class VerifyRM:
                 object_id2 = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
                 object_ids2.append(object_id2)
                 object_ids[(hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)] = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
-        
-        
+
+
         #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
         ioerrors = 0
         for i,object_id1 in enumerate(object_ids):
             stderr.write('\r %s of %s ' % (i+1,len(object_ids)))
             try:
                 object_id2 = object_ids[object_id1]
-                
+
                 hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
                 hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
                 fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1[2])[0][0]
@@ -2544,7 +2544,7 @@ class VerifyRM:
                 self.z2.append(hdu2[1].data.Z1[fiberind2])
                 self.zerr1.append(hdu1[1].data.Z_ERR1[fiberind1])
                 self.zerr2.append(hdu2[1].data.Z_ERR2[fiberind2])
-                
+
                 #dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
                 #drchi2.append(n.min([rchi21, rchi22]))
             except IndexError:
@@ -2553,8 +2553,8 @@ class VerifyRM:
                 ioerrors += 1
                 print("IOError! %s %s" % (repr(object_id1), ioerrors))
 
-        
-        
+
+
         self.z1 = n.array(self.z1)
         self.z2 = n.array(self.z2)
         self.zerr1 = n.array(self.zerr1)
@@ -2581,7 +2581,7 @@ class VerifyRM:
 
         def fit_func(x, a, sigma, mu): # Gaussian function to fit to histogram
             return a * n.exp( -((x-mu)**2)/(2.*sigma**2) )
-        
+
         if fit:
             popt, pcov = curve_fit(fit_func, bins, normhist)
             xfit = n.linspace(-4,4,1000)
@@ -2791,7 +2791,7 @@ class VerifyRM:
                         chi2null4_no1yes4 = n.append(chi2null4_no1yes4, hdu4[1].data.CHI2NULL[fiberind])
             except IndexError:
                 pass
-        
+
         f = p.figure()
         ax = f.add_subplot(211)
         p.plot(n.linspace(0,50000,1000),n.linspace(0,50000,1000), color='black', linestyle='--')
@@ -2843,7 +2843,7 @@ class VerifyRM:
         g.fig.suptitle('1 success, 4 failure')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot1.pdf')
         p.close()
-        
+
         f = p.figure()
         ax = f.add_subplot(111)
         g = sns.JointGrid((chi201_no1yes4-chi2null1_no1yes4)/chi201_no1yes4, (chi204_no1yes4-chi2null4_no1yes4)/chi204_no1yes4, xlim=(0,1), ylim=(0,1))
@@ -2857,7 +2857,7 @@ class VerifyRM:
         g.fig.suptitle('1 failure, 4 success')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/jointplot2.pdf')
         p.close()
-        
+
 
         # Fit power law to data points and plot on top as well
         def fit_func(x, a, k, b):
@@ -2892,7 +2892,7 @@ class VerifyRM:
         from scipy.stats.kde import gaussian_kde
         kde_x = gaussian_kde((chi201-chi2null1)/chi201)
         kde_y = gaussian_kde((chi204-chi2null4)/chi204)
-        
+
         # Fit a gaussian to each of the KDEs
         '''
         def fit_func(x,a,sigma,mu):
@@ -2961,7 +2961,7 @@ class VerifyRM:
                          hdu1 = fits.open(filepath)
                          hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version,
                                                '%s' % plate, self.version, basename(filepath)))
-                         wave = 10**(hduplate[0].header['COEFF0'] + n.arange(hduplate[0].header['NAXIS1']) * 
+                         wave = 10**(hduplate[0].header['COEFF0'] + n.arange(hduplate[0].header['NAXIS1']) *
                                      hduplate[0].header['COEFF1'])
                          for i in range(hdu1[2].data.shape[0]):
                              if not hdu1[1].data.ZWARNING[i] & 4:
@@ -2996,7 +2996,7 @@ class VerifyRM:
                                  inttemp4[1].append( trapz(this_temp * eval(hdu4[1].data.THETA1[i])[0],wave) )
                                  pmat = n.transpose(poly_array(4, hduplate[0].header['NAXIS1']))
                                  intpoly4[1].append( trapz(n.dot(pmat,eval(hdu4[1].data.THETA1[i])[1:]),wave) )
-        
+
         import pdb; pdb.set_trace()
         f = p.figure()
         ax = f.add_subplot(111)
@@ -3038,23 +3038,23 @@ class VerifyRM:
         rchi24_yes1no4 = []
         rchi21_no1yes4 = []
         rchi24_no1yes4 = []
-        
+
         drchi21 = []
         drchi24 = []
         drchi21_yes1no4 = []
         drchi24_yes1no4 = []
         drchi21_no1yes4 = []
         drchi24_no1yes4 = []
-        
+
         plate = None
         mjd = None
         fiber = None
-        
+
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
         plotted = False
         nfibers = hdu1[1].data.ZWARNING.shape[0]
-        
+
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
             print('Object %s of %s' % (i+1,nfibers))
             if not (zwarn & 4 and hdu4[1].data.ZWARNING[i] & 4): # only bother with this fiber if at least one has run has !(zwarn & 4)
@@ -3093,13 +3093,13 @@ class VerifyRM:
                     if not hdu4[1].data.ZWARNING[i] & 4:
                         rchi21.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
                         rchi24.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
-                    
+
                         drchi21.append(n.sum(((data_slice1 - model1_slice2)**2)*ivar_slice1)/data_slice1.shape[0] - rchi21[-1])
                         drchi24.append(n.sum(((data_slice4 - model4_slice2)**2)*ivar_slice4)/data_slice4.shape[0] - rchi24[-1])
                     else:
                         rchi21_yes1no4.append(n.sum(((data_slice - model1_slice)**2)*ivar_slice)/data_slice.shape[0])
                         rchi24_yes1no4.append(n.sum(((data_slice - model4_slice)**2)*ivar_slice)/data_slice.shape[0])
-                        
+
                         drchi21_yes1no4.append(n.sum(((data_slice1 - model1_slice2)**2)*ivar_slice1)/data_slice1.shape[0] - rchi21_yes1no4[-1])
                         drchi24_yes1no4.append(n.sum(((data_slice4 - model4_slice2)**2)*ivar_slice4)/data_slice4.shape[0] - rchi24_yes1no4[-1])
                         if not plotted:
@@ -3136,7 +3136,7 @@ class VerifyRM:
         p.ylabel(r'$\chi_4^2 / \mathrm{dof}$')
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/narrow_band_chi2.pdf')
         p.close()
-        
+
         f = p.figure()
         ax = f.add_subplot(111)
         p.plot(n.linspace(0.4,1.6,1000), n.linspace(0.4,1.6,1000), '--', color='black')
@@ -3195,7 +3195,7 @@ class VerifyRM:
         plate = None
         mjd = None
         nfibers = hdu1[1].data.ZWARNING.shape[0]
-        
+
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
             print('Object %s of %s' % (i+1,nfibers))
             if not (zwarn & 4 and hdu4[1].data.ZWARNING[i] & 4): # only bother with this fiber if at least one has run has !(zwarn & 4)
@@ -3285,7 +3285,7 @@ class VerifyRM:
     def test_merge_poly_runs(self):
         hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
-        
+
         total = 0
         count = 0
         for i,zwarn in enumerate(hdu1[1].data.ZWARNING):
@@ -3369,7 +3369,7 @@ class VerifyRM:
         object_ids1 = []
         object_ids2 = []
         object_ids = {}
-        
+
         dv = []
         drchi2 = []
 
@@ -3384,14 +3384,14 @@ class VerifyRM:
                 object_ids2.append(object_id2)
                 object_ids[(hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)] = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
 
-        
+
         #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
         totalobjs = 0
         for i,object_id1 in enumerate(object_ids):
             stderr.write('\r %s of %s' % (i+1,len(object_ids)))
             try:
                 object_id2 = object_ids[object_id1]
-                
+
                 hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
                 hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
                 fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1[2])[0][0]
@@ -3409,7 +3409,7 @@ class VerifyRM:
             except IOError:
                 ioerrors += 1
                 print("IOError! %s %s" % (repr(object_id1), ioerrors))
-        
+
         dvidl = []
         drchi2idl = []
         for i,object_id1 in enumerate(object_ids):
@@ -3424,7 +3424,7 @@ class VerifyRM:
                 z2 = hdu2[1].data.Z_NOQSO[object_id2[2]]
                 rchi21 = hdu1[1].data.RCHI2DIFF_NOQSO[object_id1[2]]
                 rchi22 = hdu2[1].data.RCHI2DIFF_NOQSO[object_id2[2]]
-                
+
                 dvidl.append(n.abs(z1-z2)*c_kms/(1+n.min([z1,z2])))
                 drchi2idl.append(n.min([rchi21,rchi22]))
             except IndexError:
@@ -3432,7 +3432,7 @@ class VerifyRM:
             except IOError as e:
                 print("IOError")
 
-        
+
         print("Total objects: %s" % len(dv)*2)
         confobjs = 0
         cataobjs = 0
@@ -3453,12 +3453,12 @@ class VerifyRM:
                 confobjs002 += 1.
                 if dv[i] > 1000:
                     cataobjs002 += 1.
-                    
+
         print("Total objects: %s" % (totalobjs))
         print("Redmonster catastrophic failures at 0.002: %s of %s -- %s percent" % (cataobjs002, confobjs002*2, cataobjs002/(confobjs002*2)))
         print("Redmonster catastrophic failures at 0.005: %s of %s -- %s percent" % (cataobjs, confobjs, cataobjs/(confobjs*2)))
         print("Redmonster catastrophic failures at 0.01: %s of %s -- %s percent" % (cataobjs01, confobjs01*2, cataobjs01/(confobjs01*2)))
-    
+
         print("Total objects: %s" % len(dvidl)*2)
         import pdb; pdb.set_trace()
         confobjs = 0
@@ -3687,7 +3687,7 @@ class VerifyRM:
         p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_fiberid.pdf')
         p.close()
-        
+
         total, count = 0., 0.
         for i in [2*x for x in range(250)]:
             total += totals[i]
@@ -3698,7 +3698,7 @@ class VerifyRM:
             total += totals[i]
             count += counts[i]
         print(count/total)
-        
+
 
 
     def failure_rate_on_plate(self, nbins=40, sns_pal='muted'):
@@ -3760,7 +3760,7 @@ class VerifyRM:
         p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_plate.pdf')
         p.close()
-    
+
         faildict = {}
 
         xbins = n.zeros(len(xbinedges)-1)
@@ -3784,7 +3784,7 @@ class VerifyRM:
         for key in faildict:
             dist.append(key/300.)
             fail.append( faildict[key][1]/faildict[key][0])
-        
+
         f = p.figure()
         f.add_subplot(111)
         p.plot(dist, convolve(fail,Box1DKernel(5)), drawstyle='steps-mid')
@@ -3794,8 +3794,8 @@ class VerifyRM:
         p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_dist.pdf')
         p.close()
-    
-                
+
+
 
 
     def failure_vs_sn_sns(self,sn_max=5,nbins=20):
@@ -3858,9 +3858,9 @@ class VerifyRM:
             rbins[i] = (rbinedges[i+1]+rbinedges[i])/2.
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
             zbins[i] = (zbinedges[i+1]+zbinedges[i])/2.
-        rhist = rhist / list(map(float,rtotal))
-        ihist = ihist / list(map(float,itotal))
-        zhist = zhist / list(map(float,ztotal))
+        rhist = rhist / rtotal.astype(float)
+        ihist = ihist / itotal.astype(float)
+        zhist = zhist / ztotal.astype(float)
         for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(rhist[i]):
@@ -3878,7 +3878,7 @@ class VerifyRM:
                         zhist[i] = (zhist[i-1] + zhist[i+1]) / 2.
                     except:
                         zhist[i] = 0
-        
+
         p.plot(rbins,rhist,color=sns.color_palette("hls", 8)[4],label='r-band', drawstyle='steps-mid')
         p.plot(ibins,ihist,color=sns.color_palette("hls", 8)[5],label='i-band', drawstyle='steps-mid')
         p.plot(zbins,zhist,color=sns.color_palette("hls", 8)[6],label='z-band', drawstyle='steps-mid')
@@ -3934,7 +3934,7 @@ class VerifyRM:
         ibins = n.zeros(nbins)
         for i in range(nbins):
             ibins[i] = (ibinedges[i+1]+ibinedges[i])/2.
-        ihist = ihist / list(map(float,itotal))
+        ihist = ihist / itotal.astype(float)
         for i in range(nbins):
             if i != 0 and i != (nbins-1):
                 if isnan(ihist[i]):
@@ -3970,7 +3970,7 @@ class VerifyRM:
         fibercount = 0
         dz591 = []
         dz5100 = []
-        
+
         openplate = None
         openmjd = None
 
@@ -3998,7 +3998,7 @@ class VerifyRM:
         print(max(dz5100))
         print(min(dz591))
         print(min(dz5100))
-        p.axis([min(dz591), max(dz591), min(dz5100), max(dz591)]) 
+        p.axis([min(dz591), max(dz591), min(dz5100), max(dz591)])
         p.tick_params(labelsize=12)
         p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/zerr_reductions.pdf')
@@ -4008,9 +4008,9 @@ class VerifyRM:
         sns.set_style('white')
         sns.set_palette(sns_pal)
         sns.set_context('paper')
-        
+
         chi2s = n.linspace(chi2min, chi2max, nchi2)
-        
+
         # Calculate completeness as function of drchi2
         hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
         hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, 'spAll-%s.fits' % self.version))
@@ -4062,15 +4062,15 @@ class VerifyRM:
         c_kms = 299792.458
         directory = '/uufs/astro.utah.edu/common/home/u0814744/compute/scratch/repeatability'
         hdu = fits.open(directory+'/spAll-v5_10_0-repeats_lrg.fits')
-        
+
         thing_ids = []
         object_ids1 = []
         object_ids2 = []
         object_ids = {}
-        
+
         dv = []
         drchi2 = []
-        
+
         for thing_id in hdu[1].data.THING_ID:
             if thing_id not in thing_ids:
                 thing_ids.append(thing_id)
@@ -4081,15 +4081,15 @@ class VerifyRM:
                 object_id2 = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
                 object_ids2.append(object_id2)
                 object_ids[(hdu[1].data.PLATE[w1], hdu[1].data.MJD[w1], hdu[1].data.FIBERID[w1]-1)] = (hdu[1].data.PLATE[w2], hdu[1].data.MJD[w2], hdu[1].data.FIBERID[w2]-1)
-    
-    
+
+
         #hdurm = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits'))
         totalobjs = 0
         for i,object_id1 in enumerate(object_ids):
             stderr.write('\r %s of %s' % (i+1,len(object_ids)))
             try:
                 object_id2 = object_ids[object_id1]
-                
+
                 hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats1' % self.version, '%s' % object_id1[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id1[0],object_id1[1])))
                 hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_repeats2' % self.version, '%s' % object_id2[0], '%s' % self.version, 'redmonster-%s-%s.fits' % (object_id2[0],object_id2[1])))
                 fiberind1 = n.where(hdu1[1].data.FIBERID == object_id1[2])[0][0]
@@ -4098,7 +4098,7 @@ class VerifyRM:
                 z2 = hdu2[1].data.Z1[fiberind2]
                 rchi21 = hdu1[1].data.RCHI2DIFF[fiberind1]
                 rchi22 = hdu2[1].data.RCHI2DIFF[fiberind2]
-                
+
                 dv.append(n.abs(z1-z2)*c_kms/(1+n.min([z1, z2])))
                 drchi2.append(n.min([rchi21, rchi22]))
                 totalobjs += 1
@@ -4107,7 +4107,7 @@ class VerifyRM:
             except IOError:
                 ioerrors += 1
                 print("IOError! %s %s" % (repr(object_id1), ioerrors))
-        
+
         dvidl = []
         drchi2idl = []
         for i,object_id1 in enumerate(object_ids):
@@ -4120,7 +4120,7 @@ class VerifyRM:
                 z2 = hdu2[1].data.Z_NOQSO[object_id2[2]]
                 rchi21 = hdu1[1].data.RCHI2DIFF_NOQSO[object_id1[2]]
                 rchi22 = hdu2[1].data.RCHI2DIFF_NOQSO[object_id2[2]]
-                                      
+
                 dvidl.append(n.abs(z1-z2)*c_kms/(1+n.min([z1,z2])))
                 drchi2idl.append(n.min([rchi21,rchi22]))
             except IndexError:
@@ -4177,40 +4177,3 @@ class VerifyRM:
         p.tick_params(labelsize=12)
         p.tight_layout()
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/comp_pur_contour.pdf')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

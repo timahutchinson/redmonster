@@ -10,6 +10,7 @@
 #
 # A. Bolton, U. of Utah, 2010-2014
 #
+from __future__ import division
 
 import numpy as n
 
@@ -73,7 +74,7 @@ def spline_get_slope(y, m, x):
     i = n.int32(x) + 1
     # (the following is a hack to keep the upper
     # bound in the valid interval range:)
-    i = i - i / (intervals + 1)
+    i = i - i // (intervals + 1)
     d1 = x - i + 1.
     d2 = d1 - 1.0
     spline_slope = (m[i] * d1**2 + m[i-1] * d2**2 +
@@ -88,7 +89,7 @@ def spline_get_curv(y, m, x):
     i = n.int32(x) + 1
     # (the following is a hack to keep the upper
     # bound in the valid interval range:)
-    i = i - i / (intervals + 1)
+    i = i - i // (intervals + 1)
     d1 = x - i + 1.
     d2 = d1 - 1.0
     spline_curv = (2.0 * m[i] * d1 + 2.0 * m[i-1] * d2 +
