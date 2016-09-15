@@ -70,7 +70,7 @@ def read_ndArch(fname):
     # Initialize list of baselines with index defaults:
     baselines = [n.arange(this_size)+1 for this_size in data.shape[:-1]]
     # Loop over parameters and construct baselines:
-    for ipar in xrange(npars):
+    for ipar in range(npars):
         # Translate Python axis index integer to FITS axis index string:
         ax = str(npars + 1 - ipar)
         # Populate name & units for this axis, if available:
@@ -81,13 +81,13 @@ def read_ndArch(fname):
         is_regular = ('CRPIX'+ax in header) and \
                      ('CRVAL'+ax in header) and \
                      ('CDELT'+ax in header)
-        pv_base = ['PV'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
+        pv_base = ['PV'+ax+'_'+str(j+1) for j in range(data.shape[ipar])]
         pv_test = n.asarray([this_pv in header for this_pv in pv_base])
         is_irregular = pv_test.prod() > 0
-        ps_base = ['PS'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
+        ps_base = ['PS'+ax+'_'+str(j+1) for j in range(data.shape[ipar])]
         ps_test = n.asarray([this_ps in header for this_ps in ps_base])
         is_labeled = ps_test.prod() > 0
-        n_base = ['N'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
+        n_base = ['N'+ax+'_'+str(j+1) for j in range(data.shape[ipar])]
         n_test = n.asarray([this_n in header for this_n in n_base])
         is_named = n_test.prod() > 0
         if is_regular:

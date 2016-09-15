@@ -45,7 +45,7 @@ class ZPicker:
     
     def classify_obj(self, zfind1, zfit1, flags1, zfind2, zfit2, flags2, zfind3, zfit3, flags3, zfind4, zfit4, flags4, zfind5, zfit5, flags5):
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
-        for ifiber in xrange(zfind1.zchi2arr.shape[0]):
+        for ifiber in range(zfind1.zchi2arr.shape[0]):
             #self.minrchi2[ifiber,0] = n.min(zfind1.zchi2arr[ifiber]) / (self.npixflux - zfind1.npoly) # Calculate reduced chi**2 values to compare templates of differing lengths
             #if zfind2: self.minrchi2[ifiber,1] = n.min(zfind2.zchi2arr[ifiber]) / (self.npixflux - zfind2.npoly)
             #if zfind3: self.minrchi2[ifiber,2] = n.min(zfind3.zchi2arr[ifiber]) / (self.npixflux - zfind3.npoly)
@@ -68,7 +68,7 @@ class ZPicker:
                 self.fname.append(zfind1.fname)
                 minloc = n.unravel_index(zfind1.zchi2arr[ifiber].argmin(), zfind1.zchi2arr[ifiber].shape)[:-1]
                 d = {}
-                for i in xrange(len(minloc)):
+                for i in range(len(minloc)):
                     d[zfind1.infodict['par_names'][i]] = zfind1.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags1[ifiber])
@@ -99,7 +99,7 @@ class ZPicker:
                 self.fname.append(zfind2.fname)
                 minloc = n.unravel_index(zfind2.zchi2arr[ifiber].argmin(), zfind2.zchi2arr[ifiber].shape)[:-1]
                 d = {}
-                for i in xrange(len(minloc)):
+                for i in range(len(minloc)):
                     d[zfind2.infodict['par_names'][i]] = zfind2.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags2[ifiber])
@@ -129,7 +129,7 @@ class ZPicker:
                 self.fname.append(zfind3.fname)
                 minloc = n.unravel_index(zfind3.zchi2arr[ifiber].argmin(), zfind3.zchi2arr[ifiber].shape)[:-1]
                 d = {}
-                for i in xrange(len(minloc)):
+                for i in range(len(minloc)):
                     d[zfind3.infodict['par_names'][i]] = zfind3.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags3[ifiber])
@@ -159,7 +159,7 @@ class ZPicker:
                 self.fname.append(zfind4.fname)
                 minloc = n.unravel_index(zfind4.zchi2arr[ifiber].argmin(), zfind4.zchi2arr[ifiber].shape)[:-1]
                 d = {}
-                for i in xrange(len(minloc)):
+                for i in range(len(minloc)):
                     d[zfind4.infodict['par_names'][i]] = zfind4.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags4[ifiber])
@@ -190,7 +190,7 @@ class ZPicker:
                 self.fname.append(zfind5.fname)
                 minloc = n.unravel_index(zfind5.zchi2arr[ifiber].argmin(), zfind5.zchi2arr[ifiber].shape)[:-1]
                 d = {}
-                for i in xrange(len(minloc)):
+                for i in range(len(minloc)):
                     d[zfind5.infodict['par_names'][i]] = zfind5.baselines[i][minloc[i]]
                 self.subtype.append(d)
                 self.zwarning = n.append(self.zwarning, flags5[ifiber])

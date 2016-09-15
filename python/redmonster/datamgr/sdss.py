@@ -28,7 +28,7 @@ class SpCFrameAll:
         self.spPlate_file = self.path_to_spectra + 'spPlate-' + pstring \
                             + '-' + mstring + '.fits'
         hdr = fits.getheader(self.spPlate_file)
-        exp_keys = [this_key for this_key in hdr.keys() if this_key[:5] == 'EXPID']
+        exp_keys = [this_key for this_key in list(hdr.keys()) if this_key[:5] == 'EXPID']
         exp_ids = [hdr[this_key][:11] for this_key in exp_keys]
         self.spCFrame_files = [self.path_to_spectra + 'spCFrame-' + this_id +
                                '.fits' for this_id in exp_ids]
@@ -47,23 +47,23 @@ class SpCFrameAll:
         self.fiberid_now = fiberid
         self.i_exp = []
         self.j_row = []
-        for i in xrange(self.n_exposures):
+        for i in range(self.n_exposures):
             wh_fib = n.where(self.plug_list[i].FIBERID == fiberid)[0]
-            for j in xrange(len(wh_fib)):
+            for j in range(len(wh_fib)):
                 self.i_exp.append(i)
                 self.j_row.append(wh_fib[j])
         self.nspec_fib = len(self.i_exp)
         full_ivar = [self.invvar_list[self.i_exp[k]][self.j_row[k]]
-                     for k in xrange(self.nspec_fib)]
+                     for k in range(self.nspec_fib)]
         self.ilo_fib = [min(n.where(this_ivar > 0)[0]) for this_ivar in full_ivar]
         self.ihi_fib = [max(n.where(this_ivar > 0)[0]) for this_ivar in full_ivar]
         self.flux_fib = [self.flux_list[self.i_exp[k]][self.j_row[k],self.ilo_fib[k]:self.ihi_fib[k]+1]
-                         for k in xrange(self.nspec_fib)]
+                         for k in range(self.nspec_fib)]
         self.invvar_fib = [self.invvar_list[self.i_exp[k]][self.j_row[k],self.ilo_fib[k]:self.ihi_fib[k]+1]
-                           for k in xrange(self.nspec_fib)]
+                           for k in range(self.nspec_fib)]
         self.mask_fib = [self.mask_list[self.i_exp[k]][self.j_row[k],self.ilo_fib[k]:self.ihi_fib[k]+1]
-                         for k in xrange(self.nspec_fib)]
+                         for k in range(self.nspec_fib)]
         self.loglam_fib = [self.loglam_list[self.i_exp[k]][self.j_row[k],self.ilo_fib[k]:self.ihi_fib[k]+1]
-                           for k in xrange(self.nspec_fib)]
+                           for k in range(self.nspec_fib)]
         self.disp_fib = [self.disp_list[self.i_exp[k]][self.j_row[k],self.ilo_fib[k]:self.ihi_fib[k]+1]
-                         for k in xrange(self.nspec_fib)]
+                         for k in range(self.nspec_fib)]

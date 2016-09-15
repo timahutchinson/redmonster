@@ -24,7 +24,10 @@
 from os.path import exists
 from time import gmtime, strftime
 import sys
-from ConfigParser import SafeConfigParser
+try:
+    from configparser import SafeConfigParser
+except ImportError:
+    from ConfigParser import SafeConfigParser
 
 import numpy as n
 from astropy.io import fits
@@ -51,10 +54,10 @@ class ZFind:
         self.npoly = []
         self.npixstep = []
         self.group = []
-        
+
         if exists(self.inifile):
             self.option = SafeConfigParser()
-            self.option.optionxform = unicode
+            self.option.optionxform = str
             r = self.option.read(self.inifile)
             if len(r) == 1:
                 for section in self.option.sections():
@@ -74,8 +77,8 @@ class ZFind:
                     if self.option.has_option(section,'group'):
                         self.group.append(self.option.getint(section,'group'))
 
-            else: print "Cannot parse ini file %r" % self.inifile
-            
+            else: print("Cannot parse ini file %r" % self.inifile)
+
             if not self.labels: self.labels = None
             if not self.templates: self.templates = None
             if not self.zmin: self.zmin = None
@@ -83,9 +86,9 @@ class ZFind:
             if not self.npoly: self.npoly = None
             if not self.npixstep: self.npixstep = None
             if not self.group: self.group = None
-            
+
             self.set_templates()
-        else: print "WARNING: %r does not exist" % self.inifile
+        else: print("WARNING: %r does not exist" % self.inifile)
 
 
     def set_templates(self, templates=None, zmin=None, zmax=None, npoly=None,
@@ -96,15 +99,15 @@ class ZFind:
         if npoly: self.npoly = npoly
         if npixstep: self.npixstep = npixstep
         if group: self.group = group
-        
+
         if type(self.templates) is str:
             try: self.templates = [self.templates]
             except Exception as e:
-                print 'Templates not a list and unable to convert to list! \
-                Exception: %r' % e
+                print('Templates not a list and unable to convert to list! \
+                Exception: %r' % e)
                 sys.exit(1)
         if type(self.templates) is list:
-                self.templates = map(str, self.templates)
+                self.templates = list(map(str, self.templates))
         if self.zmin is not None:
             if type(self.zmin) is not list:
                 try:
@@ -113,18 +116,18 @@ class ZFind:
                     try:
                         self.zmin = self.zmin.tolist()
                     except Exception as e:
-                        print 'Can\'t convert zmin to list - defaulting to \
-                                full zrange! Exception: %r' % e
+                        print('Can\'t convert zmin to list - defaulting to \
+                                full zrange! Exception: %r' % e)
                         self.zmin = None
                         self.zmax = None
             if type(self.zmin) is list:
                 if len(self.zmin) != len(self.templates):
-                    print 'Length of zmin doesn\'t match length of templates - \
-                            defaulting to full zrange!'
+                    print('Length of zmin doesn\'t match length of templates - \
+                            defaulting to full zrange!')
                     self.zmin = None
                     self.zmax = None
                 if self.zmax is None:
-                    print 'zmax not given - defaulting to full zrange!'
+                    print('zmax not given - defaulting to full zrange!')
                     self.zmin = None
                     self.zmax = None
                 else:
@@ -134,14 +137,14 @@ class ZFind:
                             try:
                                 self.zmax = self.zmax.tolist()
                             except Exception as e:
-                                print 'Can\'t convert zmax to list - \
+                                print('Can\'t convert zmax to list - \
                                         defaulting to full zrange! \
-                                        Exception: %r' % e
+                                        Exception: %r' % e)
                                 self.zmin = None
                                 self.zmax = None
                     if len(self.zmin) != len(self.zmax):
-                        print 'Length of zmin and zmax don\'t match - \
-                                defaulting to full zrange!'
+                        print('Length of zmin and zmax don\'t match - \
+                                defaulting to full zrange!')
                         self.zmin = None
                         self.zmax = None
         #import pdb; pdb.set_trace()
@@ -157,12 +160,12 @@ class ZFind:
                     try:
                         self.npoly = self.npoly.tolist()
                     except Exception as e:
-                        print 'npoly not a list and unable to convert to \
+                        print('npoly not a list and unable to convert to \
                                 list - defaulting to npoly=4 for all \
-                                templates! Exception: %r' % e
+                                templates! Exception: %r' % e)
                         self.npoly = [4]*len(self.templates)
             else:
-                self.npoly = map(int, self.npoly)
+                self.npoly = list(map(int, self.npoly))
         if self.npixstep is None:
             self.npixstep = [1]*len(self.templates)
         else:
@@ -173,12 +176,12 @@ class ZFind:
                     try:
                         self.npixstep = self.npixstep.tolist()
                     except Exception as e:
-                        print 'npixstep not a list and unable to convert to \
+                        print('npixstep not a list and unable to convert to \
                                 list - defaulting to npixstep=1 for all \
-                                templates! Exception: %r' % e
+                                templates! Exception: %r' % e)
                         self.npixstep = [1]*len(self.templates)
             else:
-                self.npixstep = map(int, self.npixstep)
+                self.npixstep = list(map(int, self.npixstep))
 
 
     def reduce_plate_mjd(self, plate=None, mjd=None, fiberid=None, data_range=None,
@@ -189,14 +192,14 @@ class ZFind:
             if type(fiberid) is not list:
                 try:
                     fiberid = [fiberid]
-                    fiberid = map(int, fiberid)
+                    fiberid = list(map(int, fiberid))
                 except ValueError:
                     try:
                         fiberid = fiberid.tolist()
-                        fiberid = map(int, fiberid)
+                        fiberid = list(map(int, fiberid))
                     except ValueError:
-                        print 'fiberid not set properly - running full plate!'
-            else: fiberid = map(int, fiberid)
+                        print('fiberid not set properly - running full plate!')
+            else: fiberid = list(map(int, fiberid))
 
         # Spec
         specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid, platepath=platepath)
@@ -206,7 +209,7 @@ class ZFind:
         zfindobjs = []
         zfitobjs = []
         if (self.zmin is not None) & (self.zmax is not None):
-            for i in xrange(len(self.templates)):
+            for i in range(len(self.templates)):
                 zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
                                                   group=self.group[i],
                                                   npoly=self.npoly[i],
@@ -220,7 +223,7 @@ class ZFind:
                                                  zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine2()
         else:
-            for i in xrange(len(self.templates)):
+            for i in range(len(self.templates)):
                 zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
                                                   group=self.group[i],
                                                   npoly=self.npoly[i],
@@ -235,7 +238,7 @@ class ZFind:
 
         # Flags
         flags = []
-        for i in xrange(len(zfindobjs)):
+        for i in range(len(zfindobjs)):
             flags.append( misc.comb_flags(specs, zfindobjs[i], zfitobjs[i]) )
 
         # ZPicker
@@ -258,28 +261,11 @@ class ZFind:
                     output = io2.WriteRedmonster(zpick, dest=self.dest,
                                                   clobber=True)
                 except Exception as e:
-                    print 'Could not convert dest to string - writing to \
+                    print('Could not convert dest to string - writing to \
                             default directory and NOT clobbering old files! \
-                            Exception: %r' % e
+                            Exception: %r' % e)
                     output = io2.WriteRedmonster(zpick, clobber=True)
 
         if output:
             if len(zpick.fiberid) == 1: output.write_fiber()
             else: output.write_plate()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

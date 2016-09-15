@@ -30,12 +30,12 @@ class ZFitter:
         # width is 1000 km/s
         self.threshold = threshold
         self.width = width
-        for ifiber in xrange(self.zchi2.shape[0]):
+        for ifiber in range(self.zchi2.shape[0]):
             self.minvector.append( (ifiber,) +
                                   n.unravel_index(self.zchi2[ifiber].argmin(),
                                                   self.zchi2[ifiber].shape))
             bestzvec = n.zeros( self.zchi2.shape[-1])
-            for iz in xrange(self.zchi2.shape[-1]):
+            for iz in range(self.zchi2.shape[-1]):
                 bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
             posinvec = n.where( bestzvec == n.min(bestzvec) )[0][0]
             # Flag and skip interpolation fit if best chi2 is at edge of z-range
@@ -145,20 +145,20 @@ class ZFitter:
         self.z_err = n.zeros((self.zchi2.shape[0],num_z))
         self.minvectors = []
         self.chi2vals = []
-        for ifiber in xrange(self.zchi2.shape[0]):
+        for ifiber in range(self.zchi2.shape[0]):
             allminvectors = []
             bestminvectors = []
             bestchi2vals = []
             bestzvec = n.zeros( self.zchi2.shape[-1] )
             # Make vector of minimum chi2 at each trial redshift
-            for iz in xrange(self.zchi2.shape[-1]):
+            for iz in range(self.zchi2.shape[-1]):
                 bestzvec[iz] = n.min( self.zchi2[ifiber,...,iz] )
                 # Location in zchi2[ifiber,...,iz] of min
                 allminvectors.append( n.unravel_index(
                         self.zchi2[ifiber,...,iz].argmin(),
                         self.zchi2[ifiber,...,iz].shape ) )
             zspline = gs.GridSpline(bestzvec) # Spline up bestzvec
-            zminlocs = map(int,n.round(zspline.get_min())) # Minimun locations
+            zminlocs = list(map(int,n.round(zspline.get_min()))) # Minimun locations
             zminvals = zspline.get_val(zminlocs) # Minimum values
             z_ind = 0
             stop = False
@@ -273,7 +273,7 @@ class ZFitter:
     def flag_small_dchi2_2(self):
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
         if self.num_z > 1:
-            for ifiber in xrange(self.zchi2.shape[0]):
+            for ifiber in range(self.zchi2.shape[0]):
                 if len(self.chi2vals[ifiber]) > 1:
                     if n.abs(self.chi2vals[ifiber][1] -
                              self.chi2vals[ifiber][0]) < self.threshold:

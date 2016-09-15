@@ -41,21 +41,21 @@ class Find_Lens:
         self.npoly = npoly
         self.bestchi2vecs = n.zeros( (chi2arr.shape[0],chi2arr.shape[-1]) )
         self.chi2mins = n.zeros( chi2arr.shape[0] )
-        for i in xrange(chi2arr.shape[0]):
-            print 'Checking fiber #' + str(i+1) + ' of ' + str(chi2arr.shape[0])
-            for j in xrange(chi2arr.shape[-1]):
+        for i in range(chi2arr.shape[0]):
+            print('Checking fiber #' + str(i+1) + ' of ' + str(chi2arr.shape[0]))
+            for j in range(chi2arr.shape[-1]):
                 self.bestchi2vecs[i,j] = n.min(chi2arr[i,...,j])
             self.chi2mins[i] = n.min(self.bestchi2vecs[i])
         self.checklocs = n.where( self.chi2mins >= (float(threshold)*dof) )[0]
-        print '%s fibers have possible lenses!' % len(self.checklocs)
-        print n.asarray(specobj.fiberid)[n.asarray(self.checklocs)]
+        print('%s fibers have possible lenses!' % len(self.checklocs))
+        print(n.asarray(specobj.fiberid)[n.asarray(self.checklocs)])
         chi2s = n.zeros( (len(self.checklocs),300,300) )
         # For each fiber in checklocs, refit a linear combination of templates at best and second best z, separated from global min by width
         ind = 0
         for loc in self.checklocs:
             if type[loc] == 'ssp_galaxy_glob':
                 #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
-                print 'THIS INDEX NUMBER IS ' + str(ind) + '!!!!!!!!!!!!!!!!!!!!!!!!!'
+                print('THIS INDEX NUMBER IS ' + str(ind) + '!!!!!!!!!!!!!!!!!!!!!!!!!')
                 chi2s[ind] = self.fit_linear_combo(loc)
                 ind += 1
                 #print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
@@ -84,11 +84,11 @@ class Find_Lens:
         pmat = n.zeros( (data.shape[0],self.npoly+2) )
         pmat[:,2], pmat[:,3], pmat[:,4], pmat[:,5] = polyarr[0],polyarr[1],polyarr[2],polyarr[3]
         ninv = n.diag(ivar)
-        for i in xrange(flattemps.shape[0]): #changed from flattemps.shape[0]
-            print i
+        for i in range(flattemps.shape[0]): #changed from flattemps.shape[0]
+            print(i)
             #import pdb; pdb.set_trace()
             pmat[:,0] = flattemps[i,minloc:minloc+data.shape[0]]
-            for j in xrange(flattemps.shape[0]): #changed from flattemps.shape[0]
+            for j in range(flattemps.shape[0]): #changed from flattemps.shape[0]
                 pmat[:,1] = flattemps[j,secondminloc:secondminloc+data.shape[0]]
                 pmattrans = n.transpose(pmat)
                 a = n.dot(n.dot(pmattrans,ninv),pmat)

@@ -103,15 +103,15 @@ log_vbase = log_vmin + log_vstep * n.arange(log_vnum)
 # Compute the velocity-broadening matrices:
 c_kms = 2.99792458e5
 sigma_v_in_ang = ssp_wave.reshape((1,-1)) * (10.**log_vbase).reshape((-1,1)) / c_kms
-vmatrix_list = [pxs.gauss_blur_matrix(ssp_wavebound, sigma_v_in_ang[i]) for i in xrange(log_vnum)]
+vmatrix_list = [pxs.gauss_blur_matrix(ssp_wavebound, sigma_v_in_ang[i]) for i in range(log_vnum)]
 
 # Initialize an array to hold the blurred SSPs before downsampling:
 ssp_vblur = n.zeros((nsub_age, log_vnum, n_pix), dtype=float)
 
-for i_age in xrange(nsub_age):
-    print i_age
+for i_age in range(nsub_age):
+    print(i_age)
     this_flux = sdss_blur * ssp_flam[idx[i_age]]
-    for j_logv in xrange(log_vnum):
+    for j_logv in range(log_vnum):
         ssp_vblur[i_age,j_logv] = vmatrix_list[j_logv] * this_flux
 
 #i = -1L
@@ -139,9 +139,9 @@ wavebound_sdss = 10.**logbound_sdss
 ssp_sdssbin = n.zeros((nsub_age, log_vnum, naxis1), dtype=float)
 
 # Do the rebinning:
-for i_age in xrange(nsub_age):
-    print i_age
-    for j_logv in xrange(log_vnum):
+for i_age in range(nsub_age):
+    print(i_age)
+    for j_logv in range(log_vnum):
         pxspline = pxs.PixelSpline(ssp_wavebound, ssp_vblur[i_age,j_logv])
         ssp_sdssbin[i_age,j_logv] = pxspline.resample(wavebound_sdss)
 
@@ -174,7 +174,7 @@ n_line = len(linedata['lambda'])
 sdss_line_array = n.zeros((n_line, naxis1), dtype=float)
 
 # Import functions and compute array values:
-for i in xrange(n_line):
+for i in range(n_line):
     sdss_line_array[i] = misc.gaussflux(wavebound_sdss, linedata['lambda'][i], linesigma[i])
 
 # Test normalization:
@@ -197,7 +197,7 @@ wtest = (wave_sdss > (linedata['lambda'][8] - bandhw)) * \
         (wave_sdss < (linedata['lambda'][8] + bandhw))
 
 cont_halpha = n.asarray([n.sum(sdss_meanspec[i] * wtest * deltawave_sdss) /
-                         n.sum(deltawave_sdss * wtest) for i in xrange(nsub_age)])
+                         n.sum(deltawave_sdss * wtest) for i in range(nsub_age)])
 
 # Let's try the following range of Halpha equivalent widths:
 ew_ha = n.asarray([0., 3.0, 10.0, 30.0, 100.0])

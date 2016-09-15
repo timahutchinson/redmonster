@@ -37,12 +37,12 @@ class Spec:
             self.topdir = environ['BOSS_SPECTRO_REDUX']
         except KeyError as e:
             self.topdir = None
-            print "Enviromental variable 'BOSS_SPECTRO_REDUX' not set: %r" % e
+            print("Enviromental variable 'BOSS_SPECTRO_REDUX' not set: %r" % e)
         try:
             self.run2d = environ['RUN2D']
         except KeyError:
             self.run2d = None
-            print "Enviromental variable 'RUN2D' not set: %r" % e
+            print("Enviromental variable 'RUN2D' not set: %r" % e)
         self.set_plate_mjd(plate=plate, mjd=mjd, fiberid=fiberid,
                            data_range=data_range, platepath=platepath)
         #for i in xrange(self.flux.shape[0]):
@@ -51,7 +51,7 @@ class Spec:
             self.ivar, self.dof = flux_check(self.flux, self.ivar, plate, mjd)
         else:
             # This should probably be logged eventually as well
-            print '%s does not exist.' % self.platepath
+            print('%s does not exist.' % self.platepath)
             # Added by TH 21 July 2015
             #write_to_log(plate, mjd, '%s does not exist.' % self.platepath)
 
@@ -72,14 +72,14 @@ class Spec:
             self.set_data()
             if data_range: self.chop_data(data_range)
             if fiberid != None: self.set_fibers(fiberid)
-            else: self.fiberid = [i for i in xrange(self.nobj)]
+            else: self.fiberid = [i for i in range(self.nobj)]
             self.flag_sky_fibers()
     
     def set_data(self):
         if self.platepath and exists(self.platepath):
             hdu = fits.open(self.platepath)
         else:
-            print "Missing path to %r" % self.platepath
+            print("Missing path to %r" % self.platepath)
             # Added by TH 21 July 2015
             #write_to_log(self.plate, self.mjd,
                           #'Missing path to %r' % self.platepath)
@@ -117,7 +117,7 @@ class Spec:
             self.coeff0 = hdu[0].header['COEFF0']
             self.coeff1 = hdu[0].header['COEFF1']
         except Exception as e:
-            print "Exception: %r" % e
+            print("Exception: %r" % e)
             # Added by TH 21 July 2015
             #write_to_log(self.plate, self.mjd, 'Exception: %r' % e')
 
@@ -128,15 +128,15 @@ class Spec:
         if i1 >= 0: self.ivar[:,:i1] = 0
         if i2 <= self.npix: self.ivar[:,i2:] = 0
         # CHANGE PRINT STATEMENT TO LOG - done by TH 21 July 2015
-        print 'Trim wavelength range to %s' % data_range
+        print('Trim wavelength range to %s' % data_range)
         #write_to_log(self.plate, self.mjd,
                      #'Trim wavelength range to %s' % data_range)
 
     def set_fibers(self, fiberid):
         if min(fiberid) < 0 or max(fiberid) > self.nobj:
             # CHANGE THIS TO LOG INSTEAD OF PRINT - done TH
-            print ('Invalid value for FIBERID: must be between 0 and %s' %
-                   hdu[0].header['NAXIS1'])
+            print(('Invalid value for FIBERID: must be between 0 and %s' %
+                   hdu[0].header['NAXIS1']))
             #write_to_log(self.plate, self.mjd,
                          #'Invalid value for FIBERID: must be between 0 and %s'%
                          #hdu[0].header['NAXIS1'])
@@ -165,7 +165,7 @@ class Spec:
     def flag_sky_fibers(self):
         self.zwarning = n.zeros( len(self.fiberid) )
         flag_val = int('0b1',2) # From BOSS zwarning flag definitions
-        for i in xrange(self.plugmap.shape[0]):
+        for i in range(self.plugmap.shape[0]):
             if ( self.plugmap[i]['OBJTYPE'].lower() == 'sky'):
                 self.zwarning[i] = int(self.zwarning[i]) | flag_val
 

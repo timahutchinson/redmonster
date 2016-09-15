@@ -56,7 +56,7 @@ def npix2slices(npix_list):
     slice_lo = n.roll(slice_hi, 1)
     slice_lo[0] = 0
     return [slice(slice_lo[k], slice_hi[k])
-            for k in xrange(len(slice_hi))]
+            for k in range(len(slice_hi))]
 
 def multi_projector(wavebound_list, sigma_list, coeff0, coeff1):
     """
@@ -116,24 +116,24 @@ def multi_projector(wavebound_list, sigma_list, coeff0, coeff1):
     # Number of pixels in each spectrum:
     npix_list = [len(this_sigma) for this_sigma in sigma_list]
     # Wavelengths of a 6-sigma buffer at the high and low ends:
-    wavelim_lo = [wavebound_list[k][0] - 10. * sigma_list[k][0] for k in xrange(nspec)]
-    wavelim_hi = [wavebound_list[k][-1] + 10. * sigma_list[k][-1] for k in xrange(nspec)]
+    wavelim_lo = [wavebound_list[k][0] - 10. * sigma_list[k][0] for k in range(nspec)]
+    wavelim_hi = [wavebound_list[k][-1] + 10. * sigma_list[k][-1] for k in range(nspec)]
     # Translate these into indices within the nominal full model baseline
     idx_list = [int(round((n.log10(this_wave) - coeff0) / coeff1)) for this_wave in wavelim_lo]
     idx_hi = [int(round((n.log10(this_wave) - coeff0) / coeff1)) for this_wave in wavelim_hi]
-    nsamp_list = [idx_hi[k] - idx_list[k] + 1 for k in xrange(nspec)]
+    nsamp_list = [idx_hi[k] - idx_list[k] + 1 for k in range(nspec)]
     # Compute the nominal wavelength arrays for the spectra:
     wave_list = [0.5 * (this_bound[1:] + this_bound[:-1]) for this_bound in wavebound_list]
     # Compute the various model-space wavelength baselines that we need:
-    modloglam_list = [coeff0 + coeff1 * (n.arange(nsamp_list[k]) + idx_list[k]) for k in xrange(nspec)]
+    modloglam_list = [coeff0 + coeff1 * (n.arange(nsamp_list[k]) + idx_list[k]) for k in range(nspec)]
     modlogbound_list = [misc.cen2bound(this_loglam) for this_loglam in modloglam_list]
     modwave_list = [10.**this_loglam for this_loglam in modloglam_list]
     modwavebound_list = [10.**this_logbound for this_logbound in modlogbound_list]
     # Interpolate the spectrum-frame sigmas onto the model-frame grids:
-    modsigma_list = [n.interp(modwave_list[k], wave_list[k], sigma_list[k]) for k in xrange(nspec)]
+    modsigma_list = [n.interp(modwave_list[k], wave_list[k], sigma_list[k]) for k in range(nspec)]
     # Compute the projection matrices:
     matrix_list = [misc.gaussproj(modwavebound_list[k], modsigma_list[k],
-                                  wavebound_list[k]) for k in xrange(nspec)]
+                                  wavebound_list[k]) for k in range(nspec)]
     # Return results:
     return matrix_list, idx_list, nsamp_list
 
@@ -267,7 +267,7 @@ class MultiProjector:
         # Build a list of slices within the model grid:
         slice_list = [slice(self.idx_list[k]-pixlag-ishift,
                             self.idx_list[k]+self.nsamp_list[k]-pixlag-ishift)
-                      for k in xrange(self.nspec)]
+                      for k in range(self.nspec)]
         # How many pixels in the model grids?
         npix_model = model_grid.shape[-1]
         # Dimensionality of the model-grid space:
@@ -280,8 +280,8 @@ class MultiProjector:
         outgrid_list = [n.zeros((nmodels, this_npix), dtype=float)
                         for this_npix in self.npix_list]
         # Now loop over exposures and models:
-        for j_spec in xrange(self.nspec):
-            for i_mod in xrange(nmodels):
+        for j_spec in range(self.nspec):
+            for i_mod in range(nmodels):
                 outgrid_list[j_spec][i_mod] = self.matrix_list[j_spec] \
                   * model_flatgrid[i_mod,slice_list[j_spec]]
             # Resize the output grid to match the input model-space dimensions:
@@ -299,14 +299,14 @@ class MultiProjector:
         sigma_line = lambda_obs * vdisp / c_kms
         # Interpolate for instrumental sigma values:
         lsf_list = [n.interp(lambda_obs, self.wavecen_list[k], self.sigma_list[k])
-                    for k in xrange(self.nspec)]
+                    for k in range(self.nspec)]
         # Add intrinsic and instrumental in quadrature:
         linesigma_list = [n.sqrt(sigma_line**2 + this_lsf**2)
                           for this_lsf in lsf_list]
         # Generate projection matrices from amplitudes to pixels:
         return [n.asarray(misc.gaussbasis(self.wavebound_list[k], lambda_obs,
                                           linesigma_list[k]).T.todense())
-                for k in xrange(self.nspec)]
+                for k in range(self.nspec)]
     def single_poly_nonneg(self, npoly):
         """
         Method to generate a single global (model-space) observed-frame
@@ -318,7 +318,7 @@ class MultiProjector:
         npix_poly = idx_hi - idx_lo
         poly_base = n.arange(npix_poly) / float(npix_poly-1)
         poly_grid = n.zeros((2*int(round(npoly)), npix_poly), dtype=float)
-        for ipoly in xrange(int(round(npoly))):
+        for ipoly in range(int(round(npoly))):
             poly_grid[2*ipoly] = poly_base**ipoly
             poly_grid[2*ipoly+1] = - poly_base**ipoly
         return self.project_model_grid(poly_grid, pixlag=idx_lo)
@@ -455,17 +455,17 @@ class MultiProjector:
         # Now the loop over redshift, emission-line, and non-linear parameters:
         # (We initialize a marginalized chi-squared versus z):
         self.chisq_versus_z = n.zeros(n_pixlag, dtype=float)
-        for i_lag in xrange(n_pixlag):
+        for i_lag in range(n_pixlag):
             proj_model_grid = self.project_model_grid(model_grid_reshape,
                                                       pixlag=pixlags_local[i_lag],
                                                       coeff0=self.model_coeff0)
             #print this_model_grid.shape
             #print nonlin_len
-            for j_line in xrange(vline_len):
+            for j_line in range(vline_len):
                 if (n_vline > 0):
                     self.current_basis_list[2] = self.make_emline_basis(z=self.zbase[i_lag],
                                                         vdisp=self.emvdisp[j_line])
-                for k_par in xrange(nonlin_len):
+                for k_par in range(nonlin_len):
                     self.current_basis_list[1] = [this_model[k_par] for this_model in proj_model_grid]
                     self.fit_current_basis()
                     self.chisq_grid[k_par,j_line,i_lag] = self.current_chisq
@@ -550,7 +550,7 @@ class MultiProjector:
             n_vert = shape[0]
             n_horiz = shape[1]
         self.specplot = p.figure()
-        for i_spec in xrange(self.nspec):
+        for i_spec in range(self.nspec):
             self.specplot.add_subplot(n_vert, n_horiz, i_spec+1)
             p.plot(self.wavecen_list[i_spec], self.flux_list[i_spec], 'k', hold=False)
             p.plot(self.wavecen_list[i_spec], self.current_model_list[i_spec], 'b', hold=True)

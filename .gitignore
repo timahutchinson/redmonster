@@ -19,6 +19,9 @@ develop-eggs
 distribute-*.tar.gz
 MANIFEST
 
+# 2to3 files
+*.bak
+
 # Other
 .*.swp
 *~

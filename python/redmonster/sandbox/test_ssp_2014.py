@@ -40,7 +40,7 @@ ssp_flux = ssp_data['SPEC'][0].copy()
 n_age, n_pix = ssp_flux.shape
 
 # Convert from fnu to flambda with arbitrary normalization:
-for i in xrange(n_age):
+for i in range(n_age):
     ssp_flux[i] /= ssp_wave**2
     ssp_flux[i] /= n.median(ssp_flux[i])
 
@@ -78,7 +78,7 @@ ssp_coeff0 = 3.225
 ssp_coeff1 = 0.0001
 ssp_naxis1 = 2**13
 ssp_loglam = ssp_coeff0 + ssp_coeff1 * n.arange(ssp_naxis1)
-print 10.**ssp_loglam.min(), 10.**ssp_loglam.max()
+print(10.**ssp_loglam.min(), 10.**ssp_loglam.max())
 ssp_logbound = pxs.cen2bound(ssp_loglam)
 ssp_wavebound = 10.**ssp_logbound
 
@@ -124,7 +124,7 @@ f_junk1 = n.fft.fft(junk1)
 f_junk2 = n.fft.fft(junk2)
 junk3 = n.fft.ifft(f_junk1 * f_junk2.conj()).real
 junk4 = n.zeros(128,dtype=float)
-for i in xrange(128):
+for i in range(128):
     junk4[i] = n.sum(junk1 * n.roll(junk2,i))
 
 p.plot(junk3, hold=False)
@@ -144,7 +144,7 @@ invvar_pad[0:len(invvar[ifiber])] = invvar[ifiber]
 npoly = 3
 poly_base = n.arange(ssp_naxis1, dtype=float) / float(ssp_naxis1-1)
 poly_set = n.zeros((npoly,ssp_naxis1), dtype=float)
-for i in xrange(npoly):
+for i in range(npoly):
     poly_set[i] = poly_base**i
 
 # The FFTs we need:
@@ -152,7 +152,7 @@ ivar_fft = n.fft.fft(invvar_pad)
 t_fft = n.fft.fft(ssp_boss)
 t2_fft = n.fft.fft(ssp_boss**2)
 poly_fft = n.zeros((npoly, ssp_naxis1), dtype=complex)
-for i in xrange(npoly):
+for i in range(npoly):
     poly_fft[i] = n.fft.fft(poly_set[i] * invvar_pad)
 
 data_fft = n.fft.fft(data_pad * invvar_pad)
@@ -162,7 +162,7 @@ alpha_big = n.zeros((npoly+1,npoly+1,ssp_naxis1), dtype=float)
 rhs_big = n.zeros((npoly+1,ssp_naxis1), dtype=float)
 alpha_big[0,0] = n.fft.ifft(t2_fft * ivar_fft.conj()).real
 rhs_big[0] = n.fft.ifft(t_fft * data_fft.conj()).real
-for i in xrange(npoly):
+for i in range(npoly):
     alpha_big[i+1,0] = alpha_big[0,i+1] = n.fft.ifft(t_fft * poly_fft[i].conj()).real
 
 ipoly_set = poly_set * invvar_pad.reshape((1,-1))
@@ -174,13 +174,13 @@ rhs_big[1:] = rhs_poly.reshape((npoly,1)) * n.ones((1,ssp_naxis1))
 
 # Test these to see if they give the same numbers as one expects
 # from straight calculation, for the zero-lag case:
-print n.sum(ssp_boss**2 * invvar_pad), alpha_big[0,0,0]
-print n.sum(ssp_boss * poly_set[0] * invvar_pad), alpha_big[0,1,0], alpha_big[1,0,0]
-print n.sum(ssp_boss * poly_set[1] * invvar_pad), alpha_big[0,2,0], alpha_big[2,0,0]
-print n.sum(ssp_boss * poly_set[2] * invvar_pad), alpha_big[0,3,0], alpha_big[3,0,0]
-print n.sum(ssp_boss * data_pad * invvar_pad), rhs_big[0,0]
-print n.sum(poly_set[1] * poly_set[2] * invvar_pad), alpha_big[2,3,0], alpha_big[3,2,0]
-print n.sum(poly_set[1] * data_pad * invvar_pad), rhs_big[2,0]
+print(n.sum(ssp_boss**2 * invvar_pad), alpha_big[0,0,0])
+print(n.sum(ssp_boss * poly_set[0] * invvar_pad), alpha_big[0,1,0], alpha_big[1,0,0])
+print(n.sum(ssp_boss * poly_set[1] * invvar_pad), alpha_big[0,2,0], alpha_big[2,0,0])
+print(n.sum(ssp_boss * poly_set[2] * invvar_pad), alpha_big[0,3,0], alpha_big[3,0,0])
+print(n.sum(ssp_boss * data_pad * invvar_pad), rhs_big[0,0])
+print(n.sum(poly_set[1] * poly_set[2] * invvar_pad), alpha_big[2,3,0], alpha_big[3,2,0])
+print(n.sum(poly_set[1] * data_pad * invvar_pad), rhs_big[2,0])
 
 # Number of redshifts to consider:
 n_z = ssp_naxis1 - n_data + 1
@@ -188,7 +188,7 @@ n_z = ssp_naxis1 - n_data + 1
 # Here's where we find out if we're making sense...
 sn_squared = n.zeros(n_z, dtype=float)
 
-for i in xrange(n_z):
+for i in range(n_z):
     coeffs = n.linalg.solve(alpha_big[:,:,i], rhs_big[:,i])
     sn_squared[i] = n.dot(coeffs, n.dot(alpha_big[:,:,i], coeffs))
 
@@ -209,5 +209,5 @@ best_model = n.dot(best_coeffs, best_basis)
 p.plot(10.**loglam, flux[ifiber], hold=False)
 p.plot(10.**loglam, best_model, hold=True)
 
-print n.sum((flux[ifiber]-best_model)**2 * invvar[ifiber]), chisq[bestlag]
+print(n.sum((flux[ifiber]-best_model)**2 * invvar[ifiber]), chisq[bestlag])
 
