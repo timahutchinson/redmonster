@@ -83,7 +83,7 @@ cap_sdssbin = n.zeros((npars, naxis1), dtype=float)
 
 # Do the blurring and rebinning:
 for i in xrange(npars):
-    print i
+    print(i)
     blurspec = sdss_blur * data_flat[i]
     pxspline = pxs.PixelSpline(hires_wavebound, sdss_blur * data_flat[i])
     cap_sdssbin[i] = pxspline.resample(wavebound_sdss)
