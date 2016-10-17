@@ -3346,7 +3346,7 @@ class VerifyRM:
         else:
             p.plot(drchi2_threshold, rmfrac, drawstyle='steps-mid', color=sns.color_palette(sns_pal)[2], label='redmonster')
             p.plot(drchi2_threshold, idlfrac, drawstyle='steps-mid',color=sns.color_palette(sns_pal)[0], label='spectro1d')
-            p.legend()
+            p.legend(prop={'size':14})
         p.xlabel(r'$\Delta \chi^2/dof$', size=14)
         p.ylabel(r'Cumulative fraction above threshold', size=14)
         ax.set_yscale('log')
