@@ -39,7 +39,7 @@ hdu.header.set('CNAME2', value='Metallicity', comment='Axis 2 name')
 hdu.header.set('CUNIT2', value='Z', comment='Axis 2 unit')
 this_axis = str(2)
 metvals = [0.0006, 0.00012, 0.0049, 0.0190, 0.03]
-for i in xrange(len(metvals)):
+for i in range(len(metvals)):
     hdu.header.set('PV' + this_axis + '_' + str(i+1), metvals[i],
                    comment='Axis 2 value at pixel ' + str(i+1))
 
@@ -48,7 +48,7 @@ hdu.header.set('CNAME3', value='Spectral Type', comment='Axis 3 name')
 hdu.header.set('CUNIT3', value='OBAFGKMLT', comment='Axis 3 unit')
 this_axis = str(3)
 labels = ['O', 'B', 'A', 'F', 'G', 'K', 'M', 'L', 'T', 'Y']
-for i in xrange(len(labels)):
+for i in range(len(labels)):
     hdu.header.set('PS' + this_axis + '_' + str(i+1), labels[i],
                    comment='Axis 3 label at pixel ' + str(i+1))
 
@@ -63,7 +63,7 @@ hdu.header.set('CDELT4', value=25.0, comment='Axis 4 increment')
 hdu.header.set('CNAME5', value='Familiar Name', comment='Axis 5 name')
 this_axis = str(5)
 names = ['Foo', 'Bar']
-for i in xrange(len(names)):
+for i in range(len(names)):
     hdu.header.set('N' + this_axis + '_' + str(i+1), names[i],
                    comment='Axis 5 name at pixel ' + str(i+1))
 

@@ -4,6 +4,8 @@
 # script for developping methods that handle multiple
 # exposures of a single fiber.
 #
+from __future__ import print_function
+
 import numpy as n
 import matplotlib as m
 m.interactive(True)
@@ -206,7 +208,7 @@ chisq_arr = n.zeros((n_zbase, n_vdisp), dtype=float)
 big_dscale = MP.big_data * n.sqrt(MP.big_ivar)
 
 for i_v in xrange(n_vdisp):
-    print i_v
+    print(i_v)
     for j_z in xrange(n_zbase):
         big_a = n.hstack(MP.project_model_grid(MP.model_grid[i_v], pixlag=pixlagvec[j_z]))
         big_em = n.hstack(MP.make_emline_basis(z=zbase[j_z], vdisp=v_best))
@@ -364,7 +366,7 @@ vdisp_net = n.sqrt(vdisp_base**2 - vdisp_ssp**2)
 big_grid = n.zeros((n_vdisp, n_age, len(loglam_vmodel)), dtype=float)
 
 for i_vdisp in xrange(n_vdisp):
-    print i_vdisp
+    print(i_vdisp)
     sigma = wave_ssp * vdisp_net[i_vdisp] / c_kms
     v_matrix = misc.gaussproj(wavebound_ssp, sigma, wavebound_vmodel)
     for j_age in xrange(n_age):
@@ -455,9 +457,9 @@ pixlag = int(round(n.log10(1. + z_best) / infodict['coeff1']))
 proj_grid = [n.zeros((n_age,len(this_flux)), dtype=float) for this_flux in SpC.flux_fib]
 
 for i_exp in xrange(SpC.nspec_fib):
-    #print i_exp
+    #print(i_exp)
     for j_age in xrange(n_age):
-        #print j_age
+        #print(j_age)
         proj_grid[i_exp][j_age] = inst_proj_fib[i_exp] * \
                                   big_grid[idx_v,j_age,idx_lo[i_exp]-pixlag:idx_hi[i_exp]+1-pixlag]
 
@@ -589,7 +591,8 @@ argmaxwave_ivar = [max(n.where(this_ivar > 0)[0]) for this_ivar in SpC.invvar_fi
 
 
 
-argminwave_sig = [n.arange(len((SpC.disp_fib[i] > 0) for iexp in xrange(SpC.nspec_fib)]
+# argminwave_sig = [n.arange(len((SpC.disp_fib[i] > 0) for iexp in xrange(SpC.nspec_fib)]
+argminwave_sig = [min(wave_fib[iexp][SpC.disp_fib[i] > 0]) for iexp in xrange(SpC.nspec_fib)]
 argmaxwave_sig = [max(wave_fib[iexp][SpC.disp_fib[i] > 0]) for iexp in xrange(SpC.nspec_fib)]
 
 
@@ -675,5 +678,3 @@ for i in xrange(n_spec):
 
 
 wh_fib = [n.where(this_plug.FIBERID == fiberid)[0] for this_plug in plug_list]
-
-[

@@ -5,6 +5,7 @@
 # t.hutchinson@utah.edu
 
 import numpy as n
+from scipy import linalg
 from scipy import special as spc
 from scipy import sparse
 
@@ -20,14 +21,14 @@ def flux_check(flux, ivars, plate, mjd):
         ct = n.where(abs(flux[i]) * n.sqrt(ivars[i]) > 200.)[0].shape[0]
         # CHANGE NEXT LINE SO IT ADDS TO LOG FILE RATHER THAN PRINTS
         if ct > 0:
-            print 'WARNING: Fiber #%s has %s pixels with S/N > 200' % (i+1,ct)
+            print('WARNING: Fiber #%s has %s pixels with S/N > 200' % (i+1,ct))
             #write_to_log(plate, mjd, 'WARNING: Fiber #%s has %s \
                           #pixels with S/N > 200' % (i+1,ct))
         badpix = n.where(flux[i] * n.sqrt(ivars[i]) < -10.)[0]
         if len(badpix) > 0:
             # ALSO CHANGE TO ADD TO LOG
-            print 'WARNING: Fiber #%s has %s pixels with Flux < -10*Noise' % \
-                    (i+1,len(badpix))
+            print('WARNING: Fiber #%s has %s pixels with Flux < -10*Noise' % \
+                    (i+1,len(badpix)))
             #write_to_log(plate, mjd, 'WARNING: Fiber #%s has %s pixels \
                           #with Flux < -10*Noise' % (i+1,len(badpix)))
             ivars[i] = mask_pixels(badpix, ivars[i])
@@ -80,8 +81,8 @@ def multipoly_fit(ind, dep, order=2):
     ndim = ind.shape[0]
     A = n.zeros((ndata, ndim*(order+1)))
     b = n.zeros(ndata)
-    for i in xrange(ndata):
-        for j in xrange(ndim*(order+1)):
+    for i in range(ndata):
+        for j in range(ndim*(order+1)):
             A[i,j] = 0
 
 
@@ -97,18 +98,18 @@ def quadfit_2d(ind, dep):
     A = n.zeros((9,6))
     b = n.reshape(dep,(9,1))
     for k in range(9):
-        for i in xrange(3):
-            for j in xrange(3):
+        for i in range(3):
+            for j in range(3):
                 A[k] = n.array([ x[i]**2, y[j]**2, x[i]*y[j], x[i], y[j], 1 ])
-    f = n.dot(n.linalg.pinv(A),b)
+    f = n.dot(linalg.pinv(A),b)
     return f
 
 
 def quadfit(ind, dep): # Fit quadratic to 3 points
     A = n.zeros((3,3))
-    for i in xrange(3):
+    for i in range(3):
         A[i] = n.array([ ind[i]**2, ind[i], 1 ])
-    f = n.linalg.solve(A,dep)
+    f = linalg.solve(A,dep)
     return f
 
 
@@ -119,7 +120,7 @@ def comb_flags(specobj, zfindobj, zfitobj):
     #nfib = len(specobj.fiberid)
     nfib = specobj.flux.shape[0]
     flags = n.zeros(nfib)
-    for ifiber in xrange(nfib):
+    for ifiber in range(nfib):
         if hasattr(specobj, 'zwarning'):
             flags[ifiber] = (int(specobj.zwarning[ifiber]) |
                              int(zfindobj.zwarning[ifiber])) | \
@@ -137,7 +138,7 @@ def comb_flags_2(specobj, zfitflags):
     #nfib = len(specobj.fiberid)
     nfib = specobj.flux.shape[0]
     flags = n.zeros(nfib)
-    for ifiber in xrange(nfib):
+    for ifiber in range(nfib):
         if hasattr(specobj, 'zwarning'):
             flags[ifiber] = (int(specobj.zwarning[ifiber]) |
                              int(zfitflags[ifiber]))
@@ -153,24 +154,24 @@ def gaussflux(pixbound, cen, sig, h_order=0):
     centered on 'cen' and with sigma parameter 'sig', and return
     the average value of that Gaussian between the boundaries
     (i.e., its pixel-averaged value for possibly non-uniform pixels.)
-    
+
     Can specify a Gauss-Hermite order (a la scipy.special.hermitenorm)
     via the 'h_order' argument, which defaults to zero.
-    
+
     (bolton@utah@iac 2014mayo)
     (Added Hermite orders: bolton@utah@iac 2014junio)
     """
     # Calculate the pixel widths and test for monotonicity:
     pixdiff = pixbound[1:] - pixbound[:-1]
     if (pixdiff.min <= 0):
-        print 'pixbound must be monotonically increasing!'
+        print('pixbound must be monotonically increasing!')
         return 0
     # Make sure scalar arguments are scalars:
     if (n.asarray(cen).size != 1):
-        print 'cen argument must be scalar!'
+        print('cen argument must be scalar!')
         return 0
     if (n.asarray(sig).size != 1):
-        print 'sig argument must be scalar!'
+        print('sig argument must be scalar!')
         return 0
     # Compute and return:
     if h_order > 0:
@@ -199,12 +200,12 @@ def gaussbasis(pixbound, cen, sig, h_order=0, nsigma=6.0):
     npix = len(pixbound) - 1
     # Make sure there are same number of 'cen' and 'sig' values:
     if (len(sig) != ngauss):
-        print 'Lengths of cen and sig must match!'
+        print('Lengths of cen and sig must match!')
         return 0
     # Check for monotonicity:
     dpix = pixbound[1:] - pixbound[:-1]
     if (dpix.min() <= 0.):
-        print 'Pixel boundaries not monotonically increasing!'
+        print('Pixel boundaries not monotonically increasing!')
         return 0
     # Work out indices of the bins into which +/- nsigma values fall:
     bin_lo = n.digitize(cen - nsigma * sig, pixbound) - 1
@@ -215,7 +216,7 @@ def gaussbasis(pixbound, cen, sig, h_order=0, nsigma=6.0):
     # Initialize matrix:
     gbasis = sparse.lil_matrix((ngauss,npix))
     # Loop over Gaussians, compute, and return:
-    for i in xrange(ngauss):
+    for i in range(ngauss):
         if (bin_hi[i] >= bin_lo[i]):
             gbasis[i,bin_lo[i]:bin_hi[i]+1] = \
                     gaussflux(pixbound[bin_lo[i]:bin_hi[i]+2], cen[i], sig[i],
@@ -273,14 +274,14 @@ def gaussproj(pixbound_in, sigma_in, pixbound_out, h_order=0, nsigma=6.0):
     dpix_in = pixbound_in[1:] - pixbound_in[:-1]
     dpix_out = pixbound_out[1:] - pixbound_out[:-1]
     if (dpix_in.min() <= 0.):
-        print 'Input pixel boundaries not monotonically increasing!'
+        print('Input pixel boundaries not monotonically increasing!')
         return 0
     if (dpix_out.min() <= 0.):
-        print 'Output pixel boundaries not monotonically increasing!'
+        print('Output pixel boundaries not monotonically increasing!')
         return 0
     # Make sure the sigma values are matched to the input pixels:
     if (len(sigma_in) != npix_in):
-        print 'Must match length of sigma_in to input pixel space!'
+        print('Must match length of sigma_in to input pixel space!')
         return 0
     # Generate a diagonal matrix that turns the flux density of the
     # input spectrum into the integrated flux of the input pixels:
@@ -292,4 +293,3 @@ def gaussproj(pixbound_in, sigma_in, pixbound_out, h_order=0, nsigma=6.0):
                           h_order=h_order, nsigma=nsigma)
     # Compose those two matrices and return the result:
     return proj_mat * pix_flux_mat
-

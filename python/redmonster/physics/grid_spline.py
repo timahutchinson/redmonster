@@ -10,6 +10,7 @@
 #
 # A. Bolton, U. of Utah, 2010-2014
 #
+from __future__ import division
 
 import numpy as n
 
@@ -57,7 +58,7 @@ def spline_get_val(y, m, x):
     i = n.int32(x) + 1
     # (the following is a hack to keep the upper
     # bound in the valid interval range:)
-    i = i - i / (intervals + 1)
+    i = i - i // (intervals + 1)
     d1 = x - i + 1.
     d2 = d1 - 1.0
     spline_val = (y[i] * d1**3 - y[i-1] * d2**3
@@ -73,7 +74,7 @@ def spline_get_slope(y, m, x):
     i = n.int32(x) + 1
     # (the following is a hack to keep the upper
     # bound in the valid interval range:)
-    i = i - i / (intervals + 1)
+    i = i - i // (intervals + 1)
     d1 = x - i + 1.
     d2 = d1 - 1.0
     spline_slope = (m[i] * d1**2 + m[i-1] * d2**2 +
@@ -88,7 +89,7 @@ def spline_get_curv(y, m, x):
     i = n.int32(x) + 1
     # (the following is a hack to keep the upper
     # bound in the valid interval range:)
-    i = i - i / (intervals + 1)
+    i = i - i // (intervals + 1)
     d1 = x - i + 1.
     d2 = d1 - 1.0
     spline_curv = (2.0 * m[i] * d1 + 2.0 * m[i-1] * d2 +
@@ -144,38 +145,37 @@ class GridSpline:
     def __init__(self, y):
         self.y = y.copy()
         self.ms = spline_get_ms(self.y)
-    
+
     def get_val(self, x):
         """
         Return spline evaluated at abscissa positions x.
         """
         return spline_get_val(self.y, self.ms, x)
-    
+
     def get_slope(self, x):
         """
         Return analytic derivative of spline evaluated at
         abscissa positions x.
         """
         return spline_get_slope(self.y, self.ms, x)
-    
+
     def get_curv(self, x):
         """
         Return analytic curvature of spline evaluated at
         abscissa positions x.
         """
         return spline_get_curv(self.y, self.ms, x)
-    
+
     def get_max(self):
         """
         Return analytically determined locations of maxima
         of spline over domain of original values.
         """
         return spline_get_max(self.y, self.ms)
-    
+
     def get_min(self):
         """
         Return analytically determined locations of minima
         of spline over domain of original values.
         """
         return spline_get_max(-self.y, -self.ms)
-

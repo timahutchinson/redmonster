@@ -114,7 +114,7 @@ vmatrix_list = [pxs.gauss_blur_matrix(ssp_wavebound, sigma_v_in_ang[i]) for i in
 ssp_vblur = n.zeros((nsub_age, log_vnum, n_pix), dtype=float)
 
 for i_age in xrange(nsub_age):
-    print i_age
+    print(i_age)
     this_flux = sdss_blur * ssp_flam[idx[i_age]]
     for j_logv in xrange(log_vnum):
         ssp_vblur[i_age,j_logv] = vmatrix_list[j_logv] * this_flux
@@ -145,7 +145,7 @@ ssp_sdssbin = n.zeros((nsub_age, log_vnum, naxis1), dtype=float)
 
 # Do the rebinning:
 for i_age in xrange(nsub_age):
-    print i_age
+    print(i_age)
     for j_logv in xrange(log_vnum):
         pxspline = pxs.PixelSpline(ssp_wavebound, ssp_vblur[i_age,j_logv])
         ssp_sdssbin[i_age,j_logv] = pxspline.resample(wavebound_sdss)

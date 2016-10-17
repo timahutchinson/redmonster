@@ -9,8 +9,10 @@
 
 from os import environ
 from os.path import join, exists
-
-from Tkinter import *
+try:
+    from tkinter import *
+except ImportError:
+    from Tkinter import *
 import numpy as n
 import matplotlib
 matplotlib.use('Agg')
@@ -277,8 +279,8 @@ class PlotFit(Frame):
                             (self.plate, self.fiber, z, thistype,
                              self.zwarning[loc[0]]))
             else:
-                print 'Fiber %s is not in redmonster-%s-%s.fits' % \
-                        (self.fiber, self.plate, self.mjd)
+                print('Fiber %s is not in redmonster-%s-%s.fits' % \
+                        (self.fiber, self.plate, self.mjd))
                 a.set_title('Plate %s Fiber %s' % (self.plate, self.fiber))
 
         if self.restframe.get() == 1:
@@ -364,5 +366,3 @@ class PlotFit(Frame):
 
 
 app = PlotFit()
-
-

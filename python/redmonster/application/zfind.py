@@ -28,7 +28,10 @@ from redmonster.physics import zfinder, zfitter, zpicker
 from redmonster.physics import misc
 from time import gmtime, strftime
 from os.path import exists
-from ConfigParser import SafeConfigParser
+try:
+    from configparser import SafeConfigParser
+except ImportError:
+    from ConfigParser import SafeConfigParser
 import sys
 
 class ZFind:
@@ -47,10 +50,10 @@ class ZFind:
         self.zmax = []
         self.npoly = []
         self.npixstep = []
-        
+
         if exists(self.inifile):
             self.option = SafeConfigParser()
-            self.option.optionxform = unicode
+            self.option.optionxform = str
             r = self.option.read(self.inifile)
             if len(r) == 1:
                 for section in self.option.sections():
@@ -67,17 +70,17 @@ class ZFind:
                     if self.option.has_option(section,'npixstep'):
                         self.npixstep.append(self.option.getint(section,
                                                                 'npixstep'))
-            else: print "Cannot parse ini file %r" % self.inifile
-            
+            else: print("Cannot parse ini file %r" % self.inifile)
+
             if not self.labels: self.labels = None
             if not self.templates: self.templates = None
             if not self.zmin: self.zmin = None
             if not self.zmax: self.zmax = None
             if not self.npoly: self.npoly = None
             if not self.npixstep: self.npixstep = None
-            
+
             self.set_templates()
-        else: print "WARNING: %r does not exist" % self.inifile
+        else: print("WARNING: %r does not exist" % self.inifile)
 
 
     def set_templates(self, templates=None, zmin=None, zmax=None, npoly=None, npixstep=None):
@@ -86,13 +89,13 @@ class ZFind:
         if zmax: self.zmax = zmax
         if npoly: self.npoly = npoly
         if npixstep: self.npixstep = npixstep
-        
+
         if type(self.templates) is str:
             try: self.templates = [self.templates]
             except:
-                print 'Templates not a list and unable to convert to list!'
+                print('Templates not a list and unable to convert to list!')
                 sys.exit(1)
-        if type(self.templates) is list: self.templates = map(str, self.templates)
+        if type(self.templates) is list: self.templates = list(map(str, self.templates))
         if self.zmin is not None:
             if type(self.zmin) is not list:
                 try:
@@ -101,16 +104,16 @@ class ZFind:
                     try:
                         self.zmin = self.zmin.tolist()
                     except:
-                        print 'Can\'t convert zmin to list - defaulting to full zrange!'
+                        print('Can\'t convert zmin to list - defaulting to full zrange!')
                         self.zmin = None
                         self.zmax = None
             if type(self.zmin) is list:
                 if len(self.zmin) != len(self.templates):
-                    print 'Length of zmin doesn\'t match length of templates - defaulting to full zrange!'
+                    print('Length of zmin doesn\'t match length of templates - defaulting to full zrange!')
                     self.zmin = None
                     self.zmax = None
                 if self.zmax is None:
-                    print 'zmax not given - defaulting to full zrange!'
+                    print('zmax not given - defaulting to full zrange!')
                     self.zmin = None
                     self.zmax = None
                 else:
@@ -120,11 +123,11 @@ class ZFind:
                             try:
                                 self.zmax = self.zmax.tolist()
                             except:
-                                print 'Can\'t convert zmax to list - defaulting to full zrange!'
+                                print('Can\'t convert zmax to list - defaulting to full zrange!')
                                 self.zmin = None
                                 self.zmax = None
                     if len(self.zmin) != len(self.zmax):
-                        print 'Length of zmin and zmax don\'t match - defaulting to full zrange!'
+                        print('Length of zmin and zmax don\'t match - defaulting to full zrange!')
                         self.zmin = None
                         self.zmax = None
         #import pdb; pdb.set_trace()
@@ -138,11 +141,11 @@ class ZFind:
                     try:
                         self.npoly = self.npoly.tolist()
                     except:
-                        print 'npoly not a list and unable to convert to \
-                                list - defaulting to npoly=4 for all templates!'
+                        print('npoly not a list and unable to convert to \
+                                list - defaulting to npoly=4 for all templates!')
                         self.npoly = [4]*len(self.templates)
             else:
-                self.npoly = map(int, self.npoly)
+                self.npoly = list(map(int, self.npoly))
         if self.npixstep is None:
             self.npixstep = [1]*len(self.templates)
         else:
@@ -153,30 +156,30 @@ class ZFind:
                     try:
                         self.npixstep = self.npixstep.tolist()
                     except:
-                        print 'npixstep not a list and unable to convert to \
+                        print('npixstep not a list and unable to convert to \
                                 list - defaulting to npixstep=1 for all \
-                                templates!'
+                                templates!')
                         self.npixstep = [1]*len(self.templates)
             else:
-                self.npixstep = map(int, self.npixstep)
+                self.npixstep = list(map(int, self.npixstep))
 
     def reduce_plate_mjd(self, plate, mjd, fiberid=None, chi2file=False):
         self.chi2file = chi2file
         # Check types and try to convert to proper types if necessary
-        if fiberid is None: fiberid = [i for i in xrange(1000)]
+        if fiberid is None: fiberid = [i for i in range(1000)]
         else:
             if type(fiberid) is not list:
                 try:
                     fiberid = [fiberid]
-                    fiberid = map(int, fiberid)
+                    fiberid = list(map(int, fiberid))
                 except:
                     try:
                         fiberid = fiberid.tolist()
-                        fiberid = map(int, fiberid)
+                        fiberid = list(map(int, fiberid))
                     except:
-                        print 'fiberid not set properly - running full plate!'
-                        fiberid = [i for i in xrange(1000)]
-            else: fiberid = map(int, fiberid)
+                        print('fiberid not set properly - running full plate!')
+                        fiberid = [i for i in range(1000)]
+            else: fiberid = list(map(int, fiberid))
 
         # Spec
         specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
@@ -185,7 +188,7 @@ class ZFind:
         zfindobjs = []
         zfitobjs = []
         if (self.zmin is not None) & (self.zmax is not None):
-            for i in xrange(len(self.templates)):
+            for i in range(len(self.templates)):
                 zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
                                                   npoly=self.npoly[i],
                                                   zmin=self.zmin[i],
@@ -198,7 +201,7 @@ class ZFind:
                                                  zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine()
         else:
-            for i in xrange(len(self.templates)):
+            for i in range(len(self.templates)):
                 zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
                                                   npoly=self.npoly[i],
                                                   npixstep=self.npixstep[i]) )
@@ -212,7 +215,7 @@ class ZFind:
 
         # Flags
         flags = []
-        for i in xrange(len(zfindobjs)):
+        for i in range(len(zfindobjs)):
             flags.append( misc.comb_flags(specs, zfindobjs[i], zfitobjs[i]) )
 
         # ZPicker
@@ -240,26 +243,9 @@ class ZFind:
                     self.dest = str(self.dest)
                     output = io.WriteRedmonster(zpick, dest=self.dest, clobber=self.clobber)
                 except:
-                    print 'Could not convert dest to string - writing to default directory and NOT clobbering old files!'
+                    print('Could not convert dest to string - writing to default directory and NOT clobbering old files!')
                     output = io.WriteRedmonster(zpick, clobber=True)
 
         if output:
             if len(zpick.fiberid) == 1: output.write_fiberid()
             else: output.write_plate()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
