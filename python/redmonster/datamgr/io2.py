@@ -399,7 +399,7 @@ class WriteRedmonster:
                 print('Writing redmonster file to %s' % \
                         join( getcwd(), 'redmonster-%s-%s-%03d.fits' %
                              (self.zpick.plate, self.zpick.mjd,
-                              self.zpick.fiberid[0]) )
+                              self.zpick.fiberid[0]) ) )
         else:
             if self.dest is not None:
                 if exists(join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' %
@@ -581,7 +581,6 @@ class MergeRedmonster:
             except Exception as e:
                 self.hdr = fits.Header()
                 print("Exception: %r" % e)
-            '''
             npix = fits.open( join( environ['BOSS_SPECTRO_REDUX'],
                                    environ['RUN2D'], '%s' % self.plate,
                                    'spPlate-%s-%s.fits' %
@@ -1104,7 +1103,7 @@ class MergeRedmonster:
             rmver = environ['REDMONSTER_VER']
         except KeyError:
             rmver = None
-            print "Environmental variable 'REDMONSTER_VER' is not set: %r" % e
+            print("Environmental variable 'REDMONSTER_VER' is not set: %r" % e)
         try:
             run2d = environ['RUN2D']
         except KeyError:
@@ -1258,7 +1257,7 @@ class MergeRedmonster:
             rmver = environ['REDMONSTER_VER']
         except KeyError:
             rmver = None
-            print "Environmental variable 'REDMONSTER_VER' is not set: %r" % e
+            print("Environmental variable 'REDMONSTER_VER' is not set: %r" % e)
         try:
             run2d = environ['RUN2D']
         except KeyError:
