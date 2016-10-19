@@ -16,6 +16,7 @@ from matplotlib.colors import LogNorm
 from glob import iglob
 from astropy.convolution import convolve, Box1DKernel
 from scipy.optimize import curve_fit
+from scipy import ndimage
 import seaborn as sns
 
 from redmonster.sandbox import yanny as y
@@ -724,7 +725,8 @@ class VerifyRM:
 
     def read_redmonster_summary_file(self):
         # Read the redmonster summary file
-        summary_path = join( self.redmonster_spectro_redux,
+        redmonster_spectro_redux = join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly1' % self.version)
+        summary_path = join( redmonster_spectro_redux,
                             'redmonsterAll-%s.fits' % self.version )
         hdu = fits.open(summary_path)
         self.rm_z1 = hdu[1].data.Z
@@ -2481,7 +2483,7 @@ class VerifyRM:
         p.xlabel(r'$\Delta\chi_{r}^2$ threshold', size=14)
         p.ylabel(r'Cumulative fraction below threshold', size=14)
         #p.grid(b=True, which='major', color='black', linestyle='--')
-        p.legend(loc=2)
+        p.legend(loc=2, prop={'size':14})
         p.axis([0,.02,0,.7])
         p.tick_params(labelsize=12)
         p.grid(b=True, which='major', color='lightgrey', linestyle='-')
@@ -2602,20 +2604,21 @@ class VerifyRM:
 
     def logdrchi2_poly_histos_sns(self, nbins=50, sns_pal='muted'):
         # Histograms of log10 delta rchi2 for 1,2,3,4 poly runs
-        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu1 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly1' % self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu2 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly2' % self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu3 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly3' % self.version, 'redmonsterAll-%s.fits' % self.version))
         hdu4 = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly4' % self.version, 'redmonsterAll-%s.fits' % self.version))
         hdulist = [hdu1, hdu2, hdu3, hdu4]
-        labels = ['1poly', '2poly', '3poly', '4poly']
+        labels = ['1 poly', '2 poly', '3 poly', '4 poly']
         sns.set_style('white')
+        sns_pal = sns.color_palette(["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"])
         sns.set_palette(sns_pal)
         sns.set_context('paper')
-        import pdb; pdb.set_trace()
         f = p.figure()
         ax = f.add_subplot(111)
         for j,hdu in enumerate(hdulist):
             x = n.delete(hdu[1].data.RCHI2DIFF, n.where(hdu[1].data.RCHI2DIFF == 0)[0])
+            x = n.delete(x, n.where(n.isnan(x) == True))
             hist,binedges = n.histogram(n.log10(x), bins=nbins, normed=True)
             bins = n.zeros(nbins)
             for i in range(nbins):
@@ -2623,7 +2626,7 @@ class VerifyRM:
             p.plot(bins, hist, drawstyle='steps-mid', label=labels[j])
         p.plot([n.log10(0.005)]*1000, n.linspace(0,1.2,1000),linestyle='--')
         p.axis([-4,0,0,1.2])
-        p.legend()
+        p.legend(loc=2,prop={'size':14})
         p.xlabel(r'$\log_{10} \Delta \chi^2 / \mathrm{dof}$', size=14)
         p.ylabel('Distribution', size=14)
         p.tick_params(labelsize=12)
@@ -3708,7 +3711,7 @@ class VerifyRM:
         sns.set_palette(sns_pal)
         sns.set_context('paper')
 
-        hdu = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], self.version, 'redmonsterAll-%s.fits' % self.version))
+        hdu = fits.open(join(environ['REDMONSTER_SPECTRO_REDUX'], '%s_poly1' % self.version, 'redmonsterAll-%s.fits' % self.version))
 
         p.close()
 
@@ -3722,8 +3725,8 @@ class VerifyRM:
             if plate != hdu[1].data.PLATE[i] or mjd != hdu[1].data.MJD[i]:
                 plate = hdu[1].data.PLATE[i]
                 mjd = hdu[1].data.MJD[i]
-                #hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
-                hduidl = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/%s/spPlate-%s-%s.fits' % (plate,plate,mjd))
+                hduidl = fits.open(join(environ['BOSS_SPECTRO_REDUX'], self.version, '%s' % plate, 'spPlate-%s-%s.fits' % (plate, mjd)))
+                #hduidl = fits.open('/uufs/chpc.utah.edu/common/home/sdss00/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/%s/spPlate-%s-%s.fits' % (plate,plate,mjd))
             xfocal.append(hduidl[5].data.XFOCAL[fiberid])
             yfocal.append(hduidl[5].data.YFOCAL[fiberid])
             if zwarn > 0:
@@ -3735,8 +3738,10 @@ class VerifyRM:
         yzwarn = n.array(yzwarn)
 
         totals, x_edges, y_edges, image = p.hist2d(xfocal, yfocal, bins=nbins, norm=LogNorm())
+        totals = n.rot90(totals)
         p.close()
         failures, xbinedges, ybinedges, image = p.hist2d(xzwarn, yzwarn, bins=[x_edges,y_edges], norm=LogNorm())
+        failures = n.rot90(failures)
         p.close()
 
         '''
@@ -3748,7 +3753,6 @@ class VerifyRM:
         '''
 
         hist = failures / totals
-
         p.imshow(hist, interpolation='nearest', origin='lower', extent=[xbinedges[0], xbinedges[-1], ybinedges[0], ybinedges[-1]], cmap='cool')
         cbar = p.colorbar()
         cbar.set_label('Failure rate', size=14)
@@ -3797,7 +3801,12 @@ class VerifyRM:
         p.savefig('/uufs/astro.utah.edu/common/home/u0814744/boss/failure_vs_dist.pdf')
         p.close()
 
-
+        inner_50_fails = []
+        for i,this_dist in enumerate(dist):
+            if this_dist <= n.sqrt(.5):
+                inner_50_fails.append(fail[i])
+        inner_50_fails = n.array(inner_50_fails)
+        print 'Average failure rate of inner 50 percent of fibers is %s' % (n.sum(inner_50_fails)/inner_50_fails.shape[0])
 
 
     def failure_vs_sn_sns(self,sn_max=5,nbins=20):

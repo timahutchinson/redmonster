@@ -20,6 +20,11 @@ except KeyError as e:
     topdir = None
     print("Environmental variable 'REDMONSTER_SPECTRO_REDUX' is not set: %r" % e)
 try:
+    rmver = environ['REDMONSTER_VER']
+except KeyError as e:
+    rmver = None
+    print "Environmental variable 'REDMONSTER_VER' is not set: %r" % e
+try:
     run2d = environ['RUN2D']
 except KeyError as e:
     run2d = None
@@ -29,7 +34,8 @@ try:
 except KeyError as e:
     run1d = None
     print("Environmental variable 'RUN1D' is not set: %r" % e)
-platedir = join( topdir, run2d, '*') if topdir and run2d else None
+
+platedir = join( topdir, run2d, rmver, '*') if topdir and run2d and rmver else None
 
 plates = []
     
@@ -42,7 +48,7 @@ if platedir:
         mjds = []
         files = []
         try:
-            for x in iglob( join( topdir, run2d, str(plate), run1d,
+            for x in iglob( join( topdir, run2d, rmver, str(plate),
                                  'redmonster-%s-*-*.fits' % plate) ):
                 files.append(x)
             for file in files:

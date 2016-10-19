@@ -78,7 +78,6 @@ class ZFind:
                         self.group.append(self.option.getint(section,'group'))
 
             else: print("Cannot parse ini file %r" % self.inifile)
-
             if not self.labels: self.labels = None
             if not self.templates: self.templates = None
             if not self.zmin: self.zmin = None
@@ -151,7 +150,7 @@ class ZFind:
         if self.npoly is None:
             self.npoly = [4]*len(self.templates)
         if self.group is None:
-            self.group = [0].len(self.templates)
+            self.group = [0]*len(self.templates)
         else:
             if type(self.npoly) is not list:
                 try:
