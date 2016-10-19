@@ -99,7 +99,6 @@ class ZFinder:
         self.nproc = nproc
         self.pixoffset = None
         self.zchi2arr = None
-        self.nproc=nproc
 
         try:
             self.templatesdir = environ['REDMONSTER_TEMPLATES_DIR']
@@ -294,8 +293,7 @@ class ZFinder:
             else:
                 print('WARNING Plate/mjd/fiberid not given - unable to write chi2 file!')
         else:
-            #print 'INFO Not writing chi2'
-            pass
+            print('INFO Not writing chi2')
 
     def store_models(self, specs, ivar):
         self.models = n.zeros( (specs.shape) )
