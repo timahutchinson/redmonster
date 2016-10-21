@@ -139,16 +139,17 @@ class ZPicker:
                             fiberminvecs.append(
                                     zfitobjs[itemp].minvectors[ifiber][imin])
                         except IndexError as e:
-                            #print "%r" % e
-                            #fibermins.append( \
-                            #        n.max(zfitobjs[itemp].chi2vals[ifiber]) / \
-                            #        (self.dof[ifiber] - zfindobjs[itemp].npoly))
+                            print(repr(e))
+                            fiberminvecs.append( (-1,) )
+                            if len(zfitobjs[itemp].chi2vals[ifiber]) > 0:
+                                fibermins.append( \
+                                       n.max(zfitobjs[itemp].chi2vals[ifiber]) / \
+                                       (self.dof[ifiber] - zfindobjs[itemp].npoly))
+                            else:
+                                fibermins.append(100000.)
 
                             # this is ok, might be no solution
-                            #print "WARNING no z fitted for fiber #%d, class #%d, zid #%d"%(ifiber,itemp,imin)
-
-                            fibermins.append(100000.)
-                            fiberminvecs.append( (-1,) )
+                            print("WARNING no z fitted for fiber #%d, class #%d, zid #%d"%(ifiber,itemp,imin))
 
                 # Build tuples of num_z best redshifts and classifications
                 # for this fiber
