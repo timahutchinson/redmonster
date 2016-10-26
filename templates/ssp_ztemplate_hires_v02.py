@@ -113,7 +113,7 @@ ssp_rebin = n.zeros((n_vdisp, nsub_age, naxis1), dtype=float)
 
 # Do the rebinning:
 for j_v in xrange(n_vdisp):
-    print 'vdisp step ', j_v, ' of ', n_vdisp
+    print('vdisp step ', j_v, ' of ', n_vdisp)
     # Desired output sigma on baseline of the input SSPs:
     sig_wave_final = ssp_wave * vdisp_base[j_v] / c_kms
     # Subtract starting dispersion in quadrature:

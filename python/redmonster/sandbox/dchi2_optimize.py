@@ -130,7 +130,7 @@ args1= [(3686, 55268, fibers3686, zperson3686, classperson3686, comments3686),(3
 
 # Remove fiber numbers from each plate that have zperson = -9.
 args = []
-for i in xrange(8):
+for i in range(8):
     badzfibs = n.where(n.asarray(args1[i][3]) == -9.)[0]
     keepfibs = n.delete(n.asarray(args1[i][2]),badzfibs).tolist()
     keepzperson = n.delete(n.asarray(args1[i][3]),badzfibs).tolist()
@@ -139,11 +139,11 @@ for i in xrange(8):
     args.append( (args1[i][0],args1[i][1],keepfibs,keepzperson,keepclassperson,keepcommentsperson) )
 
 numgals = 0
-for i in xrange(8):
+for i in range(8):
     numgals += len(args[i][2])
-print 'Total number of galaxies:' + str(numgals)
+print('Total number of galaxies:' + str(numgals))
 
-threshold_vals = [45.+(.2*i) for i in xrange(100)]
+threshold_vals = [45.+(.2*i) for i in range(100)]
 completeness = []
 purity = []
 
@@ -154,7 +154,7 @@ def find_comp_purity(this_thresh, args):
     completeness = []
     run = 1
     for iarg in args:
-        print 'Running plate %s of 8' % (run)
+        print('Running plate %s of 8' % (run))
         run += 1
         plate = iarg[0]
         mjd = iarg[1]
@@ -222,7 +222,7 @@ class Hacked_zpicker:
     
     def classify_obj(self, zchi2arr1, zfit1, flags1, zchi2arr2, zfit2, flags2):
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
-        for ifiber in xrange(zchi2arr1.shape[0]):
+        for ifiber in range(zchi2arr1.shape[0]):
             self.minrchi2[ifiber,0] = n.min(zchi2arr1[ifiber]) / (self.npixflux) # Calculate reduced chi**2 values to compare templates of differing lengths
             if zchi2arr2 != None: self.minrchi2[ifiber,1] = n.min(zchi2arr2[ifiber]) / (self.npixflux)
             minpos = self.minrchi2[ifiber].argmin() # Location of best chi2 of array of best (individual template) chi2s
@@ -252,15 +252,15 @@ class Hacked_zpicker:
 
 #--------------------------------------
 
-print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing
+print(strftime("%Y-%m-%d %H:%M:%S", gmtime())) # For timing while testing
 threshnum = 1
 for this_thresh in threshold_vals:
-    print 'Running threshold %s of %s'% (threshnum,len(threshold_vals))
+    print('Running threshold %s of %s'% (threshnum,len(threshold_vals)))
     threshnum += 1
     thiscomp, thispur = find_comp_purity(this_thresh, args)
     completeness.append(thiscomp)
     purity.append(thispur)
-print strftime("%Y-%m-%d %H:%M:%S", gmtime()) # For timing while testing     
+print(strftime("%Y-%m-%d %H:%M:%S", gmtime())) # For timing while testing     
 
 
 # Write output to fits file

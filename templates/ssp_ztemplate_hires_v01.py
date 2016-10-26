@@ -110,7 +110,7 @@ ssp_rebin = n.zeros((nsub_age, naxis1), dtype=float)
 
 # Do the rebinning:
 for i_age in xrange(nsub_age):
-    print i_age
+    print(i_age)
     pxspline = pxs.PixelSpline(ssp_wavebound, rebin_blur * ssp_flam[idx[i_age]])
     ssp_rebin[i_age] = pxspline.resample(wavebound_rebin)
 

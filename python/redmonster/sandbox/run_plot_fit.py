@@ -3,7 +3,10 @@
 # Tim Hutchinson, University of Utah, April 2014
 # t.hutchinson@utah.edu
 
-from Tkinter import *
+try:
+    from tkinter import *
+except ImportError:
+    from Tkinter import *
 import numpy as n
 import matplotlib
 matplotlib.use('TkAgg')

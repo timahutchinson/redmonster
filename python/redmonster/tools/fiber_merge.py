@@ -18,7 +18,7 @@ try:
     topdir = environ['REDMONSTER_SPECTRO_REDUX']
 except KeyError as e:
     topdir = None
-    print "Environmental variable 'REDMONSTER_SPECTRO_REDUX' is not set: %r" % e
+    print("Environmental variable 'REDMONSTER_SPECTRO_REDUX' is not set: %r" % e)
 try:
     rmver = environ['REDMONSTER_VER']
 except KeyError as e:
@@ -28,12 +28,13 @@ try:
     run2d = environ['RUN2D']
 except KeyError as e:
     run2d = None
-    print "Environmental variable 'RUN2D' is not set: %r" % e
+    print("Environmental variable 'RUN2D' is not set: %r" % e)
 try:
     run1d = environ['RUN1D']
 except KeyError as e:
     run1d = None
-    print "Environmental variable 'RUN1D' is not set: %r" % e
+    print("Environmental variable 'RUN1D' is not set: %r" % e)
+
 platedir = join( topdir, run2d, rmver, '*') if topdir and run2d and rmver else None
 
 plates = []
@@ -65,9 +66,9 @@ if platedir:
                         mjds.append( basename(file)[17:22] )
         except Exception as e:
             mjds = None
-            print "Exception: %r" % e
+            print("Exception: %r" % e)
         if mjds is not []:
             for mjd in mjds:
-                print 'Merging fibers for plate %s, mjd %s' % (plate, mjd)
+                print('Merging fibers for plate %s, mjd %s' % (plate, mjd))
                 x = io2.MergeRedmonster(plate, mjd)
                 x.merge_fibers2()

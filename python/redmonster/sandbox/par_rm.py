@@ -16,7 +16,8 @@ from redmonster.datamgr import spec, io
 from redmonster.physics import zfinder, zfitter, zpicker
 
 
-def parallel_rm( (plate,mjd,fiberid) ):
+def parallel_rm(xxx_todo_changeme ):
+    (plate,mjd,fiberid) = xxx_todo_changeme
     specs = spec.Spec(plate=plate, mjd=mjd, fiberid=fiberid)
     zssp = zfinder.ZFinder(fname='ndArch-ssp_em_galaxy-v000.fits', npoly=4, zmin=-0.01, zmax=1.2)
     zssp.zchi2(specs.flux, specs.loglambda, specs.ivar)
