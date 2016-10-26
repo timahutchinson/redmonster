@@ -15,6 +15,7 @@ from os import environ
 from os.path import join
 
 import numpy as n
+from scipy import linalg
 from scipy.optimize import nnls
 from astropy.io import fits
 
@@ -76,10 +77,10 @@ class ZPicker:
         tempdict = {}
         # Builds list of 0:num_z repeated ntemps times (i.e.,
         # [0,1,2,3,0,1,2,3,0,1,2,3] for num_z=4 and 3 templates)
-        poslist = range(self.num_z)*len(zfindobjs)
+        poslist = list(range(self.num_z))*len(zfindobjs)
         rchi2s = []
-        for itemp in xrange(len(zfindobjs)):
-            for i in xrange(self.num_z):
+        for itemp in range(len(zfindobjs)):
+            for i in range(self.num_z):
                 tempdict[ i+(itemp*self.num_z) ] = itemp
             '''
             rchi2s.append( zfindojbs[itemp].zchi2arr.copy() ) # Add copy
@@ -89,7 +90,7 @@ class ZPicker:
                 zfindobjs[itemp].npoly ) # Convert from chi2 to rchi2 by
                 dividing by (number of pixels - number of poly terms)
             '''
-        for ifiber in xrange(zfindobjs[0].zchi2arr.shape[0]):
+        for ifiber in range(zfindobjs[0].zchi2arr.shape[0]):
             fibermins = []
             fiberminvecs = []
             # Create tuples for all the values we're going to carry forward.
@@ -107,7 +108,7 @@ class ZPicker:
             npixsteptuple = ()
             fstuple = ()
             # Catch spectra that are all 0's and return null result
-            if len(n.where(self.flux[ifiber] != 0)[0]) == 0 or len(n.where(self.ivar[ifiber] != 0)[0]) == 0:
+            if n.all(self.flux[ifiber] == 0.0) or n.all(self.ivar[ifiber] == 0.0):
                 ztuple = (-1,)*self.num_z
                 zerrtuple = (-1,)*self.num_z
                 fnametuple = ('noSpectrum',)*self.num_z
@@ -123,8 +124,8 @@ class ZPicker:
                 self.flag_small_dchi2(ifiber)
             else:
                 # Build temporary array of num_z lowest minima for each template
-                for itemp in xrange(self.nclass):
-                    for imin in xrange(self.num_z):
+                for itemp in range(self.nclass):
+                    for imin in range(self.num_z):
                         try:
                             # Add num_z best chi2s found in zfitter divided by
                             # (number of pixels - number of poly terms) to
@@ -138,11 +139,18 @@ class ZPicker:
                             fiberminvecs.append(
                                     zfitobjs[itemp].minvectors[ifiber][imin])
                         except IndexError as e:
-                            print "%r" % e
-                            fibermins.append( \
-                                    n.max(zfitobjs[itemp].chi2vals[ifiber]) / \
-                                    (self.dof[ifiber] - zfindobjs[itemp].npoly))
+                            print(repr(e))
                             fiberminvecs.append( (-1,) )
+                            if len(zfitobjs[itemp].chi2vals[ifiber]) > 0:
+                                fibermins.append( \
+                                       n.max(zfitobjs[itemp].chi2vals[ifiber]) / \
+                                       (self.dof[ifiber] - zfindobjs[itemp].npoly))
+                            else:
+                                fibermins.append(100000.)
+
+                            # this is ok, might be no solution
+                            print("WARNING no z fitted for fiber #%d, class #%d, zid #%d"%(ifiber,itemp,imin))
+
                 # Build tuples of num_z best redshifts and classifications
                 # for this fiber
                 #for iz in xrange(self.num_z):
@@ -165,7 +173,7 @@ class ZPicker:
                         typetuple += (zfindobjs[tempnum].type,)
                         vectortuple += (fiberminvecs[zpos],)
                         d = {} # Dictionary for subtype
-                        for j in xrange( len(vectortuple[-1][:-1]) ):
+                        for j in range( len(vectortuple[-1][:-1]) ):
                             d[zfindobjs[tempnum].infodict['par_names'][j]] = \
                                     zfindobjs[tempnum].baselines[j] \
                                             [vectortuple[-1][j]]
@@ -189,7 +197,7 @@ class ZPicker:
                         iz += 1
                     else:
                         fibermins[zpos] = 1e9
-                
+
             self.z.append(ztuple)
             self.z_err.append(zerrtuple)
             self.fname.append(fnametuple)
@@ -219,13 +227,13 @@ class ZPicker:
             if n.isnan(self.rchi2diff[ifiber]):
                 self.flag_small_dchi2(ifiber)
             self.flag_null_fit(ifiber, flags)
-        self.zwarning = map(int, self.zwarning)
+        self.zwarning = list(map(int, self.zwarning))
 
     def flag_small_dchi2(self, ifiber):
         """Set the small delta chi**2 zwarning flag."""
         flag_val = int('0b100',2) # From BOSS zwarning flag definitions
         self.zwarning[ifiber] = int(self.zwarning[ifiber]) | flag_val
-    
+
     def flag_null_fit(self, ifiber, flags):
         """Set flag if any template classes had a null fit."""
         null_fit_flag = int('0b100000000',2)
@@ -251,7 +259,7 @@ class ZPicker:
             polyarr = poly_array(npoly, self.npixflux)
             pmat[:,1:] = n.transpose(polyarr)
             ninv = n.diag(ivar)
-            f = n.linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat),
+            f = linalg.solve( n.dot(n.dot(n.transpose(pmat),ninv),pmat),
                                n.dot( n.dot(n.transpose(pmat),ninv),flux) ); \
                     f = n.array(f)
             if f[0] < 0:
@@ -261,20 +269,10 @@ class ZPicker:
                             f = n.array(f)
                     return n.dot(pmat,f), tuple(f)
                 except Exception as e:
-                    print "Exception: %r" % e
+                    print("Exception: %r" % e)
                     return n.zeros(self.npixflux), (0,)
             else:
                 return n.dot(pmat,f), tuple(f)
         except Exception as e:
-            print "Exception: %r" % e
+            print("Exception: %r" % e)
             return n.zeros(self.npixflux), (0,)
-
-
-
-
-
-
-
-
-
-

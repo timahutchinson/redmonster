@@ -76,7 +76,7 @@ def read_ndArch(fname):
     # Initialize list of baselines with index defaults:
     baselines = [n.arange(this_size)+1 for this_size in data.shape[:-1]]
     # Loop over parameters and construct baselines:
-    for ipar in xrange(npars):
+    for ipar in range(npars):
         # Translate Python axis index integer to FITS axis index string:
         ax = str(npars + 1 - ipar)
         # Populate name & units for this axis, if available:
@@ -87,13 +87,13 @@ def read_ndArch(fname):
         is_regular = ('CRPIX'+ax in header) and \
             ('CRVAL'+ax in header) and \
             ('CDELT'+ax in header)
-        pv_base = ['PV'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
+        pv_base = ['PV'+ax+'_'+str(j+1) for j in range(data.shape[ipar])]
         pv_test = n.asarray([this_pv in header for this_pv in pv_base])
         is_irregular = pv_test.prod() > 0
-        ps_base = ['PS'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
+        ps_base = ['PS'+ax+'_'+str(j+1) for j in range(data.shape[ipar])]
         ps_test = n.asarray([this_ps in header for this_ps in ps_base])
         is_labeled = ps_test.prod() > 0
-        n_base = ['N'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
+        n_base = ['N'+ax+'_'+str(j+1) for j in range(data.shape[ipar])]
         n_test = n.asarray([this_n in header for this_n in n_base])
         is_named = n_test.prod() > 0
         if is_regular:
@@ -183,16 +183,16 @@ def write_ndArch(data, baselines, infodict):
             hdu.header.set('CRVAL'+ax, value=baselines[ipar][0], comment='Axis '+ax+' reference value')
             hdu.header.set('CDELT'+ax, value=(baselines[ipar][1]-baselines[ipar][0]), comment='Axis '+ax+' increment')
         elif (infodict['par_axistype'][ipar].strip() == 'irregular'):
-            pv_base = ['PV'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
-            for j in xrange(data.shape[ipar]): hdu.header.set(pv_base[j], value=baselines[ipar][j],
+            pv_base = ['PV'+ax+'_'+str(j+1) for j in range(data.shape[ipar])]
+            for j in range(data.shape[ipar]): hdu.header.set(pv_base[j], value=baselines[ipar][j],
                                                               comment='Axis '+ax+' value at pixel ' + str(j+1))
         elif (infodict['par_axistype'][ipar].strip() == 'labeled'):
-            ps_base = ['PS'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
-            for j in xrange(data.shape[ipar]): hdu.header.set(ps_base[j], value=baselines[ipar][j],
+            ps_base = ['PS'+ax+'_'+str(j+1) for j in range(data.shape[ipar])]
+            for j in range(data.shape[ipar]): hdu.header.set(ps_base[j], value=baselines[ipar][j],
                                                               comment='Axis '+ax+' label at pixel ' + str(j+1))
         elif (infodict['par_axistype'][ipar].strip() == 'named'):
-            n_base = ['N'+ax+'_'+str(j+1) for j in xrange(data.shape[ipar])]
-            for j in xrange(data.shape[ipar]): hdu.header.set(n_base[j], value=baselines[ipar][j],
+            n_base = ['N'+ax+'_'+str(j+1) for j in range(data.shape[ipar])]
+            for j in range(data.shape[ipar]): hdu.header.set(n_base[j], value=baselines[ipar][j],
                                                               comment='Axis '+ax+' name at pixel ' + str(j+1))
         else:
             pass
@@ -270,28 +270,28 @@ class WriteRedmonster:
         col4_3 = fits.Column(name='Z_ERR4', format='E', array=self.zpick.z_err[:,3])
         col4_4 = fits.Column(name='Z_ERR5', format='E', array=self.zpick.z_err[:,4])
         '''
-        classx = n.array(map(repr,self.zpick.type))
-        maxlen = max(map(len,classx))
+        classx = n.array(list(map(repr,self.zpick.type)))
+        maxlen = max(list(map(len,classx)))
         col5 = fits.Column(name='CLASS', format='%iA'%maxlen, array=self.zpick.type)
         # Change dictionary values of subclass to strings to be written into fits file.  eval('dictstring') will turn them back into dictionaries later.
         if type(self.zpick.subtype[0]) is not dict: # Skip this and write directly if these are already dicts
-            subclass = n.array(map(repr,self.zpick.subtype))
+            subclass = n.array(list(map(repr,self.zpick.subtype)))
         else:
             subclass = n.array(self.zpick.subtype)
-        maxlen = max(map(len,subclass))
+        maxlen = max(list(map(len,subclass)))
         col6 = fits.Column(name='SUBCLASS', format='%iA'%maxlen, array=subclass)
         col7 = fits.Column(name='FIBERID', format='J', array=self.zpick.fiberid)
         if type(self.zpick.minvector[0]) is not str:
-            minvec = n.array(map(repr,self.zpick.minvector)) # Change tuples of minvector to strings to be written into fits file. eval('minvector') will turn them back into tuples later.
+            minvec = n.array(list(map(repr,self.zpick.minvector))) # Change tuples of minvector to strings to be written into fits file. eval('minvector') will turn them back into tuples later.
         else:
             minvec = n.array(self.zpick.minvector)
-        maxlen = max(map(len,minvec))
+        maxlen = max(list(map(len,minvec)))
         col8 = fits.Column(name='MINVECTOR', format='%iA'%maxlen, array=minvec)
-        col9 = fits.Column(name='ZWARNING', format='E', array=map(int,self.zpick.zwarning))
+        col9 = fits.Column(name='ZWARNING', format='E', array=list(map(int,self.zpick.zwarning)))
         col10 = fits.Column(name='DOF', format='E', array=self.zpick.dof)
         col11 = fits.Column(name='NPOLY', format='E', array=self.zpick.npoly)
-        fname = n.array(map(repr,self.zpick.fname))
-        maxlen = max(map(len,fname))
+        fname = n.array(list(map(repr,self.zpick.fname)))
+        maxlen = max(list(map(len,fname)))
         col12 = fits.Column(name='FNAME', format='%iA'%maxlen, array=fname)
         col13 = fits.Column(name='NPIXSTEP', format='E', array=self.zpick.npixstep)
         col14 = fits.Column(name='RCHI2DIFF', format='E', array=self.zpick.chi2diff)
@@ -325,25 +325,25 @@ class WriteRedmonster:
         if self.clobber:
             if self.dest is not None:
                 self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])), clobber=self.clobber)
-                print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
+                print('Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])))
             else:
                 self.thdulist.writeto('redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]), clobber=self.clobber)
-                print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd) )
+                print('Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd) ))
         else:
             if self.dest is not None:
                 if exists(join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))):
                     self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
-                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                    print('Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
                 else:
                     self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])))
-                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
+                    print('Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])))
             else:
                 if exists('redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])):
                     self.thdulist.writeto('redmonster-%s-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
-                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                    print('Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0], strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
                 else:
                     self.thdulist.writeto('redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
-                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0]))
+                    print('Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%03d.fits' % (self.zpick.plate, self.zpick.mjd, self.zpick.fiberid[0])))
 
 
 
@@ -353,25 +353,25 @@ class WriteRedmonster:
         if self.clobber:
             if self.dest is not None:
                 self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd)), clobber=self.clobber)
-                print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd))
+                print('Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd)))
             else:
                 self.thdulist.writeto('redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd), clobber=self.clobber)
-                print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd) )
+                print('Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd) ))
         else:
             if self.dest is not None:
                 if exists(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd))):
                     self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
-                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                    print('Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
                 else:
                     self.thdulist.writeto(join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd)))
-                    print 'Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd))
+                    print('Writing redmonster file to %s' % join(self.dest, '%s' % 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd)))
             else:
                 if exists('redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd)):
                     self.thdulist.writeto('redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
-                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime())))
+                    print('Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
                 else:
                     self.thdulist.writeto('redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd))
-                    print 'Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd))
+                    print('Writing redmonster file to %s' % join( getcwd(), 'redmonster-%s-%s.fits' % (self.zpick.plate, self.zpick.mjd)))
 
 
 # Combine individual fiber fits files into a single plate file, or combine all plate files into an spAll-like file
@@ -488,7 +488,7 @@ class MergeRedmonster:
                 if listitem[-5:] == '.fits': self.plates.remove(listitem)
             self.fiberid = self.plates
             for plate in self.plates:
-                print 'Merging plate %s' % plate
+                print('Merging plate %s' % plate)
                 mjds = []
                 try:
                     for x in iglob( join( topdir, run2d, '%s' % plate, run1d, 'redmonster-%s-*.fits' % plate) ):

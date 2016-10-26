@@ -15,7 +15,7 @@ class Repeatability:
 
         hdu = pyfits.open('/uufs/chpc.utah.edu/common/home/sdss02/ebosswork/eboss/spectro/redux/test/bautista/test_dr14/spAll-test_dr14.fits')
 
-        print 'Selecting LRGs'
+        print('Selecting LRGs')
         a = hdu[1].data
         w = N.where( a.EBOSS_TARGET1 & 2 > 0)[0]
         a = a[w]
@@ -29,11 +29,11 @@ class Repeatability:
             w = N.where( a.THING_ID == t )[0]
             if len(w) > 1:
                 wr.extend(w)
-        print len(wr)
+        print(len(wr))
 
         wr = N.unique(N.array(wr))
         newa = a[wr]
-        print len(N.unique( newa.THING_ID )), 'repeats'
+        print(len(N.unique( newa.THING_ID )), 'repeats')
         newhdu = pyfits.BinTableHDU(data=newa)
         newhdu.writeto(Repeatability.directory+'/spAll-v5_10_0-repeats_lrg.fits')
 
@@ -92,7 +92,7 @@ class Repeatability:
         for i in range(ngals):
             t = a.THING_ID[i]
             if b.THING_ID[i] != t:
-                print 'Mismatch in thing_id!', t, b.THING_ID[i]
+                print('Mismatch in thing_id!', t, b.THING_ID[i])
 
             if a.RCHI2DIFF_NOQSO[i] < b.RCHI2DIFF_NOQSO[i]:
                 z1 = b.Z_NOQSO[i]
@@ -147,10 +147,10 @@ class Repeatability:
                          bbox_inches='tight')
 
         ngals = len(dv)*1.
-        print 'Total galaxies in plot', ngals
-        print '   dchi2 < 0.01', N.sum( dc< 0.01),  N.sum( dc< 0.01)/ngals
-        print '   dchi2 < 0.005', N.sum( dc< 0.005),  N.sum( dc< 0.005)/ngals
-        print '   dv > 1000 km/s', N.sum( dv > 1000.), N.sum( dv > 1000.)/ngals
+        print('Total galaxies in plot', ngals)
+        print('   dchi2 < 0.01', N.sum( dc< 0.01),  N.sum( dc< 0.01)/ngals)
+        print('   dchi2 < 0.005', N.sum( dc< 0.005),  N.sum( dc< 0.005)/ngals)
+        print('   dv > 1000 km/s', N.sum( dv > 1000.), N.sum( dv > 1000.)/ngals)
 
         return data
 

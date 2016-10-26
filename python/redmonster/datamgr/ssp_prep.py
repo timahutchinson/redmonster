@@ -39,7 +39,7 @@ class SSPPrep:
             self.specdir = environ['IDLSPEC2D_DIR']
         except KeyError as e:
             self.specdir = None
-            print "Enviromental variable 'IDSPEC2D_DIR' not set: %r" % e
+            print("Enviromental variable 'IDSPEC2D_DIR' not set: %r" % e)
         if self.specdir:
             self.ssp_path = join(self.specdir,"%s" % "templates","%s" % "SSPs",
                                  "%s" % ssp_file)
@@ -50,7 +50,7 @@ class SSPPrep:
                 self.rebin_ssp()
                 if self.velmin and self.velstep and nvel:
                     self.add_velo_disp(self.velmin, self.velstep, nvel)
-            else: print "%s IS NOT A VALID PATH" % self.ssp_path
+            else: print("%s IS NOT A VALID PATH" % self.ssp_path)
     
     def read_ssp(self):
         if exists(self.ssp_path):

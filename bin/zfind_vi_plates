@@ -40,7 +40,7 @@ plates = []
 mjds = []
 fibers = []
 zconf = []
-for i in xrange(len(data)):
+for i in range(len(data)):
     if str(data[i][0]) in platelist:
         if data[i][11] == 3:
             plates.append(data[i][0])
