@@ -39,12 +39,13 @@ from redmonster.physics import misc
 
 class ZFind:
 
-    def __init__(self, num_z=5, inifile=None, dest=None, clobber=True):
+    def __init__(self, num_z=5, inifile=None, dest=None, nproc=1, clobber=True):
         self.num_z = num_z
         self.inifile = inifile
         self.dest = dest
         self.clobber = clobber
         if self.inifile: self.set_templates_from_inifile()
+        self.nproc = nproc
 
     def set_templates_from_inifile(self):
         self.labels = []
@@ -75,7 +76,7 @@ class ZFind:
                         self.npixstep.append(self.option.getint(section,
                                                                 'npixstep'))
                     if self.option.has_option(section,'group'):
-                        self.group.append(self.option.getint(section,'group'))
+                        self.group.append(self.option.get(section,'group'))
 
             else: print("Cannot parse ini file %r" % self.inifile)
             if not self.labels: self.labels = None
@@ -213,7 +214,8 @@ class ZFind:
                                                   group=self.group[i],
                                                   npoly=self.npoly[i],
                                                   zmin=self.zmin[i],
-                                                  zmax=self.zmax[i]) )
+                                                  zmax=self.zmax[i],
+                                                  nproc=self.nproc) )
                 zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
                                    npixstep=self.npixstep[i], plate=plate,
                                    mjd=mjd, fiberid=fiberid[0],
@@ -226,7 +228,8 @@ class ZFind:
                 zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
                                                   group=self.group[i],
                                                   npoly=self.npoly[i],
-                                                  npixstep=self.npixstep[i]) )
+                                                  npixstep=self.npixstep[i],
+                                                  nproc=self.nproc) )
                 zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
                                    npixstep=self.npixstep[i], plate=plate,
                                    mjd=mjd, fiberid=fiberid[0],
