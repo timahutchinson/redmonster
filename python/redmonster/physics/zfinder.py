@@ -85,7 +85,8 @@ def zchi2_single_template_no_poly(j,t_fft, t2_fft, data_fft, ivar_fft, chi2_0, n
 
 
 class ZFinder:
-    def __init__(self, fname=None, group=[0], npoly=None, zmin=None, zmax=None, nproc=1):
+    def __init__(self, fname=None, group=[0], npoly=None, zmin=None, zmax=None,
+                 nproc=1):
         self.fname = fname
         if type(group) == list:
             self.group = group
