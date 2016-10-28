@@ -28,7 +28,9 @@ parser.add_argument("-i", "--inifile", help="templates configuration ini file \
 parser.add_argument("-c", "--clobber", help="clobber this PLATE/MJD",
                     action="store_true")
 parser.add_argument("-d", "--dest", help="overide REDMONSTER_SPECTRO_REDUX",
-                    type=str,metavar="DEST")
+                    type=str, metavar="DEST")
+parser.add_argument("-n", "--nproc", help="number of procs to use",
+                    type=int, metavar="NPROC")
 
 arg = parser.parse_args()
 if not arg.platepath: 
@@ -45,12 +47,15 @@ try:
 except:
     data_range = None
 
-zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
-#if data_range:
-zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
+if arg.nproc is not None:
+    zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, nproc=arg.nproc,
+                      clobber=arg.clobber)
+    zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
                         chi2file=False, platepath=arg.platepath)
-#else:
-#    zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, chi2file=False)
+else:
+    zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
+    zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
+                        chi2file=False, platepath=arg.platepath)
 
 # Delete QSO and CAP chi2files
 from os import remove
