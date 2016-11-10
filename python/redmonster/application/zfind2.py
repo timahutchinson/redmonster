@@ -50,6 +50,7 @@ class ZFind:
     def set_templates_from_inifile(self):
         self.labels = []
         self.templates = []
+        self.stemp = []
         self.zmin = []
         self.zmax = []
         self.npoly = []
@@ -66,6 +67,8 @@ class ZFind:
                     if self.option.has_option(section,'template'):
                         self.templates.append(self.option.get(section,
                                                               'template'))
+                    if self.option.has_option(section,'stemplate'):
+                        self.stemp.append(self.option.get(section, 'stemplate'))
                     if self.option.has_option(section,'zmin'):
                         self.zmin.append(self.option.getfloat(section,'zmin'))
                     if self.option.has_option(section,'zmax'):
@@ -81,6 +84,7 @@ class ZFind:
             else: print("Cannot parse ini file %r" % self.inifile)
             if not self.labels: self.labels = None
             if not self.templates: self.templates = None
+            if not self.stemp: self.stemp = None
             if not self.zmin: self.zmin = None
             if not self.zmax: self.zmax = None
             if not self.npoly: self.npoly = None
@@ -91,9 +95,10 @@ class ZFind:
         else: print("WARNING: %r does not exist" % self.inifile)
 
 
-    def set_templates(self, templates=None, zmin=None, zmax=None, npoly=None,
-                      npixstep=None, group=None):
+    def set_templates(self, templates=None, stemp=None, zmin=None, zmax=None,
+                      npoly=None, npixstep=None, group=None):
         if templates: self.templates = templates
+        if stemp: self.stemp = stemp
         if zmin: self.zmin = zmin
         if zmax: self.zmax = zmax
         if npoly: self.npoly = npoly
@@ -209,34 +214,67 @@ class ZFind:
         zfindobjs = []
         zfitobjs = []
         if (self.zmin is not None) & (self.zmax is not None):
-            for i in range(len(self.templates)):
-                zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
-                                                  group=self.group[i],
-                                                  npoly=self.npoly[i],
-                                                  zmin=self.zmin[i],
-                                                  zmax=self.zmax[i],
-                                                  nproc=self.nproc) )
-                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
-                                   npixstep=self.npixstep[i], plate=plate,
-                                   mjd=mjd, fiberid=fiberid[0],
-                                   chi2file=self.chi2file )
-                zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
-                                                 zfindobjs[i].zbase) )
-                zfitobjs[i].z_refine2()
+            if self.stemp is not None:
+                for i in range(len(self.templates)):
+                    zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
+                                                      stemp=self.stemp[i],
+                                                      group=self.group[i],
+                                                      npoly=self.npoly[i],
+                                                      zmin=self.zmin[i],
+                                                      zmax=self.zmax[i],
+                                                      nproc=self.nproc) )
+                    zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
+                                       npixstep=self.npixstep[i], plate=plate,
+                                       mjd=mjd, fiberid=fiberid[0],
+                                       chi2file=self.chi2file )
+                    zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
+                                                     zfindobjs[i].zbase) )
+                    zfitobjs[i].z_refine2()
+            else:
+                for i in range(len(self.templates)):
+                    zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
+                                                      group=self.group[i],
+                                                      npoly=self.npoly[i],
+                                                      zmin=self.zmin[i],
+                                                      zmax=self.zmax[i],
+                                                      nproc=self.nproc) )
+                    zfindobjs[i].zchi2(specs.flux, specs.loglambda, specs.ivar,
+                                       npixstep=self.npixstep[i], plate=plate,
+                                       mjd=mjd, fiberid=fiberid[0],
+                                       chi2file=self.chi2file )
+                    zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
+                                    zfindobjs[i].zbase) )
+                    zfitobjs[i].z_refine2()
         else:
-            for i in range(len(self.templates)):
-                zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
-                                                  group=self.group[i],
-                                                  npoly=self.npoly[i],
-                                                  npixstep=self.npixstep[i],
-                                                  nproc=self.nproc) )
-                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
-                                   npixstep=self.npixstep[i], plate=plate,
-                                   mjd=mjd, fiberid=fiberid[0],
-                                   chi2file=self.chi2file )
-                zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
-                                                 zfindobjs[i].zbase) )
-                zfitobjs[i].z_refine2()
+            if self.stemp is not None:
+                for i in range(len(self.templates)):
+                    zfindobjs.append(zfinder.ZFinder(fname=self.templates[i],
+                                                     stemp=self.stemp[i],
+                                                     group=self.group[i],
+                                                     npoly=self.npoly[i],
+                                                     npixstep=self.npixstep[i],
+                                                     nproc=self.nproc) )
+                    zfindobjs[i].zchi2(specs.flux, specs.loglambda, specs.ivar,
+                                       npixstep=self.npixstep[i], plate=plate,
+                                       mjd=mjd, fiberid=fiberid[0],
+                                       chi2file=self.chi2file )
+                    zfitobjs.append(zfitter.ZFitter(zfindobjs[i].zchi2arr,
+                                                    zfindobjs[i].zbase) )
+                    zfitobjs[i].z_refine2()
+            else:
+                for i in range(len(self.templates)):
+                    zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
+                                                      group=self.group[i],
+                                                      npoly=self.npoly[i],
+                                                      npixstep=self.npixstep[i],
+                                                      nproc=self.nproc) )
+                    zfindobjs[i].zchi2(specs.flux, specs.loglambda, specs.ivar,
+                                       npixstep=self.npixstep[i], plate=plate,
+                                       mjd=mjd, fiberid=fiberid[0],
+                                       chi2file=self.chi2file )
+                    zfitobjs.append(zfitter.ZFitter(zfindobjs[i].zchi2arr,
+                                    zfindobjs[i].zbase) )
+                    zfitobjs[i].z_refine2()
 
         # Flags
         flags = []
