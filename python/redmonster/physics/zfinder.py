@@ -85,9 +85,11 @@ def zchi2_single_template_no_poly(j,t_fft, t2_fft, data_fft, ivar_fft, chi2_0, n
 
 
 class ZFinder:
-    def __init__(self, fname=None, group=[0], npoly=None, zmin=None, zmax=None,
+    
+    def __init__(self, fname=None, stemp=None, group=[0], npoly=None, zmin=None, zmax=None,
                  nproc=1):
         self.fname = fname
+        self.stemp = stemp
         if type(group) == list:
             self.group = group
         elif type(group) == int:
@@ -118,8 +120,9 @@ class ZFinder:
 
 
     def read_template(self):
+        # Read primary templates
         self.templates, self.baselines, self.infodict = \
-                read_ndArch(join(self.templatesdir,self.fname))
+                read_ndArch(join(self.templatesdir, self.fname))
         self.type = self.infodict['class']
         self.origshape = self.templates.shape
         self.ntemps = self.templates[...,0].size
@@ -130,6 +133,12 @@ class ZFinder:
         templates_pad = n.zeros( self.origshape[:-1]+(self.fftnaxis1,) )
         templates_pad[...,:self.origshape[-1]] = self.templates
         self.templates = templates_pad
+    
+        # Read secondary templates
+        if self.stemp is not None:
+            self.stemplates, self.sbaselines, self.sinfodict = \
+                    read_ndArch(join(self.templatesdir, self.stemp))
+            self.nstemp = self.stemplates.shape[0]
 
 
     def create_z_baseline(self, loglam0):
@@ -183,29 +192,46 @@ class ZFinder:
         data_fft = n.fft.fft(data_pad * ivar_pad)
         ivar_fft = n.fft.fft(ivar_pad)
 
-        if self.npoly>0 :
-            # Compute poly terms, noting that they will stay fixed with
-            # the data - assumes data is passed in as shape (nfibers, npix)
-            polyarr = poly_array(self.npoly, specs.shape[1])
-            pmat = n.zeros( (self.npoly+1, self.npoly+1, self.fftnaxis1),
-                            dtype=float)
-            bvec = n.zeros( (self.npoly+1, self.fftnaxis1), dtype=float)
-
-            # Pad to a power of 2 for faster FFTs
-            poly_pad = n.zeros((self.npoly, self.fftnaxis1), dtype=float)
-            poly_pad[...,:polyarr.shape[-1]] = polyarr
-
-            # Pre-compute FFTs for use in convolutions
-            poly_fft = n.zeros((ivar_pad.shape[0], self.npoly, self.fftnaxis1),dtype=complex)
-            for i in range(self.npoly):
-                poly_fft[:,i,:] = n.fft.fft(poly_pad[i] * ivar_pad)
-
-
-
-
-
+        if self.npoly > 0:
+            if self.nstemp == 0: # No secondary templates
+                # Compute poly terms, noting that they will stay fixed with
+                # the data - assumes data is passed in as shape (nfibers, npix)
+                polyarr = poly_array(self.npoly, specs.shape[1])
+                pmat = n.zeros( (self.npoly+1, self.npoly+1, self.fftnaxis1),
+                               dtype=float)
+                bvec = n.zeros( (self.npoly+1, self.fftnaxis1), dtype=float)
+                # Pad to a power of 2 for faster FFTs
+                poly_pad = n.zeros((self.npoly, self.fftnaxis1), dtype=float)
+                poly_pad[...,:polyarr.shape[-1]] = polyarr
+                # Pre-compute FFTs for use in convolutions
+                poly_fft = n.zeros((ivar_pad.shape[0], self.npoly,
+                                    self.fftnaxis1), dtype=complex)
+                for i in range(self.npoly):
+                    poly_fft[:,i,:] = n.fft.fft(poly_pad[i] * ivar_pad)
+            else:
+                # Compute poly and secondary terms, both of which stay fixed
+                # with the data
+                polyarr = poly_array(self.npoly, specs.shape[1])
+                pmat = n.zeros( (self.npoly+self.nstemp+1,
+                                 self.npoly+self.nstemp+1, self.fftnaxis1),
+                               dtype=float)
+                bvec = n.zeros( (self.npoly+self.nstemp+1, self.fftnaxis1),
+                               dtype=float)
+                # Pad to a power of 2 for faster FFTs
+                poly_pad = n.zeros((self.npoly+self.nstemp, self.fftnaxis1),
+                                   dtype=float)
+                poly_pad[:self.npoly,:polyarr.shape[-1]] = polyarr
+                # Add secondary templates
+                for i in range(self.nstemp):
+                    poly_pad[self.npoly+i,
+                             :len(self.stemplates[i])] = self.stemplates[i]
+                # Pre-compute FFTs for use in convolutions
+                poly_fft = n.zeros((ivar_pad.shape[0], self.npoly+self.nstemp,
+                                    self.fftnaxis1), dtype=complex)
+                for i in range(self.npoly+self.nstemp):
+                    poly_fft[:,i,:] = n.fft.fft(poly_pad[i] * ivar_pad)
+    
         # Compute z for all fibers
-
         for i in range(specs.shape[0]): # Loop over fibers
 
             start=time.time()
@@ -221,19 +247,19 @@ class ZFinder:
 
                 self.sn2_data.append (n.sum( (specs[i]**2)*ivar[i] ) )
 
-                if self.npoly>0 :
-                    for ipos in range(self.npoly):
+                if self.npoly > 0:
+                    for ipos in range(self.npoly+self.nstemp):
                         bvec[ipos+1] = n.sum( poly_pad[ipos] * data_pad[i] *
                                               ivar_pad[i])
-                    for ipos in range(self.npoly):
-                        for jpos in range(self.npoly):
-                            pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] *
-                                                         poly_pad[jpos] *ivar_pad[i]) # CAN GO FASTER HERE (BUT NOT LIMITING = 0.001475
-
+                        for jpos in range(self.npoly+self.nstemp):
+                            pmat[ipos+1,jpos+1] = n.sum(poly_pad[ipos] *
+                                                        poly_pad[jpos] *
+                                                        ivar_pad[i])
                     f_null = linalg.solve(pmat[1:,1:,0],bvec[1:,0])
                     self.f_nulls.append( f_null )
-                    self.chi2_null.append( self.sn2_data[i] -
-                                           n.dot(n.dot(f_null,pmat[1:,1:,0]),f_null))
+                    self.chi2_null.append(self.sn2_data[i] -
+                                           n.dot(n.dot(f_null,pmat[1:,1:,0]),
+                                                 f_null))
                 else :
                     self.chi2_null.append( self.sn2_data[i] )
                 # print 'INFO Chi^2_null value is %s' % self.chi2_null[i]
