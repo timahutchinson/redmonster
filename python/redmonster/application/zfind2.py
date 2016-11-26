@@ -271,3 +271,66 @@ class ZFind:
         if output:
             if len(zpick.fiberid) == 1: output.write_fiber()
             else: output.write_plate()
+
+
+    def reduce_gen(self, filepath=None):
+        if filepath is None: print("Invalid file path.")
+        else:
+            specs = io2.SpecGen(filepath=filepath)
+        if (self.zmin is not None) & (self.zmax is not None):
+            for i in range(len(self.templates)):
+                zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
+                                                  group=self.group[i],
+                                                  npoly=self.npoly[i],
+                                                  zmin=self.zmin[i],
+                                                  zmax=self.zmax[i],
+                                                  nproc=self.nproc) )
+                zfindobjs[i].zchi2(specs.flux, specs.loglambda, specs.ivar,
+                                   npixstep=self.npixstep[i],
+                                   chi2file=self.chi2file)
+                zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
+                                                 zfindobjs[i].zbase) )
+                zfitobjs[i].z_refine2()
+        else:
+            for i in range(len(self.templates)):
+                zfindobjs.append( zfinder.ZFinder(fname=self.templates[i],
+                                                  group=self.group[i],
+                                                  npoly=self.npoly[i],
+                                                  npixstep=self.npixstep[i],
+                                                  nproc=self.nproc) )
+                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
+                                   npixstep=self.npixstep[i],
+                                   chi2file=self.chi2file )
+                zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
+                                                 zfindobjs[i].zbase) )
+                zfitobjs[i].z_refine2()
+                                                                                       
+        # Flags
+        flags = []
+        for i in range(len(zfindobjs)):
+            flags.append( misc.comb_flags(specs, zfindobjs[i], zfitobjs[i]) )
+            
+        # ZPicker
+        zpick = zpicker2.ZPicker(specs, zfindobjs, zfitobjs, flags)
+
+        output = None
+    
+        # Write output
+        if self.dest is None:
+            output = io2.WriteRedmonster(zpick, dest=filepath, clobber=True)
+
+        if output:
+            output.write_gen()
+
+
+
+
+
+
+
+
+
+
+
+
+
