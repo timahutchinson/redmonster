@@ -511,17 +511,13 @@ class WriteRedmonster:
                             join( getcwd(), 'redmonster-%s-%s.fits' %
                                  (self.zpick.plate, self.zpick.mjd)))
 
-        def write_gen(self):
-            self.create_hdulist()
-            self.thdulist.writeto(join(self.dest, '%s' %
-                                       'redmonster-%s-%s-%s.fits' %
-                                       (self.zpick.plate, self.zpick.mjd,
-                                        strftime("%Y-%m-%d_%H:%M:%S",
-                                                 gmtime()))))
-            print('Writing redmonster file\
-                  to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' %
-                                (self.zpick.plate, self.zpick.mjd,
-                                 strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
+    def write_gen(self):
+        self.create_hdulist()
+        self.thdulist.writeto(join(getcwd(), '%s' %
+                                   'redmonster-%s.fits' %
+                                   (strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
+        print('Writing redmonster file to %s' % join(getcwd(), '%s' % 'redmonster-%s.fits' %
+                            (strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
 
 # ------------------------------------------------------------------------------
 
@@ -1388,10 +1384,10 @@ class SpecGen:
         self.dof = None
         self.filepath = filepath
 
-        if self.platepath and exists(self.filepath):
-            hdu = fits.open(self.platepath)
+        if self.filepath and exists(self.filepath):
+            hdu = fits.open(self.filepath)
         else:
-            print("Missing path to %r" % self.platepath)
+            print("Missing path to %r" % self.filepath)
         try:
             self.hdr = hdu[0].header
             self.flux = hdu[0].data
@@ -1403,6 +1399,7 @@ class SpecGen:
             self.npix = hdu[0].data.shape[1]
             self.coeff0 = hdu[0].header['COEFF0']
             self.coeff1 = hdu[0].header['COEFF1']
+            self.dof = [hdu[0].data.shape[1]]*hdu[0].data.shape[0]
         except Exception as e:
             print("Exception: %r" % e)
 
