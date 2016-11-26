@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser
+from os import environ
+from os.path import join
+
+from redmonster.application import zfind, zfind2
+
+try: inidir = environ['REDMONSTER_CONF_DIR']
+except: inidir = None
+
+
+parser = ArgumentParser()
+parser.add_argument("-f", "--filepath", help="Run Redmonster on this file",
+                    type=str,metavar="FILEPATH")
+parser.add_argument("-j", "--datamin", help="Minimum wavelength of data to use",
+                    type=int, metavar="DATAMIN")
+parser.add_argument("-k", "--datamax", help="Maximum wavelength of data to use",
+                    type=int, metavar="DATAMAX")
+parser.add_argument("-i", "--inifile", help="templates configuration ini file \
+                    [default zfind.ini]",type=str, default="zfind.ini",
+                    metavar="INIFILE")
+parser.add_argument("-d", "--dest", help="overide REDMONSTER_SPECTRO_REDUX",
+                    type=str, metavar="DEST")
+parser.add_argument("-n", "--nproc", help="number of procs to use",
+                    type=int, metavar="NPROC")
+
+arg = parser.parse_args()
+if not arg.filepath:
+    arg.platepath=None
+
+if not arg.filepath: parser.error("Please specify a valid --filepath")
+
+inifile = join(inidir,arg.inifile) if inidir else arg.inifile
+
+data_range = []
+try:
+    data_range.append(arg.datamin)
+    data_range.append(arg.datamax)
+except:
+    data_range = None
+
+if arg.nproc is not None:
+    zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, nproc=arg.nproc)
+    zf.reduce_gen(filepath=arg.filepath, data_range=data_range,
+                        chi2file=False)
+else:
+    zf = zfind2.ZFind(inifile=inifile, dest=arg.dest)
+    zf.reduce_gen(filepath=arg.filepath, data_range=data_range, chi2file=False)
+
+
+
+
