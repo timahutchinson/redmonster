@@ -8,7 +8,7 @@
 
 import re
 from os import environ, makedirs, getcwd, remove
-from os.path import exists, join, basename
+from os.path import exists, join, basename, splitext
 from time import gmtime, strftime
 
 import numpy as n
@@ -16,6 +16,7 @@ from astropy.io import fits
 from glob import iglob
 
 from redmonster._version import __version__
+
 
 
 def read_ndArch(fname):
@@ -1346,5 +1347,58 @@ def write_chi2arr(plate, mjd, fiberid, zchi2arr):
     else:
         print('Environment variables not set or path does not exist - not \
                 writing chi2 file!')
+
+
+# ------------------------------------------------------------------------------
+
+# Read generic FITS file.  Data must be in (nspectra, npix) shaped image
+# located in primary HDU header of a fits file and (nspectra, npix) shaped image
+# of inverse variances located in the first extension.  Primary header must
+# include the keywords COEFF0 and COEFF1, corresponding to log10(wavelength[0])
+# and (log10(wavelength[i]-wavelength[i-1]))
+#
+# Tim Hutchinson, University of Utah, November 2016
+# t.hutchinson@utah.edu
+
+
+class SpecGen:
+    
+    def __init__(self, filepath=None):
+        self.hdr = None
+        self.flux = None
+        self.ivar = None
+        self.loglambda = None
+        self.nobj = None
+        self.npix = None
+        self.coeff0 = None
+        self.coeff1 = None
+        self.dof = None
+        self.filepath = filepath
+
+        if self.platepath and exists(self.filepath):
+            hdu = fits.open(self.platepath)
+        else:
+            print("Missing path to %r" % self.platepath)
+        try:
+            self.hdr = hdu[0].header
+            self.flux = hdu[0].data
+            self.ivar = hdu[1].data
+            self.loglambda = (hdu[0].header['COEFF0'] +
+                              n.arange(hdu[0].header['NAXIS1']) *
+                              hdu[0].header['COEFF1'])
+            self.nobj = hdu[0].data.shape[0]
+            self.npix = hdu[0].data.shape[1]
+            self.coeff0 = hdu[0].header['COEFF0']
+            self.coeff1 = hdu[0].header['COEFF1']
+        except Exception as e:
+            print("Exception: %r" % e)
+
+    def write_gen(self, filepath=None):
+        pass
+
+
+
+
+
 
 
