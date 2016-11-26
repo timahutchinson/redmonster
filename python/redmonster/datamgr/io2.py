@@ -300,7 +300,8 @@ class WriteRedmonster:
         prihdu = fits.PrimaryHDU(header=hdr)
         # Columns for 1st BIN table
         colslist = []
-        colslist.append( fits.Column(name='FIBERID', format='J',
+        if hasattr(self.zpick, 'fiberid'):
+            colslist.append( fits.Column(name='FIBERID', format='J',
                                      array=self.zpick.fiberid) )
         colslist.append( fits.Column(name='DOF', format='J',
                                      array=self.zpick.dof) )
@@ -509,6 +510,18 @@ class WriteRedmonster:
                     print('Writing redmonster file to %s' % \
                             join( getcwd(), 'redmonster-%s-%s.fits' %
                                  (self.zpick.plate, self.zpick.mjd)))
+
+        def write_gen(self):
+            self.create_hdulist()
+            self.thdulist.writeto(join(self.dest, '%s' %
+                                       'redmonster-%s-%s-%s.fits' %
+                                       (self.zpick.plate, self.zpick.mjd,
+                                        strftime("%Y-%m-%d_%H:%M:%S",
+                                                 gmtime()))))
+            print('Writing redmonster file\
+                  to %s' % join(self.dest, '%s' % 'redmonster-%s-%s-%s.fits' %
+                                (self.zpick.plate, self.zpick.mjd,
+                                 strftime("%Y-%m-%d_%H:%M:%S", gmtime()))))
 
 # ------------------------------------------------------------------------------
 
@@ -1392,9 +1405,6 @@ class SpecGen:
             self.coeff1 = hdu[0].header['COEFF1']
         except Exception as e:
             print("Exception: %r" % e)
-
-    def write_gen(self, filepath=None):
-        pass
 
 
 
