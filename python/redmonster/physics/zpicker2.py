@@ -48,7 +48,7 @@ class ZPicker:
         self.z_err = []
         self.zwarning = []
         self.npoly = []
-        self.dof = specobj.dof.copy()
+        self.dof = specobj.dof
         self.npixstep = []
         self.models = n.zeros( (specobj.flux.shape[0],num_z,self.npixflux) )
         self.fs = []
