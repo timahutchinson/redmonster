@@ -270,7 +270,7 @@ class ZFinder:
 
                 stop=time.time()
 
-                print("INFO fitted fiber %d/%d, chi2_null=%f, %d templates in %s, npoly=%d, using %d procs in %f sec"%(i+1, specs.shape[0],self.chi2_null[i],self.templates_flat.shape[0],self.fname,self.npoly,self.nproc,stop-start))
+                print("INFO fitted spectrum %d/%d, chi2_null=%f, %d templates in %s, npoly=%d, using %d procs in %f sec"%(i+1, specs.shape[0],self.chi2_null[i],self.templates_flat.shape[0],self.fname,self.npoly,self.nproc,stop-start))
 
 
         # Use only neg_model flag from best fit model/redshift and add
