@@ -288,9 +288,12 @@ class WriteRedmonster:
             hdr.remove('DUSTB')
         except KeyError:
             pass
-        hdr.extend([('SPEC2D',environ['RUN2D'],
-                     'Version of spec2d reductions used'),
-                    ('VERS_RM',__version__,'Version of redmonster used'),
+        try:
+            hdr.extend([('SPEC2D',environ['RUN2D'],
+                     'Version of spec2d reductions used')])
+        except KeyError:
+            pass
+        hdr.extend([('VERS_RM',__version__,'Version of redmonster used'),
                     ('DATE_RM',strftime("%Y-%m-%d_%H:%M:%S", gmtime()),
                      'Time of redmonster completion'),
                     ('NFIBERS', len(self.zpick.z), 'Number of fibers'),
