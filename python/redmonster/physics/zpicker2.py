@@ -131,7 +131,7 @@ class ZPicker:
                             # (number of pixels - number of poly terms) to
                             # convert to rchi2
                             fibermins.append(
-                                    zfitobjs[itemp].chi2vals[ifiber][imin] /
+                                    zfitobjs[itemp].chi2vals[ifiber][imin] /\
                                              (self.dof[ifiber] -
                                               zfindobjs[itemp].npoly) )
                             # Add num_z vectors for location of each chi2 in
