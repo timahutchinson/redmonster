@@ -29,8 +29,8 @@ try: run2d = environ['RUN2D']
 except: run2d = None
 platedir = join(topdir,run2d,'*','spPlate-*.fits') if topdir and run2d else None
 
-plates=[7848]
-mjds=[56959]
+plates=[8123, 6931, 6932, 6933]
+mjds=[]
 
 q.create(label='zfind',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
 for i,plate in enumerate(plates):
