@@ -13,8 +13,8 @@ import numpy as n
 from astropy.io import fits
 from scipy import linalg
 from scipy.optimize import nnls
-import matplotlib as m
-from matplotlib import pyplot as p
+#import matplotlib as m
+#from matplotlib import pyplot as p
 
 import multiprocessing
 import sys
