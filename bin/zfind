@@ -31,6 +31,7 @@ parser.add_argument("-d", "--dest", help="overide REDMONSTER_SPECTRO_REDUX",
                     type=str, metavar="DEST")
 parser.add_argument("-n", "--nproc", help="number of procs to use",
                     type=int, metavar="NPROC")
+parser.add_argument("--mask", help="Apply mask in redmonster._linelist", action="store_true")
 
 arg = parser.parse_args()
 if not arg.platepath: 
@@ -49,11 +50,11 @@ except:
 
 if arg.nproc is not None:
     zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, nproc=arg.nproc,
-                      clobber=arg.clobber)
+                      mask=arg.mask, clobber=arg.clobber)
     zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
                         chi2file=False, platepath=arg.platepath)
 else:
-    zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, clobber=arg.clobber)
+    zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, mask=arg.mask, clobber=arg.clobber)
     zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
                         chi2file=False, platepath=arg.platepath)
 
