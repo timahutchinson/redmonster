@@ -48,6 +48,7 @@ class ZFind:
         self.clobber = clobber
         if self.inifile: self.set_templates_from_inifile()
         self.nproc = nproc
+        self.mask = mask
 
     def set_templates_from_inifile(self):
         self.labels = []
@@ -218,7 +219,7 @@ class ZFind:
                                                   zmin=self.zmin[i],
                                                   zmax=self.zmax[i],
                                                   nproc=self.nproc) )
-                if mask:
+                if self.mask:
                     zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
                                        npixstep=self.npixstep[i], plate=plate,
                                        mjd=mjd, fiberid=fiberid[0],
