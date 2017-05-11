@@ -145,8 +145,8 @@ def comb_flags_2(specobj, zfitflags):
         else: flags[fiber] = int(zfitflags[ifiber])
     return flags
 
-def create_mask(linelist, wave):
-    wave = np.array(wave)
+def create_mask(linelist, log_wave):
+    wave = 10**np.array(wave)
     mask = np.ones(wave.shape[0])
     for line in lines.values():
         loc = np.abs(wave-line).argmin()
