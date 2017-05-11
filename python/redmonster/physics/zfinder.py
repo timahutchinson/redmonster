@@ -23,7 +23,7 @@ import time
 from redmonster.datamgr.ssp_prep import SSPPrep
 from redmonster.physics.misc import poly_array, two_pad
 from redmonster.datamgr.io2 import read_ndArch, write_chi2arr
-from redmonster.misc import create_mask
+from redmonster.physics.misc import create_mask
 
 # Assumes all templates live in $REDMONSTER_DIR/templates/
 
