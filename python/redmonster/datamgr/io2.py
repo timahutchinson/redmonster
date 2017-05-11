@@ -216,7 +216,7 @@ def write_ndArch(data, baselines, infodict):
                                comment='Axis '+ax+' name at pixel ' + str(j+1))
         else:
             pass
-    hdu.writeto(infodict['filename'], clobber=True)
+    hdu.writeto(infodict['filename'], overwrite=True)
 
 
 class WriteRedmonster:
@@ -233,12 +233,12 @@ class WriteRedmonster:
         environmental variables are also not specified, it will write in
         the directory in which it is being run.
         
-        The default behavior is to not clobber any older version of the
-        output file in the given directory.  Setting clobber=True will
+        The default behavior is to not overwrite any older version of the
+        output file in the given directory.  Setting overwrite=True will
         overwrite old versions of the output file.
         '''
-    def __init__(self, zpick, dest=None, clobber=True):
-        self.clobber = clobber
+    def __init__(self, zpick, dest=None, overwrite=True):
+        self.overwrite = overwrite
         self.zpick = zpick
         #if dest and exists(dest): self.dest = dest
         if dest is not None:
@@ -383,15 +383,15 @@ class WriteRedmonster:
         self.thdulist = fits.HDUList([prihdu, tbhdu, sechdu])
 
     def write_fiber(self):
-        self.clobber = True # Temporary fix!!
+        self.overwrite = True # Temporary fix!!
         self.create_hdulist()
-        if self.clobber:
+        if self.overwrite:
             if self.dest is not None:
                 self.thdulist.writeto(join(self.dest, '%s' %
                                            'redmonster-%s-%s-%03d.fits' %
                                            (self.zpick.plate, self.zpick.mjd,
                                             self.zpick.fiberid[0])),
-                                      clobber=self.clobber)
+                                      overwrite=self.overwrite)
                 print('Writing redmonster file to %s' % \
                         join(self.dest, '%s' % 'redmonster-%s-%s-%03d.fits' %
                              (self.zpick.plate, self.zpick.mjd,
@@ -400,7 +400,7 @@ class WriteRedmonster:
                 self.thdulist.writeto('redmonster-%s-%s-%03d.fits' %
                                       (self.zpick.plate, self.zpick.mjd,
                                        self.zpick.fiberid[0]),
-                                      clobber=self.clobber)
+                                      overwrite=self.overwrite)
                 print('Writing redmonster file to %s' % \
                         join( getcwd(), 'redmonster-%s-%s-%03d.fits' %
                              (self.zpick.plate, self.zpick.mjd,
@@ -458,19 +458,19 @@ class WriteRedmonster:
 
     def write_plate(self):
         self.create_hdulist()
-        if self.clobber:
+        if self.overwrite:
             if self.dest is not None:
                 self.thdulist.writeto(join(self.dest, '%s' %
                                            'redmonster-%s-%s.fits' %
                                            (self.zpick.plate, self.zpick.mjd)),
-                                      clobber=self.clobber)
+                                      overwrite=self.overwrite)
                 print('Writing redmonster file to %s' % \
                         join(self.dest, '%s' % 'redmonster-%s-%s.fits' %
                              (self.zpick.plate, self.zpick.mjd)))
             else:
                 self.thdulist.writeto('redmonster-%s-%s.fits' %
                                       (self.zpick.plate, self.zpick.mjd),
-                                      clobber=self.clobber)
+                                      overwrite=self.overwrite)
                 print('Writing redmonster file to %s' % \
                         join( getcwd(), 'redmonster-%s-%s.fits' %
                              (self.zpick.plate, self.zpick.mjd) ))
@@ -632,7 +632,7 @@ class MergeRedmonster:
                 self.models[i] = hdu[2].data[0]
                 #remove(path)
                                
-            output = WriteRedmonster(self, clobber=True)
+            output = WriteRedmonster(self, overwrite=True)
             output.write_plate()
 
     def merge_plates(self):
@@ -729,7 +729,7 @@ class MergeRedmonster:
         output = WriteRedmonster(self)
         output.create_hdulist()
         output.thdulist.writeto( join( topdir, run2d, '%s' % __version__.replace('.', '_'), 'redmonsterAll-%s.fits' %
-                                      run2d), clobber=True)
+                                      run2d), overwrite=True)
 
 
     def merge_fibers2(self):
@@ -1080,7 +1080,7 @@ class MergeRedmonster:
             
             dest = join(topdir, run2d, '%s' % __version__.replace('.', '_'), '%s' % self.plate,
                         'redmonster-%s-%s.fits' % (self.plate, self.mjd))
-            thdulist.writeto( dest, clobber=True )
+            thdulist.writeto( dest, overwrite=True )
 
     def merge_plates2(self):
         self.platelist = []
@@ -1258,7 +1258,7 @@ class MergeRedmonster:
             thdulist = fits.HDUList([prihdu, tbhdu])
             
             dest = join(topdir, run2d, rmver, 'redmonsterAll-%s.fits' % run1d)
-            thdulist.writeto( dest, clobber=True )
+            thdulist.writeto( dest, overwrite=True )
 
     def merge_chi2(self):
         try:
@@ -1317,7 +1317,7 @@ class MergeRedmonster:
             thdulist.writeto( join( topdir, run2d, rmver, '%s' % self.plate,
                                    'chi2arr-%s-%s-%s.fits' %
                                    (self.temp, self.plate, self.mjd) ),
-                             clobber=True)
+                             overwrite=True)
 
 
 # ------------------------------------------------------------------------------
@@ -1349,7 +1349,7 @@ def write_chi2arr(plate, mjd, fiberid, zchi2arr):
             try:
                 thdulist.writeto(join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits'
                                       % (self.type, plate, mjd, fiberid)),
-                                 clobber=True)
+                                 overwrite=True)
                 print('Writing chi2 file to %s' % \
                         join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits' %
                              (self.type, plate, mjd, fiberid)))

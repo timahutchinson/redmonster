@@ -15,7 +15,7 @@
 #                  If given, len(npixstep) must equal len(templates)
 # dest (string): Full path to directory in which output fill will be written.  If not specified, defaults to
 #                $REDMONSTER_SPECTRO_REDUX/$RUN2D/pppp/$RUN1D/ , where pppp is the 4 digit plate id.
-# clobber (Boolean): Default behavior is to overwrite older output files for same plate/mjd.  Setting to false will cause new
+# overwrite (Boolean): Default behavior is to overwrite older output files for same plate/mjd.  Setting to false will cause new
 #                    version to be written.
 #
 # Tim Hutchinson, University of Utah, October 2014
@@ -41,11 +41,11 @@ from redmonster._linelist import __linelist__
 class ZFind:
 
     def __init__(self, num_z=5, inifile=None, dest=None, nproc=1,
-                 mask=False, clobber=True):
+                 mask=False, overwrite=True):
         self.num_z = num_z
         self.inifile = inifile
         self.dest = dest
-        self.clobber = clobber
+        self.overwrite = overwrite
         if self.inifile: self.set_templates_from_inifile()
         self.nproc = nproc
         self.mask = mask
@@ -269,21 +269,21 @@ class ZFind:
 
         # Write output
         if self.dest is None:
-            output = io2.WriteRedmonster(zpick, clobber=True)
+            output = io2.WriteRedmonster(zpick, overwrite=True)
         else:
             if type(self.dest) is str:
                 output = io2.WriteRedmonster(zpick, dest=self.dest,
-                                              clobber=True)
+                                              overwrite=True)
             else:
                 try:
                     self.dest = str(self.dest)
                     output = io2.WriteRedmonster(zpick, dest=self.dest,
-                                                  clobber=True)
+                                                  overwrite=True)
                 except Exception as e:
                     print('Could not convert dest to string - writing to \
                             default directory and NOT clobbering old files! \
                             Exception: %r' % e)
-                    output = io2.WriteRedmonster(zpick, clobber=True)
+                    output = io2.WriteRedmonster(zpick, overwrite=True)
 
         if output:
             if len(zpick.fiberid) == 1: output.write_fiber()
@@ -337,7 +337,7 @@ class ZFind:
         
             # Write output
             if self.dest is None:
-                output = io2.WriteRedmonster(zpick, dest=filepath, clobber=True)
+                output = io2.WriteRedmonster(zpick, dest=filepath, overwrite=True)
 
             if output:
                 output.write_gen()

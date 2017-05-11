@@ -100,7 +100,7 @@ hdr.remove('RESTWAV')
 
 # Write it out:
 ofile = 'ndArch-TEST-v00.fits'
-fits.writeto(ofile, image, header=hdr, clobber=True)
+fits.writeto(ofile, image, header=hdr, overwrite=True)
 
 # Read it back in and see if it is sensible:
 htest = fits.getheader(ofile)

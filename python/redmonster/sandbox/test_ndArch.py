@@ -71,5 +71,5 @@ for i in range(len(names)):
 
 # Write it out:
 ofile = 'ndArch-TEST-v00.fits'
-hdu.writeto(ofile, clobber=True)
+hdu.writeto(ofile, overwrite=True)
 

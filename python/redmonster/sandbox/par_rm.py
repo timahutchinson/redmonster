@@ -27,7 +27,7 @@ def parallel_rm(xxx_todo_changeme ):
     cols = fits.ColDefs([col1])
     tbhdu = fits.BinTableHDU.from_columns(cols)
     thdulist = fits.HDUList([prihdu,tbhdu])
-    thdulist.writeto('chi2arr-%s-%s.fits' % (plate, zssp.type), clobber=True)
+    thdulist.writeto('chi2arr-%s-%s.fits' % (plate, zssp.type), overwrite=True)
     # ----
     #zstar = zfinder.ZFinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
     #zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
@@ -44,8 +44,8 @@ def parallel_rm(xxx_todo_changeme ):
     ## Write flags file
     #prihdu = fits.PrimaryHDU(ssp_flags)
     #thdulist = fits.HDUList([prihdu])
-    #thdulist.writeto('flags-%s-%s.fits' % (plate, zssp.type), clobber=True)
-    #output = io.WriteRedmonster(zpick, dest='~/scratch', clobber=True)
+    #thdulist.writeto('flags-%s-%s.fits' % (plate, zssp.type), overwrite=True)
+    #output = io.WriteRedmonster(zpick, dest='~/scratch', overwrite=True)
 
 # Read yanny file
 x = y.yanny(filename='spInspect_alltest_bolton.par.txt', np=True)

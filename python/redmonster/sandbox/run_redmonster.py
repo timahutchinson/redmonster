@@ -152,8 +152,8 @@ zpick = zpicker2.ZPicker(specs, zfindobjs, zfitobjs, flags)
 #zpick.fiberid = [0]
 
 ''' Write output file.  Arguments are zpick object from above, and
-    optionally dest and clobber, the path in which to write to file
-    and whether or not to clobber old files with the same name,
+    optionally dest and overwrite, the path in which to write to file
+    and whether or not to overwrite old files with the same name,
     respectively.  See class documentation for more detail on
     WriteRedmonster behavior.'''
 

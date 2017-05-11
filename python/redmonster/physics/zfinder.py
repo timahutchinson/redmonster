@@ -355,7 +355,7 @@ class ZFinder:
             try:
                 thdulist.writeto(join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits'
                                       % (self.type, plate, mjd, fiberid)),
-                                 clobber=True)
+                                 overwrite=True)
                 print('Writing chi2 file to %s' % \
                         join(dest, '%s' % 'chi2arr-%s-%s-%s-%03d.fits' %
                              (self.type, plate, mjd, fiberid)))

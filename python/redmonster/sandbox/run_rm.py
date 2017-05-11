@@ -22,7 +22,7 @@ def parallel_rm(xxx_todo_changeme ):
     cols = fits.ColDefs([col1])
     tbhdu = fits.BinTableHDU.from_columns(cols)
     thdulist = fits.HDUList([prihdu,tbhdu])
-    thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-%s.fits' % (plate, zssp.type), clobber=True)
+    thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-%s.fits' % (plate, zssp.type), overwrite=True)
     # ----
     zstar = zfinder.ZFinder(fname='ndArch-spEigenStar-55734.fits', npoly=4, zmin=-.005, zmax=.005)
     zstar.zchi2(specs.flux, specs.loglambda, specs.ivar)
@@ -32,7 +32,7 @@ def parallel_rm(xxx_todo_changeme ):
     cols = fits.ColDefs([col1])
     tbhdu = fits.BinTableHDU.from_columns(cols)
     thdulist = fits.HDUList([prihdu,tbhdu])
-    thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-%s.fits' % (plate, zstar.type), clobber=True)
+    thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/chi2arr-%s-%s.fits' % (plate, zstar.type), overwrite=True)
     # ----
     zfit_ssp = zfitter.ZFitter(zssp.zchi2arr, zssp.zbase)
     zfit_ssp.z_refine()
@@ -44,8 +44,8 @@ def parallel_rm(xxx_todo_changeme ):
     # Write flags file
     prihdu = fits.PrimaryHDU(zpick.zwarning)
     thdulist = fits.HDUList([prihdu])
-    thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/flags-%s.fits' % plate, clobber=True)
-    output = io.WriteRedmonster(zpick, dest='/uufs/astro.utah.edu/common/home/u0814744/scratch/screens', clobber=True)
+    thdulist.writeto('/uufs/astro.utah.edu/common/home/u0814744/scratch/screens/flags-%s.fits' % plate, overwrite=True)
+    output = io.WriteRedmonster(zpick, dest='/uufs/astro.utah.edu/common/home/u0814744/scratch/screens', overwrite=True)
 
 # Read yanny file
 x = y.yanny(filename='spInspect_alltest_bolton.par.txt', np=True)

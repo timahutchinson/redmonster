@@ -15,7 +15,7 @@
 #                  If given, len(npixstep) must equal len(templates)
 # dest (string): Full path to directory in which output fill will be written.  If not specified, defaults to
 #                $REDMONSTER_SPECTRO_REDUX/$RUN2D/pppp/$RUN1D/ , where pppp is the 4 digit plate id.
-# clobber (Boolean): Default behavior is to overwrite older output files for same plate/mjd.  Setting to false will cause new
+# overwrite (Boolean): Default behavior is to overwrite older output files for same plate/mjd.  Setting to false will cause new
 #                    version to be written.
 #
 # Tim Hutchinson, University of Utah, October 2014
@@ -36,11 +36,11 @@ import sys
 
 class ZFind:
 
-    def __init__(self, num_z=5, inifile=None, dest=None, clobber=True):
+    def __init__(self, num_z=5, inifile=None, dest=None, overwrite=True):
         self.num_z = num_z
         self.inifile = inifile
         self.dest = dest
-        self.clobber = clobber
+        self.overwrite = overwrite
         if self.inifile: self.set_templates_from_inifile()
 
     def set_templates_from_inifile(self):
@@ -234,17 +234,17 @@ class ZFind:
 
         # Write output
         if self.dest is None:
-            output = io.WriteRedmonster(zpick, clobber=self.clobber)
+            output = io.WriteRedmonster(zpick, overwrite=self.overwrite)
         else:
             if type(self.dest) is str:
-                output = io.WriteRedmonster(zpick, dest=self.dest, clobber=self.clobber)
+                output = io.WriteRedmonster(zpick, dest=self.dest, overwrite=self.overwrite)
             else:
                 try:
                     self.dest = str(self.dest)
-                    output = io.WriteRedmonster(zpick, dest=self.dest, clobber=self.clobber)
+                    output = io.WriteRedmonster(zpick, dest=self.dest, overwrite=self.overwrite)
                 except:
                     print('Could not convert dest to string - writing to default directory and NOT clobbering old files!')
-                    output = io.WriteRedmonster(zpick, clobber=True)
+                    output = io.WriteRedmonster(zpick, overwrite=True)
 
         if output:
             if len(zpick.fiberid) == 1: output.write_fiberid()
