@@ -23,6 +23,7 @@ import time
 from redmonster.datamgr.ssp_prep import SSPPrep
 from redmonster.physics.misc import poly_array, two_pad
 from redmonster.datamgr.io2 import read_ndArch, write_chi2arr
+from redmonster.misc import create_mask
 
 # Assumes all templates live in $REDMONSTER_DIR/templates/
 
@@ -145,9 +146,15 @@ class ZFinder:
 
 
     def zchi2(self, specs, specloglam, ivar, npixstep=1, chi2file=False,
-              plate=None, mjd=None, fiberid=None):
+              plate=None, mjd=None, fiberid=None, linelist=None):
         self.chi2file = chi2file
         self.npixstep = npixstep
+        # Apply mask by making ivar[i-5:i+5] = 0 where wave[i] is the
+        # wavelenght of an emission feature in linelist
+        if linelist is not None:
+            self.linelist = linelist
+            mask = create_mask(linelist, specloglam)
+            ivar *= mask
         self.zwarning = n.zeros(specs.shape[0])
         flag_val_unplugged = int('0b10000000',2)
         flag_val_neg_model = int('0b1000',2)
