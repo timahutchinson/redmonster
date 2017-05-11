@@ -35,11 +35,13 @@ from astropy.io import fits
 from redmonster.datamgr import spec, io, io2
 from redmonster.physics import zfinder, zfitter, zpicker, zpicker2
 from redmonster.physics import misc
+from redmonster._linelist import __linelist__
 
 
 class ZFind:
 
-    def __init__(self, num_z=5, inifile=None, dest=None, nproc=1, clobber=True):
+    def __init__(self, num_z=5, inifile=None, dest=None, nproc=1,
+                 mask=False, clobber=True):
         self.num_z = num_z
         self.inifile = inifile
         self.dest = dest
@@ -216,10 +218,17 @@ class ZFind:
                                                   zmin=self.zmin[i],
                                                   zmax=self.zmax[i],
                                                   nproc=self.nproc) )
-                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
-                                   npixstep=self.npixstep[i], plate=plate,
-                                   mjd=mjd, fiberid=fiberid[0],
-                                   chi2file=self.chi2file )
+                if mask:
+                    zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
+                                       npixstep=self.npixstep[i], plate=plate,
+                                       mjd=mjd, fiberid=fiberid[0],
+                                       chi2file=self.chi2file,
+                                       linelist=__linelist__)
+                else:
+                    zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
+                                       npixstep=self.npixstep[i], plate=plate,
+                                       mjd=mjd, fiberid=fiberid[0],
+                                       chi2file=self.chi2file )
                 zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
                                                  zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine2()
@@ -230,10 +239,17 @@ class ZFind:
                                                   npoly=self.npoly[i],
                                                   npixstep=self.npixstep[i],
                                                   nproc=self.nproc) )
-                zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
-                                   npixstep=self.npixstep[i], plate=plate,
-                                   mjd=mjd, fiberid=fiberid[0],
-                                   chi2file=self.chi2file )
+                if mask:
+                    zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
+                                       npixstep=self.npixstep[i], plate=plate,
+                                       mjd=mjd, fiberid=fiberid[0],
+                                       chi2file=self.chi2file,
+                                       linelist=__linelist__)
+                else:
+                    zfindobjs[i].zchi2( specs.flux, specs.loglambda, specs.ivar,
+                                    npixstep=self.npixstep[i], plate=plate,
+                                    mjd=mjd, fiberid=fiberid[0],
+                                    chi2file=self.chi2file)
                 zfitobjs.append( zfitter.ZFitter(zfindobjs[i].zchi2arr,
                                                  zfindobjs[i].zbase) )
                 zfitobjs[i].z_refine2()
