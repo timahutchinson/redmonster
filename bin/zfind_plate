@@ -35,7 +35,7 @@ mjds=[56931, 56388, 56397, 56398]
 q.create(label='zfind',alloc=alloc,nodes=nodes,ppn=ppn,walltime=walltime)
 for i,plate in enumerate(plates):
     for fiberid in range(1000):
-        q.append("zfind -p %i -m %i -f %i" % (plate,mjds[i],fiberid))
+        q.append("zfind -p %i -m %i -f %i --mask" % (plate,mjds[i],fiberid))
 q.commit(hard=True,submit=True)
 
 
