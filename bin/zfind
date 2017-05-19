@@ -50,11 +50,11 @@ except:
 
 if arg.nproc is not None:
     zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, nproc=arg.nproc,
-                      mask=arg.mask, clobber=arg.clobber)
+                      mask=arg.mask, overwrite=arg.clobber)
     zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
                         chi2file=False, platepath=arg.platepath)
 else:
-    zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, mask=arg.mask, clobber=arg.clobber)
+    zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, mask=arg.mask, overwrite=arg.clobber)
     zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
                         chi2file=False, platepath=arg.platepath)
 
