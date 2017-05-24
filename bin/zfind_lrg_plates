@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+
+# Run redmonster on all eboss LRG targets according to Kyles papers selection
+
+from os import environ
+from os.path import join, basename
+from glob import iglob
+import re
+import numpy as N
+import sys
+
+from astropy.io import fits
+from pbs import queue
+
+q = queue()
+q.verbose = True
+nodes = 9
+walltime = '300:00:00'
+
+try: uufscell = environ['UUFSCELL']
+except: uufscell = None
+if 'kingspeak' in uufscell:
+    alloc = 'sdss-kp'
+    ppn=16
+elif 'ember' in uufscell:
+    alloc = 'bolton-em'
+    ppn=12
+else:
+    alloc = None
+    ppn=None
+
+q.create(label='zfind_lrg_plate',alloc=alloc,nodes=nodes,
+         ppn=ppn,walltime=walltime)
+
+try: topdir = environ['BOSS_SPECTRO_REDUX']
+except: topdir = None
+try: run2d = environ['RUN2D']
+except: run2d = None
+spallpath = join(topdir, run2d, 'spAll-%s.fits' % run2d)
+
+spall = fits.open(spallpath)[1].data
+
+wlrgs = (spall.EBOSS_TARGET1 & 2 > 0) | (spall.EBOSS_TARGET0 & 2 > 0) | (spall.EBOSS_TARGET0 & 4 > 0)
+lrg_plates = N.unique(spall.PLATE[wlrgs]) 
+
+print sum(wlrgs), 'LRGs in ', lrg_plates.size, 'plates'
+
+update=0
+if len(sys.argv)>1 and sys.argv[1]=='-u':
+    update=1
+        
+for plate in lrg_plates:
+    script = 'zfind_lrg_plate %d'%plate+(' -u'*update)
+    print script
+    q.append(script) 
+
+q.commit(hard=True, submit=True)
+
+
+
+
