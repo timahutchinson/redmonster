@@ -51,7 +51,7 @@ if spallpath:
             q.commit(hard=True, submit=True)
             q = queue()
             q.verbose = True
-            q.create(label='zfind_sequels_lrg_%r' % cjob,alloc=alloc,
+            q.create(label='zfind_eboss_lrg_%r' % cjob,alloc=alloc,
                      nodes=nodes,ppn=ppn,walltime=walltime)
     if not q.client.committed: q.commit(hard=True, submit=True)
 
