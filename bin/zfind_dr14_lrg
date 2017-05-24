@@ -41,7 +41,7 @@ if spallpath:
     hdu = fits.open(spallpath)
     blocksize = nodes*ppn*ncycles
     for ind,ebosstarg1 in enumerate(hdu[1].data.EBOSS_TARGET1):
-        if ((ebosstarg1 & 2) or (hdu[1].data.EBOSS_TARGET0[ind] & 2) or (hdu[1].data.EBOSS_TARGET0[ind] & 4)) and (hdu[1].data.SPECPRIMARY[ind] > 0):
+        if ((ebosstarg1 & 2) or (hdu[1].data.EBOSS_TARGET0[ind] & 2) or (hdu[1].data.EBOSS_TARGET0[ind] & 4)) and (hdu[1].data.SPECPRIMARY[ind] == 0):
             plate = hdu[1].data.PLATE[ind]
             mjd = hdu[1].data.MJD[ind]
             fiberid = hdu[1].data.FIBERID[ind] - 1

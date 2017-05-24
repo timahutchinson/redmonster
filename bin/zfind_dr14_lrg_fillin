@@ -3,7 +3,7 @@
 # Run redmonster on all eboss LRG targets according to Kyles papers selection
 
 from os import environ
-from os.path import join, basename
+from os.path import join, basename, exists
 from glob import iglob
 import re
 
