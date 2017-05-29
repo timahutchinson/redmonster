@@ -1141,8 +1141,12 @@ class MergeRedmonster:
                 try:
                     for x in iglob( join( topdir, run2d, rmver, '%s' % plate,
                                          'redmonster-%s-*.fits' % plate) ):
-                        if basename(x)[16:21] not in mjds:
-                            mjds.append(basename(x)[16:21])
+                        if len(plate) == 4:
+                            if basename(x)[16:21] not in mjds:
+                                mjds.append(basename(x)[16:21])
+                        elif len(plate) == 5:
+                            if basename(x)[17:22] not in mjds:
+                                mjds.append(basename(x)[17:22])
                 except Exception as e:
                     mjds = None
                     print("Exception: %r" % e)
