@@ -48,11 +48,6 @@ for j, platepath in enumerate(platepaths):
             zmax = hdu[1].data.Z1[j] + 3 * hdu[1].data.Z_ERR1[i]
             q.append("zfind -p %i -m %i -f %i -J %f -K %f" % (plates[j], mjds[j], hdu[1].data.FIBERID[j], zmin, zmax))
 
-
-
-for i,plate in enumerate(plates):
-    for fiberid in range(1000):
-
 q.commit(hard=True,submit=True)
 
 
