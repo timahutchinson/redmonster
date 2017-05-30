@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+
+from os import environ
+from os.path import join, basename
+from glob import iglob
+
+from pbs import queue
+from astropy.io import fits
+
+# Set plates and mjds to run on
+plates=[8123, 6931, 6932, 6933]
+mjds=[56931, 56388, 56397, 56398]
+
+q = queue()
+q.verbose = True
+nodes = 12
+walltime = '36:00:00'
+
+try: uufscell = environ['UUFSCELL']
+except: uufscell = None
+if 'kingspeak' in uufscell:
+    alloc = 'sdss-kp'
+    ppn=16
+elif 'ember' in uufscell:
+    alloc = 'bolton-em'
+    ppn=12
+else:
+    alloc = None
+    ppn=None
+
+# try setting necessary environment variables
+try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
+except KeyError: topdir = False
+# run2d needs to be set manually, the environment var will be overwritten before running
+run2d = 'v5_10_0'
+try: rmver = environ['REDMONSTER_VER']
+except KeyError: rmver = False
+
+platepaths = [join(topdir, run2d, rmver, 'redmonster-%s-%s.fits' % (plate, mjd)) for plate, mjd in zip(plates, mjds) if topdir and rmver]
+
+q.create(label='zfind_plate_elg_vi', alloc=alloc, nodes=nodes, ppn=ppn, walltime=walltime)
+
+for j, platepath in enumerate(platepaths):
+    hdu = fits.open(platepath)
+    for j, zwarn in enumerate(hdu[1].data.ZWARNING):
+        if zwarn == 0:
+            zmin = hdu[1].data.Z1[j] - 3 * hdu[1].data.Z_ERR1[i]
+            zmax = hdu[1].data.Z1[j] + 3 * hdu[1].data.Z_ERR1[i]
+            q.append("zfind -p %i -m %i -f %i" % (plates[j], mjds[j], hdu[1].data.FIBERID[j]
+
+
+
+for i,plate in enumerate(plates):
+    for fiberid in range(1000):
+
+q.commit(hard=True,submit=True)
+
+
+
+
+
+
+
+
+
