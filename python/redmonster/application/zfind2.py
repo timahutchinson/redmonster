@@ -41,12 +41,15 @@ from redmonster._linelist import __linelist__
 class ZFind:
 
     def __init__(self, num_z=5, inifile=None, dest=None, nproc=1,
-                 mask=False, overwrite=True):
+                 mask=False, overwrite=True, zrange=None):
         self.num_z = num_z
         self.inifile = inifile
         self.dest = dest
         self.overwrite = overwrite
         if self.inifile: self.set_templates_from_inifile()
+        if zrange:
+            self.zmin = [zrange[0]] * len(self.templates)
+            self.zmax = [zrange[1]] * len(self.templates)
         self.nproc = nproc
         self.mask = mask
 

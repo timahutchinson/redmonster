@@ -10,7 +10,8 @@ except: inidir = None
 
 
 parser = ArgumentParser()
-parser.add_argument("-s", "--platepath", help="Run Redmonster on this spPlate-PLATE-MJD file",
+parser.add_argument("-s", "--platepath",
+                    help="Run Redmonster on this spPlate-PLATE-MJD file",
                     type=str,metavar="SPPLATE")
 parser.add_argument("-p", "--plate", help="Run Redmonster on this Plate",
                     type=int,metavar="PLATE")
@@ -22,6 +23,10 @@ parser.add_argument("-j", "--datamin", help="Minimum wavelength of data to use",
                     type=int, metavar="DATAMIN")
 parser.add_argument("-k", "--datamax", help="Maximum wavelength of data to use",
                     type=int, metavar="DATAMAX")
+parser.add_argument("-J", "--zmin", help="Minimum redshift to fit",
+                    type=float, metavar="ZMIN")
+parser.add_argument("-K", "--zmax", help="Maximum redshift to fit",
+                    type=float, metavar="ZMAX")
 parser.add_argument("-i", "--inifile", help="templates configuration ini file \
                     [default zfind.ini]",type=str, default="zfind.ini",
                     metavar="INIFILE")
@@ -31,14 +36,17 @@ parser.add_argument("-d", "--dest", help="overide REDMONSTER_SPECTRO_REDUX",
                     type=str, metavar="DEST")
 parser.add_argument("-n", "--nproc", help="number of procs to use",
                     type=int, metavar="NPROC")
-parser.add_argument("--mask", help="Apply mask in redmonster._linelist", action="store_true")
+parser.add_argument("--mask", help="Apply mask in redmonster._linelist",
+                    action="store_true")
 
 arg = parser.parse_args()
 if not arg.platepath: 
     arg.platepath=None
 
-if not arg.platepath and not arg.plate: parser.error("Please specify a valid --plate or --platepath")
-if not arg.platepath and not arg.mjd: parser.error("Please specify a valid --mjd")
+if not arg.platepath and not arg.plate:
+    parser.error("Please specify a valid --plate or --platepath")
+if not arg.platepath and not arg.mjd:
+    parser.error("Please specify a valid --mjd")
 inifile = join(inidir,arg.inifile) if inidir else arg.inifile
 
 data_range = []
@@ -48,26 +56,41 @@ try:
 except:
     data_range = None
 
-if arg.nproc is not None:
-    zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, nproc=arg.nproc,
-                      mask=arg.mask, overwrite=arg.clobber)
-    zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
-                        chi2file=False, platepath=arg.platepath)
-else:
-    zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, mask=arg.mask, overwrite=arg.clobber)
-    zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid, data_range=data_range,
-                        chi2file=False, platepath=arg.platepath)
+zrange = []
+try:
+    zrange.append(arg.zmin)
+    zrange.append(arg.zmax)
+except:
+    pass
 
-# Delete QSO and CAP chi2files
-from os import remove
-#remove( join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'],
-              #'%s' % arg.plate, environ['RUN1D'],
-              #'chi2arr-QSO-%s-%s-%03d.fits' % (arg.plate, arg.mjd,
-                                                #arg.fiberid) ) )
-#remove( join( environ['REDMONSTER_SPECTRO_REDUX'], environ['RUN2D'],
-              #'%s' % arg.plate, environ['RUN1D'],
-              #'chi2arr-CAP-%s-%s-%03d.fits' % (arg.plate, arg.mjd,
-                                                #arg.fiberid) ) )
+if arg.nproc is not None:
+    if zrange:
+        inifile = join(inidir, 'zfind_noz.ini') if inidir else 'zfind_noz.ini'
+        zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, nproc=arg.nproc,
+                          mask=arg.mask, overwrite=arg.clobber, zrange=zrange)
+        zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid,
+                            data_range=data_range, chi2file=False,
+                            platepath=arg.platepath)
+    else:
+        zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, nproc=arg.nproc,
+                          mask=arg.mask, overwrite=arg.clobber)
+        zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid,
+                            data_range=data_range, chi2file=False,
+                            platepath=arg.platepath)
+else:
+    if zrange:
+        inifile = join(inidir, 'zfind_noz.ini') if inidir else 'zfind_noz.ini'
+        zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, mask=arg.mask,
+                          overwrite=arg.clobber, zrange=zrange)
+        zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid,
+                            data_range=data_range, chi2file=False,
+                            platepath=arg.platepath)
+    else:
+        zf = zfind2.ZFind(inifile=inifile, dest=arg.dest, mask=arg.mask,
+                          overwrite=arg.clobber)
+        zf.reduce_plate_mjd(arg.plate, arg.mjd, arg.fiberid,
+                            data_range=data_range, chi2file=False,
+                            platepath=arg.platepath)
 
 
 """ usage
