@@ -50,7 +50,6 @@ if not arg.platepath and not arg.mjd:
 inifile = join(inidir,arg.inifile) if inidir else arg.inifile
 
 data_range = []
-import pdb; pdb.set_trace()
 try:
     data_range.append(arg.datamin)
     data_range.append(arg.datamax)
