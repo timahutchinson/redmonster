@@ -50,6 +50,7 @@ class ZFind:
         if zrange:
             self.zmin = [zrange[0]] * len(self.templates)
             self.zmax = [zrange[1]] * len(self.templates)
+        print self.zmin, self.zmax
         self.nproc = nproc
         self.mask = mask
 
@@ -192,6 +193,7 @@ class ZFind:
 
     def reduce_plate_mjd(self, plate=None, mjd=None, fiberid=None, data_range=None,
                          chi2file=False, platepath=None):
+        print "\nPlate %s MJD %s Fiber %s" % (plate, mjd, fiberid)
         self.chi2file = chi2file
         # Check types and try to convert to proper types if necessary
         if fiberid is not None:

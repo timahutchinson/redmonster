@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from os import environ
-from os.path import join, basename
+from os.path import join, basename, exists
 from glob import iglob
 
 from pbs import queue
@@ -30,7 +30,6 @@ else:
 
 # try setting necessary environment variables
 try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
-#try: topdir = environ['BOSS_SPECTRO_REDUX']
 except KeyError: topdir = False
 # run2d needs to be set manually, the environment var will be overwritten before running
 run2d = 'v5_10_0'
@@ -40,17 +39,17 @@ try: run1d = environ['RUN1D']
 except KeyError: run1d = False
 
 platepaths = [join(topdir, run2d, rmver, 'truth', '%s' % plate, 'redmonster-%s-%s.fits' % (plate, mjd)) for plate, mjd in zip(plates, mjds) if topdir and rmver]
-#platepaths = [join(topdir, run2d, '%s' % plate, run1d, 'spZbest-%s-%s.fits' % (plate, mjd)) for plate, mjd in zip(plates, mjds)]
 
 q.create(label='zfind_plate_elg_vi', alloc=alloc, nodes=nodes, ppn=ppn, walltime=walltime)
 
 for i, platepath in enumerate(platepaths):
     hdu = fits.open(platepath)
     for j, zwarn in enumerate(hdu[1].data.ZWARNING):
-        if (zwarn == 0) and hdu[1].data.CLASS1 == 'ssp_galaxy_glob':
-            zmin = hdu[1].data.Z1[j] - 3 * hdu[1].data.Z_ERR1[i]
-            zmax = hdu[1].data.Z1[j] + 3 * hdu[1].data.Z_ERR1[i]
-            q.append("zfind -p %i -m %i -f %i -J %f -K %f" % (plates[i], mjds[i], hdu[1].data.FIBERID[j], zmin, zmax))
+        if not exists( join(topdir, run2d, rmver, '%s' % plates[i], 'redmonster-%s-%s-%03d.fits' % (plates[i], mjds[i], hdu[1].data.FIBERID[j])) ):
+            if (zwarn == 0) and (hdu[1].data.CLASS1[j] == 'ssp_galaxy_glob'):
+                zmin = hdu[1].data.Z1[j] - 50 * hdu[1].data.Z_ERR1[j]
+                zmax = hdu[1].data.Z1[j] + 50 * hdu[1].data.Z_ERR1[j]
+                q.append("zfind -p %i -m %i -f %i -J %f -K %f" % (plates[i], mjds[i], hdu[1].data.FIBERID[j], zmin, zmax))
 
 q.commit(hard=True, submit=True)
 

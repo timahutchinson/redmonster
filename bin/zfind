@@ -57,6 +57,7 @@ except:
     data_range = None
 
 zrange = [arg.zmin, arg.zmax] if arg.zmin != None and arg.zmax != None else []
+print zrange
 
 if arg.nproc is not None:
     if zrange:
