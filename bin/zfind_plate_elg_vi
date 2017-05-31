@@ -39,7 +39,7 @@ except KeyError: rmver = False
 try: run1d = environ['RUN1D']
 except KeyError: run1d = False
 
-platepaths = [join(topdir, run2d, rmver, '%s' % plate, 'redmonster-%s-%s.fits' % (plate, mjd)) for plate, mjd in zip(plates, mjds) if topdir and rmver]
+platepaths = [join(topdir, run2d, rmver, 'truth', '%s' % plate, 'redmonster-%s-%s.fits' % (plate, mjd)) for plate, mjd in zip(plates, mjds) if topdir and rmver]
 #platepaths = [join(topdir, run2d, '%s' % plate, run1d, 'spZbest-%s-%s.fits' % (plate, mjd)) for plate, mjd in zip(plates, mjds)]
 
 q.create(label='zfind_plate_elg_vi', alloc=alloc, nodes=nodes, ppn=ppn, walltime=walltime)
