@@ -29,7 +29,7 @@ else:
     ppn=None
 
 # try setting necessary environment variables
-try: topdir = environ['REDMONSTER_SPECTRO_REDUX']
+try: topdir = environ['HOME'] # not REDMONSTER_SPECTRO_REDUX so it writes to home directory version
 except KeyError: topdir = False
 # run2d needs to be set manually, the environment var will be overwritten before running
 run2d = 'v5_10_0'

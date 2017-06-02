@@ -57,8 +57,8 @@ except:
     data_range = None
 
 zrange = [arg.zmin, arg.zmax] if arg.zmin != None and arg.zmax != None else []
-print zrange
 
+print arg.plate, arg.mjd, arg.fiberid
 if arg.nproc is not None:
     if zrange:
         inifile = join(inidir, 'zfind_noz.ini') if inidir else 'zfind_noz.ini'
