@@ -822,7 +822,12 @@ class MergeRedmonster:
             for path in iglob(fiberdir):
                 self.filepaths.append( path )
                 fiberfile = basename( path )
-                self.fiberid.append( int(fiberfile[22:25])+1 )
+                if len(self.plate) == 4:
+                    self.fiberid.append( int(fiberfile[22:25])+1 )
+                elif len(self.plate) == 5:
+                    self.fiberid.append( int(fiberfile[23:26])+1 )
+                else:
+                    raise ValueError('Plate needs to be either 4 or 5 digits.')
             try:
                 
                 self.hdr = fits.open( join( environ['BOSS_SPECTRO_REDUX'], environ['RUN2D'], '%s' % self.plate, 'spPlate-%s-%s.fits' % (self.plate,self.mjd) ) )[0].header
