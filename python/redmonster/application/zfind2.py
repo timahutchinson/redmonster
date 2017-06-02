@@ -50,7 +50,6 @@ class ZFind:
         if zrange:
             self.zmin = [zrange[0]] * len(self.templates)
             self.zmax = [zrange[1]] * len(self.templates)
-        print self.zmin, self.zmax
         self.nproc = nproc
         self.mask = mask
 
