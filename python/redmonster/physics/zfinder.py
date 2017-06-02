@@ -236,8 +236,10 @@ class ZFinder:
                         for jpos in range(self.npoly):
                             pmat[ipos+1,jpos+1] = n.sum( poly_pad[ipos] *
                                                          poly_pad[jpos] *ivar_pad[i]) # CAN GO FASTER HERE (BUT NOT LIMITING = 0.001475
-
-                    f_null = linalg.solve(pmat[1:,1:,0],bvec[1:,0])
+                    try:
+                        f_null = linalg.solve(pmat[1:,1:,0],bvec[1:,0])
+                    except n.linalg.linalg.LinAlgError:
+                        f_null = 0
                     self.f_nulls.append( f_null )
                     self.chi2_null.append( self.sn2_data[i] -
                                            n.dot(n.dot(f_null,pmat[1:,1:,0]),f_null))
