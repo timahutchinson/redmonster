@@ -14,6 +14,7 @@ from __future__ import division
 
 import numpy as n
 
+
 def tri_diag(a, b, c, r):
     """
     Tri-diagonal solver
@@ -21,18 +22,19 @@ def tri_diag(a, b, c, r):
     ndim = len(b)
     alpha = a.copy()
     beta = b.copy()
-    for i in range(1,ndim):
+    for i in range(1, ndim):
         beta[i] = b[i] - alpha[i] * c[i-1] / beta[i-1]
     gamma = c / beta
     y = r.copy()
     y[0] = r[0] / beta[0]
-    for i in range(1,ndim):
+    for i in range(1, ndim):
         y[i] = (r[i] - alpha[i] * y[i-1]) / beta[i]
     x = y.copy()
     x[ndim-1] = y[ndim-1]
     for i in range(ndim-2, -1, -1):
         x[i] = y[i] - gamma[i] * x[i+1]
     return x
+
 
 def spline_get_ms(y):
     """
@@ -50,6 +52,7 @@ def spline_get_ms(y):
     m[1:bign] = tri_diag(off_diag, on_diag, off_diag, r)
     return m
 
+
 def spline_get_val(y, m, x):
     """
     Evaluate spline value at positions x
@@ -66,6 +69,7 @@ def spline_get_val(y, m, x):
                   + (m[i-1] + 3.0 * y[i-1]) * d1 * d2**2)
     return spline_val
 
+
 def spline_get_slope(y, m, x):
     """
     Evaluate spline slope at positions x
@@ -80,6 +84,7 @@ def spline_get_slope(y, m, x):
     spline_slope = (m[i] * d1**2 + m[i-1] * d2**2 +
                     (2.0*m[i] + 2.0*m[i-1] - 6.0*y[i] + 6.0*y[i-1]) * d1 * d2)
     return spline_slope
+
 
 def spline_get_curv(y, m, x):
     """
@@ -96,13 +101,14 @@ def spline_get_curv(y, m, x):
                    (2.0*m[i] + 2.0*m[i-1] - 6.0*y[i] + 6.0*y[i-1]) * (d1 + d2))
     return spline_curv
 
+
 def spline_get_max(y, m):
     """
     Find positions of analytic maxima of spline
     """
     bign = len(y) - 1
     xval = n.zeros(bign) - 1.0
-    #Quadratic derivative coefficients in the intervals:
+    # Quadratic derivative coefficients in the intervals:
     a = (3.0 * (m[0:bign] + (n.roll(m, -1))[0:bign])
          + 6.0 * (y[0:bign] - (n.roll(y, -1))[0:bign]))
     b = (-2.0 * (2.0 * m[0:bign] + (n.roll(m, -1))[0:bign]
@@ -126,6 +132,7 @@ def spline_get_max(y, m):
     xval = xval + n.arange(bign)
     xval = xval[roots]
     return xval
+
 
 # OOP interface to this business:
 class GridSpline:

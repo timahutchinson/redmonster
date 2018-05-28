@@ -287,4 +287,3 @@ class ZFitter:
 
 def quad_for_fit(x, a, b, c):
     return a*(x**2) + b*x + c
-

@@ -23,17 +23,20 @@ c3 = 1.67917e-3
 c4 = 57.362e0
 wmin = 2000.0
 
+
 def wave_to_sigma2(wave):
     """
     Internal support routine to convert to wavevnumber^2.
     """
     return (1.e4 / wave)**2
 
+
 def conv_factor(sigma2):
     """
     Internal support routine to compute conversion factor.
     """
     return c0 + c1 / (c2 - sigma2) + c3 / (c4 - sigma2)
+
 
 def v2a(vac_wave):
     """
@@ -45,6 +48,7 @@ def v2a(vac_wave):
     wave_test = vac_wave >= wmin
     air_wave = air_wave * wave_test + vac_wave * (1 - wave_test)
     return air_wave
+
 
 def a2v(air_wave):
     """
@@ -58,4 +62,3 @@ def a2v(air_wave):
     wave_test = air_wave >= wmin
     vac_wave = vac_wave * wave_test + air_wave * (1 - wave_test)
     return vac_wave
-

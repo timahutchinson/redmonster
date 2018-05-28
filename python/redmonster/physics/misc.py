@@ -21,18 +21,19 @@ def flux_check(flux, ivars, plate, mjd):
         ct = n.where(abs(flux[i]) * n.sqrt(ivars[i]) > 200.)[0].shape[0]
         # CHANGE NEXT LINE SO IT ADDS TO LOG FILE RATHER THAN PRINTS
         if ct > 0:
-            print('WARNING: Fiber #%s has %s pixels with S/N > 200' % (i+1,ct))
-            #write_to_log(plate, mjd, 'WARNING: Fiber #%s has %s \
-                          #pixels with S/N > 200' % (i+1,ct))
+            print('WARNING: Fiber #%s has %s pixels with S/N > \
+            200' % (i+1, ct))
+            # write_to_log(plate, mjd, 'WARNING: Fiber #%s has %s \
+            # pixels with S/N > 200' % (i+1,ct))
         badpix = n.where(flux[i] * n.sqrt(ivars[i]) < -10.)[0]
         if len(badpix) > 0:
             # ALSO CHANGE TO ADD TO LOG
-            print('WARNING: Fiber #%s has %s pixels with Flux < -10*Noise' % \
-                    (i+1,len(badpix)))
-            #write_to_log(plate, mjd, 'WARNING: Fiber #%s has %s pixels \
-                          #with Flux < -10*Noise' % (i+1,len(badpix)))
+            print('WARNING: Fiber #%s has %s pixels with Flux < -10*Noise' %
+                  (i+1, len(badpix)))
+            # write_to_log(plate, mjd, 'WARNING: Fiber #%s has %s pixels \
+            # with Flux < -10*Noise' % (i+1,len(badpix)))
             ivars[i] = mask_pixels(badpix, ivars[i])
-        nummasks = len( n.where(ivars[i] == 0)[0] )
+        nummasks = len(n.where(ivars[i] == 0)[0])
         dof[i] = npix - nummasks
     return ivars, dof
 
@@ -48,8 +49,8 @@ def mask_pixels(badpix, ivars):
 # Function to transform pixel centers to pixel boundaries
 def cen2bound(pixelcen):
     pixbound = 0.5 * (pixelcen[1:] + pixelcen[:-1])
-    pixbound = n.append( n.append( 2.*pixbound[0]-pixbound[1], pixbound ),
-                        2.*pixbound[-1]-pixbound[-2] )
+    pixbound = n.append(n.append(2.*pixbound[0] - pixbound[1], pixbound),
+                        2.*pixbound[-1]-pixbound[-2])
     return pixbound
 
 
@@ -61,9 +62,10 @@ def bound2cen(pixbound):
 
 # Create poly array to add polynomial terms in fitting
 def poly_array(npoly, npix):
-    arr = n.zeros(shape=(npoly,npix))
+    arr = n.zeros(shape=(npoly, npix))
     xvec = n.arange(npix) / float(npix)
-    for i in range(npoly): arr[i] = xvec**i
+    for i in range(npoly):
+        arr[i] = xvec**i
     return arr
 
 
@@ -83,7 +85,7 @@ def multipoly_fit(ind, dep, order=2):
     b = n.zeros(ndata)
     for i in range(ndata):
         for j in range(ndim*(order+1)):
-            A[i,j] = 0
+            A[i, j] = 0
 
 
 def quadfit_2d(ind, dep):
@@ -95,21 +97,21 @@ def quadfit_2d(ind, dep):
     '''
     x = ind[0]
     y = ind[1]
-    A = n.zeros((9,6))
-    b = n.reshape(dep,(9,1))
+    A = n.zeros((9, 6))
+    b = n.reshape(dep, (9, 1))
     for k in range(9):
         for i in range(3):
             for j in range(3):
-                A[k] = n.array([ x[i]**2, y[j]**2, x[i]*y[j], x[i], y[j], 1 ])
-    f = n.dot(linalg.pinv(A),b)
+                A[k] = n.array([x[i]**2, y[j]**2, x[i]*y[j], x[i], y[j], 1])
+    f = n.dot(linalg.pinv(A), b)
     return f
 
 
-def quadfit(ind, dep): # Fit quadratic to 3 points
-    A = n.zeros((3,3))
+def quadfit(ind, dep):  # Fit quadratic to 3 points
+    A = n.zeros((3, 3))
     for i in range(3):
-        A[i] = n.array([ ind[i]**2, ind[i], 1 ])
-    f = linalg.solve(A,dep)
+        A[i] = n.array([ind[i]**2, ind[i], 1])
+    f = linalg.solve(A, dep)
     return f
 
 
@@ -117,7 +119,7 @@ def comb_flags(specobj, zfindobj, zfitobj):
     '''
         Takes objects instead of just flags
     '''
-    #nfib = len(specobj.fiberid)
+    # nfib = len(specobj.fiberid)
     nfib = specobj.flux.shape[0]
     flags = n.zeros(nfib)
     for ifiber in range(nfib):
@@ -135,15 +137,17 @@ def comb_flags_2(specobj, zfitflags):
     '''
         Takes flags instead of objects
     '''
-    #nfib = len(specobj.fiberid)
+    # nfib = len(specobj.fiberid)
     nfib = specobj.flux.shape[0]
     flags = n.zeros(nfib)
     for ifiber in range(nfib):
         if hasattr(specobj, 'zwarning'):
             flags[ifiber] = (int(specobj.zwarning[ifiber]) |
                              int(zfitflags[ifiber]))
-        else: flags[fiber] = int(zfitflags[ifiber])
+        else:
+            flags[ifiber] = int(zfitflags[ifiber])
     return flags
+
 
 def create_mask(linelist, log_wave):
     wave = 10**n.array(log_wave)
@@ -185,7 +189,7 @@ def gaussflux(pixbound, cen, sig, h_order=0):
     if h_order > 0:
         u = (pixbound - cen) / sig
         int_term = - spc.hermitenorm(h_order-1)(u) * n.exp(-0.5 * u**2) / \
-                n.sqrt(2. * n.pi)
+            n.sqrt(2. * n.pi)
     else:
         int_term = 0.5 * spc.erf((pixbound - cen) / (n.sqrt(2.) * sig))
     return (int_term[1:] - int_term[:-1]) / pixdiff
@@ -222,13 +226,13 @@ def gaussbasis(pixbound, cen, sig, h_order=0, nsigma=6.0):
     bin_lo = n.where((bin_lo >= 0), bin_lo, 0)
     bin_hi = n.where((bin_hi < npix), bin_hi, npix-1)
     # Initialize matrix:
-    gbasis = sparse.lil_matrix((ngauss,npix))
+    gbasis = sparse.lil_matrix((ngauss, npix))
     # Loop over Gaussians, compute, and return:
     for i in range(ngauss):
         if (bin_hi[i] >= bin_lo[i]):
-            gbasis[i,bin_lo[i]:bin_hi[i]+1] = \
+            gbasis[i, bin_lo[i]:bin_hi[i]+1] = \
                     gaussflux(pixbound[bin_lo[i]:bin_hi[i]+2], cen[i], sig[i],
-                              h_order=h_order).reshape((1,-1))
+                              h_order=h_order).reshape((1, -1))
     return gbasis.tocsr().T
 
 
@@ -293,7 +297,7 @@ def gaussproj(pixbound_in, sigma_in, pixbound_out, h_order=0, nsigma=6.0):
         return 0
     # Generate a diagonal matrix that turns the flux density of the
     # input spectrum into the integrated flux of the input pixels:
-    pix_flux_mat = sparse.dia_matrix((dpix_in, 0), shape=(npix_in,npix_in))
+    pix_flux_mat = sparse.dia_matrix((dpix_in, 0), shape=(npix_in, npix_in))
     # Generate a sparse matrix that takes unit flux in the input pixels
     # to sigma-distributed flux density in the output pixels:
     center_in = 0.5 * (pixbound_in[1:] + pixbound_in[:-1])
